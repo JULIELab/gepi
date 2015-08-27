@@ -1,2 +1,2 @@
-export CLASSPATH=`echo lib/* | tr ' ' ':'`:conf:classes:resources
+export CLASSPATH=`echo lib/* | tr ' ' ':'`:conf:target/classes:resources
 runCPE.sh desc/CPE.xml
