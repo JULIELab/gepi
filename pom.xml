@@ -95,7 +95,7 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>jules-cas-xmi-to-db-consumer</artifactId>
-			<version>0.4.2-SNAPSHOT</version>
+			<version>[0.4.2,0.5)</version>
 		</dependency>
 		<dependency>
 			<groupId>de.julielab</groupId>
