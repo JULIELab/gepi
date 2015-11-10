@@ -90,12 +90,12 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>jules-bioc-pmc-reader</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>jules-cas-xmi-to-db-consumer</artifactId>
-			<version>[0.4.2,0.5)</version>
+			<version>[0.6,0.7)</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>

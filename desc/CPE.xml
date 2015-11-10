@@ -19,19 +19,19 @@
 	<casProcessors casPoolSize="32"
 		processingUnitThreadCount="1">
 
-		<!-- <casProcessor deployment="integrated" name="Doc Count AE"> -->
-		<!-- <descriptor> -->
-		<!-- <import location="nothingDescriptor.xml" /> -->
-		<!-- </descriptor> -->
-		<!-- <deploymentParameters /> -->
-		<!-- <errorHandling> -->
-		<!-- <errorRateThreshold action="terminate" value="0/1000" /> -->
-		<!-- <maxConsecutiveRestarts action="terminate" -->
-		<!-- value="30" /> -->
-		<!-- <timeout max="100000" default="-1" /> -->
-		<!-- </errorHandling> -->
-		<!-- <checkpoint batch="5000" time="1000ms" /> -->
-		<!-- </casProcessor> -->
+		<casProcessor deployment="integrated" name="NoOp AE">
+			<descriptor>
+				<import location="nothingDescriptor.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="0/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="5000" time="1000ms" />
+		</casProcessor>
 
 		<casProcessor deployment="integrated" name="CasToXmiDBConsumer">
 			<descriptor>
