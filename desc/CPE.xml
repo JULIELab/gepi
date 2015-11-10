@@ -10,14 +10,14 @@
 				<nameValuePair>
 					<name>inputDirectory</name>
 					<value>
-						<string>/data/data_corpora/BioC-PMC/unicode</string>
+						<string>/home/faessler/semedico/biocpmcdevdata</string>
 					</value>
 				</nameValuePair>
 			</configurationParameterSettings>
 		</collectionIterator>
 	</collectionReader>
 	<casProcessors casPoolSize="32"
-		processingUnitThreadCount="4">
+		processingUnitThreadCount="1">
 
 		<!-- <casProcessor deployment="integrated" name="Doc Count AE"> -->
 		<!-- <descriptor> -->
