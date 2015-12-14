@@ -9,9 +9,9 @@
 		</encoder>
 	</appender>
 
-	<logger name="de.julielab.jules.reader.BioC_PMC_CollectionReader" level="DEBUG" />
-	<logger name="de.julielab.jules.consumer.CasToXmiDBConsumer" level="DEBUG" />
-	<logger name="de.julielab.xml.dataBase.DataBaseConnector" level="ERROR" />
+	<logger name="de.julielab.jules.reader.BioC_PMC_CollectionReader" level="WARN" />
+<!-- 	<logger name="de.julielab.jules.consumer.CasToXmiDBConsumer" level="DEBUG" /> -->
+<!-- 	<logger name="de.julielab.xml.dataBase.DataBaseConnector" level="ERROR" /> -->
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />

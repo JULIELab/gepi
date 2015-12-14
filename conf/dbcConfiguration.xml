@@ -6,8 +6,10 @@
 		<activeTableSchema>xmi_text_gzip</activeTableSchema>
 	</DBSchemaInformation>
 	<DBConnectionInformation>
-		<activeDBConnection>semedico_dev_pmc</activeDBConnection>
+		<activeDBConnection>bioc_pmc</activeDBConnection>
 		<DBConnections>
+		<DBConnection name="bioc_pmc"
+				url="jdbc:postgresql://darwin:5432/bioc_pmc"></DBConnection>
 			<DBConnection name="semedico_dev_pmc"
 				url="jdbc:postgresql://darwin:5432/semedico_dev_pmc"></DBConnection>
 		</DBConnections>
