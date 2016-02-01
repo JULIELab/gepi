@@ -10,8 +10,9 @@
 				<nameValuePair>
 					<name>inputDirectory</name>
 					<value>
-					<string>/data/data_corpora/BioC-PMC/unicode</string>
-<!-- 						<string>/home/faessler/semedico/biocpmcdevdata</string> -->
+						<!-- <string>/data/data_corpora/BioC-PMC/unicode</string> -->
+						<!-- <string>/home/faessler/semedico/biocpmcdevdata</string> -->
+						<string>/Users/faessler/bin/mm-pmc-encoding-issue/data</string>
 					</value>
 				</nameValuePair>
 			</configurationParameterSettings>
