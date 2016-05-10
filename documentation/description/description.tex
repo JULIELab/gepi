@@ -1,0 +1,125 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[affil-it]{authblk}
+\usepackage{textcomp}
+
+% Title Page
+\title{\textsc{GePi} - a batch tool for fully automatised selection of text based protein interaction reportings}
+\author{Erik F\"assler, Sascha Sch\"auble}
+\affil{JULIE Lab, FSU Jena}
+
+
+\begin{document}
+  \maketitle
+  
+  \begin{abstract}
+    \textsc{PubMed} / \textsc{Medline} (abstracts) and \textsc{PMC} (full texts) contain a substantial number of gene / protein interactions hitherto not reported / covered by public databases. Commonly researchers need to mine informationen manually by querying these databases and check abstracts / full texts for proper and strong reported relationships between genes / proteins. Here, we present an easy to use webservice, which streamlines / automates the search for a meaningful reported \textbf{ge}ne -- \textbf{p}rotein \textbf{i}nteraction (gepi). Either one or two lists of valid identifiers are accepted as input. The output is automatically generated and provides a spreadsheet like summary of recognised reported gepis, including heavy use of web links and clear presentation of individual sentences, where the reported gepi is identified.
+    
+    Hence, researchers are notably supported in their daily labor by automatically mining the literature for meaningful gepis and thus experierence an accelerated workflow by using the presented webservice.
+  \end{abstract}
+  
+  \newpage
+  \section{Key steps}
+  Summary of key steps. Detailed out later. This is not a strictly ordered list, e.g. frontend and backend are not necessarily in the right order.
+  \begin{enumerate}
+    \item evaluate \textsc{GeNo}
+    \item frontend
+    \begin{itemize}
+      \item accept one or two arbitrary long input lists
+      \item one list: objective: find gepis between all given items
+      \item two lists: objective: find gepis between each item of list 1 and each item of list 2
+      \begin{itemize}
+	\item as a start, accept only curated swissprot IDs
+      \end{itemize}
+      \item summarise output
+      \begin{itemize}
+       \item spreadheet like result collection
+       \item basic graphics (bar, pie chart)
+      \end{itemize}      
+    \end{itemize}
+    \item backend
+    \begin{itemize}
+      \item process SwissProt IDs
+      \item use \textsc{GeNo} to find / tag genes and proteins
+      \item use \textsc{BioSem} to find / tag gepis
+    \end{itemize}    
+  \end{enumerate}
+  
+  \section{Details}
+  \subsection{Evaluate \textsc{GeNo}}
+  
+  \textsc{GeNo} runs too conservatively due to a threshold. Either check whether its importance is less important with subsequently applying \textsc{BioSem} or change the way \textsc{GeNo} tags genes / proteins. 
+  
+  \subsubsection{Performance in conjunction with \textsc{BioSem}}
+\textsc{GeNo} is too conservative for finding / tagging genes and proteins and hence, misses a lot. A a priori set threshold is responsible for whether a hit is strong enough be report as actual gene / protein. Thus, precision is high, wheras recall is suboptimally low / average. The threshold is based / trained on available text training corpus (which?), but not for real world problems. It has never been evaluated so far in conjunction with \textsc{BioSem}. Consequently, evaluate \textsc{GeNo} for different threshold values F-score / precision / recall and apply subsequently \textsc{BioSem}. The rationale is that the likelihood of \textsc{BioSem} reporting a correct gepi is low when based on wrong genes / proteins tags provided by \textsc{GeNo}. For a low threshold the precision of \textsc{GeNo} may be low, but its recall is improved. 
+
+\textbf{Hypothesis}: The \textsc{BioSem} F-score should improve overall, as \textsc{BioSem} precision may not be harmed due to low probability of ``gene -- interaction -- gene'' structure in any given sentence, when one or two of the genes are false positives.
+
+\newpage
+\textbf{To do}
+\begin{itemize}
+ \item Run \textsc{GeNo} for different thresholds
+ \item log its performance
+ \item log \textsc{BioSem} performance alongside
+\end{itemize}
+
+\subsubsection{Alternate threshold determination}
+    
+So far the score of tagged genes /proteins is only based on the \textsc{Lucene} index. The downside is that across different search queries the scores of \textsc{GeNo} are not comparable and thus, one constant threshold may be too conservative overall.
+
+Alternatively, select for a given search query the best hits (by using quantiles and a sorted hit list) based on the \textsc{Lucene} index information.
+
+\subsection{Frontend}
+If no objections are present, service should run on server as web application / service.
+
+\subsubsection{Input lists}
+The batch tool should allow for two input modes: either one or two user defined lists. Only SwissProt IDs are allowed. Later on, conversion tools may be incorporated. Feedback about invalid and valid IDs will be provided.
+The formulars (e.g. entry boxes) for the two lists will contain text, describing briefly the two modes:
+
+Box A: ``Provide swissprot gene ID, one per line. If interactions among all these genes are sought, omit submitting IDs in list / Box B. If interactions partners for the given list items are sought, check the option below''
+
+Box B: ``Fill only with swissprot IDs, one per line, if interactions between items in A and B are sought.''
+
+Below these boxes the option to use both modes simultaneously (gepis among candidates of A and/or B and/or between the two, default: among A and between A and B (if B is given)) and an upload option should be available. Furthermore, an option to search for unknown interaction partners of list items A is available.
+
+\subsubsection{Output}
+The output should be twofold:
+
+Firstly, a spreadsheet is given summarising the results.
+
+Header: SwissProt ID; Name; Publication ID; Sentence
+
+All entries shall be linked to respective sources (Swissprot, Semedico, Pub\-Med, journals, etc.).
+An option to download the result as csv list is available.
+
+Secondly, basic diagrams illustrating the results should be provided. A bar or pie chart showing the frequency of the best m hits. The count consists of genes / proteins that are most frequently found in recognised gepis.
+
+\subsection{Backend}
+The main question is, how often ressources are updated due to the heavy workload on server side.
+
+\subsubsection{process SwissProt IDs, provide Input for pipeline}
+The user provides an entry list of ideally swissprot IDs. If not, a ``not valid'' or ``not found'' warning message should be generated. If uniprot IDs are given, a warning should be generated as well (``m out of n are uniprot IDs and omitted'').
+
+The valid swissprot IDs should be furthermore enriched with homology information as follows:
+\begin{enumerate}
+ \item Get gene / protein name for given swissprot ID
+ \item Search Swissprot with that name
+ \item Add all swissprot hits with the same name, but different swissprot ID to the input list.
+\end{enumerate}
+
+For version 1.0 only swissprot is strictly allowed.
+
+\subsubsection{Pipeline \textsc{GeNo} - \textsc{BioSem}}
+
+A UIMA pipeline connecting \textsc{GeNo} and \textsc{BioSem} is necessary.
+Results are precompiled for the entire available corpus of swissprot IDs and the biomedical literature.
+
+\textsc{GeNo} may be re-run upon new entries in the swissprot database. If the literature corpus hasn't changed, new items should be ``just'' added to the already computed tagged gene names. 
+
+TODO: How often an update? For each new entry? What is the frequency of new entries in swissprot over time?
+
+How often should \textsc{BioSem} be updated? Indexing is costly, needs to be considered. Thus, if literature corpus has not changed, search only for interactions of new \textsc{GeNo} entries with everything else and add to database.
+
+If literature corpus is updated, use only update liturature for new gene / protein and gepi indexing.
+
+\end{document}          
