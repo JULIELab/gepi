@@ -4,8 +4,8 @@ apply plugin: "war"
 apply plugin: "java"
 apply plugin: "jetty"
 
-sourceCompatibility = "1.6"
-targetCompatibility = "1.6"
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
 
 group = "de.julielab"
 version = "1.0.0-SNAPSHOT"

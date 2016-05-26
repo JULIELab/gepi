@@ -1,4 +1,4 @@
-package de.julielab.services;
+package de.julielab.gepi.webapp.services;
 
 import java.io.IOException;
 

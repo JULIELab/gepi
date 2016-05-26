@@ -1,4 +1,4 @@
-package de.julielab.pages;
+package de.julielab.gepi.webapp.pages;
 
 import org.apache.tapestry5.annotations.PageActivationContext;
 

@@ -11,7 +11,7 @@
         of where to look for pages, components and mixins.
         -->
         <param-name>tapestry.app-package</param-name>
-        <param-value>de.julielab</param-value>
+        <param-value>de.julielab.gepi.webapp</param-value>
     </context-param>
 
     <!--
@@ -22,13 +22,13 @@
     <context-param>
         <param-name>tapestry.development-modules</param-name>
         <param-value>
-            de.julielab.services.DevelopmentModule
+            de.julielab.gepi.webapp.services.DevelopmentModule
         </param-value>
     </context-param>
     <context-param>
         <param-name>tapestry.qa-modules</param-name>
         <param-value>
-            de.julielab.services.QaModule
+            de.julielab.gepi.webapp.services.QaModule
         </param-value>
     </context-param>
 
