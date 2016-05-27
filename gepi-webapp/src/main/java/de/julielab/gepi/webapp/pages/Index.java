@@ -12,6 +12,7 @@ import org.apache.commons.io.LineIterator;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.Environmental;
+import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
@@ -21,9 +22,11 @@ import org.apache.tapestry5.corelib.components.TextArea;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.HttpError;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
+import org.apache.tapestry5.services.ajax.JavaScriptCallback;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
@@ -32,6 +35,7 @@ import de.julielab.gepi.webapp.entities.Interaction;
 /**
  * Start page of application gepi-webapp.
  */
+@Import(stylesheet = { "context:css-pages/index.css" })
 public class Index {
 	@Inject
 	private Logger logger;
@@ -58,23 +62,27 @@ public class Index {
 
 	@InjectComponent
 	private Form inputForm;
-	
+
 	@InjectComponent
 	private TextArea lista;
-	
+
 	@Property
 	@Persist
 	private int counter;
 
 	@Property
 	private String listATextAreaValue;
-	
+
 	@Property
 	private String listBTextAreaValue;
-	
+
 	@Property
 	@Persist
 	private List<Interaction> interactions;
+	
+	@Property
+	@Persist
+	private JSONObject pieData;
 
 	// Handle call with an unwanted context
 	Object onActivate(EventContext eventContext) {
@@ -93,12 +101,11 @@ public class Index {
 		// already found error(s).
 
 		if (listATextAreaValue == null || listATextAreaValue.isEmpty()) {
-		 inputForm.recordError(lista, "List A must not be empty.");
-		 return;
+			inputForm.recordError(lista, "List A must not be empty.");
+			return;
 		}
-		
+
 		File file = new File("relationsPmc.lst");
-		System.out.println(file.getAbsolutePath());
 		try {
 			interactions = new ArrayList<>();
 			LineIterator lineIterator = IOUtils.lineIterator(new FileInputStream(file), "UTF-8");
@@ -115,6 +122,12 @@ public class Index {
 				interaction.setSentenceText(interactionRecord[7]);
 				interactions.add(interaction);
 			}
+			pieData = new JSONObject();
+			pieData.put("c-Jun", 10);
+			pieData.put("Raptor", 7);
+			pieData.put("Raptor", 7);
+			pieData.put("Rab", 13);
+			pieData.put("IRS-1", 3);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -127,6 +140,13 @@ public class Index {
 		++counter;
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(resultZone);
+			ajaxResponseRenderer.addCallback(new JavaScriptCallback() {
+				
+				@Override
+				public void run(JavaScriptSupport javascriptSupport) {
+					javaScriptSupport.require("gepi/charts").invoke("plotPie").with(pieData);
+				}
+			});
 		}
 	}
 
@@ -138,6 +158,7 @@ public class Index {
 	}
 
 	void afterRender() {
+		javaScriptSupport.require("bootstrap/tab");
 		javaScriptSupport.require("gepi/pages/index").invoke("initialize");
 	}
 

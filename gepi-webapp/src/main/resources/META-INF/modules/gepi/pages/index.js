@@ -109,7 +109,6 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
 				listbdiv.tooltip("disable");
 			}
 		}
-
 	};
 
 	return {
