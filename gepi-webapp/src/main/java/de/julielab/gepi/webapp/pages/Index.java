@@ -66,9 +66,6 @@ public class Index {
 	@InjectComponent
 	private TextArea lista;
 
-	@Property
-	@Persist
-	private int counter;
 
 	@Property
 	private String listATextAreaValue;
@@ -125,7 +122,6 @@ public class Index {
 			pieData = new JSONObject();
 			pieData.put("c-Jun", 10);
 			pieData.put("Raptor", 7);
-			pieData.put("Raptor", 7);
 			pieData.put("Rab", 13);
 			pieData.put("IRS-1", 3);
 		} catch (FileNotFoundException e) {
@@ -137,7 +133,6 @@ public class Index {
 	}
 
 	void onSuccess() {
-		++counter;
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(resultZone);
 			ajaxResponseRenderer.addCallback(new JavaScriptCallback() {
@@ -151,7 +146,6 @@ public class Index {
 	}
 
 	void onFailure() {
-		--counter;
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(resultZone);
 		}
