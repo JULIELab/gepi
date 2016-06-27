@@ -132,7 +132,7 @@
 						</div>
 						<div id="pieDiv" class="tab-pane fade">
 							<div class="panel-body">
-								<div id="pie">
+								<div id="piechart" style="width: 100%">
 								</div>	
 							</div>
 						</div>

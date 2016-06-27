@@ -10,6 +10,7 @@
     <meta name="author" content="Erik Faessler and Sascha Schäuble"/>
     <!-- Fav and touch icons -->
     <link rel="shortcut icon" href="${asset:context:/favicon.ico}"/>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 
 <body>

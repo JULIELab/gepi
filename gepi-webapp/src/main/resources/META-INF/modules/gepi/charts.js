@@ -1,11 +1,9 @@
-define([ "jquery" ], function($) {
+define([ "jquery", "./diagrams/pie" ], function($, pie) {
 
-	var plotPie = function(data) {
-		console.log(data);
-		$('div#pie').html('<span>The data: ' + JSON.stringify(data) + '</span>')
-	}
-	
-	return {
-		"plotPie" : plotPie
-	};
+	//var plotPie = function(data) {
+	//	console.log(data);
+	//	$('div#pie').html('<span>Fool! The data: ' + JSON.stringify(data) + '</span>')
+	//}
+		
+	return pie;
 })
