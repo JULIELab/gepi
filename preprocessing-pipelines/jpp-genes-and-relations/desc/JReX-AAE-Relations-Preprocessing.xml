@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+	<primitive>false</primitive>
+	<delegateAnalysisEngineSpecifiers>
+
+		<!-- Only needed to determine which sentences to delete (see below) - but 
+			we don't want to delete any sentence annotations. -->
+		<!-- <delegateAnalysisEngine key="TriggerAggregateGeneRegulation"> -->
+		<!-- <import -->
+		<!-- location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/aggregate/TriggerAggregateGeneRegulation.xml" 
+			/> -->
+		<!-- </delegateAnalysisEngine> -->
+
+
+		<!--Deletes sentences from CAS which do not contain regulation triggers 
+			as they are not relavant then for syntactic processing and relation extraction, 
+			you save a lot of processing time in full texts!!! -->
+		<!-- Commented out for preprocessing pipeline; we want all sentences intact 
+			and all of them syntactially analyzed. -->
+		<!-- <delegateAnalysisEngine key="RegulationSentenceFilter"> -->
+		<!-- <import location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/RegulationSentenceFilter.xml"/> -->
+		<!-- </delegateAnalysisEngine> -->
+		<!-- Syntax analysis has already been done. -->
+		<!-- <delegateAnalysisEngine key="SyntaxAggregate"> -->
+		<!-- <import location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/aggregate/SyntaxAnnotator.xml"/> -->
+		<!-- </delegateAnalysisEngine> -->
+
+		<delegateAnalysisEngine key="RelationAggregate">
+			<import location="RelationAnnotator.xml" />
+		</delegateAnalysisEngine>
+
+		<delegateAnalysisEngine key="TriggerAggregate">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/aggregate/TriggerAnnotator.xml" />
+		</delegateAnalysisEngine>
+
+
+		<delegateAnalysisEngine key="EventAggregate">
+			<import location="EventAnnotator.xml" />
+		</delegateAnalysisEngine>
+	</delegateAnalysisEngineSpecifiers>
+
+
+	<analysisEngineMetaData>
+		<name>JReX-AAE-Relations</name>
+		<description />
+		<version>1.0</version>
+		<vendor />
+		<configurationParameters />
+		<configurationParameterSettings />
+		<flowConstraints>
+			<fixedFlow>
+
+				<!-- <node>TriggerAggregateGeneRegulation</node> -->
+				<!-- <node>RegulationSentenceFilter</node> -->
+				<!-- <node>SyntaxAggregate</node> -->
+				<!-- The TriggerAggegrate is for events; it is placed first so the IdSetter 
+					may already give the triggers their ID. This way, we don't have the IdSetter 
+					twice (one for Relations and one for Events) -->
+				<node>TriggerAggregate</node>
+				<node>RelationAggregate</node>
+				<node>EventAggregate</node>
+			</fixedFlow>
+		</flowConstraints>
+		<fsIndexCollection />
+		<capabilities>
+			<capability>
+				<inputs>
+					<type allAnnotatorFeatures="true">de.julielab.jules.types.Sentence
+					</type>
+					<type allAnnotatorFeatures="true">de.julielab.jules.types.Token
+					</type>
+					<type allAnnotatorFeatures="true">de.julielab.jules.types.POSTag
+					</type>
+					<type allAnnotatorFeatures="true">de.julielab.jules.types.Gene</type>
+				</inputs>
+				<outputs>
+					<!-- <type allAnnotatorFeatures="true">de.julielab.jules.types.DependencyRelation -->
+					<!-- </type> -->
+					<!-- <type allAnnotatorFeatures="true">de.julielab.jules.types.EventTrigger -->
+					<!-- </type> -->
+					<type allAnnotatorFeatures="true">de.julielab.jules.types.EventMention
+					</type>
+				</outputs>
+				<languagesSupported />
+			</capability>
+		</capabilities>
+		<operationalProperties>
+			<modifiesCas>true</modifiesCas>
+			<multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+			<outputsNewCASes>false</outputsNewCASes>
+		</operationalProperties>
+	</analysisEngineMetaData>
+	<resourceManagerConfiguration />
+</analysisEngineDescription>
+

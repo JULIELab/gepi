@@ -1,0 +1,48 @@
+<configuration scan="true">
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- encoders are assigned the type
+         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  
+  <appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- If this file is specified, the current log will be written here. Only 
+			at rollover time, the fileNamePattern is applied. -->
+		<file>../log/jpp-semedico-metadata.${HOSTNAME}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>../log-archive/jpp-semedico-metadata.${HOSTNAME}.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+
+			<!-- keep 14 days' worth of history -->
+			<maxHistory>14</maxHistory>
+		</rollingPolicy>
+
+		<append>true</append>
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+  
+  <logger name="de.julielab.jules.cpe.DBStatusCallbackListener" level="INFO"/>
+<!--   <logger name="de.julielab.xmlData.dataBase.DataBaseConnector" level="DEBUG"/> -->
+<<<<<<< .working
+	<logger name="de.julielab.jules.ae.netagger.EntityAnnotator" level="ERROR" />
+
+=======
+	<logger name="de.julielab.jules.ae.netagger.EntityAnnotator" level="ERROR" />
+>>>>>>> .merge-right.r9689
+
+<!--  <logger name="de.julielab.jules.consumer.CasToXmiDBConsumer" level="TRACE"/> -->
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+  </root>
+</configuration>

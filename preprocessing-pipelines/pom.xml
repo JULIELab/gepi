@@ -1,0 +1,137 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>jules</artifactId>
+		<groupId>de.julielab</groupId>
+		<version>1.9.1</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>jules-preprocessing-pipelines</artifactId>
+	<name>JULES Preprocessing Pipelines</name>
+	<version>1.1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<description>A collection of UIMA pipelines for processing documents (e.g. MEDLINE) for common meta data (e.g. sentences, tokens, PoS, parsing…) and storing them in XMI format (e.g. in a database). The purpose is to do such basic processing once and then store the results and perform experiments on top of the stored XMI files.</description>
+	<modules>
+		<module>jpp-syntax</module>
+		<module>jpp-genes-and-relations</module>
+		<module>jpp-semedico-metadata</module>
+		<module>jpp-application</module>
+		<module>jpp-all</module>
+	</modules>
+	<profiles>
+		<!-- This profile defines the plugins to be executed for the sub-pipelines 
+			but not for the parent POM. We do this so we can set an activation condition. 
+			Due to a lack of a more elegant condition, the profile is executed when there 
+			is NO "marker-file-do-not-copy-dependencies.txt" file present, which is always the case except 
+			when explicitly wished otherwise. -->
+		<profile>
+			<id>Module default</id>
+			<activation>
+				<file>
+					<missing>${basedir}/marker-file-do-not-copy-dependencies</missing>
+				</file>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<!-- Clean the libraries before copying the dependencies to avoid 
+								version conflicts. -->
+							<execution>
+								<id>CleanLib</id>
+								<phase>package</phase>
+								<configuration>
+									<tasks>
+										<delete dir="lib" />
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.6</version>
+						<executions>
+							<execution>
+								<id>copy dependencies</id>
+								<phase>package</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<overWriteSnapshots>true</overWriteSnapshots>
+							<outputDirectory>lib</outputDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<!-- copy-dependency plugin -->
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.julielab</groupId>
+			<artifactId>jules-cas-xmi-from-db-reader</artifactId>
+			<version>[0.6.1,0.7)</version>
+		</dependency>
+		<dependency>
+			<groupId>de.julielab</groupId>
+			<artifactId>jules-cas-xmi-to-db-consumer</artifactId>
+			<version>[0.6.1,7)</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.uima</groupId>
+			<artifactId>uimaj-cpe</artifactId>
+			<version>${uima-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.julielab</groupId>
+			<artifactId>jcore-types</artifactId>
+			<version>[2.0.1-SNAPSHOT, 2.1)</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<jpp-version>1.1.0-SNAPSHOT</jpp-version>
+	</properties>
+</project>

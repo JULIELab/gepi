@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpeDescription>
+	<collectionReader>
+		<collectionIterator>
+			<descriptor>
+				<import location="../../jpp-syntax/desc/jules-medline-db-reader.xml" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>Table</name>
+					<value>
+						<string>_0data_mirror1</string>
+						<!-- <string>semedico.testdocxml</string> -->
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>ResetTable</name>
+					<value>
+						<boolean>false</boolean>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</collectionIterator>
+	</collectionReader>
+	<casProcessors casPoolSize="24"
+		processingUnitThreadCount="1">
+		<casProcessor deployment="integrated" name="Syntax-AAE">
+			<descriptor>
+				<import location="../../jpp-syntax/desc/syntax-aae.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="0/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="10000" time="1000ms" />
+		</casProcessor>
+
+		<casProcessor deployment="integrated" name="AAEGeNoDescriptor">
+			<descriptor>
+				<import
+					location="/data/installed_pears/geno-genes-alltext-default/jules-geno-aae/jules-geno-aae_pear.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="100" time="1000ms" />
+		</casProcessor>
+
+		<casProcessor deployment="integrated" name="Relations-AAE">
+			<descriptor>
+				<import location="../../jpp-genes-and-relations/desc/relations-aae.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="0/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="10000" time="1000ms" />
+		</casProcessor>
+
+<!-- 		<casProcessor deployment="integrated" name="Semedico-AAE"> -->
+<!-- 			<descriptor> -->
+<!-- 				<import location="../../jpp-semedico-metadata/desc/semedico-aae.xml" /> -->
+<!-- 			</descriptor> -->
+<!-- 			<deploymentParameters /> -->
+<!-- 			<errorHandling> -->
+<!-- 				<errorRateThreshold action="terminate" value="0/1000" /> -->
+<!-- 				<maxConsecutiveRestarts action="terminate" -->
+<!-- 					value="30" /> -->
+<!-- 				<timeout max="100000" default="-1" /> -->
+<!-- 			</errorHandling> -->
+<!-- 			<checkpoint batch="10000" time="1000ms" /> -->
+<!-- 		</casProcessor> -->
+
+		<casProcessor deployment="integrated" name="CasToXmiDBConsumer">
+			<descriptor>
+				<import location="../../desc/jules-cas-xmi-to-db-consumer.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="0/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="100" time="1000ms" />
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>UpdateMode</name>
+					<value>
+						<boolean>false</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<!-- For BioC-PMC we store the base document again because the Sofa 
+						gets XMI ID 8 from the reader but UIMA then reorders the elements and uses 
+						XMI ID 1... -->
+					<name>StoreBaseDocument</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AnnotationsToStore</name>
+					<value>
+						<array>
+							<string>de.julielab.jcore.types.Sentence</string>
+							<string>de.julielab.jcore.types.Token</string>
+							<string>de.julielab.jcore.types.Abbreviation</string>
+							<string>de.julielab.jcore.types.ChunkADJP</string>
+							<string>de.julielab.jcore.types.ChunkADVP</string>
+							<string>de.julielab.jcore.types.ChunkCONJP</string>
+							<string>de.julielab.jcore.types.ChunkNP</string>
+							<string>de.julielab.jcore.types.ChunkPP</string>
+							<string>de.julielab.jcore.types.ChunkSBAR</string>
+							<string>de.julielab.jcore.types.ChunkVP</string>
+							<string>de.julielab.jcore.types.DependencyRelation</string>
+							<string>de.julielab.jcore.types.Organism</string>
+							<string>de.julielab.jcore.types.Gene</string>
+							<string>de.julielab.jcore.types.EventMention</string>
+							<string>de.julielab.jcore.types.LikelihoodIndicator</string>
+							<string>de.julielab.jcore.types.Cell</string>
+							<string>de.julielab.jcore.types.stemnet.CD_antigens</string>
+							<string>de.julielab.jcore.types.stemnet.MinorHA</string>
+							<string>de.julielab.jcore.types.OntClassMentionSimple</string>
+							<string>de.julielab.jcore.types.OntClassMentionAggregate</string>
+							<string>de.julielab.jcore.types.OntClassMentionAggElement
+							</string>
+							<string>de.julielab.jcore.types.AutoDescriptor</string>
+						</array>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</casProcessor>
+		<!-- <casProcessor deployment="integrated" name="XMI Writer"> -->
+		<!-- <descriptor> -->
+		<!-- <import name="de.julielab.jcore.consumer.xmi.jcore-xmi-writer" /> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="1/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="5000" time="1000ms" /> -->
+		<!-- </casProcessor> -->
+	</casProcessors>
+	<cpeConfig>
+		<numToProcess>-1</numToProcess>
+		<deployAs>immediate</deployAs>
+		<checkpoint batch="100" time="300000ms" />
+		<timerImpl />
+	</cpeConfig>
+</cpeDescription>

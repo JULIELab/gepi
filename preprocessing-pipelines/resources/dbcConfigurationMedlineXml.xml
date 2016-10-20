@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseConnectorConfiguration>
+	<DBSchemaInformation>
+		<activePostgresSchema>_data</activePostgresSchema>
+		<activeTableSchema>defaultGzip</activeTableSchema>
+	</DBSchemaInformation>
+	<DBConnectionInformation>
+		<activeDBConnection>semedico_dev</activeDBConnection>
+		<DBConnections>
+			<DBConnection name="semedico_medline_2015"
+				url="jdbc:postgresql://darwin:5432/semedico_medline_2015"></DBConnection>
+			<DBConnection name="semedico_dev"
+				url="jdbc:postgresql://darwin:5432/semedico_dev"></DBConnection>
+			<DBConnection name="bioc_pmc"
+				url="jdbc:postgresql://darwin:5432/bioc_pmc"></DBConnection>
+		</DBConnections>
+	</DBConnectionInformation>
+</databaseConnectorConfiguration>
+

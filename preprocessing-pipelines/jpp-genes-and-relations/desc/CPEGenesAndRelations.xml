@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<collectionReader>
+		<collectionIterator>
+			<descriptor>
+				<import location="../../desc/jules-cas-xmi-from-db-reader.xml" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>Table</name>
+					<value>
+						<string>_1chunksandparsing_mirror2</string>
+<!-- <string>semedico.testdoc</string> -->
+
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>ResetTable</name>
+					<value>
+						<boolean>false</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionalTables</name>
+					<value>
+						<array>
+							<string>de.julielab.jcore.types.Sentence</string>
+							<string>de.julielab.jcore.types.Token</string>
+<!-- 							<string>de.julielab.jcore.types.PennBioIEPOSTag</string> -->
+							<string>de.julielab.jcore.types.Abbreviation</string>
+							<!-- <string>de.julielab.jcore.types.Chunk</string> -->
+							<!-- <string>de.julielab.jcore.types.ChunkADJP</string> -->
+							<!-- <string>de.julielab.jcore.types.ChunkADVP</string> -->
+							<!-- <string>de.julielab.jcore.types.ChunkCONJP</string> -->
+							<!-- <string>de.julielab.jcore.types.ChunkNP</string> -->
+							<!-- <string>de.julielab.jcore.types.ChunkPP</string> -->
+							<!-- <string>de.julielab.jcore.types.ChunkSBAR</string> -->
+							<!-- <string>de.julielab.jcore.types.ChunkVP</string> -->
+							<!-- <string>de.julielab.jcore.types.DependencyRelation</string> -->
+<!-- 							<string>de.julielab.jcore.types.Gene</string> -->
+<!-- 							<string>de.julielab.jcore.types.GeneResourceEntry</string> -->
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>BatchSize</name>
+					<value>
+						<integer>50</integer>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>FetchIdsProactively</name>
+					<value>
+						<boolean>false</boolean>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</collectionIterator>
+	</collectionReader>
+	<casProcessors casPoolSize="32"
+		processingUnitThreadCount="1">
+
+		<casProcessor deployment="integrated" name="AAEGeNoDescriptor">
+			<descriptor>
+				<import
+					location="/data/installed_pears/geno-genes-alltext-default/jules-geno-aae/jules-geno-aae_pear.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="100" time="1000ms" />
+		</casProcessor>
+		
+		<casProcessor deployment="integrated" name="Relations-AAE">
+			<descriptor>
+				<import
+					location="relations-aae.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="100" time="1000ms" />
+		</casProcessor>
+
+		<!-- For the tasks given by Alessandro Cellerino, we also require miRNA 
+			annotations to extract gene-miRNA interactions. -->
+		<!-- <casProcessor deployment="integrated" name="Jules miRNA AE"> -->
+		<!-- <descriptor> -->
+		<!-- <import name="jules-mirna-ae" /> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="1/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="5000" time="1000ms" /> -->
+		<!-- </casProcessor> -->
+
+		<!-- Here we have the possibility to remove too long sentences from the 
+			CAS index. In full texts in may happen the JREX takes seemingly forever on 
+			some sentences otherwise. -->
+		<!-- <casProcessor deployment="integrated" name="SentenceRemover"> -->
+		<!-- <descriptor> -->
+		<!-- <import name="jules-sentence-remover" /> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="0/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="10000" time="1000ms" /> -->
+		<!-- <configurationParameterSettings> -->
+		<!-- <nameValuePair> -->
+		<!-- <name>MaxNumTokens</name> -->
+		<!-- <value> -->
+		<!-- <integer>200</integer> -->
+		<!-- </value> -->
+		<!-- </nameValuePair> -->
+		<!-- </configurationParameterSettings> -->
+		<!-- </casProcessor> -->
+
+		<!-- Relations (ROGE, Binding Relations and Events - just everything!) -->
+		<!-- <casProcessor deployment="integrated" -->
+		<!-- name="JReX-AAE-Relations-Preprocessing"> -->
+		<!-- <descriptor> -->
+		<!-- <import location="JReX-AAE-Relations-Preprocessing.xml" /> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="0/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="10000" time="1000ms" /> -->
+		<!-- </casProcessor> -->
+
+		<!-- Order the arguments of events/relations by "agent/cause -> patient/theme" -->
+		<!-- Does currently not work because JReX outputs "EventMention" and not 
+			"GeneralEventMention", i.e. the type systems don't fit. The JReX related 
+			descriptors import local type system descriptors which cause the incompatibility. -->
+		<!-- <casProcessor deployment="integrated" name="ArgumentReorderer"> -->
+		<!-- <descriptor> -->
+		<!-- <import name="jules-event-argument-reorderer" /> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="1/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="5000" time="1000ms" /> -->
+		<!-- </casProcessor> -->
+
+		<!-- <casProcessor deployment="integrated" name="XMIWriter"> -->
+		<!-- <descriptor> -->
+		<!-- <import name="de.julielab.jcore.consumer.xmi.jcore-xmi-writer" /> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="10/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="1" time="1000ms" /> -->
+		<!-- </casProcessor> -->
+
+	
+		<casProcessor deployment="integrated" name="CasToXmiDBConsumer">
+			<descriptor>
+				<import location="../../desc/jules-cas-xmi-to-db-consumer.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="0/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="100" time="1000ms" />
+			<configurationParameterSettings>
+				<!-- An override must be defined in the CPE descriptor because otherwise 
+					we won't be ably to change the value from Java code (at least I currently 
+					don't know how). -->
+				<nameValuePair>
+					<name>UpdateMode</name>
+					<value>
+						<boolean>false</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AnnotationsToStore</name>
+					<value>
+						<array>
+							<string>de.julielab.jcore.types.Organism</string>
+							<string>de.julielab.jcore.types.Gene</string>
+<!-- 							<string>de.julielab.jcore.types.ResourceEntry</string> -->
+<!-- 							<string>de.julielab.jcore.types.GeneResourceEntry</string> -->
+							<!-- <string>de.julielab.jcore.types.MiRNA</string> -->
+<!-- 							<string>de.julielab.jcore.types.EventTrigger</string> -->
+							<string>de.julielab.jcore.types.EventMention</string>
+<!-- 							<string>de.julielab.jcore.types.RelationMention</string> -->
+<!-- 							<string>de.julielab.jcore.types.ArgumentMention</string> -->
+							<string>de.julielab.jcore.types.LikelihoodIndicator</string>
+						</array>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</casProcessor>
+
+
+	</casProcessors>
+	<cpeConfig>
+		<numToProcess>-1</numToProcess>
+		<deployAs>immediate</deployAs>
+		<checkpoint batch="100" />
+		<timerImpl />
+	</cpeConfig>
+</cpeDescription>

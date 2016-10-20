@@ -1,0 +1,50 @@
+
+# /
+/.settings
+/.project
+/log-archive
+/last_job_ids.txt
+/log
+
+# /jpp-all/
+/jpp-all/.settings
+/jpp-all/target
+/jpp-all/.project
+/jpp-all/.classpath
+/jpp-all/lib
+
+# /jpp-application/
+/jpp-application/lib
+/jpp-application/.settings
+/jpp-application/.classpath
+/jpp-application/.project
+/jpp-application/target
+/jpp-application/logs
+
+# /jpp-genes-and-relations/
+/jpp-genes-and-relations/.settings
+/jpp-genes-and-relations/lib
+/jpp-genes-and-relations/target
+/jpp-genes-and-relations/*.classpath
+/jpp-genes-and-relations/*.project
+
+# /jpp-semedico-metadata/
+/jpp-semedico-metadata/.settings
+/jpp-semedico-metadata/lib
+/jpp-semedico-metadata/target
+/jpp-semedico-metadata/*.classpath
+/jpp-semedico-metadata/*.project
+
+# /jpp-semedico-metadata/src/test/resources/
+/jpp-semedico-metadata/src/test/resources/bioportal.gazetteer.dict
+/jpp-semedico-metadata/src/test/resources/bioportal.gazetteer.aggelements.dict
+/jpp-semedico-metadata/src/test/resources/bioportal.gazetteer.aggregates.dict
+/jpp-semedico-metadata/src/test/resources/bioportal.gazetteer.simple.dict
+
+# /jpp-syntax/
+/jpp-syntax/.settings
+/jpp-syntax/lib
+/jpp-syntax/target
+/jpp-syntax/*.classpath
+/jpp-syntax/*.project
+/jpp-syntax/out.txt

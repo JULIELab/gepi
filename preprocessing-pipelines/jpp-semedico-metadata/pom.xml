@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>jules-preprocessing-pipelines</artifactId>
+		<groupId>de.julielab</groupId>
+		<version>1.1.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>jpp-semedico-metadata</artifactId>
+	<version>${jpp-version}</version>
+	<name>JPP Semedico Meta Data</name>
+	<description>The third preprocessing sub-pipeline. It adds annotations related to the Semedico search engine. This comprises the immunology entity types, ageing-classifiers and other Semedico-specific meta data.</description>
+	<build>
+		<resources>
+			<resource>
+				<directory>resources</directory>
+				<excludes>
+					<exclude>**/logback.xml</exclude>
+				</excludes>
+			</resource>
+		</resources>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.julielab</groupId>
+			<artifactId>jpp-application</artifactId>
+			<version>${jpp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.julielab</groupId>
+			<artifactId>jcore-lingpipe-gazetteer-ae</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.julielab</groupId>
+			<artifactId>jcore-jnet-ae-jules-base</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+	</dependencies>
+</project>

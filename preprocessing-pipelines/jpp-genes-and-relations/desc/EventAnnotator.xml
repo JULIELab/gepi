@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+	<primitive>false</primitive>
+	<delegateAnalysisEngineSpecifiers>
+
+		<!-- Already done by the RelationAnnotator (see JReX-AAE-Relations-Preprocessing.xml; 
+			assuming this descriptor is still located in the jpp-genes-and-relations 
+			module of the julie-preprocessing-pipelines project. -->
+		<!-- <delegateAnalysisEngine key="EntityCleaner"> -->
+		<!-- <import location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/EntityCleaner.xml"/> -->
+		<!-- </delegateAnalysisEngine> -->
+
+		<!-- <delegateAnalysisEngine key="IdSetter"> -->
+		<!-- <import location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/IdSetter.xml"/> -->
+		<!-- </delegateAnalysisEngine> -->
+
+
+		<delegateAnalysisEngine key="PhosphorylationEvent">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/PhosphorylationEvent.xml" />
+		</delegateAnalysisEngine>
+
+		<delegateAnalysisEngine key="ProteinCatabolismEvent">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/ProteinCatabolismEvent.xml" />
+		</delegateAnalysisEngine>
+
+		<delegateAnalysisEngine key="LocalizationEvent">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/LocalizationEvent.xml" />
+		</delegateAnalysisEngine>
+
+		<delegateAnalysisEngine key="ExpressionTranscriptionEvent-ME">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/Expression-Transcription-ME.xml" />
+		</delegateAnalysisEngine>
+
+		<delegateAnalysisEngine key="ExpressionTranscriptionEvent">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/Expression-Transcription.xml" />
+		</delegateAnalysisEngine>
+
+		<delegateAnalysisEngine key="BindingEvent-ME">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/BindingEvent-ME.xml" />
+		</delegateAnalysisEngine>
+
+		<delegateAnalysisEngine key="BindingEvent">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/BindingEvent.xml" />
+		</delegateAnalysisEngine>
+
+
+		<delegateAnalysisEngine key="UnspecifiedRegulationEvent-ME">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/UnspecifiedRegulationEvent-ME.xml" />
+		</delegateAnalysisEngine>
+
+
+		<delegateAnalysisEngine key="UnspecifiedRegulationEvent">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/UnspecifiedRegulationEvent.xml" />
+		</delegateAnalysisEngine>
+
+
+		<delegateAnalysisEngine key="NegativeRegulationEvent-ME">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/NegativeRegulationEvent-ME.xml" />
+		</delegateAnalysisEngine>
+
+
+		<delegateAnalysisEngine key="NegativeRegulationEvent">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/NegativeRegulationEvent.xml" />
+		</delegateAnalysisEngine>
+
+
+		<delegateAnalysisEngine key="PositiveRegulationEvent-ME">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/event/PositiveRegulationEvent-ME.xml" />
+		</delegateAnalysisEngine>
+
+		<delegateAnalysisEngine key="EventRemover1">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/EventRemover1.xml" />
+		</delegateAnalysisEngine>
+
+
+		<delegateAnalysisEngine key="EventRemover2">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/EventRemover2.xml" />
+		</delegateAnalysisEngine>
+
+		<delegateAnalysisEngine key="EventDuplicator">
+			<import
+				location="/var/data/essentials/pipeline_data/jrex-pipeline-resources/resources/descriptors/ae/EventDuplicator.xml" />
+		</delegateAnalysisEngine>
+
+
+	</delegateAnalysisEngineSpecifiers>
+	<analysisEngineMetaData>
+		<name>EventAnnotator</name>
+		<description />
+		<version>1.0</version>
+		<vendor />
+		<configurationParameters searchStrategy="language_fallback" />
+		<configurationParameterSettings />
+		<flowConstraints>
+			<fixedFlow>
+<!-- 				<node>EntityCleaner</node> -->
+<!-- 				<node>IdSetter</node> -->
+				<node>LocalizationEvent</node>
+				<node>PhosphorylationEvent</node>
+				<node>LocalizationEvent</node>
+				<node>ProteinCatabolismEvent</node>
+				<node>ExpressionTranscriptionEvent-ME</node>
+				<node>ExpressionTranscriptionEvent</node>
+				<node>BindingEvent-ME</node>
+				<node>BindingEvent</node>
+				<node>EventRemover1</node>
+				<node>UnspecifiedRegulationEvent-ME</node>
+				<node>UnspecifiedRegulationEvent</node>
+				<node>PositiveRegulationEvent-ME</node>
+				<node>NegativeRegulationEvent-ME</node>
+				<node>NegativeRegulationEvent</node>
+				<node>EventRemover2</node>
+				<node>EventDuplicator</node>
+			</fixedFlow>
+		</flowConstraints>
+		<fsIndexCollection />
+		<capabilities>
+			<capability>
+				<inputs />
+				<outputs />
+				<languagesSupported />
+			</capability>
+		</capabilities>
+		<operationalProperties>
+			<modifiesCas>true</modifiesCas>
+			<multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+			<outputsNewCASes>false</outputsNewCASes>
+		</operationalProperties>
+	</analysisEngineMetaData>
+	<resourceManagerConfiguration />
+</analysisEngineDescription>

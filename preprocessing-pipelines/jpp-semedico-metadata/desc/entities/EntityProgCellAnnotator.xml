@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>
+  <annotatorImplementationName>de.julielab.jules.ae.netagger.EntityAnnotator</annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>ProgCellEntityAnnotator</name>
+    <description/>
+    <version>2.3.5</version>
+    <vendor>julielab</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>ModelFilename</name>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>EntityTypes</name>
+        <type>String</type>
+        <multiValued>true</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>NegativeList</name>
+        <description>a list with entity mentions (covered text) and label which when found is ignore, i.e., not written to the CAS. 
+Format: one entry per line, within the line: 
+entityMention@label
+if no label is given, also @ should not be given!
+Example:
+--------------
+IL-2@gene
+IL-2 receptor
+HDA1@protein
+--------------</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>ExpandAbbreviations</name>
+        <description>Determines if abbreviations should be expanded to their fullform before NER is done.</description>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>ConsistencyPreservation</name>
+        <description>whether consistency preservation should be run. different levels of consistency preservation will be performed!</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>ShowSegmentConfidence</name>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>IgnoreNotIntroducedAbbreviations</name>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+    </configurationParameters>
+    			<configurationParameterSettings>
+				<nameValuePair>
+					<name>ModelFilename</name>
+					<value>
+						<string>
+							resources/jnet/wbc_progs.crf.gz
+						</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>EntityTypes</name>
+					<value>
+						<array>
+							<string>
+								leukocyte=de.julielab.jcore.types.Cell
+							</string>
+							<string>
+								hematopoietic_stem_cell=de.julielab.jcore.types.Cell
+							</string>
+							<string>
+								hematopoietic_progenitor_cell=de.julielab.jcore.types.Cell
+							</string>
+							<string>
+								common_lymphocyte_progenitor=de.julielab.jcore.types.Cell
+							</string>
+							<string>
+								lymphoid_progenitor_cell=de.julielab.jcore.types.Cell
+							</string>
+							<string>
+								nk_cell_progenitor=de.julielab.jcore.types.Cell
+							</string>
+							<string>
+								common_myeloid_progenitor=de.julielab.jcore.types.Cell
+							</string>
+							<string>
+								myeloid_progenitor_cell=de.julielab.jcore.types.Cell
+							</string>
+							<string>
+								granulocyte_monocyte_progenitor_cell=de.julielab.jcore.types.Cell
+							</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>NegativeList</name>
+					<value>
+						<string>
+							resources/jnet/negative_list
+						</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>ExpandAbbreviations</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>ConsistencyPreservation</name>
+					<value>
+						<string>full2acro,string</string>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+
+    <typeSystemDescription>
+      <imports>
+        <import name="de.julielab.jcore.types.extensions.jcore-semantics-stemnet-types"/>
+      </imports>
+    </typeSystemDescription>
+    <typePriorities/>
+    <fsIndexCollection/>
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs/>
+        <languagesSupported/>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+  <resourceManagerConfiguration/>
+</analysisEngineDescription>
