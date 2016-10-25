@@ -14,7 +14,7 @@
 	<modules>
 		<module>jpp-syntax</module>
 		<module>jpp-genes-and-relations</module>
-		<module>jpp-semedico-metadata</module>
+		
 		<module>jpp-application</module>
 		<module>jpp-all</module>
 	</modules>
@@ -128,10 +128,11 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>jcore-types</artifactId>
-			<version>[2.0.1-SNAPSHOT, 2.1)</version>
+			<version>${jcore-version}</version>
 		</dependency>
 	</dependencies>
 	<properties>
 		<jpp-version>1.1.0-SNAPSHOT</jpp-version>
+		<jcore-version>2.2.0</jcore-version>
 	</properties>
 </project>
