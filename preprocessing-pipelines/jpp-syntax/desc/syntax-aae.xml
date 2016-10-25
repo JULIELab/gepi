@@ -4,21 +4,19 @@
   <primitive>false</primitive>  
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="jcore-jsbd-biomedical-english">
-      <import name="de.julielab.jcore.ae.jsbd.desc.jcore-jsbd-biomedical-english"/>
+      <import name="de.julielab.jcore.ae.jsbd.desc.jcore-jsbd-ae-biomedical-english"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="jcore-acronymtagger">
-      <import name="de.julielab.jcore.ae.acronymtagger.desc.jcore-acronymtagger"/>
+    <delegateAnalysisEngine key="jcore-acronym-ae">
+      <import name="de.julielab.jcore.ae.acronymtagger.desc.jcore-acronym-ae"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="jcore-jtbd-biomedical-english">
-      <import name="de.julielab.jcore.ae.jtbd.desc.jcore-jtbd-biomedical-english"/>
+      <import name="de.julielab.jcore.ae.jtbd.desc.jcore-jtbd-ae-biomedical-english"/>
     </delegateAnalysisEngine>
-  <delegateAnalysisEngine key="jcore-opennlp-postag-ae-pennbioie">
-      <import name="de.julielab.jcore.ae.opennlp.postag.desc.jcore-opennlp-postag-ae-pennbioie"/>
-    
+    <delegateAnalysisEngine key="jcore-opennlp-postag-ae-biomedical-english">
+      <import name="de.julielab.jcore.ae.opennlp.postag.desc.jcore-opennlp-postag-ae-biomedical-english"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="jcore-stanford-lemmatizer-ae">
-      <import name="de.julielab.jcore.ae.stanford.lemma.desc.jcore-stanford-lemmatizer-ae"/>
-    
+    <delegateAnalysisEngine key="jcore-stanford-lemmatizer">
+      <import name="de.julielab.jcore.ae.stanford.lemma.desc.jcore-stanford-lemmatizer"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -26,15 +24,38 @@
     <description/>
     <version>1.0</version>
     <vendor/>
-    <configurationParameters searchStrategy="language_fallback"/>
-    <configurationParameterSettings/>
+    <configurationParameters searchStrategy="language_fallback">
+      <configurationParameter>
+        <name>AcroList</name>
+        <description>A list of acronym-fullForm pairs known not to be recognized by the JACRO algorithm:
+Format of the file
+
+acronym1 TAB full form1
+acronym2 TAB full form2
+etc.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+        <overrides>
+          <parameter>jcore-acronym-ae/AcroList</parameter>
+        </overrides>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>AcroList</name>
+        <value>
+          <string>resources/acrolist.txt</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
         <node>jcore-jsbd-biomedical-english</node>
-        <node>jcore-acronymtagger</node>
+        <node>jcore-acronym-ae</node>
         <node>jcore-jtbd-biomedical-english</node>
-      <node>jcore-opennlp-postag-ae-pennbioie</node>
-        <node>jcore-stanford-lemmatizer-ae</node>
+        <node>jcore-opennlp-postag-ae-biomedical-english</node>
+        <node>jcore-stanford-lemmatizer</node>
       </fixedFlow>
     </flowConstraints>
     <fsIndexCollection/>
