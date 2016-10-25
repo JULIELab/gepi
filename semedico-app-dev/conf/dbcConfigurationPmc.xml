@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseConnectorConfiguration>
+	<DBSchemaInformation>
+		<activePostgresSchema>semedico</activePostgresSchema>
+		<activeTableSchema>xmi_text_gzip</activeTableSchema>
+		<activeDataPostgresSchema>_data_xmi</activeDataPostgresSchema>
+	</DBSchemaInformation>
+	<DBConnectionInformation>
+		<activeDBConnection>bioc_pmc</activeDBConnection>
+		<DBConnections>
+		<DBConnection name="bioc_pmc"
+				url="jdbc:postgresql://darwin:5432/bioc_pmc" />
+		</DBConnections>
+	</DBConnectionInformation>
+</databaseConnectorConfiguration>

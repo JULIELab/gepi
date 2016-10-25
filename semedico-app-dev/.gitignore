@@ -1,0 +1,11 @@
+
+# /
+/target-eclipse
+/.classpath
+/.project
+/.settings
+/target
+/log
+/log-archive
+/lib
+/xmi-output

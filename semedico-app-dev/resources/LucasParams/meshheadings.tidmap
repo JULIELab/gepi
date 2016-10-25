@@ -1,0 +1,1797 @@
+Langerhans cells	tid0
+Lymphoid leukocytes	tid1
+Anaphase	tid42
+Autophagy	tid43
+Axonal Transport	tid44
+Cell Adhesion	tid45
+Cell Aggregation	tid46
+Cell Communication	tid47
+Cell Compartmentation	tid48
+Cell Cycle	tid49
+Cell Differentiation	tid50
+Cell Division	tid51
+Cell Fusion	tid52
+Cell Membrane Permeability	tid53
+Cell Migration Inhibition	tid54
+Cell Movement	tid55
+Cell Survival	tid56
+Chemotaxis	tid57
+Chemotaxis, Leukocyte	tid58
+Contact Inhibition	tid59
+Cytoplasmic Streaming	tid60
+Embryonic Induction	tid61
+Endocytosis	tid62
+Erythrocyte Aging	tid63
+Erythropoiesis	tid64
+Exocytosis	tid65
+Gametogenesis	tid66
+Hematopoiesis	tid67
+Hematopoiesis, Extramedullary	tid68
+Immunologic Capping	tid69
+Interphase	tid70
+Lymphocyte Cooperation	tid71
+Meiosis	tid72
+Membrane Fusion	tid73
+Metaphase	tid74
+Mitochondrial Swelling	tid75
+Mitosis	tid76
+Necrosis	tid77
+Synaptic Transmission	tid78
+Oogenesis	tid79
+Ovum Transport	tid80
+Phagocytosis	tid81
+Pinocytosis	tid82
+Prophase	tid83
+Receptor Aggregation	tid84
+Sperm Maturation	tid85
+Sperm Motility	tid86
+Sperm Transport	tid87
+Spermatogenesis	tid88
+Telophase	tid89
+Vitellogenesis	tid90
+Second Messenger Systems	tid91
+Signal Transduction	tid92
+Cell Degranulation	tid93
+Ion Channel Gating	tid94
+Cell Hypoxia	tid95
+G0 Phase	tid96
+G1 Phase	tid97
+G2 Phase	tid98
+S Phase	tid99
+Respiratory Burst	tid100
+Cell Aging	tid101
+Cell Death	tid102
+Apoptosis	tid103
+Cell Respiration	tid104
+Phototransduction	tid105
+Leukopoiesis	tid106
+Autocrine Communication	tid107
+Paracrine Communication	tid108
+Calcium Signaling	tid109
+Chromosome Segregation	tid110
+Receptor Cross Talk	tid111
+MAP Kinase Signaling System	tid112
+Anoikis	tid113
+Chromosome Pairing	tid114
+Bystander Effect	tid115
+Thrombopoiesis	tid116
+Leukocyte Rolling	tid117
+Lymphopoiesis	tid118
+Myelopoiesis	tid119
+Mechanotransduction, Cellular	tid120
+Chromatin Assembly and Disassembly	tid121
+DNA Packaging	tid122
+Chromosome Positioning	tid123
+Cell Growth Processes	tid124
+Cytokinesis	tid125
+Cell Nucleus Division	tid126
+Cell Enlargement	tid127
+Cell Proliferation	tid128
+Prometaphase	tid129
+Meiotic Prophase I	tid130
+Pachytene Stage	tid131
+Adipogenesis	tid132
+Quorum Sensing	tid133
+DNA Degradation, Necrotis	tid134
+Cytological Techniques	tid1136
+Antigen-Antibody Reactions	tid141
+Immunity, Natural	tid162
+Agglutination	tid135
+Antibody Affinity	tid136
+Antibody Diversity	tid137
+Antibody Formation	tid138
+Antibody Specificity	tid139
+Antibody-Dependent Cell Cytotoxicity	tid140
+Antigenic Variation	tid142
+Blood Bactericidal Activity	tid143
+Complement Activation	tid144
+Complement Pathway, Alternative	tid145
+Complement Pathway, Classical	tid146
+Cross Reactions	tid147
+Cytotoxicity, Immunologic	tid148
+Dose-Response Relationship, Immunologic	tid149
+Graft Rejection	tid150
+Graft Survival	tid151
+Graft vs Host Reaction	tid152
+Hemagglutination	tid153
+Hemolysis	tid154
+Histamine Release	tid155
+Histocompatibility	tid156
+Host vs Graft Reaction	tid157
+Immune Tolerance	tid158
+Immunity, Active	tid159
+Immunity, Cellular	tid160
+Immunity, Maternally-Acquired	tid161
+Immunocompetence	tid163
+Immunoglobulin Allotypes	tid164
+Immunoglobulin Gm Allotypes	tid165
+Immunoglobulin Km Allotypes	tid166
+Immunologic Memory	tid167
+Immunologic Surveillance	tid168
+Organ Specificity	tid169
+Radiation Chimera	tid170
+Species Specificity	tid171
+Sperm Agglutination	tid172
+Tachyphylaxis	tid173
+Transplantation Immunology	tid174
+Neuroimmunomodulation	tid175
+Gene Rearrangement, B-Lymphocyte	tid176
+Gene Rearrangement, B-Lymphocyte, Heavy Chain	tid177
+Gene Rearrangement, B-Lymphocyte, Light Chain	tid178
+Gene Rearrangement, T-Lymphocyte	tid179
+Gene Rearrangement, alpha-Chain T-Cell Antigen Receptor	tid180
+Gene Rearrangement, beta-Chain T-Cell Antigen Receptor	tid181
+Gene Rearrangement, gamma-Chain T-Cell Antigen Receptor	tid182
+Autoimmunity	tid183
+CD4-CD8 Ratio	tid184
+Antigenic Modulation	tid185
+Gene Rearrangement, delta-Chain T-Cell Antigen Receptor	tid186
+Immunocompromised Host	tid187
+Immunoglobulin Class Switching	tid188
+Self Tolerance	tid189
+Clonal Anergy	tid190
+Clonal Deletion	tid191
+Antigen Presentation	tid192
+HIV Seronegativity	tid193
+Immunity, Mucosal	tid194
+Antibody-Dependent Enhancement	tid195
+Tumor Escape	tid196
+Graft vs Tumor Effect	tid197
+Graft vs Leukemia Effect	tid198
+Neutrophil Infiltration	tid199
+Transplantation Tolerance	tid200
+Somatic Hypermutation, Immunoglobulin	tid201
+Immunity, Herd	tid202
+T-Cell Antigen Receptor Specificity	tid203
+Complement Pathway, Mannose-Binding Lectin	tid204
+Cross-Priming	tid205
+Antibodies	tid955
+CD4 Lymphocyte Count	tid1663
+allerglobulin	tid206
+IgM-L paraprotein	tid207
+Immobilizine	tid208
+Histaglobin	tid209
+protein 460	tid210
+antistaphylolysin	tid211
+antistreptopolysaccharide	tid212
+anti-thyroglobulin	tid213
+IgO	tid214
+lactacyd	tid215
+M-proteins (Myeloma)	tid216
+taraxein	tid217
+long-acting thyroid stimulator protector	tid218
+tridacnin	tid219
+Gm(m)	tid220
+2-chlorobenzoyl-bovine gamma globulin	tid221
+immunoglobulin Kol	tid222
+pyrogel	tid223
+antistreptokinase	tid224
+IgK	tid225
+antistaphylococcal gamma globulin	tid226
+IgY	tid227
+myeloma immunoglobulins	tid228
+macromolecular insoluble cold globulin	tid229
+toxoplasmin	tid230
+lactoserum	tid231
+circulating anticoagulants	tid232
+ablastin	tid233
+leukokininogen	tid234
+antistreptohyaluronidase	tid235
+non-glycosylated surface IgA	tid236
+myeloma protein M 467	tid237
+IgG, sulfonated	tid238
+myeloma protein Dob	tid239
+anti-GAT antibodies, idiotypic	tid240
+palmitoyl-gamma globulin	tid241
+atroglobins	tid242
+T-agglutinin	tid243
+islet cell antibody	tid244
+polymeric IgM	tid245
+Thomsen-Friedenreich antibodies	tid246
+cryobulin	tid247
+anti-proinsulin antibodies	tid248
+anti-IgE	tid249
+succinyl-human gamma-globulin	tid250
+deoxyribonucleoprotein antibodies	tid251
+Fch fragments	tid252
+Factor-42	tid253
+anti-Z immunoglobulin G	tid254
+tuftsin, Arg(3)-	tid255
+cold agglutinins	tid256
+antimacrophage globulin	tid257
+Lyt antibodies	tid258
+anti-H-2 antibodies	tid259
+immunoglobulin light chain protein Sm lambda	tid260
+protein 315	tid261
+dinitrophenyl gamma globulin	tid262
+varicella-zoster immune globulin	tid263
+antiperinuclear factor	tid264
+pepsinated immunoglobulin G	tid265
+M-9337	tid266
+heavy chain disease proteins, human	tid267
+secretory IgM	tid268
+anti-extractable nuclear antigen antibodies	tid269
+artroglobina	tid270
+IGE decapeptide	tid271
+myeloma cell activator	tid272
+RH-antibodies	tid273
+tuftsinyltuftsin	tid274
+Hepaga	tid275
+polymeric IgA	tid276
+SS-A antibodies	tid277
+SS-B antibodies	tid278
+venilon	tid279
+anti-Thy antibody	tid280
+myeloma protein MOPC 173	tid281
+IGE class-specific suppressor factor	tid282
+Ca1 antibody	tid283
+immunoglobulin B	tid284
+GV 523	tid285
+biofer	tid286
+anti-IgD	tid287
+pentigide	tid288
+COG-78	tid289
+tuftsin, Arg-	tid290
+tuftsin, Pro-Arg-	tid291
+tuftsin, Lys-Pro-Arg-	tid292
+tuftsin, Lys(4)-	tid293
+myeloma protein A48, mouse	tid294
+rubella antibodies	tid295
+IgE octapeptide (497-504)	tid296
+BOT heavy chain disease protein, human	tid297
+immunoglobulin Facb fragment	tid298
+obioactin	tid299
+cryofibrinogen	tid300
+bovine gamma globulin-penicilloyl	tid301
+myeloma protein W3129	tid302
+glycosylated IgM	tid303
+glycosylated IgA	tid304
+tuftsin, (3,4-dehydro-Pro)(3)-	tid305
+mitomycin C-anti-alpha-fetoprotein antibody conjugate	tid306
+antilipopolysaccharide antibodies	tid307
+cryoglobulin M	tid308
+anti-alpha-fetoprotein antibody-daunomycin conjugate	tid309
+myeloma protein TEPC15	tid310
+anti-IgM	tid311
+immunoglobulin A-sepharose 4B	tid312
+Globin-N	tid313
+polymeric IgG	tid314
+SM-4300	tid315
+hepatitis B hyperimmune globulin	tid316
+2,4-dinitrophenyl-IgG	tid317
+Mi-2 antibodies	tid318
+cytotect	tid319
+K-18 conjugate	tid320
+myeloma-associated membrane antigen KMA	tid321
+mitomycin C-immunoglobulin M antibody conjugate	tid322
+glycosylated IgG	tid323
+igercine	tid324
+Jo-1 antibody	tid325
+tuftsinyltuftsin, Lys(4)-	tid326
+amyloid protein BAN	tid327
+A1BG protein, human	tid328
+B-cell differentiation factor receptor	tid329
+anti-IgG	tid330
+anti-IgA	tid331
+digoxin antibodies Fab fragments	tid332
+cryoprotein, Clostridium botulinum	tid333
+NORM-2 antigen, mouse	tid334
+IgD pyroglobulin	tid335
+anti-c antibody	tid336
+M315 myeloma protein, mouse	tid337
+H-Y antibody	tid338
+dysopsonins	tid339
+IGG-horseradish peroxidase	tid340
+antineoplastic agent K 18	tid341
+myasthenia gravis anti-skeletal muscle antibody	tid342
+anti-desmin antibody	tid343
+antiglomerular basement membrane antibody	tid344
+alloantiserum LY 1327	tid345
+alloantiserum TK2	tid346
+allergam	tid347
+liver cell membrane specific antigen	tid348
+LY 256787	tid349
+4-desacetylvinblastine 3-carboxyhydrazide monoclonal antibody conjugates	tid350
+polytuftsin	tid351
+myeloma protein Rou	tid352
+4-desacetylvinblastine hydrazide-monoclonal antibody KS1-4 conjugate	tid353
+MBr1-Res immunotoxin, Aspergillus	tid354
+immunoglobulin Fv	tid355
+anti-synaptophysin	tid356
+thyroid microsomal antibodies	tid357
+doxorubicin-1G3.10-monoclonal antibody conjugate	tid358
+immunoglobulin G-dextran conjugate	tid359
+alergim PG	tid360
+Imacis-1	tid361
+islet-cell-stimulating antibodies	tid362
+gadolinium-IGG complex	tid363
+complement 4 nephritic factor	tid364
+imciromab pentetate	tid365
+XomaZyme	tid366
+pentaglobulin	tid367
+anti-liver kidney microsome antibody	tid368
+gamma-A	tid369
+T101 FAB fragment-ricin A-chain immunotoxin	tid370
+RHO(D) antibody	tid371
+anti-Fy(a) antibody	tid372
+ID 32-44	tid373
+Indium 111In-satumomab pendetide	tid374
+Algalev	tid375
+CD4-IgG1 hinge fusion protein, recombinant	tid376
+agalactosyl IGG	tid377
+technetium Tc 99m immunoglobulin	tid378
+hemolin	tid379
+bleomycin-immunoglobulin G conjugate	tid380
+protein Kau, Fab fragment	tid381
+Donath-Landsteiner antibody	tid382
+glpQ protein, Haemophilus influenzae	tid383
+nebacumab	tid384
+zolimomab aritox	tid385
+gastrin 34 (1-14)-IgG hinge protein-gastrin 17 (2-17)	tid386
+IgG hinge protein-gastrin 17 (2-17)	tid387
+botulism immune globulin	tid388
+myeloma protein MOPC 141, mouse	tid389
+McPC603 antibody	tid390
+tuftsin, Leu(1)-	tid391
+DTPA-IgG complex	tid392
+edobacomab	tid393
+H-Thr-(psi)(NHCO)Lys-Pro-Arg-OH	tid394
+myeloma protein WIE	tid395
+tuftsin, Hyp(3)-	tid396
+tuftsinyl-n-heptylamide	tid397
+tuftsinyl-n-hexylamide	tid398
+bacterial polysaccharide immune globulin	tid399
+MIA-15-5	tid400
+technetium Tc 99m thiol reduction-mediated IgG	tid401
+Bioglobulin	tid402
+B3(Fv)-PE38KDEL recombinant immunotoxin	tid403
+tuftsin-M	tid404
+COLTA, monoclonal antibody	tid405
+anti-CP-9	tid406
+anti-C100-3	tid407
+Oncolysin B	tid408
+aspartyl-seryl-aspartyl-glycyl-lysine	tid409
+RT6.1 antibody	tid410
+technetium TC 99m polyclonal IgG	tid411
+technetium Tc 99m-Fab'-RP-1	tid412
+(111)In-Fab-DTPA antimyosine	tid413
+inolimomab	tid414
+SDZ CHH 380	tid415
+OKT4A	tid416
+N901 MoAb-blocked ricin conjugate	tid417
+8HS-20 protein, mouse	tid418
+Minibody (WT)	tid419
+monoclonal antibody IMMU 4	tid420
+monoclonal antibody ZCE 025	tid421
+benzylpenicilloyl-bovine-gamma-globulin	tid422
+immunocorticotropin	tid423
+technetium Tc99m-antimyosin	tid424
+tumor-globulin	tid425
+murine monoclonal antibody MX 35	tid426
+HIV hyperimmune globulin	tid427
+multiple myeloma M-proteins	tid428
+OX7-saporin	tid429
+tau-1	tid430
+PHF-1	tid431
+192 IgG-saporin	tid432
+abciximab	tid433
+monoclonal mouse globulin IgG2a A1CD3	tid434
+RG 83852	tid435
+anti-endothelial cell antibody	tid436
+decidua-associated protein 200	tid437
+arsanilic acid hapten-bovine gamma globulin	tid438
+ZENECA ZD0490	tid439
+TI-23 human monoclonal antibody	tid440
+BR96 sFv-PE40	tid441
+immunoglobulin G (285-292)	tid442
+monoclonal antibody DO-7	tid443
+Campath 1G	tid444
+OLX 209	tid445
+EDNsFv anti-transferrin receptor	tid446
+polyacrylic-IgG polymer	tid447
+SP1 antigen	tid448
+chimeric Pvt-1a Ig-Ck	tid449
+Scianna antibody	tid450
+B72.3 antibody	tid451
+Fv-interferon gamma	tid452
+antireticular cytotoxic serum	tid453
+nurse shark antigen receptor	tid454
+rituximab	tid455
+BR96-doxorubicin immunoconjugate	tid456
+anti-HIV-1 Rev SFv	tid457
+CD83 antigen	tid458
+immunotoxin LMB-7	tid459
+AAMP protein, human	tid460
+anti-liver cytosolic protein 1	tid461
+thyrotropin-binding inhibitory immunoglobulin	tid462
+monoclonal antibody IMMU-LL2-Fab	tid463
+daclizumab	tid464
+ICA512 autoantibody	tid465
+alemtuzumab	tid466
+CD4-IgG(2)	tid467
+HAM-56 antibody	tid468
+respiratory syncytial virus immune globulin intravenous	tid469
+REGA-1 protein, Schistocerca americana	tid470
+technetium Tc 99m hydrazinonicotinate-IgG	tid471
+Ro 45-2081	tid472
+light chain, monoclonal antibody B23	tid473
+heavy chain, monoclonal antibody B23	tid474
+immunoglobulins, Fd	tid475
+monoclonal antibody VS38	tid476
+monoclonal antibody IMMU-MN3	tid477
+monoclonal antibody CYT-351	tid478
+monoclonal antibody RSHZ19	tid479
+Capromab Pendetide	tid480
+anti-dopamine beta-hydroxylase immunotoxin	tid481
+monoclonal antibody M195	tid482
+monoclonal antibody SCH94.03	tid483
+neural CEPU-1 protein, chicken	tid484
+OST7-(1-(4-(4-(2-maleimidoethoxy)succinamido)benzyl)ethylenediamine-N,N,N',N'-tetraacetic acid)	tid485
+Sdfr1 protein, rat	tid486
+synaptic glycoprotein gp65	tid487
+Cytolin+	tid488
+BW 250 183	tid489
+technetium-99m-MAG3-dsFV	tid490
+scFv 421	tid491
+recombinant antibody scFV2913	tid492
+LO-CD2a	tid493
+FVS191Cys-(scFv')2	tid494
+Fab F11.2.32	tid495
+monoclonal antibody CY1748	tid496
+monoclonal antibody GA6	tid497
+monoclonal antibody SPM8-2	tid498
+TNFR-Fc fusion protein	tid499
+monoclonal antibody H17E2	tid500
+monoclonal antibody ChL6	tid501
+G28-5 sFv-PE40	tid502
+monoclonal antibody G250	tid503
+125I-BR96-biotin	tid504
+monoclonal antibody GK1.5	tid505
+monoclonal antibody FO23C5	tid506
+COU-1 antibody	tid507
+oregovomab	tid508
+monoclonal antibody 2B1	tid509
+monoclonal antibody LHTric-1	tid510
+monoclonal antibody AN100226	tid511
+monoclonal antibody OX-38	tid512
+monoclonal antibody RIB 5-2	tid513
+L49-sFv-beta-lactamase	tid514
+ME20.4 IgG-saporin	tid515
+infliximab	tid516
+ISLR protein, human	tid517
+Campath 1M	tid518
+monoclonal antibody 4C7	tid519
+antibody aldolase	tid520
+Mab13-1 monoclonal antibody	tid521
+technetium Tc 99m-monoclonal antibody-170H.82	tid522
+technetium Tc 99m-nofetumomab merpentan	tid523
+gm4 antibody	tid524
+labetuzumab	tid525
+monoclonal antibody 13B8-2	tid526
+CGP 51901	tid527
+monoclonal antibody EP-5C7	tid528
+TXU-pokeweed antiviral protein, Phytolacca	tid529
+SC-1 monoclonal antibody	tid530
+palivizumab	tid531
+DT390-anti-CD3sFv	tid532
+CEA 79 scFv	tid533
+CD3fos-F(ab')2	tid534
+IGSF1 protein, human	tid535
+monoclonal antibody OX-34	tid536
+Punc protein, mouse	tid537
+vitaxin	tid538
+monoclonal antibody ch14.18	tid539
+trastuzumab	tid540
+monoclonal antibody huOKT3(Ala-Ala)	tid541
+lead-203 DOTA-B72.3	tid542
+basiliximab	tid543
+scFv 425	tid544
+FN18-CRM9	tid545
+anti-LFA-1 monoclonal antibody	tid546
+scFv fragment SW1	tid547
+RFT5-SMPT-dgA immunotoxin	tid548
+technetium Tc 99m arcitumomab	tid549
+BMS-191352 protein, recombinant	tid550
+monoclonal antibody C4.4A	tid551
+IGSF6 protein, human	tid552
+monoclonal antibody JT95	tid553
+HU23F2G	tid554
+IGSF3 protein, human	tid555
+anti-quadruplex DNA scFv	tid556
+monoclonal antibody B48-151	tid557
+monoclonal antibody OX-6	tid558
+indium 111-cT84.66 monoclonal antibody	tid559
+scF11 antibody	tid560
+anti-B4 blocked ricin immunoconjugate	tid561
+monoclonal antibody OC-TR	tid562
+RFT5(scFv)-ETA'	tid563
+RM4-TNF protein, recombinant	tid564
+monoclonal antibody Ber-EP4	tid565
+SIgA 1	tid566
+OMRI-Hep-B	tid567
+hOKT3 gamma4	tid568
+thyroid stimulation-blocking antibody	tid569
+scFv 763.74	tid570
+iodine-131 anti-B1 antibody	tid571
+BACH 250-rGel	tid572
+antigen 106	tid573
+keliximab	tid574
+MDX-H210	tid575
+monoclonal antibody MOPC21	tid576
+clenoliximab	tid577
+(213)Bi-CHX-A-diethylenetriamine pentaacetic acid-HuM195	tid578
+monoclonal antibody 17-1A	tid579
+HHLA2 protein, human	tid580
+HHLA3 protein, human	tid581
+agalactoimmunoglobulin A1	tid582
+rhuMAb-E25	tid583
+MEDI 500	tid584
+priliximab	tid585
+CDP 571	tid586
+Bence Jones protein AM37	tid587
+Bence Jones protein NIG1	tid588
+Bence Jones protein NIG26	tid589
+h5G1.1-scFv	tid590
+CADM1 protein, human	tid591
+BPH-associated protein P25-26	tid592
+anti-HER2-neu peptide mimic, 1.5 kDa	tid593
+NR-LU-10 antibody	tid594
+105AD7 antibody	tid595
+gemtuzumab	tid596
+antitac(FV)-PE38 recombinant immunotoxin	tid597
+TADS protein, Gallus gallus	tid598
+class-I restricted T cell-associated molecule	tid599
+Nope protein, mouse	tid600
+sevirumab	tid601
+m4G3 abzyme	tid602
+IBP protein, Spodoptera frugiperda	tid603
+monoclonal antibody 2IT-BAD-Lym-1	tid604
+monoclonal antibody Lym-1	tid605
+scFV green fluorescent protein, recombinant	tid606
+sticks and stones protein, Drosophila	tid607
+anti-Fas monoclonal antibody	tid608
+cetuximab	tid609
+DOTA-4D5	tid610
+ScFv VK41	tid611
+ScFv VK34	tid612
+monoclonal antibody anti-SSEA-1	tid613
+bromoacetyl-TMT	tid614
+abzyme 21D8	tid615
+4162W94 IgG1	tid616
+SP31 ScFv	tid617
+monoclonal antibody KP14	tid618
+monoclonal antibody KP15	tid619
+Y2B8 monoclonal antibody	tid620
+3F8 antibody	tid621
+PRO 140	tid622
+hCTMO1-calicheamicin	tid623
+T1-S protein, human	tid624
+ibritumomab tiuxetan	tid625
+monoclonal antibody MOv18	tid626
+DA7 immunotoxin	tid627
+924-RAC	tid628
+omalizumab	tid629
+malmo protocol	tid630
+TES101 protein, mouse	tid631
+tutl protein, Drosophila	tid632
+MMC4 antigen, rat	tid633
+monoclonal antibody AC12	tid634
+afelimomab	tid635
+monoclonal antibody TONO-1	tid636
+monoclonal antibody 107-1A4	tid637
+single chain Fv fragment M97	tid638
+Crotalidae Polyvalent immune Fab	tid639
+RFB4(dsFv)-PE38 recombinant immunotoxin	tid640
+abzyme 6D9	tid641
+FREP2 protein, Biomphalaria glabrata	tid642
+FREP4 protein, Biomphalaria glabrata	tid643
+mepolizumab	tid644
+ABX-EGF monoclonal antibody	tid645
+monoclonal antibody MUC-1	tid646
+antibody 28B4	tid647
+amyloid protein GRA, human	tid648
+monoclonal antibody TMA-15	tid649
+galiximab	tid650
+monoclonal antibody LDP-02	tid651
+RASA protein, human	tid652
+immunoglobulin-MBP3 protein, chimeric	tid653
+LO-CD2b	tid654
+MIB-1 antibody	tid655
+Tetabulin S	tid656
+N-cholestanyl-amino-ethyl-rigin amide	tid657
+N-palmitoyl-amino-ethyl-rigin amide	tid658
+RIME regimen	tid659
+hu5C8 antibody	tid660
+pivalase	tid661
+3H9 protein, mouse	tid662
+IL-13 receptor alpha2-Fc fusion protein, Canis familiaris	tid663
+fibrinogen-related protein 3, Biomphalaria glabrata	tid664
+fibrinogen-related protein 7, Biomphalaria glabrata	tid665
+immunorphin	tid666
+SB 249417	tid667
+apolizumab	tid668
+hLL2 agent	tid669
+Igsf4 protein, mouse	tid670
+anti-VAChT antibody-saporin conjugate immunotoxin	tid671
+MFE-23 protein, human	tid672
+SNC73 protein, human	tid673
+adalimumab	tid674
+TAPBPL protein, human	tid675
+visilizumab	tid676
+IGSF9 protein, human	tid677
+TNF-selectokine	tid678
+MT201 antibody, human	tid679
+BIVM protein, Giardia lamblia	tid680
+1E8-4b Fab	tid681
+brain- and testis-specific immunoglobulin superfamily protein, mouse	tid682
+MV833 monoclonal antibody, human	tid683
+DAS-1 protein, human	tid684
+CDP870	tid685
+abatacept	tid686
+monoclonal antibody HMFG1	tid687
+natalizumab	tid688
+bevacizumab	tid689
+monoclonal antibody XTL001	tid690
+monoclonal antibody IDEC131	tid691
+monoclonal antibody CIBCgp185	tid692
+efalizumab	tid693
+talizumab	tid694
+5.2-OKT3 bispecific single-chain antibody fragment	tid695
+SYG-1 protein, C elegans	tid696
+anti-pancytokeratin immunoglobulin	tid697
+BOC protein, human	tid698
+SS1(dsFv)PE38	tid699
+90Y-DOTA-peptide-Lym-1	tid700
+enlimomab	tid701
+GP90-MC301 protein, rat	tid702
+monoclonal antibody CMRF-44	tid703
+monoclonal antibody 99mTc-hR3	tid704
+monoclonal antibody M75	tid705
+monoclonal antibody TriGem	tid706
+monoclonal antibody 6B1 IgG4	tid707
+Nd-1scFv	tid708
+anti-U-like antibody, human	tid709
+genistein-17.1A immunoconjugate	tid710
+sibrotuzumab	tid711
+Amalgam protein, Drosophila	tid712
+MEDI507	tid713
+monoclonal antibody, MRA	tid714
+HuM195 antibody	tid715
+copper-64-DOTA-NR-LU-10	tid716
+mAb K2-3f scFv antibody	tid717
+99mTc-anti-carcinoembryonic antigen antibody	tid718
+C6orf21 protein, human	tid719
+Hep27scFv	tid720
+monoclonal antibody J591	tid721
+FcRepsilon51 protein, human	tid722
+monoclonal antibody BIWA 4	tid723
+ING-1 monoclonal antibody, human	tid724
+monoclonal antibody scFv A21	tid725
+antibody MDXH447	tid726
+CMC544	tid727
+DIM-1 protein, C elegans	tid728
+IMC1C11	tid729
+Mxra8 protein, mouse	tid730
+CH-11 anti-fas antibody, human	tid731
+2C4 antibody	tid732
+TNX-355	tid733
+eculizumab	tid734
+Se-4C5 abzyme	tid735
+IGSF11 protein, human	tid736
+atlizumab	tid737
+KIRREL2 protein, human	tid738
+antiegressin, Trypanosoma cruzi	tid739
+M1-70 monoclonal antibody	tid740
+HuM195-gelonin	tid741
+Gm(23) allotype	tid742
+immunotoxin 4D5MOCB-ETA	tid743
+FOR heavy chain disease protein, human	tid744
+Wis heavy-chain disease protein, human	tid745
+CHA heavy chain disease protein, human	tid746
+IgC3kappa Jir protein, human	tid747
+RIV immunoglobulin variant protein, human	tid748
+Islr protein, mouse	tid749
+ABI793 monoclonal antibody	tid750
+Gamunex	tid751
+technetium Tc 99m CIBCNSH3	tid752
+pertuzumab	tid753
+11-1f4 monoclonal antibody, human	tid754
+Jam3 protein, mouse	tid755
+Igsf9 protein, mouse	tid756
+monoclonal antibody CNTO 95	tid757
+MDGA1 protein, rat	tid758
+MDGA2 protein, rat	tid759
+ANNA-2 antibody, human	tid760
+monoclonal antibody i41SL1-2	tid761
+14C5 monoclonal antibody	tid762
+HMCN1 protein, human	tid763
+Ki-3(scFv)-ETA'	tid764
+ephrin A1-Fc fusion protein, recombinant	tid765
+ETI104	tid766
+granularin protein, Lymnaea stagnalis	tid767
+amidase antibody 312d6	tid768
+ABX-Interleukin 8	tid769
+sidekick-1 protein, mouse	tid770
+BLCA-38 monoclonal antibody	tid771
+monoclonal antibody PAM-1, human	tid772
+EMD 273063 antibody, human	tid773
+monoclonal antibody IMMU-106	tid774
+tucotuzumab celmoleukin	tid775
+RIGScan CR49	tid776
+denosumab	tid777
+terbium-rituximab	tid778
+CRxA-01 antibody, human	tid779
+mF4-31C1 monoclonal antibody	tid780
+Octagam	tid781
+hu3S193-N-acetyl gamma calicheamicin dimethyl hydrazide	tid782
+kappa allotype b4, rabbits	tid783
+ranibizumab	tid784
+CD79A protein, human	tid785
+Cd79a protein, mouse	tid786
+CD79B protein, human	tid787
+Cd79b protein, mouse	tid788
+Igb protein, rat	tid789
+immunoglobulin zeta, zebrafish	tid790
+monoclonal antibody HMMC-1	tid791
+IgG D1.3	tid792
+IZUMO1 protein, human	tid793
+Izumo1 protein, mouse	tid794
+Igsf4a protein, mouse	tid795
+CADM3 protein, human	tid796
+Igsf4b protein, mouse	tid797
+CADM4 protein, human	tid798
+Igsf4c protein, mouse	tid799
+Jam2 protein, mouse	tid800
+monoclonal antibody cUV3, mouse	tid801
+mAb-AR20.5	tid802
+Hepama-1 mAb	tid803
+panitumumab	tid804
+monoclonal antibody D2-40	tid805
+PTH22 protein, Lama glama	tid806
+MLN02 antibody, human	tid807
+nimotuzumab	tid808
+TheraCIM	tid809
+tuftsin-AZT conjugate	tid810
+cpIL-4(13D)-PE38KDEL immunotoxin	tid811
+rituximab-alliinase conjugate	tid812
+4C9 antibody, rat	tid813
+hOKT3gamma1(Ala-Ala)	tid814
+tocilizumab	tid815
+HRL-3 monoclonal antibody	tid816
+DT 2219 immunotoxin	tid817
+Sid4 protein, zebrafish	tid818
+NHS76-PEP2	tid819
+15A9 catalytic antibody	tid820
+MG7 monoclonal antibody	tid821
+Artrofoon	tid822
+monoclonal antibody CNTO 328	tid823
+monoclonal antibody PRO70769	tid824
+MADCAM1 protein, human	tid825
+Madcam1 protein, rat	tid826
+monoclonal antibody CNTO 1275	tid827
+monoclonal antibody SGN-30	tid828
+IMMU-110	tid829
+monoclonal antibody Naid60	tid830
+monoclonal antibody 5B13B1	tid831
+fontolizumab	tid832
+monoclonal antibody KM871	tid833
+hepatitis C immune globulin, human	tid834
+Sdk2 protein, mouse	tid835
+huN901-DM1	tid836
+90Y-MOv18-Bz-DOTA conjugate	tid837
+Stamulumab	tid838
+MEDI-524 monoclonal antibody, human	tid839
+mapatumumab	tid840
+131I-rituximab	tid841
+211At-labeled monoclonal antibody MX35	tid842
+monoclonal antibody 8H9	tid843
+90Y-CHX-A''-DTPA-hu3S193	tid844
+monoclonal antibody BR96	tid845
+ipilimumab	tid846
+8-1A monoclonal antibody, human	tid847
+MT110 monoclonal antibody	tid848
+monoclonal antibody TGN1412	tid849
+lumiliximab	tid850
+technetium 99m rituximab	tid851
+lexatumumab	tid852
+Vivaglobin	tid853
+Boc protein, mouse	tid854
+MT-103 antibody	tid855
+stretchin-klp protein, Drosophila	tid856
+junctional adhesion molecule-A , human	tid857
+MDX 060	tid858
+IGN 311	tid859
+Veronate	tid860
+monoclonal antibody PR1A3	tid861
+metuximab	tid862
+ScFv(G250) protein	tid863
+ST2146biot	tid864
+monoclonal antibody DC101	tid865
+OKT3xAntag2	tid866
+(131)I-ch81C6	tid867
+ertumaxomab	tid868
+belimumab	tid869
+TRX-4 monoclonal antibody	tid870
+Hu-P4G7 antibody	tid871
+mycograb	tid872
+thymoglobulin	tid873
+monoclonal antibody YAML568	tid874
+thallium-4-benzyl-DOTA-rituximab	tid875
+CytoFab	tid876
+hdsFv25, human	tid877
+SIP(L19) fusion protein	tid878
+IGSF6 protein, mouse	tid879
+DIG-1 protein, C elegans	tid880
+lymphoglobuline	tid881
+monoclonal antibody 776.1	tid882
+monoclonal antibody BAT	tid883
+pre-B lymphocyte protein 3, human	tid884
+pre-B lymphocyte protein 3, mouse	tid885
+reslizumab	tid886
+immunoglobulin lambda-like polypeptide 1, human	tid887
+immunoglobulin lambda-like polypeptide 1, mouse	tid888
+pre-B lymphocyte gene 1 protein, mouse	tid889
+pre-B lymphocyte gene 2 protein, mouse	tid890
+pre-B-lymphocyte gene 1 protein, human	tid891
+thromboview	tid892
+T5E3 antibody	tid893
+edratide	tid894
+volociximab	tid895
+monoclonal antibody OX-18	tid896
+monoclonal antibody T2-2	tid897
+MT204 antibody, human	tid898
+CP-870,893	tid899
+FK734 monoclonal antibody	tid900
+abagovomab	tid901
+MNAC13 monoclonal antibody	tid902
+A5B7 monoclonal antibody	tid903
+R-FCM protocol	tid904
+monoclonal antibody 806	tid905
+bivatuzumab mertansine	tid906
+monoclonal antibody 2B8-BM	tid907
+monoclonal antibody 12C3	tid908
+monoclonal antibody 4C5	tid909
+zanolimumab	tid910
+CP-675,206	tid911
+matuzumab	tid912
+L612 monoclonal antibody	tid913
+monoclonal antibody 1G12	tid914
+monoclonal antibody 6A12	tid915
+ScFv CB4-1	tid916
+ior c5 monoclonal antibody	tid917
+herceptin-rhodamine green conjugate	tid918
+monoclonal antibody Hu3S193	tid919
+Siglec-G protein, mouse	tid920
+catumaxomab	tid921
+HI44a monoclonal antibody	tid922
+DX109	tid923
+GL-7 Fab fragment	tid924
+sc-538 antibody, human	tid925
+TEM8-Fc	tid926
+MLN8866	tid927
+64Cu-DOTA-abergrin	tid928
+(111In-DTPA)n-trastuzumab-(IRDye800)m	tid929
+antibody GD3G7, human	tid930
+AMG 102	tid931
+monoclonal antibody 7B10	tid932
+monoclonal antibody h-MDM2-F4-14	tid933
+pagimaximab	tid934
+altastaph	tid935
+CP 751871	tid936
+chFRP5-ZZ-PE38	tid937
+Erb-hcAb	tid938
+monafram	tid939
+(124)I-cMAb U36	tid940
+C4C13 monoclonal antibody	tid941
+MORAb-009	tid942
+1D4.1-325 DVD-Ig protein	tid943
+Siglec-15 protein, human	tid944
+PUNC protein, human	tid945
+Fab MOR03268	tid946
+MORAb-003	tid947
+ofatumumab	tid948
+188Re-anti-CD20 monoclonal antibody	tid949
+IMC-11F8 monoclonal antibody	tid950
+TSK114	tid951
+1D09C3 monoclonal antibody	tid952
+213Bi-cDTPA=9.2.27 monoclonal antibody	tid953
+Antibodies, Anti-Idiotypic	tid954
+Antibodies, Bacterial	tid956
+Antibodies, Fungal	tid957
+Antibodies, Helminth	tid958
+Antibodies, Heterophile	tid959
+Antibodies, Monoclonal	tid960
+Antibodies, Neoplasm	tid961
+Antibodies, Protozoan	tid962
+Antibodies, Viral	tid963
+Immunotoxins	tid964
+Antigen-Antibody Complex	tid965
+Antilymphocyte Serum	tid966
+Antibodies, Antinuclear	tid967
+Antistreptolysin	tid968
+Antitoxins	tid969
+Antivenins	tid970
+Autoantibodies	tid971
+Bence Jones Protein	tid972
+Botulinum Antitoxin	tid973
+Complement C3 Nephritic Factor	tid974
+Cryoglobulins	tid975
+Diphtheria Antitoxin	tid976
+gamma-Globulins	tid977
+Hepatitis Antibodies	tid978
+Hepatitis B Antibodies	tid979
+Immunoglobulin A	tid980
+Immunoglobulin A, Secretory	tid981
+Immunoglobulin D	tid982
+Immunoglobulin E	tid983
+Immunoglobulin G	tid984
+Immunoglobulin M	tid985
+Immune Sera	tid986
+Immunoglobulin Constant Regions	tid987
+Immunoglobulin Fragments	tid988
+Immunoglobulin Idiotypes	tid989
+Immunoglobulin Isotypes	tid990
+Immunoglobulin Joining Region	tid991
+Immunoglobulin Variable Region	tid992
+Immunoglobulins	tid993
+Immunoglobulin alpha-Chains	tid994
+Immunoglobulin delta-Chains	tid995
+Immunoglobulin epsilon-Chains	tid996
+Immunoglobulin Fab Fragments	tid997
+Immunoglobulin Fc Fragments	tid998
+Immunoglobulin gamma-Chains	tid999
+Immunoglobulin Heavy Chains	tid1000
+Immunoglobulin J-Chains	tid1001
+Immunoglobulin kappa-Chains	tid1002
+Immunoglobulin lambda-Chains	tid1003
+Immunoglobulin Light Chains	tid1004
+Immunoglobulin mu-Chains	tid1005
+Insulin Antibodies	tid1006
+Isoantibodies	tid1007
+Long-Acting Thyroid Stimulator	tid1008
+Myeloma Proteins	tid1009
+Opsonin Proteins	tid1010
+Paraproteins	tid1011
+Precipitins	tid1012
+Pyroglobulins	tid1013
+Reagins	tid1014
+Receptors, Antigen, B-Cell	tid1015
+Rheumatoid Factor	tid1016
+Secretory Component	tid1017
+Tetanus Antitoxin	tid1018
+Tuftsin	tid1019
+Deltaretrovirus Antibodies	tid1020
+HTLV-I Antibodies	tid1021
+HTLV-II Antibodies	tid1022
+HIV Antibodies	tid1023
+Lupus Coagulation Inhibitor	tid1024
+Immunoglobulins, Intravenous	tid1025
+Muromonab-CD3	tid1026
+CD4 Immunoadhesins	tid1027
+Antibodies, Catalytic	tid1028
+Antibodies, Antiphospholipid	tid1029
+Antibodies, Anticardiolipin	tid1030
+Rho(D) Immune Globulin	tid1031
+Antibodies, Bispecific	tid1032
+Immunoconjugates	tid1033
+Immunoglobulins, Thyroid-Stimulating	tid1034
+Hepatitis C Antibodies	tid1035
+Antibodies, Blocking	tid1036
+Antibodies, Antineutrophil Cytoplasmic	tid1037
+Antibodies, Archaeal	tid1038
+Complementarity Determining Regions	tid1039
+Hepatitis A Antibodies	tid1040
+Immunoconglutinins	tid1041
+Oligoclonal Bands	tid1042
+Antibodies, Phospho-Specific	tid1043
+Plantibodies	tid1044
+Immunoglobulin Subunits	tid1045
+Antigens, CD79	tid1046
+Pre-B Cell Receptors	tid1047
+Immunoglobulin Light Chains, Surrogate	tid1048
+Acoustic Stimulation	tid1049
+Activation Analysis	tid1050
+Actuarial Analysis	tid1051
+Administration, Buccal	tid1052
+Administration, Cutaneous	tid1053
+Administration, Inhalation	tid1054
+Administration, Intranasal	tid1055
+Administration, Intravaginal	tid1056
+Administration, Intravesical	tid1057
+Administration, Oral	tid1058
+Administration, Rectal	tid1059
+Administration, Sublingual	tid1060
+Administration, Topical	tid1061
+Agglutination Tests	tid1062
+Analysis of Variance	tid1063
+Animal Identification Systems	tid1064
+Anthropometry	tid1065
+Antibody-Coated Bacteria Test, Urinary	tid1066
+Arthritis, Experimental	tid1067
+Autoanalysis	tid1068
+Autopsy	tid1069
+Autoradiography	tid1070
+Bacteriological Techniques	tid1071
+Bacteriophage Typing	tid1072
+Bayes Theorem	tid1073
+Biological Assay	tid1074
+Birth Certificates	tid1075
+Birth Rate	tid1076
+Birth Weight	tid1077
+Biuret Reaction	tid1078
+Blood Cell Count	tid1079
+Blood Grouping and Crossmatching	tid1080
+Blood Preservation	tid1081
+Body Burden	tid1082
+Body Height	tid1083
+Body Surface Area	tid1084
+Body Weight	tid1085
+Body Weights and Measures	tid1086
+Brain Mapping	tid1087
+Breeding	tid1088
+Calibration	tid1089
+Calorimetry	tid1090
+Calorimetry, Differential Scanning	tid1091
+Calorimetry, Indirect	tid1092
+Catheterization	tid1093
+Cause of Death	tid1094
+Cell Count	tid1095
+Cell Fractionation	tid1096
+Cell Separation	tid1097
+Cementation	tid1098
+Centrifugation	tid1099
+Centrifugation, Density Gradient	tid1100
+Centrifugation, Isopycnic	tid1101
+Centrifugation, Zonal	tid1102
+Cephalometry	tid1103
+Chemistry, Analytical	tid1104
+Chromatography	tid1105
+Chromatography, Affinity	tid1106
+Chromatography, Agarose	tid1107
+Chromatography, DEAE-Cellulose	tid1108
+Chromatography, Gas	tid1109
+Chromatography, Gel	tid1110
+Chromatography, High Pressure Liquid	tid1111
+Chromatography, Ion Exchange	tid1112
+Chromatography, Liquid	tid1113
+Chromatography, Paper	tid1114
+Chromatography, Thin Layer	tid1115
+Chromosome Banding	tid1116
+Chromosome Mapping	tid1117
+Chronaxy	tid1118
+Circular Dichroism	tid1119
+Clinical Trials as Topic	tid1120
+Cloning, Molecular	tid1121
+Colony-Forming Units Assay	tid1122
+Colorimetry	tid1123
+Complement Fixation Tests	tid1124
+Conductometry	tid1125
+Constriction	tid1126
+Containment of Biohazards	tid1127
+Coombs' Test	tid1128
+Countercurrent Distribution	tid1129
+Counterimmunoelectrophoresis	tid1130
+Cross Circulation	tid1131
+Cross-Sectional Studies	tid1132
+Crosses, Genetic	tid1133
+Crystallization	tid1134
+Crystallography	tid1135
+Cytophotometry	tid1137
+Cytotoxicity Tests, Immunologic	tid1138
+Data Collection	tid1139
+Data Interpretation, Statistical	tid1140
+Death Certificates	tid1141
+Decalcification Technique	tid1142
+Densitometry	tid1143
+Dental Health Surveys	tid1144
+Dental Plaque Index	tid1145
+Dental Records	tid1146
+Dermatoglyphics	tid1147
+Desensitization, Immunologic	tid1148
+Desiccation	tid1149
+Diabetes Mellitus, Experimental	tid1150
+Dialysis	tid1151
+Diet	tid1152
+Diet Surveys	tid1153
+Diet, Atherogenic	tid1154
+Diet, Cariogenic	tid1155
+Differential Thermal Analysis	tid1156
+Dilatation	tid1157
+Disease Models, Animal	tid1158
+DMF Index	tid1159
+DNA Mutational Analysis	tid1160
+Dosage Forms	tid1161
+Double-Blind Method	tid1162
+Drug Administration Routes	tid1163
+Drug Administration Schedule	tid1164
+Drug Compounding	tid1165
+Drug Evaluation	tid1166
+Drug Incompatibility	tid1167
+Drug Labeling	tid1168
+Drug Packaging	tid1169
+Drug Evaluation, Preclinical	tid1170
+Drug Screening Assays, Antitumor	tid1171
+Drug Stability	tid1172
+Drug Storage	tid1173
+Dye Dilution Technique	tid1174
+Electric Stimulation	tid1175
+Electron Probe Microanalysis	tid1176
+Electron Spin Resonance Spectroscopy	tid1177
+Electrophoresis	tid1178
+Electrophoresis, Agar Gel	tid1179
+Electrophoresis, Cellulose Acetate	tid1180
+Electrophoresis, Disc	tid1181
+Electrophoresis, Paper	tid1182
+Electrophoresis, Polyacrylamide Gel	tid1183
+Electrophoresis, Starch Gel	tid1184
+Electroshock	tid1185
+Embryo Transfer	tid1186
+Encephalomyelitis, Autoimmune, Experimental	tid1187
+Enzyme Stability	tid1188
+Enzyme-Linked Immunosorbent Assay	tid1189
+Epidemiologic Methods	tid1190
+Equipment Design	tid1191
+Equipment Failure	tid1192
+Equipment Safety	tid1193
+Erythrocyte Count	tid1194
+Estrus Detection	tid1195
+Estrus Synchronization	tid1196
+Evaluation Studies as Topic	tid1197
+Exercise Test	tid1198
+Factor Analysis, Statistical	tid1199
+Fallopian Tube Patency Tests	tid1200
+Fasting	tid1201
+Feasibility Studies	tid1202
+Fertilization in Vitro	tid1203
+Film Dosimetry	tid1204
+Filtration	tid1205
+Flame Ionization	tid1206
+Flocculation Tests	tid1207
+Flow Cytometry	tid1208
+Fluorescence Polarization	tid1209
+Fluorescent Antibody Technique	tid1210
+Fluorometry	tid1211
+Follow-Up Studies	tid1212
+Food Analysis	tid1213
+Chemical Fractionation	tid1214
+Freeze Drying	tid1215
+Freeze Etching	tid1216
+Freeze Fracturing	tid1217
+Frozen Sections	tid1218
+Gastric Lavage	tid1219
+Immunodiffusion	tid1220
+Genetic Complementation Test	tid1221
+Genetic Engineering	tid1222
+Genetic Screening	tid1223
+Genetic Techniques	tid1224
+Graft Enhancement, Immunologic	tid1225
+Hardness Tests	tid1226
+Health Status Indicators	tid1227
+Health Surveys	tid1228
+Hemadsorption Inhibition Tests	tid1229
+Hemagglutination Inhibition Tests	tid1230
+Hemagglutination Tests	tid1231
+Hemofiltration	tid1232
+Hemolytic Plaque Technique	tid1233
+Heterozygote Detection	tid1234
+Histocompatibility Testing	tid1235
+Histocytochemistry	tid1236
+Histological Techniques	tid1237
+Hospital Records	tid1238
+Human Experimentation	tid1239
+Hybridization, Genetic	tid1240
+Immersion	tid1241
+Immobilization	tid1242
+Immune Adherence Reaction	tid1243
+Immunization	tid1244
+Immunization Schedule	tid1245
+Immunization, Passive	tid1246
+Immunization, Secondary	tid1247
+Immunoassay	tid1248
+Immunochemistry	tid1249
+Immunoelectrophoresis	tid1250
+Immunoelectrophoresis, Two-Dimensional	tid1251
+Immunoenzyme Techniques	tid1252
+Immunohistochemistry	tid1253
+Immunologic Techniques	tid1254
+Immunologic Tests	tid1255
+Immunosorbent Techniques	tid1256
+Immunosuppression	tid1257
+Inbreeding	tid1258
+Indicator Dilution Techniques	tid1259
+Infant Mortality	tid1260
+Infusions, Intra-Arterial	tid1261
+Infusions, Intravenous	tid1262
+Infusions, Parenteral	tid1263
+Injections	tid1264
+Injections, Epidural	tid1265
+Injections, Intra-Arterial	tid1266
+Injections, Intra-Articular	tid1267
+Injections, Intradermal	tid1268
+Injections, Intralymphatic	tid1269
+Injections, Intramuscular	tid1270
+Injections, Intraperitoneal	tid1271
+Injections, Intravenous	tid1272
+Injections, Intraventricular	tid1273
+Injections, Jet	tid1274
+Injections, Spinal	tid1275
+Injections, Subcutaneous	tid1276
+Insemination, Artificial	tid1277
+Insemination, Artificial, Heterologous	tid1278
+Insemination, Artificial, Homologous	tid1279
+Instillation, Drug	tid1280
+Interferometry	tid1281
+Interviews as Topic	tid1282
+Intradermal Tests	tid1283
+Intrauterine Device Expulsion	tid1284
+Intubation	tid1285
+Intubation, Gastrointestinal	tid1286
+Intubation, Intratracheal	tid1287
+Iontophoresis	tid1288
+Irrigation	tid1289
+Isoelectric Focusing	tid1290
+Isotope Labeling	tid1291
+Karyometry	tid1292
+Karyotyping	tid1293
+Kveim Test	tid1294
+Latex Fixation Tests	tid1295
+Lethal Dose 50	tid1296
+Leukapheresis	tid1297
+Leukemia, Experimental	tid1298
+Leukocyte Adherence Inhibition Test	tid1299
+Leukocyte Count	tid1300
+Lymphocyte Culture Test, Mixed	tid1301
+Life Expectancy	tid1302
+Limulus Test	tid1303
+Liver Cirrhosis, Experimental	tid1304
+Liver Neoplasms, Experimental	tid1305
+Longitudinal Studies	tid1306
+Luminescent Measurements	tid1307
+Lymphocyte Depletion	tid1308
+Lymphocyte Activation	tid1309
+Mammary Neoplasms, Experimental	tid1310
+Manometry	tid1311
+Markov Chains	tid1312
+Mass Chest X-Ray	tid1313
+Gas Chromatography-Mass Spectrometry	tid1314
+Mass Screening	tid1315
+Materials Testing	tid1316
+Maternal Mortality	tid1317
+Medical Record Linkage	tid1318
+Medical Records	tid1319
+Medical Records, Problem-Oriented	tid1320
+Melanoma, Experimental	tid1321
+Methods	tid1322
+Microbial Sensitivity Tests	tid1323
+Microbiological Techniques	tid1324
+Microchemistry	tid1325
+Microinjections	tid1326
+Micromanipulation	tid1327
+Microscopy	tid1328
+Microscopy, Electron	tid1329
+Microscopy, Electron, Scanning	tid1330
+Microscopy, Fluorescence	tid1331
+Microscopy, Interference	tid1332
+Microscopy, Phase-Contrast	tid1333
+Microscopy, Polarization	tid1334
+Microscopy, Ultraviolet	tid1335
+Microsurgery	tid1336
+Microtomy	tid1337
+Mitotic Index	tid1338
+Monte Carlo Method	tid1339
+Morbidity	tid1340
+Mortality	tid1341
+Multiphasic Screening	tid1342
+Mutagenicity Tests	tid1343
+Neoplasm Transplantation	tid1344
+Neoplasms, Experimental	tid1345
+Nephelometry and Turbidimetry	tid1346
+Neuritis, Autoimmune, Experimental	tid1347
+Neutralization Tests	tid1348
+Neutron Activation Analysis	tid1349
+Magnetic Resonance Spectroscopy	tid1350
+Nucleic Acid Denaturation	tid1351
+Nucleic Acid Hybridization	tid1352
+Nucleotide Mapping	tid1353
+Nursing Records	tid1354
+Nutrition Surveys	tid1355
+Odontometry	tid1356
+Optical Rotatory Dispersion	tid1357
+Oral Hygiene Index	tid1358
+Organ Culture Techniques	tid1359
+Organ Preservation	tid1360
+Organ Size	tid1361
+Oscillometry	tid1362
+Ovulation Detection	tid1363
+Ovulation Induction	tid1364
+Parabiosis	tid1365
+Passive Cutaneous Anaphylaxis	tid1366
+Patch Tests	tid1367
+Pedigree	tid1368
+Pelvimetry	tid1369
+Peptide Mapping	tid1370
+Perfusion	tid1371
+Chemotherapy, Cancer, Regional Perfusion	tid1372
+Periodic Acid-Schiff Reaction	tid1373
+Periodontal Index	tid1374
+Peritoneal Lavage	tid1375
+Photic Stimulation	tid1376
+Photography	tid1377
+Photometry	tid1378
+Photomicrography	tid1379
+Physical Conditioning, Animal	tid1380
+Physical Stimulation	tid1381
+Physiognomy	tid1382
+Pilot Projects	tid1383
+Plaque Assay	tid1384
+Platelet Count	tid1385
+Plateletpheresis	tid1386
+Polarography	tid1387
+Population Surveillance	tid1388
+Potentiometry	tid1389
+Precipitin Tests	tid1390
+Predictive Value of Tests	tid1391
+Pregnancy Tests, Immunologic	tid1392
+Preservation, Biological	tid1393
+Probability	tid1394
+Product Surveillance, Postmarketing	tid1395
+Prospective Studies	tid1396
+Prosthesis Design	tid1397
+Prosthesis Failure	tid1398
+Prussian Blue Reaction	tid1399
+Pulse Radiolysis	tid1400
+Questionnaires	tid1401
+Radiation Dosage	tid1402
+Radiation Injuries, Experimental	tid1403
+Radiation Monitoring	tid1404
+Radioallergosorbent Test	tid1405
+Radioimmunoassay	tid1406
+Radioimmunosorbent Test	tid1407
+Radioisotope Dilution Technique	tid1408
+Radiometry	tid1409
+Random Allocation	tid1410
+Records as Topic	tid1411
+Refractometry	tid1412
+Refrigeration	tid1413
+Registries	tid1414
+Regression Analysis	tid1415
+Reproductive Techniques	tid1416
+Restraint, Physical	tid1417
+Retrospective Studies	tid1418
+Rheology	tid1419
+Risk	tid1420
+Risk Factors	tid1421
+ROC Curve	tid1422
+Rosette Formation	tid1423
+Sampling Studies	tid1424
+Sarcoma, Experimental	tid1425
+Scattering, Radiation	tid1426
+Scintillation Counting	tid1427
+Semen Preservation	tid1428
+Sensitivity and Specificity	tid1429
+Serial Passage	tid1430
+Serologic Tests	tid1431
+Serotyping	tid1432
+Severity of Illness Index	tid1433
+Sex Determination (Analysis)	tid1434
+Sex Preselection	tid1435
+Skin Tests	tid1436
+Skin Window Technique	tid1437
+Skinfold Thickness	tid1438
+Sound Spectrography	tid1439
+Space-Time Clustering	tid1440
+Spectrometry, Fluorescence	tid1441
+Spectrometry, Gamma	tid1442
+Spectrometry, X-Ray Emission	tid1443
+Spectrophotometry	tid1444
+Spectrophotometry, Atomic	tid1445
+Spectrophotometry, Infrared	tid1446
+Spectrophotometry, Ultraviolet	tid1447
+Spectrum Analysis	tid1448
+Mass Spectrometry	tid1449
+Spectrum Analysis, Raman	tid1450
+Sperm Count	tid1451
+Staining and Labeling	tid1452
+Statistics as Topic	tid1453
+Stereotaxic Techniques	tid1454
+Stochastic Processes	tid1455
+Subrenal Capsule Assay	tid1456
+Superovulation	tid1457
+Syphilis Serodiagnosis	tid1458
+Technology, Pharmaceutical	tid1459
+Technology, Radiologic	tid1460
+Thermodilution	tid1461
+Thermogravimetry	tid1462
+Thermoluminescent Dosimetry	tid1463
+Tissue Preservation	tid1464
+Transduction, Genetic	tid1465
+Transfection	tid1466
+Transformation, Bacterial	tid1467
+Treponema Immobilization Test	tid1468
+Tuberculin Test	tid1469
+Tumor Stem Cell Assay	tid1470
+Ultracentrifugation	tid1471
+Ultrafiltration	tid1472
+Vaccination	tid1473
+Virus Cultivation	tid1474
+Vital Statistics	tid1475
+Vivisection	tid1476
+Whole-Body Counting	tid1477
+Whole-Body Irradiation	tid1478
+X-Ray Diffraction	tid1479
+Blotting, Southern	tid1480
+Immunoblotting	tid1481
+Blotting, Northern	tid1482
+Blotting, Western	tid1483
+Micronucleus Tests	tid1484
+Monitoring, Immunologic	tid1485
+Colony Count, Microbial	tid1486
+Electrophoresis, Gel, Two-Dimensional	tid1487
+Gamete Intrafallopian Transfer	tid1488
+Restriction Mapping	tid1489
+Diffusion Chambers, Culture	tid1490
+Carcinogenicity Tests	tid1491
+Fluoroimmunoassay	tid1492
+Meta-Analysis as Topic	tid1493
+Protein Engineering	tid1494
+Reproducibility of Results	tid1495
+Spectroscopy, Mossbauer	tid1496
+Models, Statistical	tid1497
+Glucose Clamp Technique	tid1498
+Gene Therapy	tid1499
+Cohort Studies	tid1500
+Molecular Probe Techniques	tid1501
+Multicenter Studies as Topic	tid1502
+Epidemiologic Research Design	tid1503
+Vision Screening	tid1504
+Bacterial Typing Techniques	tid1505
+Biosensing Techniques	tid1506
+Program Evaluation	tid1507
+Reperfusion	tid1508
+Myocardial Reperfusion	tid1509
+AIDS Serodiagnosis	tid1510
+Absorptiometry, Photon	tid1511
+HIV Seroprevalence	tid1512
+Radioimmunoprecipitation Assay	tid1513
+Basophil Degranulation Test	tid1514
+Injections, Intralesional	tid1515
+Geriatric Assessment	tid1516
+Fluorophotometry	tid1517
+Microspectrophotometry	tid1518
+Immunoradiometric Assay	tid1519
+Nutrition Assessment	tid1520
+Trauma Severity Indices	tid1521
+Glasgow Coma Scale	tid1522
+Injury Severity Score	tid1523
+Serum Bactericidal Test	tid1524
+Phonophoresis	tid1525
+Substance Abuse Detection	tid1526
+Moire Topography	tid1527
+Cryopreservation	tid1528
+Skin Test End-Point Titration	tid1529
+Complement Hemolytic Activity Assay	tid1530
+Body Mass Index	tid1531
+Life Tables	tid1532
+Incidence	tid1533
+Prevalence	tid1534
+Survival Rate	tid1535
+Neonatal Screening	tid1536
+Abbreviated Injury Scale	tid1537
+Multivariate Analysis	tid1538
+Cluster Analysis	tid1539
+Confidence Intervals	tid1540
+Discriminant Analysis	tid1541
+Statistical Distributions	tid1542
+Chi-Square Distribution	tid1543
+Binomial Distribution	tid1544
+Normal Distribution	tid1545
+Poisson Distribution	tid1546
+Likelihood Functions	tid1547
+Linear Models	tid1548
+Logistic Models	tid1549
+Proportional Hazards Models	tid1550
+Odds Ratio	tid1551
+Least-Squares Analysis	tid1552
+Survival Analysis	tid1553
+Epidemiologic Study Characteristics as Topic	tid1554
+Epidemiologic Studies	tid1555
+Case-Control Studies	tid1556
+Randomized Controlled Trials as Topic	tid1557
+Intervention Studies	tid1558
+Seroepidemiologic Studies	tid1559
+Single-Blind Method	tid1560
+Immunophenotyping	tid1561
+Polymerase Chain Reaction	tid1562
+DNA Fingerprinting	tid1563
+Immunotherapy, Adoptive	tid1564
+Fluorescence Polarization Immunoassay	tid1565
+Immunotherapy, Active	tid1566
+Cytapheresis	tid1567
+Microscopy, Scanning Tunneling	tid1568
+Microscopy, Immunoelectron	tid1569
+Mutagenesis, Insertional	tid1570
+Mutagenesis, Site-Directed	tid1571
+Corrosion Casting	tid1572
+Spectrometry, Mass, Fast Atom Bombardment	tid1573
+Medical Records Systems, Computerized	tid1574
+Contact Tracing	tid1575
+Orthodontic Appliance Design	tid1576
+Chromosome Walking	tid1577
+Sequence Alignment	tid1578
+Artifacts	tid1579
+Fluorescent Treponemal Antibody-Absorption Test	tid1580
+Electrophoresis, Gel, Pulsed-Field	tid1581
+Mycological Typing Techniques	tid1582
+Ergometry	tid1583
+Matched-Pair Analysis	tid1584
+Histocytological Preparation Techniques	tid1585
+Tissue Embedding	tid1586
+Paraffin Embedding	tid1587
+Plastic Embedding	tid1588
+Cryoultramicrotomy	tid1589
+Silver Staining	tid1590
+Negative Staining	tid1591
+Shadowing (Histology)	tid1592
+Replica Techniques	tid1593
+Radiosurgery	tid1594
+Tissue Fixation	tid1595
+Radioimmunodetection	tid1596
+Adverse Drug Reaction Reporting Systems	tid1597
+Flow Injection Analysis	tid1598
+Hospital Mortality	tid1599
+Models, Econometric	tid1600
+Small-Area Analysis	tid1601
+Laser-Doppler Flowmetry	tid1602
+Chemiluminescent Measurements	tid1603
+Freeze Substitution	tid1604
+Focus Groups	tid1605
+Infusions, Intraosseous	tid1606
+Titrimetry	tid1607
+Laryngeal Masks	tid1608
+Blood Patch, Epidural	tid1609
+Enzyme Multiplied Immunoassay Technique	tid1610
+Drug Approval	tid1611
+Clinical Trials, Phase I as Topic	tid1612
+Clinical Trials, Phase II as Topic	tid1613
+Clinical Trials, Phase III as Topic	tid1614
+Clinical Trials, Phase IV as Topic	tid1615
+Microscopy, Electron, Scanning Transmission	tid1616
+Investigational New Drug Application	tid1617
+Zygote Intrafallopian Transfer	tid1618
+In Situ Hybridization	tid1619
+In Situ Hybridization, Fluorescence	tid1620
+Sequence Analysis	tid1621
+Sequence Analysis, DNA	tid1622
+Sequence Analysis, RNA	tid1623
+Spectroscopy, Fourier Transform Infrared	tid1624
+Microdialysis	tid1625
+Karnofsky Performance Status	tid1626
+Hemodiafiltration	tid1627
+Reticulocyte Count	tid1628
+Epidemiology, Molecular	tid1629
+Equipment Reuse	tid1630
+Prosthesis Fitting	tid1631
+Prosthesis Coloring	tid1632
+Fatal Outcome	tid1633
+Gene Transfer Techniques	tid1634
+Hemorheology	tid1635
+Immunomagnetic Separation	tid1636
+Electroporation	tid1637
+Crystallography, X-Ray	tid1638
+Gene Targeting	tid1639
+Sample Size	tid1640
+Patch-Clamp Techniques	tid1641
+SEER Program	tid1642
+Twin Studies as Topic	tid1643
+Sickness Impact Profile	tid1644
+Weightlessness Simulation	tid1645
+Weightlessness Countermeasures	tid1646
+Disease Notification	tid1647
+Crown-Rump Length	tid1648
+Risk Assessment	tid1649
+Sentinel Surveillance	tid1650
+Disease-Free Survival	tid1651
+Oocyte Donation	tid1652
+Cross-Over Studies	tid1653
+Epitope Mapping	tid1654
+Microscopy, Confocal	tid1655
+Microscopy, Atomic Force	tid1656
+Spectrometry, Mass, Secondary Ion	tid1657
+Lymphocyte Count	tid1658
+Toxicity Tests	tid1659
+Statistics, Nonparametric	tid1660
+Microscopy, Video	tid1661
+Bone Demineralization Technique	tid1662
+Device Approval	tid1664
+Models, Economic	tid1665
+APACHE	tid1666
+Controlled Clinical Trials as Topic	tid1667
+Pregnancy Rate	tid1668
+Bronchoalveolar Lavage	tid1669
+Coculture Techniques	tid1670
+Cell Culture Techniques	tid1671
+DNA Footprinting	tid1672
+Directed Molecular Evolution	tid1673
+Spectrometry, Mass, Matrix-Assisted Laser Desorption-Ionization	tid1674
+Image Cytometry	tid1675
+No-Observed-Adverse-Effect Level	tid1676
+Electrophoresis, Capillary	tid1677
+Fluorescent Antibody Technique, Indirect	tid1678
+Fluorescent Antibody Technique, Direct	tid1679
+Spin Trapping	tid1680
+Random Amplified Polymorphic DNA Technique	tid1681
+Teleradiology	tid1682
+Neuromuscular Blockade	tid1683
+Ischemic Preconditioning, Myocardial	tid1684
+Transplantation Conditioning	tid1685
+Ischemic Preconditioning	tid1686
+Adoptive Transfer	tid1687
+Spectroscopy, Near-Infrared	tid1688
+Clinical Laboratory Techniques	tid1689
+Hindlimb Suspension	tid1690
+Biolistics	tid1691
+Health Care Surveys	tid1692
+Area Under Curve	tid1693
+Equipment Failure Analysis	tid1694
+Viral Load	tid1695
+Artificial Gene Fusion	tid1696
+Nuclear Magnetic Resonance, Biomolecular	tid1697
+Biotinylation	tid1698
+Embryo Disposition	tid1699
+Amino Acid Substitution	tid1700
+Cloning, Organism	tid1701
+Inhibitory Concentration 50	tid1702
+Reverse Transcriptase Polymerase Chain Reaction	tid1703
+Physical Chromosome Mapping	tid1704
+Heteroduplex Analysis	tid1705
+Chromosome Painting	tid1706
+Cryoelectron Microscopy	tid1707
+In Situ Nick-End Labeling	tid1708
+Surface Plasmon Resonance	tid1709
+Chromatography, Micellar Electrokinetic Capillary	tid1710
+Primed In Situ Labeling	tid1711
+Oligonucleotide Array Sequence Analysis	tid1712
+Contig Mapping	tid1713
+Xenodiagnosis	tid1714
+Microscopy, Scanning Probe	tid1715
+Sequence Analysis, Protein	tid1716
+Pulse Therapy, Drug	tid1717
+Comet Assay	tid1718
+Sperm Injections, Intracytoplasmic	tid1719
+Fetal Weight	tid1720
+Combinatorial Chemistry Techniques	tid1721
+Maximum Tolerated Dose	tid1722
+Myasthenia Gravis, Autoimmune, Experimental	tid1723
+Nervous System Autoimmune Disease, Experimental	tid1724
+Cytogenetic Analysis	tid1725
+Two-Hybrid System Techniques	tid1726
+Gene Expression Profiling	tid1727
+Radiation Hybrid Mapping	tid1728
+Branched DNA Signal Amplification Assay	tid1729
+Nucleic Acid Amplification Techniques	tid1730
+Self-Sustained Sequence Replication	tid1731
+Spectrometry, Mass, Electrospray Ionization	tid1732
+Parasitic Sensitivity Tests	tid1733
+Ribotyping	tid1734
+Ligase Chain Reaction	tid1735
+Xenograft Model Antitumor Assays	tid1736
+Glasgow Outcome Scale	tid1737
+Nuclease Protection Assays	tid1738
+Protein Footprinting	tid1739
+Endpoint Determination	tid1740
+Acute Toxicity Tests	tid1741
+Models, Animal	tid1742
+Skin Irritancy Tests	tid1743
+Local Lymph Node Assay	tid1744
+Tissue Engineering	tid1745
+Photography, Dental	tid1746
+Electrophoretic Mobility Shift Assay	tid1747
+Biomedical Enhancement	tid1748
+Genetic Enhancement	tid1749
+Molecular Diagnostic Techniques	tid1750
+Rhinomanometry	tid1751
+Chromatography, Supercritical Fluid	tid1752
+Protein Interaction Mapping	tid1753
+Blotting, Far-Western	tid1754
+Blotting, Southwestern	tid1755
+Reproductive Techniques, Assisted	tid1756
+Fractionation, Field Flow	tid1757
+Fluorescence Resonance Energy Transfer	tid1758
+Mass Immunization	tid1759
+DNA Shuffling	tid1760
+Spectral Karyotyping	tid1761
+Animal Experimentation	tid1762
+Autoexperimentation	tid1763
+Embryo Research	tid1764
+Fetal Research	tid1765
+Narration	tid1766
+Powder Diffraction	tid1767
+Neutron Diffraction	tid1768
+Microscopy, Acoustic	tid1769
+Anonymous Testing	tid1770
+Control Groups	tid1771
+Uncertainty	tid1772
+Research Embryo Creation	tid1773
+Toxicity Tests, Chronic	tid1774
+Infusions, Intralesional	tid1775
+Microscopy, Fluorescence, Multiphoton	tid1776
+Fluorescence Recovery After Photobleaching	tid1777
+Posthumous Conception	tid1778
+Euthanasia, Animal	tid1779
+Virus Inactivation	tid1780
+Neuronavigation	tid1781
+Protein Array Analysis	tid1782
+Behavioral Risk Factor Surveillance System	tid1783
+Deuterium Exchange Measurement	tid1784
+Microdissection	tid1785
+Microfluidics	tid1786
+Vaginal Douching	tid1787
+Ovulation Prediction	tid1788
+Rotarod Performance Test	tid1789
+Microscopy, Energy-Filtering Transmission Electron	tid1790
+Embryo Culture Techniques	tid1791
+Microchip Analytical Procedures	tid1792
+Electrophoresis, Microchip	tid1793
+Microfluidic Analytical Techniques	tid1794
+Microarray Analysis	tid1795
+Culture Techniques	tid1796
+Tissue Culture Techniques	tid1797
+Microscopy, Electron, Transmission	tid1798
+Spectroscopy, Electron Energy-Loss	tid1799
+Child Mortality	tid1800
+Fetal Mortality	tid1801
+Tissue Array Analysis	tid1802
+Tumor Burden	tid1803
+Chromatin Immunoprecipitation	tid1804
+Immunoprecipitation	tid1805
+Laser Scanning Cytometry	tid1806
+Leukocyte Reduction Procedures	tid1807
+Nomograms	tid1808
+Body Size	tid1809
+Waist-Hip Ratio	tid1810
+Cold Ischemia	tid1811
+Basic Reproduction Number	tid1812
+Whole Body Imaging	tid1813
+SELEX Aptamer Technique	tid1814
+Targeted Gene Repair	tid1815
+Solid Phase Extraction	tid1816
+Solid Phase Microextraction	tid1817
+Optical Tweezers	tid1818
+Disk Diffusion Antimicrobial Tests	tid1819
+Analytic Sample Preparation Methods	tid1820
+Kaplan-Meiers Estimate	tid1821
+Sperm Retrieval	tid1822
+Nuclear Transfer Techniques	tid1823
+Electrochemotherapy	tid1824
+Tandem Mass Spectrometry	tid1825
+Capillary Electrochromatography	tid1826
+Scattering, Small Angle	tid1827
+Electroosmosis	tid1828
+Perinatal Mortality	tid1829
+Oocyte Retrieval	tid1830
+Cell Migration Assays, Leukocyte	tid1831
+Cell Migration Assays, Macrophage	tid1832
+Cell Migration Assays	tid1833
+Amplified Fragment Length Polymorphism Analysis	tid1834
+Molecular Imprinting	tid1835
+Validation Studies as Topic	tid1836

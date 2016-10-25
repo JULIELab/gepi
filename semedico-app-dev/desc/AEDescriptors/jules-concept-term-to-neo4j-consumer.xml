@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>  <annotatorImplementationName>de.julielab.semedico.consumer.ConceptTermToNeo4jConsumer</annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>jules-concept-term-extractor</name>
+    <description/>
+    <version>1.0</version>
+    <vendor/>
+    <configurationParameters>
+      <configurationParameter>
+        <name>Types</name>
+        <description>An array that maps type system type names to their respective concept ID feature path. Examples: de.julielab.jules.types.Gene=/resourceEntryList/entryId or de.julielab.jules.types.OntMention=/specificType</description>
+        <type>String</type>
+        <multiValued>true</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>ConcurrencyLevel</name>
+        <description>An optional setting for the cache used internally to avoid unnecessary submissions of already known term writing variants when possible. If not set, defaults to 4.</description>
+        <type>Integer</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>Neo4jAddress</name>
+        <description>The protocol, host and port parts of the Neo4j server URL. E.g. http://myhost:7474</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+    <configurationParameter>
+        <name>InitialCacheCapacity</name>
+        <description>Initial size of the concept term variant cache. The size is the number of terms for which writing variants are cached. Defaults to 1000.</description>
+        <type>Integer</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>MaxCacheSize</name>
+        <description>The maximum size of the concept term variant cache before unfrequently used entries are evicted from the cache. Cache size denotes the number of concepts for which writing variants are cached. Defaults to 10000.</description>
+        <type>Integer</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+    <configurationParameter>
+        <name>EnableAcronyms</name>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>EnableWritingVariants</name>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>IncludeAcronymsInVariants</name>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings/>
+    <typeSystemDescription/>
+    <typePriorities/>
+    <fsIndexCollection/>
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs/>
+        <languagesSupported/>
+      </capability>
+    </capabilities>
+  <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+  <resourceManagerConfiguration/>
+</analysisEngineDescription>

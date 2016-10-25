@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<collectionReader>
+		<collectionIterator>
+			<descriptor>
+				<import name="jules-cas-xmi-from-db-reader" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>Table</name>
+					<value>
+						<string>semedico.testdocs</string>
+					</value>
+				</nameValuePair>
+					<nameValuePair>
+					<name>ResetTable</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>dbcConfigFile</name>
+					<value>
+						<string>conf/dbcConfigurationPmcDev.xml</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>PerformGUNZIP</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionalTables</name>
+					<value>
+						<array>
+							<string>de.julielab.jcore.types.Token</string>
+							<string>de.julielab.jcore.types.Sentence</string>
+							<string>de.julielab.jcore.types.Gene</string>
+							<string>de.julielab.jcore.types.OntClassMentionSimple</string>
+							<string>de.julielab.jcore.types.OntClassMentionAggregate</string>
+							<string>de.julielab.jcore.types.OntClassMentionAggElement
+							</string>
+							<string>de.julielab.jcore.types.Cell</string>
+							<string>de.julielab.jcore.types.stemnet.CD_antigens</string>
+							<string>de.julielab.jcore.types.stemnet.MinorHA</string>
+							<string>de.julielab.jcore.types.EventMention</string>
+							<string>de.julielab.jcore.types.LikelihoodIndicator</string>
+							<string>de.julielab.jcore.types.Organism</string>
+							<string>de.julielab.jcore.types.AutoDescriptor</string>
+							<string>de.julielab.jcore.types.Abbreviation</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionTableSchema</name>
+					<value>
+						<string>xmi_annotation_gzip</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>BatchSize</name>
+					<value>
+						<integer>50</integer>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>StoreMaxXmiId</name>
+					<value>
+						<boolean>false</boolean>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</collectionIterator>
+	</collectionReader>
+	<!-- <collectionReader> -->
+	<!-- <collectionIterator> -->
+	<!-- <descriptor> -->
+	<!-- <import name="jules-xmi-reader" /> -->
+	<!-- </descriptor> -->
+	<!-- <configurationParameterSettings/> -->
+	<!-- </collectionIterator> -->
+	<!-- </collectionReader> -->
+	<casProcessors casPoolSize="24"
+		processingUnitThreadCount="2">
+
+	<casProcessor deployment="integrated" name="Index AAE">
+			<descriptor>
+				<import location="index-aae.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+		
+		<casProcessor deployment="integrated" name="ElasticSearchConsumer">
+			<descriptor>
+				<import location="AEDescriptors/ElasticSearchConsumer.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="1/1" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="50" time="1000ms" />
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>url</name>
+					<value>
+						<string>http://localhost:9200</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>indexName</name>
+					<value>
+						<string>documents</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>type</name>
+					<value>
+						<string>pmc</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>IdPrefix</name>
+					<value>
+						<string>PMC</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>FilterBoards</name>
+					<value>
+						<array>
+							<string>de.julielab.semedico.consumer.SemedicoFilterBoard
+							</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>FieldGenerators</name>
+					<value>
+						<array>
+							<string>de.julielab.semedico.consumer.SemedicoPubmedCentralFieldsGenerator
+							</string>
+						</array>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</casProcessor>
+	</casProcessors>
+	<cpeConfig>
+		<numToProcess>-1</numToProcess>
+		<deployAs>immediate</deployAs>
+		<checkpoint batch="1000" />
+		<timerImpl />
+	</cpeConfig>
+</cpeDescription>

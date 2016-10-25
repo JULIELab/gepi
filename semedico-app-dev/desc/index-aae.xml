@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+	<primitive>false</primitive>
+	<delegateAnalysisEngineSpecifiers>
+		<delegateAnalysisEngine key="jules-feature-value-replacement-ae-genes">
+			<import location="AEDescriptors/jules-feature-value-replacement-ae-genes.xml" />
+		</delegateAnalysisEngine>
+		<delegateAnalysisEngine
+			key="jules-feature-value-replacement-ae-immunology">
+			<import
+				location="AEDescriptors/jules-feature-value-replacement-ae-immunology.xml" />
+		</delegateAnalysisEngine>
+		<delegateAnalysisEngine key="jules-feature-value-replacement-ae-ncbitaxon">
+			<import
+				location="AEDescriptors/jules-feature-value-replacement-ae-ncbitaxon.xml" />
+		</delegateAnalysisEngine>
+		<delegateAnalysisEngine key="jules-feature-value-replacement-ae-events">
+			<import location="AEDescriptors/jules-feature-value-replacement-ae-events.xml" />
+		</delegateAnalysisEngine>
+		<delegateAnalysisEngine key="jules-event-flattener-ae">
+			<import location="AEDescriptors/jules-event-flattener-ae.xml" />
+		</delegateAnalysisEngine>
+		<delegateAnalysisEngine key="TokenSplitter">
+			<import location="AEDescriptors/TokenSplitter.xml" />
+
+		</delegateAnalysisEngine>
+	</delegateAnalysisEngineSpecifiers>
+	<analysisEngineMetaData>
+		<name>index-aae</name>
+		<description />
+		<version>1.0</version>
+		<vendor />
+		<configurationParameters searchStrategy="language_fallback" />
+		<configurationParameterSettings />
+		<flowConstraints>
+			<fixedFlow>
+				<node>jules-feature-value-replacement-ae-genes</node>
+				<node>jules-feature-value-replacement-ae-immunology</node>
+				<node>jules-feature-value-replacement-ae-ncbitaxon</node>
+				<node>jules-feature-value-replacement-ae-events</node>
+				<node>jules-event-flattener-ae</node>
+				<node>TokenSplitter</node>
+			</fixedFlow>
+		</flowConstraints>
+		<fsIndexCollection />
+		<capabilities>
+			<capability>
+				<inputs />
+				<outputs />
+				<languagesSupported />
+			</capability>
+		</capabilities>
+		<operationalProperties>
+			<modifiesCas>true</modifiesCas>
+			<multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+			<outputsNewCASes>false</outputsNewCASes>
+		</operationalProperties>
+	</analysisEngineMetaData>
+	<resourceManagerConfiguration />
+</analysisEngineDescription>

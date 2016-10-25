@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>
+  <annotatorImplementationName>de.julielab.jules.consumer.EntityEvaluatorConverter</annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>jules-entity-evaluator-converter</name>
+    <description/>
+    <version>1.0</version>
+    <vendor/>
+    <configurationParameters>
+      <configurationParameter>
+        <name>EntityType</name>
+        <description>Fully qualified name of the entity annotation type in the CAS, for which the format conversion is supposed to be done. For instance, "de.julielab.jules.types.Gene" could be the type. For this type, the actual gene ID is stored as a ResourceEntry. This has to be configured via the ID feature path parameter.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>IdFeaturePath</name>
+        <description>Feature path to get the actual entity ID. The path given here must be a sequence of features reachable from the entity type given with the Paramter "EntityType". If, for example, the type would be "de.julielab.jules.types.Gene", then a feature path could be "/resourceEntryList[0]/entryId" to get the entry ID feature value from the first ResourceEntry in the resourceEntryList feature of the Gene type. Here you also see how to bring in an array index value.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>SystemFeaturePath</name>
+        <description>Feature path relative to annotations retrieved via the 'EntityType' parameter. Should point to the ID of the entity recognition system, if this information is available.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>ConfidenceFeaturePath</name>
+        <description>Feature path pointing to a confidence value indicating how "sure" the respective recoginition and/or mapping/grounding algorithm is that a specific entity and entity ID decision is correct. The computation of TAP-k evaluation measures makes use of this information, for example. The feature path is specified analogous to the IdFeaturePath and may be null.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>DocumentInformationType</name>
+        <description>The annotation type that holds meta information about the document, most importantly the document ID. You also have to deliver the document ID feature path then relative to the type given in this parameter.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>DocumentIdFeaturePath</name>
+        <description>The feature path to the document ID. This path must fit the document information type given with the DocumentInformationType parameter.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>DiscardEntitiesWithoutId</name>
+        <description>If set to true, entities whose ID is not set or empty will be discarded completely from output.</description>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>OutputFile</name>
+        <description>Output file to which all entity information is written in the format
+docId EGID begin end confidence
+Where the fields are separated by tab stops.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings/>
+    <typeSystemDescription>
+      <imports>
+        <import name="julie-all-types"/>
+      </imports>
+    </typeSystemDescription>
+    <typePriorities/>
+    <fsIndexCollection/>
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs/>
+        <languagesSupported/>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+  <resourceManagerConfiguration/>
+</analysisEngineDescription>

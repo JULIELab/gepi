@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<collectionReader>
+		<collectionIterator>
+			<descriptor>
+				<import name="jules-cas-xmi-from-db-reader" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>Table</name>
+					<value>
+						<string>unit_test</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>dbcConfigFile</name>
+					<value>
+						<string>conf/dbcConfiguration.xml</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>PerformGUNZIP</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionalTables</name>
+					<value>
+						<array>
+							<string>de.julielab.jules.types.ResourceEntry</string>
+							<string>de.julielab.jules.types.Organism</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionTableSchema</name>
+					<value>
+						<string>xmi_annotation_gzip</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>BatchSize</name>
+					<value>
+						<integer>2000</integer>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</collectionIterator>
+	</collectionReader>
+	<casProcessors casPoolSize="24"
+		processingUnitThreadCount="1">
+		<casProcessor deployment="integrated" name="NCBI Taxon ID Extractor">
+			<descriptor>
+				<import location="AEDescriptors/jules-entity-evaluator-converter.xml" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>EntityType</name>
+					<value>
+						<string>de.julielab.jules.types.Organism</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>IdFeaturePath</name>
+					<value>
+						<string>/resourceEntryList[0]/entryId</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>SystemFeaturePath</name>
+					<value>
+						<string>/componentId</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>DocumentInformationType</name>
+					<value>
+						<string>de.julielab.jules.types.pubmed.Header</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>DocumentIdFeaturePath</name>
+					<value>
+						<string>docId</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>DiscardEntitiesWithoutId</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>OutputFile</name>
+					<value>
+						<string>ncbiTaxonIDs.lst</string>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+		<!-- <casProcessor deployment="integrated" name="XMIWriter"> -->
+		<!-- <descriptor> -->
+		<!-- <import name="jules-xmi-writer" /> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="10/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="1" time="1000ms" /> -->
+		<!-- <configurationParameterSettings /> -->
+		<!-- </casProcessor> -->
+	</casProcessors>
+	<cpeConfig>
+		<numToProcess>-1</numToProcess>
+		<deployAs>immediate</deployAs>
+		<checkpoint batch="1000" />
+		<timerImpl />
+	</cpeConfig>
+</cpeDescription>

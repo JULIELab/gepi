@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<collectionReader>
+		<collectionIterator>
+			<descriptor>
+				<import name="jules-cas-xmi-from-db-reader" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>Table</name>
+					<value>
+						<string>unit_test</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>dbcConfigFile</name>
+					<value>
+						<string>conf/dbcConfiguration.xml</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>PerformGUNZIP</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionalTables</name>
+					<value>
+						<array>
+							<string>de.julielab.jules.types.EventTrigger</string>
+							<string>de.julielab.jules.types.EventMention</string>
+							<string>de.julielab.jules.types.RelationMention</string>
+							<string>de.julielab.jules.types.ArgumentMention</string>
+							<string>de.julielab.jules.types.Gene</string>
+							<string>de.julielab.jules.types.MiRNA</string>
+							<string>de.julielab.jules.types.GeneResourceEntry</string>
+							<string>de.julielab.jules.types.ResourceEntry</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionTableSchema</name>
+					<value>
+						<string>xmi_annotation_gzip</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>BatchSize</name>
+					<value>
+						<integer>2000</integer>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</collectionIterator>
+	</collectionReader>
+	<casProcessors casPoolSize="24"
+		processingUnitThreadCount="1">
+		<casProcessor deployment="integrated" name="EventTypeExtractor">
+			<descriptor>
+				<import location="AEDescriptors/EventTypeExtractor.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+			<configurationParameterSettings />
+		</casProcessor>
+		<casProcessor deployment="integrated" name="XMIWriter">
+			<descriptor>
+				<import name="jules-xmi-writer" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+			<configurationParameterSettings />
+		</casProcessor>
+	</casProcessors>
+	<cpeConfig>
+		<numToProcess>-1</numToProcess>
+		<deployAs>immediate</deployAs>
+		<checkpoint batch="1000" />
+		<timerImpl />
+	</cpeConfig>
+</cpeDescription>

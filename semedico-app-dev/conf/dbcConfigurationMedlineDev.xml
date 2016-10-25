@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseConnectorConfiguration>
+	<DBSchemaInformation>
+		<activePostgresSchema>semedico</activePostgresSchema>
+		<activeTableSchema>xmi_text_gzip</activeTableSchema>
+		<activeDataPostgresSchema>_data_xmi</activeDataPostgresSchema>
+	</DBSchemaInformation>
+	<DBConnectionInformation>
+		<activeDBConnection>semedico_dev</activeDBConnection>
+		<DBConnections>
+		<DBConnection name="semedico_dev"
+				url="jdbc:postgresql://darwin:5432/semedico_dev" />
+			<DBConnection name="semedico_unit_test"
+				url="jdbc:postgresql://darwin:5432/semedico_unit_test" />
+			<DBConnection name="medline_mirror_2014"
+				url="jdbc:postgresql://darwin:5432/medline_mirror_2014"></DBConnection>
+		</DBConnections>
+	</DBConnectionInformation>
+</databaseConnectorConfiguration>

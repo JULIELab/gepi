@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<collectionReader>
+		<collectionIterator>
+			<descriptor>
+				<import name="jules-cas-xmi-from-db-reader" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>Table</name>
+					<value>
+						<string>semedico.semedico_mirror</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>ResetTable</name>
+					<value>
+						<boolean>false</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>dbcConfigFile</name>
+					<value>
+						<string>conf/dbcConfigurationMedlineMirror.xml</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>PerformGUNZIP</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionalTables</name>
+					<value>
+						<array>
+							<string>de.julielab.jcore.types.Token</string>
+							<string>de.julielab.jcore.types.Sentence</string>
+							<string>de.julielab.jcore.types.Gene</string>
+							<string>de.julielab.jcore.types.OntClassMentionSimple</string>
+							<string>de.julielab.jcore.types.OntClassMentionAggregate</string>
+							<string>de.julielab.jcore.types.OntClassMentionAggElement
+							</string>
+							<string>de.julielab.jcore.types.Cell</string>
+							<string>de.julielab.jcore.types.stemnet.CD_antigens</string>
+							<string>de.julielab.jcore.types.stemnet.MinorHA</string>
+							<string>de.julielab.jcore.types.EventMention</string>
+							<string>de.julielab.jcore.types.LikelihoodIndicator</string>
+							<string>de.julielab.jcore.types.Organism</string>
+							<string>de.julielab.jcore.types.AutoDescriptor</string>
+							<string>de.julielab.jcore.types.Abbreviation</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionTableSchema</name>
+					<value>
+						<string>xmi_annotation_gzip</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>BatchSize</name>
+					<value>
+						<integer>100</integer>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>StoreMaxXmiId</name>
+					<value>
+						<boolean>false</boolean>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</collectionIterator>
+	</collectionReader>
+	<casProcessors casPoolSize="60"
+		processingUnitThreadCount="4">
+
+		<casProcessor deployment="integrated" name="Index AAE">
+			<descriptor>
+				<import location="index-aae.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+
+		<casProcessor deployment="integrated"
+			name="Concept Terms to Neo4j Consumer">
+			<descriptor>
+				<import location="AEDescriptors/jules-concept-term-to-neo4j-consumer.xml" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>Neo4jAddress</name>
+					<value>
+						<string>http://dawkins:7474</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>Types</name>
+					<value>
+						<array>
+							<string>de.julielab.jcore.types.Gene=/resourceEntryList/entryId</string>
+<!-- 							<string>de.julielab.jcore.types.Organism=/resourceEntryList/entryId</string> -->
+							<string>de.julielab.jcore.types.Cell=/specificType</string>
+							<string>de.julielab.jcore.types.EventMention=/specificType</string>
+							<string>de.julielab.jcore.types.stemnet.CD_antigens=/specificType</string>
+							<string>de.julielab.jcore.types.stemnet.MinorHA=/specificType</string>
+						</array>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1000" time="1000ms" />
+		</casProcessor>
+
+		<casProcessor deployment="integrated" name="ElasticSearchConsumer">
+			<descriptor>
+				<import location="AEDescriptors/ElasticSearchConsumer.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="1/1" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="150" time="1000ms" />
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>url</name>
+					<value>
+						<string>http://dawkins:9200</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>indexName</name>
+					<value>
+						<string>documents</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>type</name>
+					<value>
+						<string>medline</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>FilterBoards</name>
+					<value>
+						<array>
+							<string>de.julielab.semedico.consumer.SemedicoFilterBoard
+							</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>FieldGenerators</name>
+					<value>
+						<array>
+							<string>de.julielab.semedico.consumer.SemedicoMedlineFieldsGenerator
+							</string>
+						</array>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</casProcessor>
+	</casProcessors>
+	<cpeConfig>
+		<numToProcess>-1</numToProcess>
+		<deployAs>immediate</deployAs>
+		<checkpoint batch="1000" />
+		<timerImpl />
+	</cpeConfig>
+</cpeDescription>

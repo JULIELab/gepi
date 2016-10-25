@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseConnectorConfiguration>
+	<DBSchemaInformation>
+		<activePostgresSchema>semedico</activePostgresSchema>
+		<activeTableSchema>xmi_text_gzip</activeTableSchema>
+		<activeDataPostgresSchema>_data_xmi</activeDataPostgresSchema>
+	</DBSchemaInformation>
+	<DBConnectionInformation>
+		<activeDBConnection>semedico_medline_2015</activeDBConnection>
+		<DBConnections>
+		<DBConnection name="semedico_medline_2015"
+				url="jdbc:postgresql://darwin:5432/semedico_medline_2015" />
+		</DBConnections>
+	</DBConnectionInformation>
+</databaseConnectorConfiguration>

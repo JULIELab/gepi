@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<collectionReader>
+		<collectionIterator>
+			<descriptor>
+				<import name="jules-xmi-reader" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>InputDir</name>
+					<value>
+						<string>xmi-output-biosem</string>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</collectionIterator>
+	</collectionReader>
+	<casProcessors casPoolSize="24"
+		processingUnitThreadCount="2">
+
+		<casProcessor deployment="integrated" name="Entity ID Replacement Genes">
+			<descriptor>
+				<import location="AEDescriptors/jules-feature-value-replacement-ae-genes.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+		<casProcessor deployment="integrated"
+			name="Entity ID Replacement Immunology">
+			<descriptor>
+				<import
+					location="AEDescriptors/jules-feature-value-replacement-ae-immunology.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+		<casProcessor deployment="integrated"
+			name="Entity ID Replacement NCBI Taxonomy">
+			<descriptor>
+				<import
+					location="AEDescriptors/jules-feature-value-replacement-ae-ncbitaxon.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+		<casProcessor deployment="integrated"
+			name="Event Specific Type to ID Replacement">
+			<descriptor>
+				<import
+					location="AEDescriptors/jules-feature-value-replacement-ae-events.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+
+		<!-- Somehow we should incorporate the miRNA reorder-rules by A. Cellerino; 
+			they are currently only in the respective relation consumers (class MiRNAGeneArgumentReorderer), 
+			make a component of its own -->
+		<!-- <casProcessor deployment="integrated" -->
+		<!-- name="jules-relation-argument-reorderer"> -->
+		<!-- <descriptor> -->
+		<!-- <import name="jules-event-argument-reorderer" /> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="0/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="10000" time="1000ms" /> -->
+		<!-- </casProcessor> -->
+		<!-- <casProcessor deployment="integrated" name="jules-lucas-term-preparator-ae"> -->
+		<!-- <descriptor> -->
+		<!-- <import name="jules-lucas-term-preparator-ae" /> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="0/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="10000" time="1000ms" /> -->
+		<!-- </casProcessor> -->
+		<!-- <casProcessor deployment="integrated" name="SemedicoTermDistanceAnnotator"> -->
+		<!-- <descriptor> -->
+		<!-- <import location="AEDescriptors/SemedicoTermDistanceAnnotator.xml" 
+			/> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="0/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="10000" time="1000ms" /> -->
+		<!-- </casProcessor> -->
+		<casProcessor deployment="integrated" name="EventFlattener">
+			<descriptor>
+				<import location="AEDescriptors/jules-event-flattener-ae.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+		<casProcessor deployment="integrated" name="AnnotationSplitterAnnotator">
+			<descriptor>
+				<import location="AEDescriptors/AnnotationSplitterAnnotator.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>splitterDescriptionFileName</name>
+					<value>
+						<string>resources/LucasParams/splitter.xml</string>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</casProcessor>
+		<casProcessor deployment="integrated" name="TermExtractor">
+			<descriptor>
+				<import location="AEDescriptors/jules-concept-term-extractor.xml" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>Types</name>
+					<value>
+						<array>
+							<string>de.julielab.jules.types.Gene=/resourceEntryList/entryId
+							</string>
+							<string>de.julielab.jules.types.EventMention=/specificType
+							</string>
+							<string>de.julielab.jules.types.Cell=/specificType</string>
+							<string>de.julielab.jules.types.stemnet.CD_antigens=/specificType
+							</string>
+							<string>de.julielab.jules.types.stemnet.MinorHA=/specificType
+							</string>
+							<string>de.julielab.jules.types.OntClassMentionSimple=/specificType
+							</string>
+							<string>de.julielab.jules.types.OntClassMentionAggElement=/specificType
+							</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>Neo4jAddress</name>
+					<value>
+						<string>http://localhost:7474</string>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="500" time="1000ms" />
+		</casProcessor>
+		<!-- <casProcessor deployment="integrated" name="XMIWriter"> -->
+		<!-- <descriptor> -->
+		<!-- <import name="jules-xmi-writer" /> -->
+		<!-- </descriptor> -->
+		<!-- <deploymentParameters /> -->
+		<!-- <configurationParameterSettings> -->
+		<!-- <nameValuePair> -->
+		<!-- <name>OutputDirectory</name> -->
+		<!-- <value> -->
+		<!-- <string>xmi-output-flattened-events</string> -->
+		<!-- </value> -->
+		<!-- </nameValuePair> -->
+		<!-- </configurationParameterSettings> -->
+		<!-- <errorHandling> -->
+		<!-- <errorRateThreshold action="terminate" value="10/1000" /> -->
+		<!-- <maxConsecutiveRestarts action="terminate" -->
+		<!-- value="30" /> -->
+		<!-- <timeout max="100000" default="-1" /> -->
+		<!-- </errorHandling> -->
+		<!-- <checkpoint batch="1" time="1000ms" /> -->
+		<!-- </casProcessor> -->
+		<casProcessor deployment="integrated" name="ElasticSearchConsumer">
+			<descriptor>
+				<import location="AEDescriptors/ElasticSearchConsumer.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="1/1" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="500" time="1000ms" />
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>url</name>
+					<value>
+						<string>http://localhost:9200</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>indexName</name>
+					<value>
+						<string>medline</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>type</name>
+					<value>
+						<string>docs</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>uniqueKeyField</name>
+					<value>
+						<string>pubmedID</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>filterBoards</name>
+					<value>
+						<array>
+							<string>de.julielab.semedico.consumer.SemedicoFilterBoard
+							</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>fieldGenerators</name>
+					<value>
+						<array>
+							<string>de.julielab.semedico.consumer.SemedicoFieldsGenerator
+							</string>
+						</array>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</casProcessor>
+	</casProcessors>
+	<cpeConfig>
+		<numToProcess>-1</numToProcess>
+		<deployAs>immediate</deployAs>
+		<checkpoint batch="1000" />
+		<timerImpl />
+	</cpeConfig>
+</cpeDescription>

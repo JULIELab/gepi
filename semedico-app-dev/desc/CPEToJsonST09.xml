@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<collectionReader>
+		<collectionIterator>
+			<descriptor>
+				<import name="jules-cas-xmi-from-db-reader" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>Table</name>
+					<value>
+						<string>st09devel</string>
+						<!-- <string>wrongdoc</string> -->
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>dbcConfigFile</name>
+					<value>
+						<string>conf/dbcConfigurationMedlineDev.xml</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>ResetTable</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>PerformGUNZIP</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionalTables</name>
+					<value>
+						<array>
+							<string>de.julielab.jcore.types.Token</string>
+							<string>de.julielab.jcore.types.Sentence</string>
+							<string>de.julielab.jcore.types.Gene</string>
+							<string>de.julielab.jcore.types.OntClassMentionSimple</string>
+							<string>de.julielab.jcore.types.OntClassMentionAggregate</string>
+							<string>de.julielab.jcore.types.OntClassMentionAggElement
+							</string>
+							<string>de.julielab.jcore.types.Cell</string>
+							<string>de.julielab.jcore.types.stemnet.CD_antigens</string>
+							<string>de.julielab.jcore.types.stemnet.MinorHA</string>
+							<string>de.julielab.jcore.types.EventMention</string>
+							<string>de.julielab.jcore.types.LikelihoodIndicator</string>
+							<string>de.julielab.jcore.types.Organism</string>
+							<string>de.julielab.jcore.types.AutoDescriptor</string>
+							<string>de.julielab.jcore.types.Abbreviation</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>AdditionalTableSchema</name>
+					<value>
+						<string>xmi_annotation_gzip</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>BatchSize</name>
+					<value>
+						<integer>100</integer>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>StoreMaxXmiId</name>
+					<value>
+						<boolean>false</boolean>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+		</collectionIterator>
+	</collectionReader>
+	<!-- <collectionReader> -->
+	<!-- <collectionIterator> -->
+	<!-- <descriptor> -->
+	<!-- <import name="jules-xmi-reader" /> -->
+	<!-- </descriptor> -->
+	<!-- <configurationParameterSettings/> -->
+	<!-- </collectionIterator> -->
+	<!-- </collectionReader> -->
+	<casProcessors casPoolSize="24"
+		processingUnitThreadCount="1">
+
+		<casProcessor deployment="integrated" name="Index AAE">
+			<descriptor>
+				<import location="index-aae.xml" />
+			</descriptor>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+
+		<casProcessor deployment="integrated" name="JSON Writer">
+			<descriptor>
+				<import location="AEDescriptors/jules-cas-to-json-consumer.xml" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>FilterBoards</name>
+					<value>
+						<array>
+							<string>de.julielab.semedico.consumer.SemedicoFilterBoard
+							</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>FieldGenerators</name>
+					<value>
+						<array>
+							<string>de.julielab.semedico.consumer.SemedicoMedlineFieldsGenerator
+							</string>
+						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>OutputDir</name>
+					<value>
+						<string>json-st09</string>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="100" time="1000ms" />
+		</casProcessor>
+		<casProcessor deployment="integrated" name="BioNLP09Writer">
+			<descriptor>
+				<import
+					name="de.julielab.jcore.consumer.bionlp09event.desc.jcore-bionlp09event-consumer" />
+			</descriptor>
+			<deploymentParameters />
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>Directory</name>
+					<value>
+						<string>st09-devel-semedico</string>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+		<casProcessor deployment="integrated" name="XMIWriter">
+			<descriptor>
+				<import name="de.julielab.jcore.consumer.xmi.jcore-xmi-writer" />
+			</descriptor>
+			<deploymentParameters />
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>OutputDirectory</name>
+					<value>
+						<string>xmi-output-st09-devel</string>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+			<errorHandling>
+				<errorRateThreshold action="terminate" value="10/1000" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="1" time="1000ms" />
+		</casProcessor>
+	</casProcessors>
+	<cpeConfig>
+		<numToProcess>-1</numToProcess>
+		<deployAs>immediate</deployAs>
+		<checkpoint batch="1000" />
+		<timerImpl />
+	</cpeConfig>
+</cpeDescription>
