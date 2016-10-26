@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>jules-preprocessing-pipelines</artifactId>
 		<groupId>de.julielab</groupId>
-		<version>1.1.0-SNAPSHOT</version>
+		<version>${jpp-version}</version>
 	</parent>
 	<artifactId>jpp-genes-and-relations</artifactId>
 	<name>JPP Genes And Relations</name>
