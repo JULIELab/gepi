@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>jules-preprocessing-pipelines</artifactId>
 		<groupId>de.julielab</groupId>
-		<version>1.1.0-SNAPSHOT</version>
+		<version>${jpp-version}</version>
 	</parent>
 	<artifactId>jpp-syntax</artifactId>
 	<name>JPP Syntax Pipeline</name>
@@ -70,7 +70,6 @@
 			<version>3.0.2</version>
 		</dependency>
 	</dependencies>
-	<version>${jpp-version}</version>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
