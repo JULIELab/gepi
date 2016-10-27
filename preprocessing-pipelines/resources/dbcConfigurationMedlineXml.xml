@@ -2,17 +2,13 @@
 <databaseConnectorConfiguration>
 	<DBSchemaInformation>
 		<activePostgresSchema>_data</activePostgresSchema>
-		<activeTableSchema>defaultGzip</activeTableSchema>
+		<activeTableSchema>default</activeTableSchema>
 	</DBSchemaInformation>
 	<DBConnectionInformation>
-		<activeDBConnection>semedico_dev</activeDBConnection>
+		<activeDBConnection>gepi_test</activeDBConnection>
 		<DBConnections>
-			<DBConnection name="semedico_medline_2015"
-				url="jdbc:postgresql://darwin:5432/semedico_medline_2015"></DBConnection>
-			<DBConnection name="semedico_dev"
-				url="jdbc:postgresql://darwin:5432/semedico_dev"></DBConnection>
-			<DBConnection name="bioc_pmc"
-				url="jdbc:postgresql://darwin:5432/bioc_pmc"></DBConnection>
+			<DBConnection name="gepi_test"
+				url="jdbc:postgresql://darwin:5432/gepi_test"></DBConnection>
 		</DBConnections>
 	</DBConnectionInformation>
 </databaseConnectorConfiguration>

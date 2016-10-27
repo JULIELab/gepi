@@ -15,14 +15,10 @@
 		</tableSchemas>
 	</DBSchemaInformation>
 	<DBConnectionInformation>
-		<activeDBConnection>bioc_pmc_encoding_issue</activeDBConnection>
+		<activeDBConnection>gepi_test</activeDBConnection>
 		<DBConnections>
-			<DBConnection name="bioc_pmc_encoding_issue"
-				url="jdbc:postgresql://darwin:5432/bioc_pmc_encoding_issue"></DBConnection>
-		<DBConnection name="bioc_pmc"
-				url="jdbc:postgresql://darwin:5432/bioc_pmc"></DBConnection>
-			<DBConnection name="semedico_dev_pmc"
-				url="jdbc:postgresql://darwin:5432/semedico_dev_pmc"></DBConnection>
+			<DBConnection name="gepi_test"
+				url="jdbc:postgresql://darwin:5432/gepi_test"></DBConnection>
 		</DBConnections>
 	</DBConnectionInformation>
 </databaseConnectorConfiguration>
