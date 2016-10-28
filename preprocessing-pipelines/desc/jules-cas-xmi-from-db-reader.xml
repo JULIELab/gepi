@@ -81,12 +81,12 @@
 			</configurationParameter>
 		</configurationParameters>
 		<configurationParameterSettings>
-			<nameValuePair>
-				<name>PerformGUNZIP</name>
-				<value>
-					<boolean>false</boolean>
-				</value>
-			</nameValuePair>
+<!-- 			<nameValuePair> -->
+<!-- 				<name>PerformGUNZIP</name> -->
+<!-- 				<value> -->
+<!-- 					<boolean>false</boolean> -->
+<!-- 				</value> -->
+<!-- 			</nameValuePair> -->
 			<nameValuePair>
 				<name>ReadsBaseDocument</name>
 				<value>
