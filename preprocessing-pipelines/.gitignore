@@ -5,6 +5,8 @@
 /log-archive
 /last_job_ids.txt
 /log
+/lib
+/target
 
 # /jpp-all/
 /jpp-all/.settings

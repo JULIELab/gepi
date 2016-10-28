@@ -114,6 +114,12 @@
 			<groupId>de.julielab</groupId>
 			<artifactId>jules-cas-xmi-from-db-reader</artifactId>
 			<version>[0.6.1,0.7)</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jcore-utilities</artifactId>
+					<groupId>de.julielab</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.julielab</groupId>

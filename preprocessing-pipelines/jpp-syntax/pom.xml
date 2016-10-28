@@ -68,6 +68,12 @@
 			<groupId>de.julielab</groupId>
 			<artifactId>jules-medline-reader</artifactId>
 			<version>3.0.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jcore-utilities</artifactId>
+					<groupId>de.julielab</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>

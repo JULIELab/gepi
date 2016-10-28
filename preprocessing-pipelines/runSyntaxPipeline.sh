@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#SBATCH -p express
 #SBATCH --mem 18000
 #SBATCH --cpus-per-task 4
 

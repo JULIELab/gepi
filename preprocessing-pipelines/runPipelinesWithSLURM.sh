@@ -89,5 +89,5 @@ new_job_ids=""
 # If a particular SLURM partition is required, the JPP_PARTITION variable
 # has to be exported before running the script
 sendSubPipelineJobs $jobfilesyntax "syntax" "<none>" $JPP_PARTITION
-sendSubPipelineJobs $jobfilegenesandrelations "genRel" $last_job_ids $JPP_PARTITION
+#sendSubPipelineJobs $jobfilegenesandrelations "genRel" $last_job_ids $JPP_PARTITION
 #sendSubPipelineJobs $jobfilesemedicometadata "smdco" $last_job_ids $JPP_PARTITION
