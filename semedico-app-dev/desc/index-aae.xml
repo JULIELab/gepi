@@ -6,14 +6,11 @@
 		<delegateAnalysisEngine key="jules-feature-value-replacement-ae-genes">
 			<import location="AEDescriptors/jules-feature-value-replacement-ae-genes.xml" />
 		</delegateAnalysisEngine>
-		<delegateAnalysisEngine
-			key="jules-feature-value-replacement-ae-immunology">
-			<import
-				location="AEDescriptors/jules-feature-value-replacement-ae-immunology.xml" />
+		<delegateAnalysisEngine	key="jules-feature-value-replacement-ae-immunology">
+			<import	location="AEDescriptors/jules-feature-value-replacement-ae-immunology.xml" />
 		</delegateAnalysisEngine>
 		<delegateAnalysisEngine key="jules-feature-value-replacement-ae-ncbitaxon">
-			<import
-				location="AEDescriptors/jules-feature-value-replacement-ae-ncbitaxon.xml" />
+			<import	location="AEDescriptors/jules-feature-value-replacement-ae-ncbitaxon.xml" />
 		</delegateAnalysisEngine>
 		<delegateAnalysisEngine key="jules-feature-value-replacement-ae-events">
 			<import location="AEDescriptors/jules-feature-value-replacement-ae-events.xml" />
@@ -23,7 +20,6 @@
 		</delegateAnalysisEngine>
 		<delegateAnalysisEngine key="TokenSplitter">
 			<import location="AEDescriptors/TokenSplitter.xml" />
-
 		</delegateAnalysisEngine>
 	</delegateAnalysisEngineSpecifiers>
 	<analysisEngineMetaData>

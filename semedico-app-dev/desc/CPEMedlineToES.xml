@@ -21,7 +21,7 @@
 				<nameValuePair>
 					<name>dbcConfigFile</name>
 					<value>
-						<string>conf/dbcConfigurationMedlineMirror.xml</string>
+						<string>conf/dbcConfigurationMedline.xml</string>
 					</value>
 				</nameValuePair>
 				<nameValuePair>

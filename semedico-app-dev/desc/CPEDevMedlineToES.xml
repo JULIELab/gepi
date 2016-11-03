@@ -39,8 +39,7 @@
 							<string>de.julielab.jcore.types.Gene</string>
 							<string>de.julielab.jcore.types.OntClassMentionSimple</string>
 							<string>de.julielab.jcore.types.OntClassMentionAggregate</string>
-							<string>de.julielab.jcore.types.OntClassMentionAggElement
-							</string>
+							<string>de.julielab.jcore.types.OntClassMentionAggElement</string>
 							<string>de.julielab.jcore.types.Cell</string>
 							<string>de.julielab.jcore.types.stemnet.CD_antigens</string>
 							<string>de.julielab.jcore.types.stemnet.MinorHA</string>
@@ -90,8 +89,7 @@
 			<checkpoint batch="100" time="1000ms" />
 		</casProcessor>
 
-		<casProcessor deployment="integrated"
-			name="Variants and Acronyms to Neo4j Consumer">
+		<casProcessor deployment="integrated" name="Variants and Acronyms to Neo4j Consumer">
 			<descriptor>
 				<import location="AEDescriptors/jules-concept-term-to-neo4j-consumer.xml" />
 			</descriptor>
@@ -147,8 +145,7 @@
 			<checkpoint batch="1000" time="1000ms" />
 		</casProcessor>
 		
-		<casProcessor deployment="integrated"
-			name="Acronyms to Neo4j Consumer">
+		<casProcessor deployment="integrated" name="Acronyms to Neo4j Consumer">
 			<descriptor>
 				<import location="AEDescriptors/jules-concept-term-to-neo4j-consumer.xml" />
 			</descriptor>
