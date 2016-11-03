@@ -92,7 +92,7 @@
       <nameValuePair>
         <name>StoreBaseDocument</name>
         <value>
-          <boolean>false</boolean>
+          <boolean>true</boolean>
         </value>
       </nameValuePair>
       <nameValuePair>
