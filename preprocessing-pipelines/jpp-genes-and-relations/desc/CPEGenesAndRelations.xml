@@ -10,7 +10,7 @@
 				<nameValuePair>
 					<name>Table</name>
 					<value>
-					<string>_1chunks_mirror2</string>
+					<string>_1syntax_mirror2</string>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
@@ -26,17 +26,17 @@
 							<string>de.julielab.jcore.types.Sentence</string>
 							<string>de.julielab.jcore.types.Token</string>
 							<string>de.julielab.jcore.types.Abbreviation</string>
-<!-- 						<string>de.julielab.jcore.types.Chunk</string> -->
-<!-- 						<string>de.julielab.jcore.types.ChunkADJP</string> -->
-<!-- 						<string>de.julielab.jcore.types.ChunkADVP</string> -->
-<!-- 						<string>de.julielab.jcore.types.ChunkCONJP</string> -->
-<!-- 						<string>de.julielab.jcore.types.ChunkNP</string> -->
-<!-- 						<string>de.julielab.jcore.types.ChunkPP</string> -->
-<!-- 						<string>de.julielab.jcore.types.ChunkSBAR</string> -->
-<!-- 						<string>de.julielab.jcore.types.ChunkVP</string> -->
-<!-- 						<string>de.julielab.jcore.types.DependencyRelation</string> -->
-<!-- 						<string>de.julielab.jcore.types.Gene</string> -->
-<!-- 						<string>de.julielab.jcore.types.GeneResourceEntry</string> -->
+<!-- 							<string>de.julielab.jcore.types.Chunk</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkADJP</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkADVP</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkCONJP</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkNP</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkPP</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkSBAR</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkVP</string> -->
+<!-- 							<string>de.julielab.jcore.types.DependencyRelation</string> -->
+<!-- 							<string>de.julielab.jcore.types.Gene</string> -->
+<!-- 							<string>de.julielab.jcore.types.GeneResourceEntry</string> -->
 						</array>
 					</value>
 				</nameValuePair>

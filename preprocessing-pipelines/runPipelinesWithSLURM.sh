@@ -79,7 +79,7 @@ SCRIPTDIR="`dirname \"$0\"`"
 cd $SCRIPTDIR
 jobfilesyntax="runSyntaxPipeline.sh"
 jobfilegenesandrelations="runGenesAndRelationsPipeline.sh"
-jobfilesemedicometadata="runSemedicoPipeline.sh"
+#jobfilesemedicometadata="runSemedicoPipeline.sh"
 
 # The list of job ids allocated to the last pipeline jobs.
 last_job_ids="<none>"

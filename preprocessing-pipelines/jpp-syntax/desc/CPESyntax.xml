@@ -51,6 +51,12 @@
 			<checkpoint batch="100" time="1000ms" />
 			<configurationParameterSettings>
 				<nameValuePair>
+        			<name>StoreBaseDocument</name>
+        				<value>
+          					<boolean>true</boolean>
+        				</value>
+      			</nameValuePair>
+				<nameValuePair>
 					<name>UpdateMode</name>
 					<value>
 						<boolean>false</boolean>
@@ -63,13 +69,13 @@
 							<string>de.julielab.jcore.types.Sentence</string>
 							<string>de.julielab.jcore.types.Token</string>
 							<string>de.julielab.jcore.types.Abbreviation</string>
-							<string>de.julielab.jcore.types.ChunkADJP</string>
-							<string>de.julielab.jcore.types.ChunkADVP</string>
-							<string>de.julielab.jcore.types.ChunkCONJP</string>
-							<string>de.julielab.jcore.types.ChunkNP</string>
-							<string>de.julielab.jcore.types.ChunkPP</string>
-							<string>de.julielab.jcore.types.ChunkSBAR</string>
-							<string>de.julielab.jcore.types.ChunkVP</string>
+<!-- 							<string>de.julielab.jcore.types.ChunkADJP</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkADVP</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkCONJP</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkNP</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkPP</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkSBAR</string> -->
+<!-- 							<string>de.julielab.jcore.types.ChunkVP</string> -->
 						</array>
 					</value>
 				</nameValuePair>
