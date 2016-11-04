@@ -9,13 +9,13 @@
 				<nameValuePair>
 					<name>Table</name>
 					<value>
-						<string>semedico.semedico_mirror</string>
+						<string>_1syntax_mirror2</string>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
 					<name>ResetTable</name>
 					<value>
-						<boolean>false</boolean>
+						<boolean>true</boolean>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
@@ -37,17 +37,9 @@
 							<string>de.julielab.jcore.types.Token</string>
 							<string>de.julielab.jcore.types.Sentence</string>
 							<string>de.julielab.jcore.types.Gene</string>
-							<string>de.julielab.jcore.types.OntClassMentionSimple</string>
-							<string>de.julielab.jcore.types.OntClassMentionAggregate</string>
-							<string>de.julielab.jcore.types.OntClassMentionAggElement
-							</string>
-							<string>de.julielab.jcore.types.Cell</string>
-							<string>de.julielab.jcore.types.stemnet.CD_antigens</string>
-							<string>de.julielab.jcore.types.stemnet.MinorHA</string>
 							<string>de.julielab.jcore.types.EventMention</string>
 							<string>de.julielab.jcore.types.LikelihoodIndicator</string>
 							<string>de.julielab.jcore.types.Organism</string>
-							<string>de.julielab.jcore.types.AutoDescriptor</string>
 							<string>de.julielab.jcore.types.Abbreviation</string>
 						</array>
 					</value>
@@ -87,43 +79,7 @@
 					value="30" />
 				<timeout max="100000" default="-1" />
 			</errorHandling>
-			<checkpoint batch="1" time="1000ms" />
-		</casProcessor>
-
-		<casProcessor deployment="integrated"
-			name="Concept Terms to Neo4j Consumer">
-			<descriptor>
-				<import location="AEDescriptors/jules-concept-term-to-neo4j-consumer.xml" />
-			</descriptor>
-			<configurationParameterSettings>
-				<nameValuePair>
-					<name>Neo4jAddress</name>
-					<value>
-						<string>http://dawkins:7474</string>
-					</value>
-				</nameValuePair>
-				<nameValuePair>
-					<name>Types</name>
-					<value>
-						<array>
-							<string>de.julielab.jcore.types.Gene=/resourceEntryList/entryId</string>
-<!-- 							<string>de.julielab.jcore.types.Organism=/resourceEntryList/entryId</string> -->
-							<string>de.julielab.jcore.types.Cell=/specificType</string>
-							<string>de.julielab.jcore.types.EventMention=/specificType</string>
-							<string>de.julielab.jcore.types.stemnet.CD_antigens=/specificType</string>
-							<string>de.julielab.jcore.types.stemnet.MinorHA=/specificType</string>
-						</array>
-					</value>
-				</nameValuePair>
-			</configurationParameterSettings>
-			<deploymentParameters />
-			<errorHandling>
-				<errorRateThreshold action="terminate" value="10/1000" />
-				<maxConsecutiveRestarts action="terminate"
-					value="30" />
-				<timeout max="100000" default="-1" />
-			</errorHandling>
-			<checkpoint batch="1000" time="1000ms" />
+			<checkpoint batch="100" time="1000ms" />
 		</casProcessor>
 
 		<casProcessor deployment="integrated" name="ElasticSearchConsumer">
@@ -137,12 +93,12 @@
 					value="30" />
 				<timeout max="100000" default="-1" />
 			</errorHandling>
-			<checkpoint batch="150" time="1000ms" />
+			<checkpoint batch="500" time="1000ms" />
 			<configurationParameterSettings>
 				<nameValuePair>
 					<name>url</name>
 					<value>
-						<string>http://dawkins:9200</string>
+						<string>http://localhost:9200</string>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
@@ -155,6 +111,12 @@
 					<name>type</name>
 					<value>
 						<string>medline</string>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>uniqueKeyField</name>
+					<value>
+						<string>pubmedID</string>
 					</value>
 				</nameValuePair>
 				<nameValuePair>

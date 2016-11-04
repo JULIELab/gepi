@@ -6,9 +6,6 @@
 		<delegateAnalysisEngine key="jules-feature-value-replacement-ae-genes">
 			<import location="AEDescriptors/jules-feature-value-replacement-ae-genes.xml" />
 		</delegateAnalysisEngine>
-		<delegateAnalysisEngine	key="jules-feature-value-replacement-ae-immunology">
-			<import	location="AEDescriptors/jules-feature-value-replacement-ae-immunology.xml" />
-		</delegateAnalysisEngine>
 		<delegateAnalysisEngine key="jules-feature-value-replacement-ae-ncbitaxon">
 			<import	location="AEDescriptors/jules-feature-value-replacement-ae-ncbitaxon.xml" />
 		</delegateAnalysisEngine>
@@ -32,7 +29,6 @@
 		<flowConstraints>
 			<fixedFlow>
 				<node>jules-feature-value-replacement-ae-genes</node>
-				<node>jules-feature-value-replacement-ae-immunology</node>
 				<node>jules-feature-value-replacement-ae-ncbitaxon</node>
 				<node>jules-feature-value-replacement-ae-events</node>
 				<node>jules-event-flattener-ae</node>

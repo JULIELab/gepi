@@ -9,13 +9,13 @@
 				<nameValuePair>
 					<name>Table</name>
 					<value>
-						<string>semedico.semedico_mirror</string>
+						<string>semedico.testdocs</string>
 					</value>
 				</nameValuePair>
 					<nameValuePair>
 					<name>ResetTable</name>
 					<value>
-						<boolean>false</boolean>
+						<boolean>true</boolean>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
@@ -73,8 +73,16 @@
 			</configurationParameterSettings>
 		</collectionIterator>
 	</collectionReader>
-	<casProcessors casPoolSize="32"
-		processingUnitThreadCount="4">
+	<!-- <collectionReader> -->
+	<!-- <collectionIterator> -->
+	<!-- <descriptor> -->
+	<!-- <import name="jules-xmi-reader" /> -->
+	<!-- </descriptor> -->
+	<!-- <configurationParameterSettings/> -->
+	<!-- </collectionIterator> -->
+	<!-- </collectionReader> -->
+	<casProcessors casPoolSize="24"
+		processingUnitThreadCount="2">
 
 	<casProcessor deployment="integrated" name="Index AAE">
 			<descriptor>
@@ -106,7 +114,7 @@
 				<nameValuePair>
 					<name>url</name>
 					<value>
-						<string>http://dawkins:9200</string>
+						<string>http://localhost:9200</string>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
