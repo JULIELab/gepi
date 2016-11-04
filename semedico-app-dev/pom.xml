@@ -122,7 +122,7 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>jcore-utilities</artifactId>
-			<version>[2.0.0, 2.1)</version>
+			<version>${jcore-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.julielab</groupId>
@@ -132,7 +132,7 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>jcore-xmi-writer</artifactId>
-			<version>2.0.0</version>
+			<version>${jcore-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.julielab</groupId>
@@ -154,5 +154,21 @@
 			<artifactId>jcore-bionlp09event-consumer</artifactId>
 			<version>2.2.0</version>
 		</dependency>
+		<dependency>
+			<groupId>de.julielab</groupId>
+			<artifactId>jcore-types</artifactId>
+		</dependency>
 	</dependencies>
+	<properties>
+		<jcore-version>2.2.0</jcore-version>
+	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>de.julielab</groupId>
+				<artifactId>jcore-types</artifactId>
+				<version>2.2.2</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

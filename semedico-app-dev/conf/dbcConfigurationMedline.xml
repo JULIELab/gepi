@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseConnectorConfiguration>
 	<DBSchemaInformation>
-		<activePostgresSchema>semedico</activePostgresSchema>
+		<activePostgresSchema>_data_xmi</activePostgresSchema>
 		<activeTableSchema>xmi_text_gzip</activeTableSchema>
 		<activeDataPostgresSchema>_data_xmi</activeDataPostgresSchema>
 	</DBSchemaInformation>
 	<DBConnectionInformation>
-		<activeDBConnection>semedico_medline_2015</activeDBConnection>
+		<activeDBConnection>gepi_test</activeDBConnection>
 		<DBConnections>
-		<DBConnection name="semedico_medline_2015"
-				url="jdbc:postgresql://darwin:5432/semedico_medline_2015" />
+			<DBConnection name="gepi_test"
+				url="jdbc:postgresql://darwin:5432/gepi_test"></DBConnection>
 		</DBConnections>
 	</DBConnectionInformation>
 </databaseConnectorConfiguration>
