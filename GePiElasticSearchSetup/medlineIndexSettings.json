@@ -1,0 +1,787 @@
+{
+	"settings": 
+	{
+		"number_of_replicas": 0,
+		"number_of_shards": 10
+	},
+
+	"mappings": 
+	{
+		"medline": 
+		{
+			"_all": 
+			{
+				"enabled": false
+			},
+
+			"_source": 
+			{
+				"enabled": true
+			},
+
+			"properties": 
+			{
+				"pmid": 
+				{
+					"type": "string",
+					"store": true,
+					"norms": 
+					{
+						"enabled": false
+					}
+				},
+
+				"pmcid": 
+				{
+					"type": "string",
+					"store": true,
+					"norms": 
+					{
+						"enabled": false
+					}
+				},
+
+				"title": 
+				{
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+
+				"abstracttext": 
+				{
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+
+				"abstractsections": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"text": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": "yes",
+							"term_vector": "with_positions_offsets"
+						},
+
+						"label": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
+
+						"nlmcategory": 
+						{
+							"type": "string",
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						}
+					}
+				},
+
+				"alltext": 
+				{
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": false
+				},
+
+				"meshminor": 
+				{
+					"type": "string",
+					"store":true,
+					"norms": 
+					{
+						"enabled": false
+					},
+
+					"copy_to": "mesh"
+				},
+
+				"meshmajor": 
+				{
+					"type": "string",
+					"store":true,
+					"norms": 
+					{
+						"enabled": false
+					},
+
+					"copy_to": "mesh"
+				},
+
+				"substances": 
+				{
+					"type": "string",
+					"store":true,
+					"norms": 
+					{
+						"enabled": false
+					},
+
+					"copy_to": "mesh"
+				},
+
+				"mesh": 
+				{
+					"type": "string",
+					"norms": 
+					{
+						"enabled": false
+					}
+				},
+
+				"sentences": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"text": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": "yes",
+							"term_vector": "with_positions_offsets",
+							"copy_to": "alltext"
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						}
+					}
+				},
+
+				"events": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"agent": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							},
+
+							"analyzer": "semedico_text"
+						},
+
+						"patient": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							},
+
+							"analyzer": "semedico_text"
+						},
+
+						"allarguments": 
+						{
+							"type": "string",
+							"store": true,
+							"analyzer": "semedico_text",
+							"copy_to": "events.allargumentsandtypes"
+						},
+
+						"maineventtype": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							},
+
+							"analyzer": "semedico_text"
+						},
+
+						"alleventtypes": 
+						{
+							"type": "string",
+							"store": true,
+							"analyzer": "semedico_text",
+							"copy_to": "events.allargumentsandtypes"
+						},
+
+						"allargumentsandtypes": 
+						{
+							"type": "string",
+							"analyzer": "semedico_text"
+						},
+
+						"id": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						},
+
+						"sentence": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets",
+							"norms": 
+							{
+								"enabled": false
+							}
+						}
+					}
+				},
+
+				"docmeta": 
+				{
+					"type": "string"
+				},
+
+				"keywords": 
+				{
+					"type": "string",
+					"store": true,
+					"norms": 
+					{
+						"enabled": false
+					},
+
+					"copy_to": "docmeta"
+				},
+
+				"authors": 
+				{
+					"type": "string",
+					"store": true,
+					"copy_to": "docmeta"
+				},
+
+				"journal": 
+				{
+					"type": "object",
+					"properties": 
+					{
+						"title": 
+						{
+							"type": "string",
+							"store": true,
+							"copy_to": "docmeta"
+						},
+
+						"volume": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							},
+							"copy_to": "docmeta"
+						},
+
+						"issue": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							},
+							"copy_to": "docmeta"
+						},
+
+						"pages": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						}
+					}
+				},
+
+				"affiliation": 
+				{
+					"type": "string",
+					"store": true,
+					"copy_to": "docmeta"
+				},
+
+				"conceptlist": 
+				{
+					"type": "string",
+					"norms": 
+					{
+						"enabled": false
+					}
+				},
+
+				"date": 
+				{
+					"type": "date",
+					"store": true
+				}
+			}
+		},
+
+		"pmc": 
+		{
+			"_all": 
+			{
+				"enabled": false
+			},
+
+			"_source": 
+			{
+				"enabled": true
+			},
+
+			"properties": 
+			{
+				"pmid": 
+				{
+					"type": "string",
+					"store": true,
+					"norms": 
+					{
+						"enabled": false
+					}
+				},
+
+				"pmcid": 
+				{
+					"type": "string",
+					"store": true,
+					"norms": 
+					{
+						"enabled": false
+					}
+				},
+
+				"title": 
+				{
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+
+				"abstracttext": 
+				{
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": true,
+					"term_vector": "with_positions_offsets"
+				},
+
+				"abstractsections": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"text": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": "yes",
+							"term_vector": "with_positions_offsets"
+						},
+
+						"label": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
+
+						"nlmcategory": 
+						{
+							"type": "string",
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						}
+					}
+				},
+
+				"alltext": 
+				{
+					"type": "preanalyzed",
+					"analyzer": "semedico_text",
+					"store": false
+				},
+
+				"sections": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"title": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets"
+						},
+
+						"text": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": false
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						},
+
+						"titlelikelihood": 
+						{
+							"type": "integer",
+							"store": true
+						}
+					}
+				},
+
+				"sentences": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"text": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets",
+							"copy_to": "alltext"
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						}
+					}
+				},
+
+				"paragraphs": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"text": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets",
+							"copy_to": "alltext"
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						}
+					}
+				},
+
+				"figurecaptions": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"text": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets",
+							"copy_to": "alltext"
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						}
+					}
+				},
+
+				"tablecaptions": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"text": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets",
+							"copy_to": "alltext"
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						}
+					}
+				},
+
+				"zones": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"text": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets",
+							"copy_to": "alltext"
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						}
+					}
+				},
+
+				"events": 
+				{
+					"type": "nested",
+					"properties": 
+					{
+						"agent": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							},
+
+							"analyzer": "semedico_text"
+						},
+
+						"patient": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							},
+
+							"analyzer": "semedico_text"
+						},
+
+						"allarguments": 
+						{
+							"type": "string",
+							"store": true,
+							"analyzer": "semedico_text",
+							"copy_to": "events.allargumentsandtypes"
+						},
+
+						"maineventtype": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							},
+
+							"analyzer": "semedico_text"
+						},
+
+						"alleventtypes": 
+						{
+							"type": "string",
+							"store": true,
+							"analyzer": "semedico_text",
+							"copy_to": "events.allargumentsandtypes"
+						},
+
+						"allargumentsandtypes": 
+						{
+							"type": "string",
+							"analyzer": "semedico_text"
+						},
+
+						"id": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
+
+						"likelihood": 
+						{
+							"type": "integer",
+							"store": true
+						},
+
+						"sentence": 
+						{
+							"type": "preanalyzed",
+							"analyzer": "semedico_text",
+							"store": true,
+							"term_vector": "with_positions_offsets",
+							"norms": 
+							{
+								"enabled": false
+							}
+						}
+					}
+				},
+
+				"docmeta": 
+				{
+					"type": "string"
+				},
+
+				"keywords": 
+				{
+					"type": "string",
+					"store": true,
+					"norms": 
+					{
+						"enabled": false
+					},
+
+					"copy_to": "docmeta"
+				},
+
+				"authors": 
+				{
+					"type": "string",
+					"store": true,
+					"copy_to": "docmeta"
+				},
+
+				"journal": 
+				{
+					"type": "object",
+					"properties": 
+					{
+						"title": 
+						{
+							"type": "string",
+							"store": true,
+							"copy_to": "docmeta"
+						},
+
+						"volume": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
+
+						"issue": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						},
+
+						"pages": 
+						{
+							"type": "string",
+							"store": true,
+							"norms": 
+							{
+								"enabled": false
+							}
+						}
+					}
+				},
+
+				"affiliation": 
+				{
+					"type": "string",
+					"store": true,
+					"copy_to": "docmeta"
+				},
+
+				"conceptlist": 
+				{
+					"type": "string",
+					"norms": 
+					{
+						"enabled": false
+					}
+				},
+
+				"date": 
+				{
+					"type": "date",
+					"store": true
+				}
+			}
+		}
+	}
+}

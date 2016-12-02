@@ -1,0 +1,40 @@
+index :
+    analysis :
+        analyzer : 
+             semedico_text :
+                type : custom
+                tokenizer : standard
+                filter : [ lowercase, snow_english ]
+             suggestion_completion :
+                type : custom
+                tokenizer : keyword
+                filter : [ lowercase, pattern_replace_suggestions ]
+             suggestion_edge :
+                type : custom
+                tokenizer : whitespace
+                filter : [ lowercase, edgeNGram_suggestions, pattern_replace_suggestions, icu_collation_suggestions ]
+             suggestion_text_query :
+                type : custom
+                tokenizer : whitespace
+                filter : [ lowercase, pattern_replace_suggestions, icu_collation_suggestions ]
+        filter :
+              snow_english :
+                type : snowball
+                language : english
+              stop_biomed :
+                type : stop
+                stopwords_path : ../resources/stopwords.txt
+              edgeNGram_suggestions:
+                type : edgeNGram
+                min_gram : 1
+                max_gram : 30
+                side: front
+              pattern_replace_suggestions:
+                type : pattern_replace
+                pattern : \p{Punct}
+                replacement : " "
+                replace : all
+              icu_collation_suggestions:
+                type : icu_collation
+                rules : ../resources/icuCollationRules.dat
+                strength : primary

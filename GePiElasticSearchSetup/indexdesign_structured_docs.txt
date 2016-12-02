@@ -1,0 +1,25 @@
+title
+abstract
+abstractsections (structures abstracts: klar; unstructured: erstmal 3; sollte man später evaluieren, also Anzahl flexibel gestalten (geht natürlich nur während der Indexierung, eine Änderung erfordert also eine Neuindexierung)
+Volltext
+sections (überlappungsfrei, also nur die 'Blätter'. Achtung: Es könnte vorkommen, dass eine Section kein Blatt ist und trotzdem selbst Inhalt besitzt, der in keine Subsection fällt (also so etwas wie eine Section-Intro); das kann man als Verfeinerung zusätzlich berücksichtigen)
+Paragraphen
+Captions
+"Zones" (vielleicht erstmal mit Paragrpahen und Captions zusammen werfen? Sind eh längennormalisiert? Kann man mit dem Argument nicht auch gleich Sätze dazu werfen?? Mit dem Gedanken kann man aber alle Freitextfelder einfach zusammen schmeißen???!!!! Antwort: Ja, könnte man; dann kann man aber nicht mehr explizit in diesen Feldern suchen. Also wenn es kein großer Mehraufwand ist, sollte man die Trennung schon machen, z.B. für unterschiedliche Gewichtungen)
+Sätze
+Events
+Referenzen
+major MESH topics wären noch sinnvoll!
+Und keywords!! (müssen sogar noch ins Mappingfile!! Beispiel finden in Medline!)
+
+Notizen bezüglich sich wiederholender Strukturen wie Paragraphen:
+Man kann NICHT einfach ein Array von Paragraphen indexieren. Das würde alle Paragraphen einfach nur in ein Feld stecken und wir hätten keine Trennung zwischen den Paragraphen (jede Suche würde also alle Paragraphen mit einbeziehen).
+Lösung ist, dass man aus solchen Strukturen ein 'nested' Feld macht und dann jede Struktur - also etwa jeden Paragraphen oder auch jeden Satz - als eigenes OBJEKT indexiert. Dann sind das intern alles getrennte Objekte (inklusive Längennormalisierung! Was uns sehr bzgl. "closeness" entgegen kommt. Bzw. da nochmal schauen, ob das bei BM25 auch drin steckt)
+Betroffen davon sind:
+	abstract-drittel
+	sections
+	Paragraphen
+	captions
+	Sätze
+	Events
+	[Referenzen nicht, weil die nicht einzeln erkannt werden aktuell]

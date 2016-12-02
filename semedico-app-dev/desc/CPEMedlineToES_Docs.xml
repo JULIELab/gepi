@@ -129,7 +129,7 @@
 					</value>
 				</nameValuePair>
 				<nameValuePair>
-					<name>FieldGenerators</name>
+					<name>DocumentGenerators</name>
 					<value>
 						<array>
 							<string>de.julielab.semedico.consumer.GepiFieldsGenerator
