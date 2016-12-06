@@ -2,15 +2,14 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import scan
 
 import sys
+import itertools
 
 class ESQuery():
 
 	def __init__(self, connection):
 		self.connection = connection
 		self.es = Elasticsearch(hosts=self.connection, verify_certs=True)
-		self.results = {}
-		self.result_count = 0
-		self.doc_count = 0
+		self.clear_results()
 
 	def create_json_query(self, tid1, tid2):
 		format_tpl = (tid1, tid2)
@@ -67,11 +66,22 @@ class ESQuery():
 	def get_sentence(self, r):
 		return self.get_fields_content(r, "events.sentence")
 
-	def print_results(self):
+	def print_results(self, rfile=None):
 		for res in self.results.values():
-			print("IDs: {}\n\tSentence: {}\n\tArguments: {}".
-					format(res["ids"], res["sentence"], res["arguments"]))
-			print(20*"-")
+			rtxt = "IDs: {}\n\tSentence: {}\n\tArguments: {}".\
+					format(res["ids"], res["sentence"], res["arguments"])
+			if not rfile:
+				print(rtxt, end="\n"+(20*"-")+"\n")
+			else:
+				print(rtxt, end="\n"+(20*"-")+"\n", file=rfile)
+		if rfile:		
+			rfile.close()
+				
+
+	def clear_results(self):
+		self.results = {}
+		self.result_count = 0
+		self.doc_count = 0
 
 
 if __name__ == "__main__":
@@ -81,13 +91,27 @@ if __name__ == "__main__":
 		print("please create a 'cred.txt' file that holds one line:\n\t" + \
 				"user-name	user-pw")
 		sys.exit()
+
 	user, pw = upw.split()
+	tofile = False
 
 	if len(sys.argv) < 3:
-		print("please give two tids")
+		print("please give two (comma seperated) tid-groups")
 		sys.exit()
+	elif len(sys.argv) == 4:
+		tofile = True
+
+	tid_group1 = (sys.argv[1]).split(",")
+	tid_group2 = (sys.argv[2]).split(",")
 
 	es = ESQuery("http://{}:{}@dawkins:9200/".format(user, pw))
-	es.send_query(str(sys.argv[1]), str(sys.argv[2]))
 
-	es.print_results()
+	for comb in itertools.product(tid_group1, tid_group2):
+		tid1, tid2 = comb
+
+		if tofile:
+			tofile = open("{}-{}.txt".format(tid1, tid2), "w")
+
+		es.send_query(tid1, tid2)
+		es.print_results(tofile)
+		es.clear_results()
