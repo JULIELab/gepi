@@ -3,6 +3,27 @@ from elasticsearch.helpers import scan
 
 import sys
 import itertools
+import argparse
+
+class QueryParser(argparse.ArgumentParser):
+	
+	def __init__(self):
+		argparse.ArgumentParser.__init__(self,
+			description="ElasticSearch Query for Gene Events")
+		self.add_argument(
+				    'tid-list-1', type = str, nargs = 1,
+					 help = 'comma seperated list of tids'
+				)
+		self.add_argument(
+				    'tid-list-2', type = str, nargs = 1,
+					 help = 'comma seperated list of tids'
+				)
+		self.add_argument(
+			'-f', '--store-to-file', metavar = 'Store to file',
+			action = 'store', nargs = 1, default = False,
+			type = bool, help = 'Boolean if result of each combination ' + \
+			 'shall be stored in a seperate file (default: False)'
+				)
 
 class ESQuery():
 
@@ -85,6 +106,9 @@ class ESQuery():
 
 
 if __name__ == "__main__":
+	parser = QueryParser()
+	args = vars(parser.parse_args())
+
 	try:
 		upw = (open("cred.txt","r").read()).rstrip("\n")
 	except:
@@ -93,16 +117,12 @@ if __name__ == "__main__":
 		sys.exit()
 
 	user, pw = upw.split()
-	tofile = False
 
-	if len(sys.argv) < 3:
-		print("please give two (comma seperated) tid-groups")
-		sys.exit()
-	elif len(sys.argv) == 4:
-		tofile = True
-
-	tid_group1 = (sys.argv[1]).split(",")
-	tid_group2 = (sys.argv[2]).split(",")
+	tid_group1 = (args['tid-list-1'][0]).split(",")
+	tid_group2 = (args['tid-list-2'][0]).split(",")
+	tofile = args['store_to_file']
+	if tofile:
+		tofile = args['store_to_file'][0]
 
 	es = ESQuery("http://{}:{}@dawkins:9200/".format(user, pw))
 
