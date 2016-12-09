@@ -147,12 +147,12 @@ SHOULD: ==> either of these tids has to occur in the conceptlist
                 "and": [
                   {
                     "term": {
-                      "events.allarguments": "tid1848"
+                      "events.allarguments": "tid550919"
                     }
                   },
                   {
                     "term": {
-                      "events.allarguments": "tid3038"
+                      "events.allarguments": "tid72600"
                     }
                   }
                 ]

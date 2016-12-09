@@ -223,7 +223,8 @@ public abstract class AbstractPubmedPmcFieldsGenerator extends AbstractSemedicoF
 				meshFilterChainWithoutHypernyms));
 		featurePathSets.add(new FeaturePathSet(OntClassMentionSimple.type, Arrays.asList("/specificType"), null, null));
 		featurePathSets.add(new FeaturePathSet(OntClassMentionAggregate.type, Arrays.asList("/specificType"), null, null));
-		featurePathSets.add(new FeaturePathSet(Gene.type, featurePathsEntryId, null, null));
+		// for genes, we currently don't want the basic NCBI Gene entries but the homology aggregates
+		featurePathSets.add(new FeaturePathSet(Gene.type, featurePathsEntryId, null, elementsAggregateIdReplaceFilter));
 		featurePathSets.add(new FeaturePathSet(Organism.type, featurePathsEntryId, null, null));
 		featurePathSets.add(new FeaturePathSet(CD_antigens.type, Arrays.asList("/specificType"), null, null));
 		featurePathSets.add(new FeaturePathSet(MinorHA.type, Arrays.asList("/specificType"), null, null));

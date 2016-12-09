@@ -122,7 +122,6 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>jcore-utilities</artifactId>
-			<version>${jcore-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.julielab</groupId>
@@ -152,7 +151,7 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>jcore-bionlp09event-consumer</artifactId>
-			<version>2.2.0</version>
+			<version>${jcore-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.julielab</groupId>
@@ -168,6 +167,11 @@
 				<groupId>de.julielab</groupId>
 				<artifactId>jcore-types</artifactId>
 				<version>2.2.2</version>
+			</dependency>
+			<dependency>
+				<groupId>de.julielab</groupId>
+				<artifactId>jcore-utilities</artifactId>
+				<version>${jcore-version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

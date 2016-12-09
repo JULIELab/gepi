@@ -76,6 +76,7 @@ public abstract class AbstractSemedicoFieldsGenerator extends FieldsGenerator {
 	protected final HashMap<String, Integer> likelihoodValues;
 	protected final HashMap<Integer, String> inverseLikelihoodValues;
 	protected FeaturePathSets preanalyzedTextFeaturePathSets;
+	protected final ReplaceFilter elementsAggregateIdReplaceFilter;
 
 	public AbstractSemedicoFieldsGenerator(FilterRegistry filterRegistry) {
 		super(filterRegistry);
@@ -92,6 +93,7 @@ public abstract class AbstractSemedicoFieldsGenerator extends FieldsGenerator {
 		eventFilterChain = fb.eventFilterChain;
 		facetRecommenderFilterChain = fb.facetRecommenderFilterChain;
 		meshFilterChain = fb.meshFilterChain;
+		elementsAggregateIdReplaceFilter = fb.elementsAggregateIdReplaceFilter;
 		// eventTermPatterns = fb.eventTermPatterns;
 		likelihoodValues = new HashMap<>();
 		likelihoodValues.put("negation", 1);

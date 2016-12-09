@@ -32,6 +32,7 @@ public class SemedicoFilterBoard extends AbstractFilterBoard {
 	public static final String RESOURCE_EVENT_TERM_PATTERNS = "EventTermPatterns";
 	public final static String RESOURCE_VALID_TERMS = "ValidTerms";
 	public final static String RESOURCE_TERM_FACETS = "TermFacetIds";
+	public final static String RESOURCE_ELEMENTS_AGGREGATES_ID_MAPPING = "ElementsAggregatesIdMapping";
 
 	public StopWordFilter stopWordFilter;
 	public SemedicoTermFilter semedicoTermFilter;
@@ -56,6 +57,7 @@ public class SemedicoFilterBoard extends AbstractFilterBoard {
 	@Deprecated
 	public SemedicoFacetIdReplaceFilter eventTermCategoryReplaceFilter;
 	public LatinTransliterationFilter latinTransliterationFilter;
+	public ReplaceFilter elementsAggregateIdReplaceFilter;
 	
 	@ExternalResource(key=RESOURCE_HYPERNYMS, property="hypernyms")
 	private String[][] hypernyms;
@@ -65,6 +67,9 @@ public class SemedicoFilterBoard extends AbstractFilterBoard {
 	
 	@ExternalResource(key=RESOURCE_STOPWORDS, methodName="getAsSet")
 	private Set<String> stopwords;
+	
+	@ExternalResource(key=RESOURCE_ELEMENTS_AGGREGATES_ID_MAPPING)
+	private Map<String, String> elementsToAggregatesIdMapping;
 
 //	@ExternalResource(key=RESOURCE_AGG_FACETS)
 //	public String[][] aggFacetIds;
@@ -130,6 +135,8 @@ public class SemedicoFilterBoard extends AbstractFilterBoard {
 		meshFilterChain.add(semedicoTermFilter);
 		meshFilterChain.add(hypernymsFilter);
 		meshFilterChain.add(new UniqueFilter());
+		
+		elementsAggregateIdReplaceFilter = new ReplaceFilter(elementsToAggregatesIdMapping);
 	}
 
 
