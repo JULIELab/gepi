@@ -9,7 +9,7 @@
 				<nameValuePair>
 					<name>Table</name>
 					<value>
-						<string>_2relations_mirror3</string>
+						<string>_1syntax_mirror2</string>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
@@ -21,7 +21,7 @@
 				<nameValuePair>
 					<name>dbcConfigFile</name>
 					<value>
-						<string>conf/dbcConfigurationMedline.xml</string>
+						<string>conf/TESTdbcConfigurationMedline.xml</string>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
