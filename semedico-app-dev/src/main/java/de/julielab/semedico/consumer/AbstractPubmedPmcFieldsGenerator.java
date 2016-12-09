@@ -73,8 +73,8 @@ public abstract class AbstractPubmedPmcFieldsGenerator extends AbstractSemedicoF
 		createPmidField(aJCas, doc);
 		createPmcidField(aJCas, doc);
 		createTitleField(aJCas, doc);
-		createAbstractField(aJCas, doc);
-		createAbstractSectionsField(aJCas, doc);
+//		createAbstractField(aJCas, doc);
+//		createAbstractSectionsField(aJCas, doc);
 		createSentencesField(aJCas, doc);
 		createEventsField(aJCas, doc);
 		createKeywordsField(aJCas, doc);
