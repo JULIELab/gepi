@@ -1,7 +1,9 @@
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import scan
+from os.path import expanduser
 
 import sys
+import os
 import itertools
 import argparse
 
@@ -19,10 +21,21 @@ class QueryParser(argparse.ArgumentParser):
 					 help = 'comma seperated list of tids'
 				)
 		self.add_argument(
-			'-f', '--store-to-file', metavar = 'Store to file',
+			'-i', '--input-as-files', metavar = 'input',
+			action = 'store', nargs = 1, default = False,
+			type = bool, help = 'Interpreting tid-list arguments as files. '
+				)
+		self.add_argument(
+			'-f', '--storage', metavar = 'storage',
 			action = 'store', nargs = 1, default = False,
 			type = bool, help = 'Boolean if result of each combination ' + \
 			 'shall be stored in a seperate file (default: False)'
+				)
+		self.add_argument(
+			'-m', '--mapping', metavar = 'mapping',
+			action = 'store', nargs = 1, default = None,
+			type = str, help = 'Location of a mapping file if no tids are ' + \
+			'used for querying. The file has on tab-seperated entry per line.'
 				)
 
 class ESQuery():
@@ -104,27 +117,79 @@ class ESQuery():
 		self.result_count = 0
 		self.doc_count = 0
 
+def readFile(fi):
+	gene_list = list()
+	try:
+		ifi = os.path.abspath(fi)
+		with open(ifi, 'r') as ifile:
+			for line in ifile.readlines():
+				line = line.rstrip('\n')
+				gene_list.append(line.split('\t')[1])
+	except IOError:
+		print("One or more input files don't exist or can't be read.")
+	return gene_list
+
+def buildMappingDict(mapping):
+	gene_dict = dict()
+	try:
+		mfi = os.path.abspath(mapping)
+		with open(mfi, 'r') as mfile:
+			for line in mfile.readlines():
+				line = line.rstrip('\n')
+				line = line.split('\t')
+				gene_dict[line[0]] = line[1]
+	except IOError:
+		print("mapping file {} does not exist or can't be read.".fomat(mapping))
+	return gene_dict
+
+def replaceTids(tlist, mapping):
+	for i in range(len(tlist)):
+		tid = tlist.pop()
+		ntid = mapping.get(tid, tid)
+		tlist.insert(0, ntid)
 
 if __name__ == "__main__":
 	parser = QueryParser()
 	args = vars(parser.parse_args())
 
 	try:
-		upw = (open("cred.txt","r").read()).rstrip("\n")
-	except:
-		print("please create a 'cred.txt' file that holds one line:\n\t" + \
+		upw = (open(expanduser("~")+"/.server_cred","r").read()).rstrip("\n")
+	except IOError:
+		print("please create a '.server_cred' in your home-folder " + \
+				"file that holds one line:\n\t" + \
 				"user-name	user-pw")
 		sys.exit()
 
 	user, pw = upw.split()
 
-	tid_group1 = (args['tid-list-1'][0]).split(",")
-	tid_group2 = (args['tid-list-2'][0]).split(",")
-	tofile = args['store_to_file']
+	finput = args['input_as_files']
+	if finput:
+		finput = finput[0]
+		print("[Config] Interpreting tid lists as input file")
+		tid_group1 = readFile(args['tid-list-1'][0])
+		tid_group2 = readFile(args['tid-list-2'][0])
+	else:
+		tid_group1 = (args['tid-list-1'][0]).split(",")
+		tid_group2 = (args['tid-list-2'][0]).split(",")
+		
+	
+	tofile = args['storage']
 	if tofile:
-		tofile = args['store_to_file'][0]
+		tofile = tofile[0]
+		print("[Config] Storing results in seperate files")
 
-	es = ESQuery("http://{}:{}@dawkins:9200/".format(user, pw))
+	mapping = args['mapping']
+	if mapping:
+		mapping = mapping[0]
+		print("[Config] Using '{}' as mapping file".format(mapping))
+		mdict = buildMappingDict(mapping)
+		replaceTids(tid_group1, mdict)
+		replaceTids(tid_group2, mdict)
+
+	print(tid_group1)
+	print(tid_group2)
+	sys.exit()
+	es = ESQuery("http://{}:{}@darwin:9200/".format(user, pw))
 
 	for comb in itertools.product(tid_group1, tid_group2):
 		tid1, tid2 = comb
