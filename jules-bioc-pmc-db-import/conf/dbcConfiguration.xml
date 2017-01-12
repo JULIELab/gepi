@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseConnectorConfiguration>
+	<DBSchemaInformation>
+		<activePostgresSchema>_data_xmi</activePostgresSchema>
+		<activeDataPostgresSchema>_data_xmi</activeDataPostgresSchema>
+		<activeTableSchema>xmi_text_gzip</activeTableSchema>
+	</DBSchemaInformation>
+	<DBConnectionInformation>
+		<activeDBConnection>bioc_pmc_encoding_issue</activeDBConnection>
+		<DBConnections>
+		<DBConnection name="bioc_pmc_encoding_issue"
+				url="jdbc:postgresql://darwin:5432/bioc_pmc_encoding_issue"></DBConnection>
+		<DBConnection name="bioc_pmc"
+				url="jdbc:postgresql://darwin:5432/bioc_pmc"></DBConnection>
+			<DBConnection name="semedico_dev_pmc"
+				url="jdbc:postgresql://darwin:5432/semedico_dev_pmc"></DBConnection>
+		</DBConnections>
+	</DBConnectionInformation>
+</databaseConnectorConfiguration>
+
