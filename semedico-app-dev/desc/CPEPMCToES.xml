@@ -9,10 +9,10 @@
 				<nameValuePair>
 					<name>Table</name>
 					<value>
-						<string>semedico.testdocs</string>
+						<string>_2relations_mirror3</string>
 					</value>
 				</nameValuePair>
-					<nameValuePair>
+				<nameValuePair>
 					<name>ResetTable</name>
 					<value>
 						<boolean>true</boolean>
@@ -37,13 +37,6 @@
 							<string>de.julielab.jcore.types.Token</string>
 							<string>de.julielab.jcore.types.Sentence</string>
 							<string>de.julielab.jcore.types.Gene</string>
-							<string>de.julielab.jcore.types.OntClassMentionSimple</string>
-							<string>de.julielab.jcore.types.OntClassMentionAggregate</string>
-							<string>de.julielab.jcore.types.OntClassMentionAggElement
-							</string>
-							<string>de.julielab.jcore.types.Cell</string>
-							<string>de.julielab.jcore.types.stemnet.CD_antigens</string>
-							<string>de.julielab.jcore.types.stemnet.MinorHA</string>
 							<string>de.julielab.jcore.types.EventMention</string>
 							<string>de.julielab.jcore.types.LikelihoodIndicator</string>
 							<string>de.julielab.jcore.types.Organism</string>
@@ -73,18 +66,10 @@
 			</configurationParameterSettings>
 		</collectionIterator>
 	</collectionReader>
-	<!-- <collectionReader> -->
-	<!-- <collectionIterator> -->
-	<!-- <descriptor> -->
-	<!-- <import name="jules-xmi-reader" /> -->
-	<!-- </descriptor> -->
-	<!-- <configurationParameterSettings/> -->
-	<!-- </collectionIterator> -->
-	<!-- </collectionReader> -->
 	<casProcessors casPoolSize="24"
 		processingUnitThreadCount="2">
 
-	<casProcessor deployment="integrated" name="Index AAE">
+		<casProcessor deployment="integrated" name="Index AAE">
 			<descriptor>
 				<import location="index-aae.xml" />
 			</descriptor>
@@ -97,7 +82,7 @@
 			</errorHandling>
 			<checkpoint batch="1" time="1000ms" />
 		</casProcessor>
-		
+
 		<casProcessor deployment="integrated" name="ElasticSearchConsumer">
 			<descriptor>
 				<import location="AEDescriptors/ElasticSearchConsumer.xml" />

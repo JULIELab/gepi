@@ -4,16 +4,12 @@
 		<activePostgresSchema>_data_xmi</activePostgresSchema>
 		<activeDataPostgresSchema>_data_xmi</activeDataPostgresSchema>
 		<activeTableSchema>xmi_text_gzip</activeTableSchema>
-		<tableSchemas>
-
-		</tableSchemas>
 	</DBSchemaInformation>
-	<DBConnectionInformation>
-		<activeDBConnection>gepi_test</activeDBConnection>
-		<DBConnections>
-			<DBConnection name="gepi_test"
-				url="jdbc:postgresql://darwin:5432/gepi_test"></DBConnection>
-		</DBConnections>
-	</DBConnectionInformation>
+   <DBConnectionInformation>
+   <activeDBConnection>medline_2017</activeDBConnection>
+       <DBConnections>
+     	    <DBConnection name="medline_2017" url="jdbc:postgresql://darwin:5432/medline_2017" />
+       </DBConnections>
+   </DBConnectionInformation>
 </databaseConnectorConfiguration>
 

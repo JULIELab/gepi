@@ -6,10 +6,10 @@
 		<activeDataPostgresSchema>_data_xmi</activeDataPostgresSchema>
 	</DBSchemaInformation>
 	<DBConnectionInformation>
-		<activeDBConnection>gepi_test</activeDBConnection>
+		<activeDBConnection>pmc</activeDBConnection>
 		<DBConnections>
-			<DBConnection name="gepi_test"
-				url="jdbc:postgresql://darwin:5432/gepi_test"></DBConnection>
+			<DBConnection name="pmc"
+				url="jdbc:postgresql://darwin:5432/bioc_pmc"></DBConnection>
 		</DBConnections>
 	</DBConnectionInformation>
 </databaseConnectorConfiguration>

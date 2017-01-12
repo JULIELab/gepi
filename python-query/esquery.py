@@ -101,6 +101,9 @@ class ESQuery():
 		return self.get_fields_content(r, "events.sentence")
 
 	def print_results(self, rfile=None):
+		no_results = False
+		if len(self.results) == 0:
+			no_results = True
 		for res in self.results.values():
 			rtxt = "IDs: {}\n\tSentence: {}\n\tArguments: {}".\
 					format(res["ids"], res["sentence"], res["arguments"])
@@ -108,8 +111,10 @@ class ESQuery():
 				print(rtxt, end="\n"+(20*"-")+"\n")
 			else:
 				print(rtxt, end="\n"+(20*"-")+"\n", file=rfile)
-		if rfile:		
+		if rfile:
 			rfile.close()
+			if no_results:
+				os.remove(rfile.name)
 				
 
 	def clear_results(self):
@@ -131,6 +136,7 @@ def readFile(fi):
 
 def buildMappingDict(mapping):
 	gene_dict = dict()
+	gene_dict_reversed = dict()
 	try:
 		mfi = os.path.abspath(mapping)
 		with open(mfi, 'r') as mfile:
@@ -138,9 +144,10 @@ def buildMappingDict(mapping):
 				line = line.rstrip('\n')
 				line = line.split('\t')
 				gene_dict[line[0]] = line[1]
+				gene_dict_reversed[line[1]] = line[0]
 	except IOError:
 		print("mapping file {} does not exist or can't be read.".fomat(mapping))
-	return gene_dict
+	return gene_dict, gene_dict_reversed
 
 def replaceTids(tlist, mapping):
 	for i in range(len(tlist)):
@@ -182,20 +189,17 @@ if __name__ == "__main__":
 	if mapping:
 		mapping = mapping[0]
 		print("[Config] Using '{}' as mapping file".format(mapping))
-		mdict = buildMappingDict(mapping)
+		mdict, mdict_reversed = buildMappingDict(mapping)
 		replaceTids(tid_group1, mdict)
 		replaceTids(tid_group2, mdict)
 
-	print(tid_group1)
-	print(tid_group2)
-	sys.exit()
 	es = ESQuery("http://{}:{}@darwin:9200/".format(user, pw))
 
 	for comb in itertools.product(tid_group1, tid_group2):
 		tid1, tid2 = comb
 
 		if tofile:
-			tofile = open("{}-{}.txt".format(tid1, tid2), "w")
+			tofile = open("out/{}-{}.txt".format(mdict_reversed[tid1], mdict_reversed[tid2]), "w")
 
 		es.send_query(tid1, tid2)
 		es.print_results(tofile)
