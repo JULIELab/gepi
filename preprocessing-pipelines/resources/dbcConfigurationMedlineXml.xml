@@ -6,7 +6,8 @@
 	</DBSchemaInformation>
    <DBConnectionInformation>
    <activeDBConnection>medline_2017</activeDBConnection>
-       <DBConnections>
+		<DBConnections>
+			<DBConnection name="gepi_pmc" url="jdbc:postgresql://darwin:5432/bioc_pmc_Dec2016" />
      	    <DBConnection name="medline_2017" url="jdbc:postgresql://darwin:5432/medline_2017" />
        </DBConnections>
    </DBConnectionInformation>

@@ -12,7 +12,8 @@
 					<value>
 						<!-- <string>/data/data_corpora/BioC-PMC/unicode</string> -->
 						<!-- <string>/home/faessler/semedico/biocpmcdevdata</string> -->
-						<string>/Users/faessler/bin/mm-pmc-encoding-issue/data</string>
+						<!-- <string>/Users/faessler/bin/mm-pmc-encoding-issue/data</string> -->
+						<string>/home/matthies/tmp/bioc-pmc</string>
 					</value>
 				</nameValuePair>
 			</configurationParameterSettings>
