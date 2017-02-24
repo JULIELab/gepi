@@ -124,7 +124,7 @@
 		<dependency>
 			<groupId>de.julielab</groupId>
 			<artifactId>jules-cas-xmi-to-db-consumer</artifactId>
-			<version>[0.6.1,7)</version>
+			<version>[0.6.1,0.8)</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.uima</groupId>

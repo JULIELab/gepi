@@ -4,24 +4,19 @@
 	<collectionReader>
 		<collectionIterator>
 			<descriptor>
-				<import name="jules-bioc-pmc-reader" />
+				<import location="jules-bioc-pmc-reader-single.xml" />
 			</descriptor>
 			<configurationParameterSettings>
 				<nameValuePair>
-					<name>inputDirectory</name>
+					<name>inputFile</name>
 					<value>
-						<!-- <string>/data/data_corpora/BioC-PMC/unicode</string> -->
-						<!-- <string>/home/faessler/semedico/biocpmcdevdata</string> -->
-						<!-- <string>/Users/faessler/bin/mm-pmc-encoding-issue/data</string> -->
-						<string>/data/data_corpora/BioC-PMC/Dec2016/unicode/</string>
+						<string>/data/data_corpora/BioC-PMC/Dec2016/unicode/Can_J_Infect_Dis_Med_Microbiol.xml</string>
 					</value>
 				</nameValuePair>
 			</configurationParameterSettings>
 		</collectionIterator>
 	</collectionReader>
-	<casProcessors casPoolSize="32"
-		processingUnitThreadCount="1">
-
+	<casProcessors casPoolSize="32" processingUnitThreadCount="1">
 		<casProcessor deployment="integrated" name="NoOp AE">
 			<descriptor>
 				<import location="nothingDescriptor.xml" />
@@ -35,7 +30,6 @@
 			</errorHandling>
 			<checkpoint batch="5000" time="1000ms" />
 		</casProcessor>
-
 		<casProcessor deployment="integrated" name="CasToXmiDBConsumer">
 			<descriptor>
 				<import name="jules-cas-xmi-to-db-consumer" />
@@ -94,7 +88,7 @@
 				<nameValuePair>
 					<name>IncreasedAttributeSize</name>
 					<value>
-						<integer>1048576</integer>
+						<integer>134217728</integer>
 					</value>
 				</nameValuePair>
 			</configurationParameterSettings>
@@ -107,3 +101,4 @@
 		<timerImpl />
 	</cpeConfig>
 </cpeDescription>
+    

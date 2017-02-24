@@ -15,7 +15,7 @@
 				<nameValuePair>
 					<name>ResetTable</name>
 					<value>
-						<boolean>true</boolean>
+						<boolean>false</boolean>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
@@ -98,7 +98,7 @@
 				<nameValuePair>
 					<name>url</name>
 					<value>
-						<string>http://localhost:9200</string>
+						<string>http://darwin:9200</string>
 					</value>
 				</nameValuePair>
 				<nameValuePair>

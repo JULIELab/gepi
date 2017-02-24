@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -p express
+#SBATCH -p QC32GBp
 #SBATCH --mem 23000
 #SBATCH --cpus-per-task 1
 

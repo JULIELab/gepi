@@ -14,5 +14,5 @@ cd jpp-syntax
 
 echo $logconf
 export CLASSPATH=resources:`echo lib/*.jar | tr ' ' ':'`
-export JVM_OPTS="-Xms8g -Xmx15g"
+export JVM_OPTS="-Xms8g -Xmx25g"
 $JAVA_BIN $JVM_OPTS -Dfile.encoding=UTF-8 -Djava.util.logging.config.file=$logconf -cp $CLASSPATH de.julielab.jules.jpp.JPPDBCPERunner -d desc/CPESyntaxPMC.xml $PIPELINE_PARAMS $*

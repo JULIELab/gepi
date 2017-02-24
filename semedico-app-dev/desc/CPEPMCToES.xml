@@ -15,7 +15,7 @@
 				<nameValuePair>
 					<name>ResetTable</name>
 					<value>
-						<boolean>true</boolean>
+						<boolean>false</boolean>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
@@ -40,7 +40,7 @@
 							<string>de.julielab.jcore.types.EventMention</string>
 							<string>de.julielab.jcore.types.LikelihoodIndicator</string>
 							<string>de.julielab.jcore.types.Organism</string>
-							<string>de.julielab.jcore.types.AutoDescriptor</string>
+<!--							<string>de.julielab.jcore.types.AutoDescriptor</string> -->
 							<string>de.julielab.jcore.types.Abbreviation</string>
 						</array>
 					</value>
@@ -99,7 +99,7 @@
 				<nameValuePair>
 					<name>url</name>
 					<value>
-						<string>http://localhost:9200</string>
+						<string>http://darwin:9200</string>
 					</value>
 				</nameValuePair>
 				<nameValuePair>
@@ -133,7 +133,7 @@
 					<name>FieldGenerators</name>
 					<value>
 						<array>
-							<string>de.julielab.semedico.consumer.SemedicoPubmedCentralFieldsGenerator
+							<string>de.julielab.semedico.consumer.GepiFieldsGenerator
 							</string>
 						</array>
 					</value>

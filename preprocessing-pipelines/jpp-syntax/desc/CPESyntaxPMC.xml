@@ -47,8 +47,28 @@
 			</configurationParameterSettings>
 		</collectionIterator>
 	</collectionReader>
-	<casProcessors casPoolSize="24"
-		processingUnitThreadCount="1">
+	<casProcessors casPoolSize="60"	processingUnitThreadCount="4" dropCasOnException="true">
+		<casProcessor deployment="integrated" name="LongdocSkipper">
+			<descriptor>
+				<import name="jules-longdocument-skipper" />
+			</descriptor>
+			<configurationParameterSettings>
+				<nameValuePair>
+					<name>MaxLength</name>
+					<value>
+						<integer>1000000</integer>
+					</value>
+				</nameValuePair>
+			</configurationParameterSettings>
+			<deploymentParameters />
+			<errorHandling>
+				<errorRateThreshold action="continue" value="1" />
+				<maxConsecutiveRestarts action="terminate"
+					value="30" />
+				<timeout max="100000" default="-1" />
+			</errorHandling>
+			<checkpoint batch="10000" time="1000ms" />
+		</casProcessor>
 		<casProcessor deployment="integrated" name="Syntax-AAE">
 			<descriptor>
 				<import
@@ -80,7 +100,7 @@
 <!-- 		</casProcessor> -->
 		<casProcessor deployment="integrated" name="CasToXmiDBConsumer">
 			<descriptor>
-				<import location="../../desc/jules-cas-xmi-to-db-consumer.xml" />
+				<import location="../../desc/jules-cas-xmi-to-db-consumer-pmc.xml" />
 			</descriptor>
 			<deploymentParameters />
 			<errorHandling>
@@ -93,6 +113,12 @@
 			<configurationParameterSettings>
 				<nameValuePair>
 					<name>UpdateMode</name>
+					<value>
+						<boolean>true</boolean>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>StoreBaseDocument</name>
 					<value>
 						<boolean>false</boolean>
 					</value>
@@ -114,6 +140,12 @@
 <!-- 							<string>de.julielab.jcore.types.ChunkVP</string> -->
 <!--							<string>de.julielab.jcore.types.DependencyRelation</string> -->
 						</array>
+					</value>
+				</nameValuePair>
+				<nameValuePair>
+					<name>IncreasedAttributeSize</name>
+					<value>
+						<integer>134217728</integer>
 					</value>
 				</nameValuePair>
 			</configurationParameterSettings>

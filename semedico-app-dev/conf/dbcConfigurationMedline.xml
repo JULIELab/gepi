@@ -6,10 +6,9 @@
 		<activeDataPostgresSchema>_data_xmi</activeDataPostgresSchema>
 	</DBSchemaInformation>
 	<DBConnectionInformation>
-		<activeDBConnection>medline2015</activeDBConnection>
+    <activeDBConnection>medline_2017</activeDBConnection>
 		<DBConnections>
-			<DBConnection name="medline2015"
-				url="jdbc:postgresql://darwin:5432/semedico_medline_2015"></DBConnection>
+			<DBConnection name="medline_2017" url="jdbc:postgresql://darwin:5432/medline_2017" />
 		</DBConnections>
 	</DBConnectionInformation>
 </databaseConnectorConfiguration>

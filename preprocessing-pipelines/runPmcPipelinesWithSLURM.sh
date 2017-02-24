@@ -77,8 +77,8 @@ export PIPELINE_PARAMS="$4 -t $2"
 # the pipeline scripts are correct.
 SCRIPTDIR="`dirname \"$0\"`"
 cd $SCRIPTDIR
-jobfilesyntax="runSyntaxPipeline.sh"
-jobfilegenesandrelations="runGenesAndRelationsPipeline.sh"
+jobfilesyntax="runSyntaxPipelinePmc.sh"
+jobfilegenesandrelations="runGenesAndRelationsPipelinePmc.sh"
 
 # The list of job ids allocated to the last pipeline jobs.
 last_job_ids="<none>"

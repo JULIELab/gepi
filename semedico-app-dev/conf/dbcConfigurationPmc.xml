@@ -6,10 +6,9 @@
 		<activeDataPostgresSchema>_data_xmi</activeDataPostgresSchema>
 	</DBSchemaInformation>
 	<DBConnectionInformation>
-		<activeDBConnection>pmc</activeDBConnection>
+    <activeDBConnection>bioc_pmc2016</activeDBConnection>
 		<DBConnections>
-			<DBConnection name="pmc"
-				url="jdbc:postgresql://darwin:5432/bioc_pmc"></DBConnection>
+			<DBConnection name="bioc_pmc2016" url="jdbc:postgresql://darwin:5432/bioc_pmc_Dec2016" />
 		</DBConnections>
 	</DBConnectionInformation>
 </databaseConnectorConfiguration>
