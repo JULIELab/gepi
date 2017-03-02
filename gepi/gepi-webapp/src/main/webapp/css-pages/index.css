@@ -1,0 +1,9 @@
+div#table {
+	overflow:hidden;
+}
+
+span#resultResizeHandle {
+	float: right;
+	transform: rotate(90deg) scale(1.1);
+	cursor: pointer;
+}
