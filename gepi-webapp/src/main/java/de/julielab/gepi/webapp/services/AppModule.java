@@ -59,7 +59,7 @@ public class AppModule
 
               // You should change the passphrase immediately; the HMAC passphrase is used to secure
         // the hidden field data stored in forms to encrypt and digitally sign client-side data.
-        configuration.add(SymbolConstants.HMAC_PASSPHRASE, "change this immediately");
+        configuration.add(SymbolConstants.HMAC_PASSPHRASE, "juliegepipassphrase");
     }
 
 	/**
