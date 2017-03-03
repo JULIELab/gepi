@@ -1,9 +1,7 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>de.julielab</groupId>
     <artifactId>gepi-webapp</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>gepi-webapp Tapestry 5 Application</name>
         <dependencies>
@@ -14,13 +12,6 @@
             <groupId>org.apache.tapestry</groupId>
             <artifactId>tapestry-core</artifactId>
             <version>${tapestry-release-version}</version>
-        </dependency>
-
-        <!-- Include the Log4j implementation for the SLF4J logging framework -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j-release-version}</version>
         </dependency>
 
 
@@ -73,7 +64,16 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
             <scope>provided</scope>
         </dependency>
 
-    </dependencies>
+        <dependency>
+        	<groupId>ch.qos.logback</groupId>
+        	<artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>de.julielab</groupId>
+        	<artifactId>gepi-core</artifactId>
+        	<version>${project.parent.version}</version>
+        </dependency>
+        </dependencies>
     <build>
         <finalName>gepi-webapp</finalName>
         <plugins>
@@ -140,10 +140,14 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
     </repositories>
 
     <properties>
-        <tapestry-release-version>5.4.1</tapestry-release-version>
         <servlet-api-release-version>2.5</servlet-api-release-version>
         <testng-release-version>6.8.21</testng-release-version>
-        <slf4j-release-version>1.7.19</slf4j-release-version>
 
     </properties>
+    <parent>
+    	<groupId>de.julielab</groupId>
+    	<artifactId>gepi</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    	<relativePath>..</relativePath>
+    </parent>
 </project>
