@@ -14,6 +14,7 @@ import de.julielab.elastic.query.components.data.query.BoolClause;
 import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.InnerHits;
+import de.julielab.elastic.query.components.data.query.MatchAllQuery;
 import de.julielab.elastic.query.components.data.query.NestedQuery;
 import de.julielab.elastic.query.components.data.query.TermQuery;
 import de.julielab.elastic.query.components.data.query.TermsQuery;
@@ -29,30 +30,33 @@ import de.julielab.gepi.core.services.IGeneIdService;
  *
  */
 public class EventRetrievalService implements IEventRetrievalService {
-	
+
 	public static final String FIELD_EVENTS = "events";
 
-	private static final String FIELD_EVENT_MAINEVENTTYPE = FIELD_EVENTS + ".maineventtype";
-
-	private static final String FIELD_EVENT_ALLARGUMENTS = FIELD_EVENTS + ".allarguments";
-
-	private static final String FIELD_EVENT_SENTENCE = FIELD_EVENTS + ".sentence";
-
-	private static final String FIELD_EVENT_LIKELIHOOD  = FIELD_EVENTS + ".likelihood";
+	public static final String FIELD_EVENT_MAINEVENTTYPE = FIELD_EVENTS + ".maineventtype";
 	
-	private static final String FIELD_EVENT_NUMARGUMENTS  = FIELD_EVENTS + ".numarguments";
+	public static final String FIELD_EVENT_ALLEVENTTYPES = FIELD_EVENTS + ".alleventtypes";
+
+	public static final String FIELD_EVENT_ALLARGUMENTS = FIELD_EVENTS + ".allarguments";
+
+	public static final String FIELD_EVENT_SENTENCE = FIELD_EVENTS + ".sentence";
+
+	public static final String FIELD_EVENT_LIKELIHOOD = FIELD_EVENTS + ".likelihood";
+
+	public static final String FIELD_EVENT_NUMDISTINCTARGUMENTS = FIELD_EVENTS + ".numdistinctarguments";
 
 	private Logger log;
-	private IGeneIdService conversionService;
 	private ISearchServerComponent searchServerComponent;
 
 	private String documentIndex;
 
-	public EventRetrievalService(@Symbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS) String documentIndex, Logger log, IGeneIdService conversionService,
-			ISearchServerComponent searchServerComponent) {
+	private IEventResponseProcessingService eventResponseProcessingService;
+
+	public EventRetrievalService(@Symbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS) String documentIndex, Logger log,
+			IEventResponseProcessingService eventResponseProcessingService, ISearchServerComponent searchServerComponent) {
 		this.documentIndex = documentIndex;
 		this.log = log;
-		this.conversionService = conversionService;
+		this.eventResponseProcessingService = eventResponseProcessingService;
 		this.searchServerComponent = searchServerComponent;
 	}
 
@@ -73,18 +77,18 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 		TermQuery filterQuery = new TermQuery();
 		filterQuery.term = 2;
-		filterQuery.field = FIELD_EVENT_NUMARGUMENTS;
+		filterQuery.field = FIELD_EVENT_NUMDISTINCTARGUMENTS;
 
 		BoolClause termsClause = new BoolClause();
 		termsClause.addQuery(termsQuery);
 		termsClause.occur = Occur.MUST;
-//		BoolClause filterClause = new BoolClause();
-//		filterClause.addQuery(filterQuery);
-//		filterClause.occur = Occur.FILTER;
+		BoolClause filterClause = new BoolClause();
+		filterClause.addQuery(filterQuery);
+		filterClause.occur = Occur.FILTER;
 
 		BoolQuery eventQuery = new BoolQuery();
 		eventQuery.addClause(termsClause);
-//		eventQuery.addClause(filterClause);
+		eventQuery.addClause(filterClause);
 		
 		NestedQuery nestedQuery = new NestedQuery();
 		nestedQuery.path = FIELD_EVENTS;
@@ -101,13 +105,14 @@ public class EventRetrievalService implements IEventRetrievalService {
 		serverCmd.index = documentIndex;
 		serverCmd.rows = 5;
 		serverCmd.fieldsToReturn = Collections.emptyList();
+		serverCmd.downloadCompleteResults = true;
 
 		SearchCarrier carrier = new SearchCarrier("OutsideEvents");
 		carrier.addSearchServerCommand(serverCmd);
 		searchServerComponent.process(carrier);
 		
 		
-		return null;
+		return eventResponseProcessingService.getEventRetrievalResult(carrier.getSingleSearchServerResponse());
 	}
 
 }

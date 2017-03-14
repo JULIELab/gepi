@@ -1,5 +1,7 @@
 package de.julielab.gepi.core.retrieval.services;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 
 import org.apache.tapestry5.ioc.Registry;
@@ -9,7 +11,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.services.ConfigurationSymbolProvider;
 import de.julielab.gepi.core.services.GePiCoreTestModule;
 
 public class EventRetrievalServiceTest {
@@ -28,6 +29,7 @@ public class EventRetrievalServiceTest {
 	@Test
 	public void testGetOutsideEvents() {
 		IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-		EventRetrievalResult outsideEvents = eventRetrievalService.getOutsideEvents(Arrays.asList("tid2018").stream());
+		EventRetrievalResult outsideEvents = eventRetrievalService.getOutsideEvents(Arrays.asList("atid393").stream());
+		assertTrue(0 < outsideEvents.getEvents().count());
 	}
 }
