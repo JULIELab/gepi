@@ -46,12 +46,12 @@ class QueryParser(argparse.ArgumentParser):
 
 
 class ESQuery():
-    def __init__(self, connection, mapping=None):
-        self.connection = connection
+    def __init__(self, _connection, _mapping=None, _timeout=50):
+        self.connection = _connection
         self.mapping = dict()
         if mapping:
-            self.mapping = mapping
-        self.es = Elasticsearch(hosts=self.connection, verify_certs=True)
+            self.mapping = _mapping
+        self.es = Elasticsearch(hosts=self.connection, verify_certs=True, timeout=_timeout)
         self.clear_results()
 
     def create_json_query(self, tid1, tid2):
@@ -84,9 +84,9 @@ class ESQuery():
 
     def send_query(self, tid1, tid2):
         if tid2 is None:
-            self.update_results(scan(self.es, self.create_json_single_query(tid1)), tid1)
+            self.update_results(scan(self.es, self.create_json_single_query(tid1), index="documents_revised"), tid1)
         else:
-            self.update_results(scan(self.es, self.create_json_query(tid1, tid2)), tid1)
+            self.update_results(scan(self.es, self.create_json_query(tid1, tid2), index="documents_revised"), tid1)
 
     def update_results(self, scan_results, ftid):
         if not scan_results:
