@@ -29,7 +29,7 @@ public class EventRetrievalServiceTest {
 	@Test
 	public void testGetOutsideEvents() {
 		IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-		EventRetrievalResult outsideEvents = eventRetrievalService.getOutsideEvents(Arrays.asList("atid393").stream());
+		EventRetrievalResult outsideEvents = eventRetrievalService.getOutsideEvents(Arrays.asList("5327").stream());
 		assertTrue(0 < outsideEvents.getEvents().count());
 	}
 }
