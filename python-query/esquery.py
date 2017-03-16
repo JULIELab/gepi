@@ -298,7 +298,9 @@ if __name__ == "__main__":
         ofile = open(file_store, 'w')
         print("[Config] Saving results to '{}'".format(file_store))
 
-    index_name = args['index'][0]
+    index_name = args['index']
+    if not index_name == "documents":
+        index_name = args['index'][0]
     if tid_group2:
         for comb in itertools.product(tid_group1, tid_group2):
             tid1, tid2 = comb
