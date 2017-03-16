@@ -1,16 +1,21 @@
 define([ "jquery", "bootstrap/tooltip" ], function($) {
 
-    var initialize = function(listaId, listbId) {
+    var initialize = function() {
+        var listaId = "lista";
+        var listbId = "listb";
         var lista = '#' + listaId;
         var listb = '#' + listbId;
-        
+
         observelistbchange();
         togglelistb();
         observelistachange();
         setuplistfileselectors();
         setupclearbuttons();
-        
-          
+
+        $('#inputform').on("t5.form.validate", function() {
+            console.log("validate!!")
+        })
+
         /*
          * On changes of list B, checks if the list is empty. If not, some
          * control elements for single-list operations are disabled.
@@ -115,7 +120,47 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
         }
     };
 
+    // from
+    // http://stackoverflow.com/questions/5023514/how-do-i-normalize-css3-transition-functions-across-browsers
+    function transitionEndEventName() {
+        var i, undefined, el = document.createElement('div'), transitions = {
+            'transition' : 'transitionend',
+            'OTransition' : 'otransitionend', // oTransitionEnd in very old
+            // Opera
+            'MozTransition' : 'transitionend',
+            'WebkitTransition' : 'webkitTransitionEnd'
+        };
+
+        for (i in transitions) {
+            if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+                return transitions[i];
+            }
+        }
+
+        // TODO: throw 'TransitionEnd event is not supported in this browser';
+    }
+    var showOutput = function() {
+        var inputPaddingLeft = parseFloat($("#inputcol").css("padding-left"))
+        var inputPaddingRight = parseFloat($("#inputcol").css("padding-right"))
+
+        $("#outputcol").addClass("animate");
+        $("#inputcol").removeClass("col-md-offset-4");
+        $("#outputcol").addClass("fadein");
+        console.log(-(inputPaddingLeft + inputPaddingRight + $("#inputcol").width()))
+        setTimeout(function() {
+            $("#inputcol,#outputcol").css("left", -(inputPaddingLeft + inputPaddingRight + $("#inputcol").width()));
+        }, 1000);
+        setTimeout(function() {
+            $("#outputcol").removeClass("animate").css("left",0).removeClass("col-md-4").addClass("col-md-12");
+            $("#inputcol").removeClass("col-md-4").css("position", "absolute");
+        }, 2000)
+      
+        // $("#inputcol").addClass("shift")
+        // $("#outputcol").addClass("shift")
+    }
+
     return {
-        "initialize" : initialize
+        "initialize" : initialize,
+        "showOutput" : showOutput
     };
 })

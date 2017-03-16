@@ -14,14 +14,14 @@
 
     <div class="eg">
         <t:zone t:id="formZone" id="formZone">
-            <t:form t:id="ajaxForm" class="form-horizontal" async="true">
+            <t:form t:id="ajaxForm" class="form-horizontal" data-async-trigger="true" data-validate="submit" method="post">
 
                 <t:errors globalOnly="false"/>
 
                 <div class="form-group">
                     <t:label for="firstName" class="col-sm-2"/>
                     <div class="col-sm-4">
-                        <t:textfield t:id="firstName"/>
+                        <t:textfield t:id="firstName" t:clientId="firstName" validate="required"/>
                     </div>
                 </div>
                 <div class="form-group">

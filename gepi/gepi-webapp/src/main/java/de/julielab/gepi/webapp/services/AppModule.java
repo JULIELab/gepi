@@ -8,6 +8,7 @@ import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Autobuild;
 import org.apache.tapestry5.ioc.annotations.Contribute;
+import org.apache.tapestry5.ioc.annotations.ImportModule;
 import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.ioc.services.ApplicationDefaults;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
@@ -18,11 +19,13 @@ import org.apache.tapestry5.services.Response;
 import org.slf4j.Logger;
 
 import de.julielab.gepi.core.services.ConfigurationSymbolProvider;
+import de.julielab.gepi.core.services.GepiCoreModule;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to
  * configure and extend Tapestry, or to place your own service definitions.
  */
+@ImportModule(GepiCoreModule.class)
 public class AppModule
 {
 	public static void contributeSymbolSource(@Autobuild ConfigurationSymbolProvider symbolProvider,

@@ -5,6 +5,11 @@
     <packaging>war</packaging>
     <name>gepi-webapp Tapestry 5 Application</name>
         <dependencies>
+          <dependency>
+        	<groupId>de.julielab</groupId>
+        	<artifactId>gepi-core</artifactId>
+        	<version>${project.parent.version}</version>
+        </dependency>
         <!-- To set up an application with a database, change the artifactId below to
              tapestry-hibernate, and add a dependency on your JDBC driver. You'll also
              need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
@@ -19,6 +24,12 @@
             <groupId>org.apache.tapestry</groupId>
             <artifactId>tapestry-webresources</artifactId>
             <version>${tapestry-release-version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>com.google.guava</groupId>
+            		<artifactId>guava</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Uncomment this to add support for file uploads: -->
@@ -45,6 +56,12 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
             <artifactId>tapestry-test</artifactId>
             <version>${tapestry-release-version}</version>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>com.google.guava</groupId>
+            		<artifactId>guava</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Provided by the servlet container, but sometimes referenced in the application
@@ -68,11 +85,7 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
         	<groupId>ch.qos.logback</groupId>
         	<artifactId>logback-classic</artifactId>
         </dependency>
-        <dependency>
-        	<groupId>de.julielab</groupId>
-        	<artifactId>gepi-core</artifactId>
-        	<version>${project.parent.version}</version>
-        </dependency>
+      
         <dependency>
     <groupId>javax.validation</groupId>
     <artifactId>validation-api</artifactId>

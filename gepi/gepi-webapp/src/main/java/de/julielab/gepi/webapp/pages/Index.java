@@ -14,6 +14,9 @@ import org.apache.tapestry5.services.HttpError;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
+import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+
 /**
  * Start page of application gepi-webapp.
  */
@@ -37,6 +40,12 @@ public class Index {
 	private Zone outputZone;
 	@InjectComponent
 	private Zone inputZone;
+	
+	@Property
+	private EventRetrievalResult result;
+	
+	@Property
+	private Event eventItem;
 
 	public Zone getOutputZone() {
 		return outputZone;
@@ -50,4 +59,9 @@ public class Index {
 	Object onActivate(EventContext eventContext) {
 		return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
 	}
+
+	void afterRender() {
+		
+	}
+	
 }

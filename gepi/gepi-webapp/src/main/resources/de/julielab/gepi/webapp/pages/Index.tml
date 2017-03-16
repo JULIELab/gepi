@@ -5,20 +5,12 @@
 	<div class="row">
 		<div id="inputcol" class="col-md-4 col-md-offset-4">
 			<t:zone t:id="inputzone" id="inputzone">
-				<t:gepiinput />
+				<t:gepiinput result="result" />
 			</t:zone>
 		</div>
-		<div id="outputcol" class="hidden">
+		<div id="outputcol" class="col-md-4 fade">
 			<t:zone t:id="outputzone" id="outputzone">
-				<!-- <div class="panel panel-default"> -->
-				<!-- <div class="panel-heading text-center">Interaction List</div> -->
-				<!-- <div class="panel-body"> -->
-				<!-- <div id="table" class="tab-pane fade in active"> -->
-				<!-- <t:grid source="interactions" rowsPerPage="5" -->
-				<!-- pagerPosition="top" inplace="true" /> -->
-				<!-- </div> -->
-				<!-- </div> -->
-				<!-- </div> -->
+				<t:tableresultwidget t:clientId="tablewidget"/>
 			</t:zone>
 		</div>
 		<!-- <div id="resultdiv" class="col-md-8"> -->

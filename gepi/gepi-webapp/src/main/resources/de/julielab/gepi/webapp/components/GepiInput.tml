@@ -6,7 +6,7 @@
 			<span class="glyphicon glyphicon-pencil"></span>
 		</div>
 		<div class="panel-body">
-				<form role="form" t:type="form" zone="^" t:id="inputform" id="inputform">
+				<form role="form" t:type="form" async="true" t:id="inputform" >
 					<div class="row">
 						<div class="col-md-6">
 							<div class="text-center">
@@ -15,8 +15,7 @@
 										List A
 										<span class="text-muted">required</span>
 									</t:label>
-									<t:textarea class="form-control" rows="20" t:id="lista"
-										id="lista"
+									<t:textarea class="form-control" rows="20" t:id="lista" t:clientId="lista"
 										placeholder="Provide NCBI Gene IDs, one per line. You may also select a file with appropriate IDs using the button below."
 										value="listatextareavalue">
 									</t:textarea>
@@ -55,7 +54,6 @@
 										<span class="text-muted">optional</span>
 									</t:label>
 									<t:textarea class="form-control" rows="20" t:id="listb"
-										id="listb"
 										placeholder="Becomes available when List A is not empty. Copy in your second list of IDs here or use the upload function."
 										value="listbtextareavalue">
 									</t:textarea>

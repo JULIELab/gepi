@@ -1,30 +1,22 @@
 package de.julielab.gepi.webapp.components;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Log;
-import org.apache.tapestry5.annotations.Persist;
+import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.TextArea;
-import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
-import de.julielab.gepi.webapp.entities.Interaction;
+import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.webapp.pages.Index;
 
 public class GepiInput {
@@ -43,7 +35,7 @@ public class GepiInput {
 
 	@InjectComponent
 	private TextArea lista;
-	
+
 	@InjectComponent
 	private TextArea listb;
 
@@ -53,24 +45,19 @@ public class GepiInput {
 	@Property
 	private String listBTextAreaValue;
 
-	@Property
-	@Persist
-	private List<Interaction> interactions;
-
-	@Property
-	@Persist
-	private JSONObject pieData;
-
-//	@InjectComponent
-//	private Zone inputFormZone;
-	
 	@Inject
 	private ComponentResources resources;
 
-	void setupRender() {
-	}
+	@Inject
+	private IEventRetrievalService eventRetrievalService;
+
+	@Parameter
+	private EventRetrievalResult result;
 	
-	@Log
+	void setupRender() {
+		listATextAreaValue = "5327";
+	}
+
 	void onValidateFromInputForm() {
 		// Note, this method is triggered even if server-side validation has
 		// already found error(s).
@@ -81,49 +68,26 @@ public class GepiInput {
 		}
 	}
 
-	@Log
 	void onSuccessFromInputForm() {
+		result = eventRetrievalService
+				.getOutsideEvents(Stream.of(listATextAreaValue.split("\n")));
+
 		Index indexPage = (Index) resources.getContainer();
-		ajaxResponseRenderer.addRender(indexPage.getOutputZone()).addRender(indexPage.getInputZone());
-		File file = new File("relationsPmc.lst");
-		try {
-			interactions = new ArrayList<>();
-			LineIterator lineIterator = IOUtils.lineIterator(new FileInputStream(file), "UTF-8");
-			while (lineIterator.hasNext()) {
-				String line = (String) lineIterator.next();
-				String[] interactionRecord = line.split("\t");
-				Interaction interaction = new Interaction();
-				interaction.setDocumentId(interactionRecord[0]);
-				interaction.setInteractionPartner1Id(interactionRecord[1]);
-				interaction.setInteractionPartner2Id(interactionRecord[2]);
-				interaction.setInteractionPartner1Text(interactionRecord[3]);
-				interaction.setInteractionPartner2Text(interactionRecord[4]);
-				interaction.setInteractionType(interactionRecord[6]);
-				interaction.setSentenceText(interactionRecord[7]);
-				interactions.add(interaction);
-			}
-			pieData = new JSONObject();
-			pieData.put("c-Jun", 10);
-			pieData.put("Raptor", 7);
-			pieData.put("Rab", 13);
-			pieData.put("IRS-1", 3);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		ajaxResponseRenderer.addRender(indexPage.getInputZone());
 	}
 
 	void onFailure() {
 		if (request.isXHR()) {
 			Index indexPage = (Index) resources.getContainer();
-			ajaxResponseRenderer.addRender(indexPage.getOutputZone()).addRender(indexPage.getInputZone());
+			ajaxResponseRenderer.addRender(indexPage.getInputZone());
 		}
 	}
-	
+
 	@Log
 	void afterRender() {
-		javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize").with(lista.getClientId(), listb.getClientId());
+		javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize");
+		if (result != null)
+			javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");
 	}
-	
+
 }

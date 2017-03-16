@@ -47,13 +47,12 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			Map<String, List<String>> highlights = eventDocument.getHighlights();
 
 			Event event = new Event();
-			event.setAllArguments(allArguments.orElse(Collections.emptyList()).stream().map(o -> (String)o).collect(Collectors.toList()));
+			event.setAllArgumentTokens(allArguments.orElse(Collections.emptyList()).stream().map(o -> (String)o).collect(Collectors.toList()));
 			event.setAllEventTypes(allEventTypes.orElse(Collections.emptyList()).stream().map(o -> (String)o).collect(Collectors.toList()));
 			event.setLikelihood(likelihood.get());
 			event.setMainEventType(mainEventType.get());
 			event.setHighlightedSentence(highlights.getOrDefault(FIELD_EVENT_SENTENCE, Collections.emptyList()).stream().findFirst().orElse(null));
 			event.setSentence(sentence.get());
-			event.setNumArguments(numArguments.orElse(0));
 
 			return event;
 		});

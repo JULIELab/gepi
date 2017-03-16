@@ -1,16 +1,54 @@
-#table {
-	overflow: hidden;
-}
-
 #resultResizeHandle {
 	float: right;
 	transform: rotate(90deg) scale(1.1);
 	cursor: pointer;
 }
 
-#inputcol, #outputcol {
-	-webkit-transition: all 1s ease;
-	-moz-transition: all 1s ease;
-	-o-transition: all 1s ease;
-	transition: all 1s ease;
+#inputcol {
+	left: 0;
+	-webkit-transition: margin 1s ease-in, left 1s ease-out;
+	-moz-transition: margin 1s ease-in, left 1s ease-out;
+	-o-transition: margin 1s ease-in, left 1s ease-out;
+	transition: margin 1s ease-in, left 1s ease-out;
 }
+
+#outputcol.animate {
+	left: 0;
+	-webkit-transition: opacity 1s linear, left 1s ease-out;
+	-moz-transition: opacity 1s linear, left 1s ease-out;
+	-o-transition: opacity 1s linear, left 1s ease-out;
+	transition: opacity 1s linear, left 1s ease-out;
+}
+
+.fadein {
+	opacity: 1;
+}
+
+/* @keyframes fadein { */
+/* 	from { opacity: 0} */
+/* 	to {opacity: 1} */
+/* } */
+
+/* #outputcol { */
+/* 	opacity: 0; */
+/* } */
+
+/* .fadein { */
+/* 	animation-name: fadein; */
+/* 	animation-duration: 2s; */
+/* 	animation-fill-mode: forwards; */
+/* 	animation-delay: 1s; */
+/* } */
+
+/* @keyframes leftshift { */
+/* 	from {left: 0} */
+/* 	to {left:-500px} */
+/* } */
+
+/* .shift { */
+/* 	animation-name: leftshift; */
+/* 	animation-duration: 1s; */
+/* 	animation-delay: 1s; */
+/* 	animation-fill-mode: forwards; */
+/* 	animation-timing-function: ease-out; */
+/* } */

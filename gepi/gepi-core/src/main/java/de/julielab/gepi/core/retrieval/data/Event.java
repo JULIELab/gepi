@@ -1,9 +1,10 @@
 package de.julielab.gepi.core.retrieval.data;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Event {
-	private List<String> allArguments;
+	private List<String> allArgumentTokens;
 
 	private List<String> allEventTypes;
 
@@ -11,11 +12,15 @@ public class Event {
 
 	private int likelihood;
 	private String mainEventType;
-	private int numArguments;
 	private String sentence;
+	private List<String> allArguments;
+
 	public List<String> getAllArguments() {
+		if (allArguments == null)
+			allArguments = allArgumentTokens.stream().filter(a -> a.matches("^[0-9]+$")).collect(Collectors.toList());
 		return allArguments;
 	}
+
 	public List<String> getAllEventTypes() {
 		return allEventTypes;
 	}
@@ -32,16 +37,19 @@ public class Event {
 		return mainEventType;
 	}
 
-	public int getNumArguments() {
-		return numArguments;
-	}
-
 	public String getSentence() {
 		return sentence;
 	}
 
-	public void setAllArguments(List<String> allArguments) {
-		this.allArguments = allArguments;
+	/**
+	 * The index might store multiple tokens for a single arguments, e.g. its
+	 * NCBI Gene ID, its term ID, its aggregate IDs, the original word etc. All
+	 * those are set here.
+	 * 
+	 * @param allArguments
+	 */
+	public void setAllArgumentTokens(List<String> allArguments) {
+		this.allArgumentTokens = allArguments;
 	}
 
 	public void setAllEventTypes(List<String> allEventTypes) {
@@ -60,11 +68,26 @@ public class Event {
 		this.mainEventType = mainEventType;
 	}
 
-	public void setNumArguments(int numArguments) {
-		this.numArguments = numArguments;
-	}
-
 	public void setSentence(String sentence) {
 		this.sentence = sentence;
 	}
+
+	public int getNumArguments() {
+		return getAllArguments().size();
+	}
+
+	public int getNumDistinctArguments() {
+		return (int) getAllArguments().stream().distinct().count();
+	}
+
+	public String getArgument(int position) {
+		return getAllArguments().get(position);
+	}
+
+	@Override
+	public String toString() {
+		return getMainEventType() + ": " + String.join(", ", getAllArguments());
+	}
+	
+	
 }

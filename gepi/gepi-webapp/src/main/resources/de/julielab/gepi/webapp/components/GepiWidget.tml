@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+	<div class="panel panel-default" id="${clientId}">
+		<div class="panel-heading text-center">${widgettitle}</div>
+		<div class="panel-body">
+			<t:body />
+		</div>
+	</div>
+</t:container>
