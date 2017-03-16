@@ -52,14 +52,14 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container-fluid">
 
     <t:body />
 
     <hr />
 
     <footer>
-        <p>&copy; Your Company 2015</p>
+        <p>&copy; JULIE Lab 2017</p>
     </footer>
 
 </div> <!-- /container -->

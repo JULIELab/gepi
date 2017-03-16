@@ -11,6 +11,8 @@
   <logger name="tapestry.events" level="INFO" />
   <logger name="tapestry.transformer" level="INFO" />
   <logger name="org.apache.tapestry5" level="INFO"/>
+  
+  <logger name="de.julielab.gepi.webapp.components.GepiInput" level="DEBUG"/>
 
   <root level="DEBUG">
     <appender-ref ref="STDOUT" />
