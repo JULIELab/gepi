@@ -2,13 +2,13 @@
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
 
 
-	<div class="row">
-		<div id="inputcol" class="col-md-4 col-md-offset-4">
+		<div id="inputcol" class="center">
 			<t:zone t:id="inputzone" id="inputzone">
 				<t:gepiinput result="result" />
 			</t:zone>
 		</div>
-		<div id="outputcol" class="col-md-4 fade">
+	<div class="row">
+		<div id="outputcol" class="col-md-12 fade">
 			<t:zone t:id="outputzone" id="outputzone">
 				<div class="row">
 					<t:tableresultwidget result="result" class="col-md-4" />

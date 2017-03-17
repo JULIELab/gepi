@@ -5,22 +5,24 @@
 }
 
 #inputcol {
-	left: 0;
-	-webkit-transition: margin 1s ease-in, left 1s ease-out, padding 1s ease-in;
-	-moz-transition: margin 1s ease-in, left 1s ease-out;
-	-o-transition: margin 1s ease-in, left 1s ease-out;
-	transition: margin 1s ease-in, left 1s ease-out, padding 1s linear;
+	-webkit-transition: margin 1s ease;
+	-moz-transition: margin 1s ease;
+	-o-transition: margin 1s ease;
+	transition: margin 1s ease;
+	width: calc(100% / 3);
+	position: absolute;
 }
 
-.no-padding {
-	padding: 0;
+#inputcol.center {
+	margin-left: calc(100% / 3);
+	margin-right: calc(100% / 3);
 }
 
 #outputcol {
-	-webkit-transition: opacity 1s linear;
-	-moz-transition: opacity 1s linear;
-	-o-transition: opacity 1s linear;
-	transition: opacity 1s linear, padding 1s linaer;
+	-webkit-transition: opacity 1s linear 1s;
+	-moz-transition: opacity 1s linear 1s;
+	-o-transition: opacity 1s linear 1s;
+	transition: opacity 1s linear 1s;
 }
 
 .padding {
@@ -37,63 +39,5 @@
 
 .in {
 	opacity: 1;
-}
-
-@keyframes step1 {
-	0% { 
-	    width: calc(100% / 3);
-	}
-	100% {
-	    width: calc(200% / 3);
-	}
-}
-
-@keyframes step2 {
-	0% {width: calc(200% / 3);}
-	100% {width: 100%;}
-}
-
-.larger1 {
-	animation-name: step1;
-	animation-duration: 1s;
-	animation-fill-mode: forwards;
-	animation-timing-function: ease-in;
-	
-	-o-animation-name: step1;
-	-o-animation-duration: 1s;
-	-o-animation-fill-mode: forwards;
-	-o-animation-timing-function: ease-in;
-
-	-moz-animation-name: step1;
-	-moz-animation-duration: 1s;
-	-moz-animation-fill-mode: forwards;
-	-moz-animation-timing-function: ease-in;
-	
-	-webkit-animation-name: step1;
-	-webkit-animation-duration: 1s;
-	-webkit-animation-fill-mode: forwards;
-	-webkit-animation-timing-function: ease-in;
-}
-
-.larger2 {
-	animation-name: step2;
-	animation-duration: 1s;
-	animation-fill-mode:forwards;
-	animation-timing-function: ease-out;
-	
-	-webkit-animation-name: step2;
-    -webkit-animation-duration: 1s;
-    -webkit-animation-fill-mode:forwards;
-    -webkit-animation-timing-function: ease-out;
-    
-    -moz-animation-name: step2;
-    -moz-animation-duration: 1s;
-    -moz-animation-fill-mode:forwards;
-    -moz-animation-timing-function: ease-out;
-    
-    -o-animation-name: step2;
-    -o-animation-duration: 1s;
-    -o-animation-fill-mode:forwards;
-    -o-animation-timing-function: ease-out;
 }
 

@@ -73,12 +73,8 @@ public class GepiWidget {
 	}
 
 	void onLoad() {
-		if (resources.getComponent().toString().contains("GepiWidget")) {
-			Zone widgetZone = (Zone) resources.getComponent().getComponentResources()
-					.getEmbeddedComponent("widgetZone");
-			Link eventLink = resources.createEventLink("refreshContent");
-			javaScriptSupport.require("gepi/components/gepiwidget").invoke("loadWidgetContent")
-					.with(eventLink.toAbsoluteURI(), widgetZone.getClientId());
-		}
+		Link eventLink = resources.createEventLink("refreshContent");
+		javaScriptSupport.require("gepi/components/gepiwidget").invoke("loadWidgetContent")
+				.with(eventLink.toAbsoluteURI(), widgetZone.getClientId());
 	}
 }

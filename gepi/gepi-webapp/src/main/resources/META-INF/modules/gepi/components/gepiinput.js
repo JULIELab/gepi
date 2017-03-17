@@ -121,43 +121,26 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
     };
 
     var showOutput = function() {
-        var inputPaddingLeft = parseFloat($("#inputcol").css("padding-left"))
-        var inputPaddingRight = parseFloat($("#inputcol").css("padding-right"))
+        // The inputcol's width is one third. However, when we push it out of
+        // the screen for one third, the body container's padding won't be
+        // accounted for and the inputcol would still be visible for this exact
+        // amount. Thus, we also have to add the padding when computing the
+        // negative left margin.
+        // However, when we would just set the negative left margin for this
+        // exact number of pixels, resizing the viewport will lead to the
+        // inputcol to grow since its width is defined in percent. As the margin
+        // would be defined absolute, the inputcol would be visible again at the
+        // left border of the screen. Thus, we need to compute the percentage
+        // the margin needs to have so that it also adjusts automatically.
+        var availableWidth = $("#body-container").innerWidth();
+        var bodyPadding = parseFloat($("#body-container").css("padding-left"));
+        var marginLeft = -(availableWidth / 3) - bodyPadding;
+        var marginLeftPercent = marginLeft / availableWidth * 100;
 
-        // Configure the output column to:
-        // * fade.IN
-        // * flow right (growing) so it will expand to the left via
-        // * larger1 which uses a keyframe to change the width from 1/3% to 2/3%
-        $("#outputcol").addClass("in growing larger1");
-        // This is actually the first visiable movement: remove the offset that
-        // keeps the input col in the page center
-        $("#inputcol").removeClass("col-md-offset-4");
-        // After the first shift is completed (set in the CSS to take 1s), now
-        // tell the output column to shift to 100% width
-        setTimeout(function() {
-            $("#outputcol").addClass("larger2");
-        }, 1000)
-        // at the same time, we must remove the inputcol from the relative
-        // positioning flow
-        // or the outputcol will be wrapped below the inputcol since there would
-        // be no 100% available (the wrapping does happen despite the fact that
-        // the change from 2/3% to 100% happens slowly in an animation, I don't
-        // know why)
-        setTimeout(function() {
-            $("#inputcol").css({
-                "position" : "absolute",
-                "left" : -(inputPaddingLeft + inputPaddingRight + $("#inputcol").width())
-            });
-        }, 1000);
-        // After two seconds, the grand finally: the inputcol is officially no
-        // part of the bootstrap grid any more. In exchange, the outputcol now
-        // spans all 12 bootstrap columns.
-        // Also, remove all the classes used on outputcol for transition so that we get default bootstrap behaviour back.
-        // The inputcol just stays the way it is, it is not planned for it to come back
-        setTimeout(function() {
-            $("#inputcol").removeClass("col-md-4");
-            $("#outputcol").removeClass("growing larger1 larger2 col-md-4").addClass("col-md-12");
-        }, 2000)
+        // Show the outputcol. The CSS defines all the timings, including a
+        // delay for the let the inputcol disappear first.
+        $("#outputcol").addClass("in");
+        $("#inputcol").removeClass("center").css("margin-left", marginLeftPercent + "%");
     }
 
     return {
