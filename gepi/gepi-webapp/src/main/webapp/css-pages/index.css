@@ -12,16 +12,52 @@
 	transition: margin 1s ease-in, left 1s ease-out;
 }
 
+
 #outputcol.animate {
-	left: 0;
-	-webkit-transition: opacity 1s linear, left 1s ease-out;
-	-moz-transition: opacity 1s linear, left 1s ease-out;
-	-o-transition: opacity 1s linear, left 1s ease-out;
-	transition: opacity 1s linear, left 1s ease-out;
+	-webkit-transition: opacity 1s linear;
+	-moz-transition: opacity 1s linear;
+	-o-transition: opacity 1s linear;
+	transition: opacity 1s linear;
 }
 
-.fadein {
+#outputcol.growing {
+	float: right;
+}
+
+.fade {
+	opacity: 0;
+}
+
+.in {
 	opacity: 1;
+}
+
+@keyframes step1 {
+	0% { 
+	    width: calc(100% / 3);
+	}
+	100% {
+	    width: calc(200% / 3);
+	}
+}
+
+@keyframes step2 {
+	0% {width: calc(200% / 3);}
+	100% {width: 100%;}
+}
+
+.larger1 {
+	animation-name: step1;
+	animation-duration: 1s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-in;
+}
+
+.larger2 {
+	animation-name: step2;
+	animation-duration: 1s;
+	animation-fill-mode:forwards;
+	animation-timing-function: ease-out;
 }
 
 /* @keyframes fadein { */
