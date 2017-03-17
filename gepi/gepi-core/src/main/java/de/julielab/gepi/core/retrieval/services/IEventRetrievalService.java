@@ -1,5 +1,6 @@
 package de.julielab.gepi.core.retrieval.services;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
@@ -14,7 +15,7 @@ public interface IEventRetrievalService {
 	 * @param idStream2
 	 * @return Events between the two streams of IDs.
 	 */
-	EventRetrievalResult getBipartiteEvents(Stream<String> idStream1, Stream<String> idStream2);
+	CompletableFuture<EventRetrievalResult> getBipartiteEvents(Stream<String> idStream1, Stream<String> idStream2);
 
 	/**
 	 * Retrieves events between the input genes and any genes not on the list.
@@ -25,5 +26,5 @@ public interface IEventRetrievalService {
 	 * @return Events between genes identified by the input stream and other
 	 *         genes.
 	 */
-	EventRetrievalResult getOutsideEvents(Stream<String> idStream);
+	CompletableFuture<EventRetrievalResult> getOutsideEvents(Stream<String> idStream);
 }

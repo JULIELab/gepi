@@ -1,4 +1,4 @@
 <!DOCTYPE html>
-<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidget" widgettitle="Table View" t:clientId="tableresult">
-Here is some content!
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidget" widgettitle="Table View" t:clientId="tableresult-widget" class="${classes}" result="result" >
+Here is some table content!
 </div>

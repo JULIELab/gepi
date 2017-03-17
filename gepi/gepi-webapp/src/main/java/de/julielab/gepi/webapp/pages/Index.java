@@ -1,5 +1,7 @@
 package de.julielab.gepi.webapp.pages;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.Environmental;
@@ -38,12 +40,13 @@ public class Index {
 
 	@InjectComponent
 	private Zone outputZone;
+
 	@InjectComponent
 	private Zone inputZone;
-	
+
 	@Property
-	private EventRetrievalResult result;
-	
+	private CompletableFuture<EventRetrievalResult> result;
+
 	@Property
 	private Event eventItem;
 
@@ -60,8 +63,4 @@ public class Index {
 		return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
 	}
 
-	void afterRender() {
-		
-	}
-	
 }

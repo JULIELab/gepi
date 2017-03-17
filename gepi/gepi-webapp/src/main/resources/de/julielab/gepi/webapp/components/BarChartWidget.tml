@@ -1,0 +1,4 @@
+<!DOCTYPE html>
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidget" widgettitle="Bar Chart" t:clientId="barchart-widget" class="${classes}">
+Have some baaaaaars!
+</div>

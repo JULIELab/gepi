@@ -10,39 +10,14 @@
 		</div>
 		<div id="outputcol" class="col-md-4 fade">
 			<t:zone t:id="outputzone" id="outputzone">
-				<t:tableresultwidget t:clientId="tablewidget"/>
+				<div class="row">
+					<t:tableresultwidget result="result" class="col-md-4" />
+<!-- 					<t:piechartwidget result="result" class="col-md-4" /> -->
+<!-- 					<t:sankeywidget result="result" class="col-md-4" /> -->
+<!-- 					<t:barchartwidget result="result" class="col-md-4" /> -->
+				</div>
 			</t:zone>
 		</div>
-		<!-- <div id="resultdiv" class="col-md-8"> -->
-		<!-- <div id="resultpanel" class="panel panel-default text-center"> -->
-		<!-- <div class="panel-heading">Result View <span id="resultResizeHandle" 
-			class="glyphicon glyphicon-resize-full" aria-hidden="true"></span></div> -->
-		<!-- <t:zone t:id="resultzone" id="resultzone"> -->
-		<!-- <ul class="nav nav-pills"> -->
-		<!-- <li class="active"> -->
-		<!-- <a data-toggle="pill" href="#table">Table</a> -->
-		<!-- </li> -->
-		<!-- <li> -->
-		<!-- <a data-toggle="pill" href="#pieDiv">Pie Chart</a> -->
-		<!-- </li> -->
-		<!-- </ul> -->
-		<!-- <div class="tab-content"> -->
-		<!-- <div id="table" class="tab-pane fade in active"> -->
-		<!-- <t:grid source="interactions" rowsPerPage="5" -->
-		<!-- pagerPosition="top" inplace="true" /> -->
-		<!-- </div> -->
-		<!-- <div id="pieDiv" class="tab-pane fade"> -->
-		<!-- <div class="panel-body"> -->
-		<!-- <div id="piechart" style="width: 100%"> -->
-		<!-- </div> -->
-		<!-- </div> -->
-		<!-- </div> -->
-		<!-- </div> -->
-		<!-- </t:zone> -->
-		<!-- </div> -->
-		<!-- </div> -->
 	</div>
-
-
 
 </html>

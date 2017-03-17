@@ -1,5 +1,7 @@
 package de.julielab.gepi.webapp.components;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.apache.tapestry5.ComponentResources;
@@ -52,8 +54,8 @@ public class GepiInput {
 	private IEventRetrievalService eventRetrievalService;
 
 	@Parameter
-	private EventRetrievalResult result;
-	
+	private CompletableFuture<EventRetrievalResult> result;
+
 	void setupRender() {
 		listATextAreaValue = "5327";
 	}
@@ -69,11 +71,10 @@ public class GepiInput {
 	}
 
 	void onSuccessFromInputForm() {
-		result = eventRetrievalService
-				.getOutsideEvents(Stream.of(listATextAreaValue.split("\n")));
+		result = eventRetrievalService.getOutsideEvents(Stream.of(listATextAreaValue.split("\n")));
 
 		Index indexPage = (Index) resources.getContainer();
-		ajaxResponseRenderer.addRender(indexPage.getInputZone());
+		ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
 	}
 
 	void onFailure() {
@@ -86,6 +87,7 @@ public class GepiInput {
 	@Log
 	void afterRender() {
 		javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize");
+		javaScriptSupport.require("gepi/base").invoke("setuptooltips");
 		if (result != null)
 			javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");
 	}

@@ -1,9 +1,19 @@
 <!DOCTYPE html>
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
-	<div class="panel panel-default" id="${clientId}">
-		<div class="panel-heading text-center">${widgettitle}</div>
-		<div class="panel-body">
-			<t:body />
+	<div class="${classes}">
+		<div class="panel panel-default" id="${clientId}">
+			<div class="panel-heading text-center">${widgettitle}</div>
+			<div class="panel-body">
+				<t:zone t:id="widgetZone" id="widgetZone">
+					<t:if test="resultready">
+						<t:body />
+					</t:if>
+					<t:if test="resultloading">
+						${loadingmessage}
+						<t:trigger event="load" />
+					</t:if>
+				</t:zone>
+			</div>
 		</div>
 	</div>
 </t:container>

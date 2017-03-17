@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.retrieval.services;
 
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,13 +15,11 @@ import de.julielab.elastic.query.components.data.query.BoolClause;
 import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.InnerHits;
-import de.julielab.elastic.query.components.data.query.MatchAllQuery;
 import de.julielab.elastic.query.components.data.query.NestedQuery;
 import de.julielab.elastic.query.components.data.query.TermQuery;
 import de.julielab.elastic.query.components.data.query.TermsQuery;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.services.IGeneIdService;
 
 /**
  * Gets any IDs, converts them to GePi IDs (or just queries the index?!) and
@@ -61,13 +60,13 @@ public class EventRetrievalService implements IEventRetrievalService {
 	}
 
 	@Override
-	public EventRetrievalResult getBipartiteEvents(Stream<String> idStream1, Stream<String> idStream2) {
+	public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Stream<String> idStream1, Stream<String> idStream2) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public EventRetrievalResult getOutsideEvents(Stream<String> idStream) {
+	public CompletableFuture<EventRetrievalResult> getOutsideEvents(Stream<String> idStream) {
 
 //		Stream<String> gepiGeneIds = conversionService.convert2Gepi(idStream);
 
@@ -111,8 +110,12 @@ public class EventRetrievalService implements IEventRetrievalService {
 		carrier.addSearchServerCommand(serverCmd);
 		searchServerComponent.process(carrier);
 		
-		
-		return eventResponseProcessingService.getEventRetrievalResult(carrier.getSingleSearchServerResponse());
+		return CompletableFuture.supplyAsync(() ->  {try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}return eventResponseProcessingService.getEventRetrievalResult(carrier.getSingleSearchServerResponse());});
 	}
 
 }

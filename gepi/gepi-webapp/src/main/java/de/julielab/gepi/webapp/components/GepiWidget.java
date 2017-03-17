@@ -1,16 +1,84 @@
 package de.julielab.gepi.webapp.components;
 
-import org.apache.tapestry5.BindingConstants;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Property;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import org.apache.tapestry5.BindingConstants;
+import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.Link;
+import org.apache.tapestry5.annotations.Environmental;
+import org.apache.tapestry5.annotations.InjectComponent;
+import org.apache.tapestry5.annotations.Parameter;
+import org.apache.tapestry5.annotations.Persist;
+import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SupportsInformalParameters;
+import org.apache.tapestry5.corelib.components.Zone;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
+import org.apache.tapestry5.services.javascript.JavaScriptSupport;
+
+import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+
+@SupportsInformalParameters
 public class GepiWidget {
-	@Parameter(defaultPrefix=BindingConstants.LITERAL)
+	@Parameter(defaultPrefix = BindingConstants.LITERAL)
 	@Property
 	private String widgettitle;
-	
-	@Parameter(defaultPrefix=BindingConstants.LITERAL)
+
+	@Parameter(defaultPrefix = BindingConstants.LITERAL)
 	@Property
 	private String clientId;
-	
+
+	@Parameter(defaultPrefix = BindingConstants.LITERAL, name = "class")
+	@Property
+	private String classes;
+
+	@Parameter
+	@Property
+	protected CompletableFuture<EventRetrievalResult> result;
+
+	@InjectComponent
+	private Zone widgetZone;
+
+	@Inject
+	private AjaxResponseRenderer ajaxResponseRenderer;
+
+	@Inject
+	private ComponentResources resources;
+
+	@Environmental
+	private JavaScriptSupport javaScriptSupport;
+
+	@Property
+	protected String loadingMessage = "Data is loaded, please wait...";
+
+	@Persist
+	private CompletableFuture<EventRetrievalResult> persistResult;
+
+	void setupRender() {
+		persistResult = result;
+	}
+
+	public boolean isResultReady() {
+		return persistResult != null && persistResult.isDone();
+	}
+
+	public boolean isResultLoading() {
+		return persistResult != null && !persistResult.isDone();
+	}
+
+	void onRefreshContent() throws InterruptedException, ExecutionException {
+		persistResult.get();
+		ajaxResponseRenderer.addRender(widgetZone);
+	}
+
+	void onLoad() {
+		if (resources.getComponent().toString().contains("GepiWidget")) {
+			Zone widgetZone = (Zone) resources.getComponent().getComponentResources()
+					.getEmbeddedComponent("widgetZone");
+			Link eventLink = resources.createEventLink("refreshContent");
+			javaScriptSupport.require("gepi/components/gepiwidget").invoke("loadWidgetContent")
+					.with(eventLink.toAbsoluteURI(), widgetZone.getClientId());
+		}
+	}
 }

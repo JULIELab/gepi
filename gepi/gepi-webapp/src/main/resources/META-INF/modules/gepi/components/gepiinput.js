@@ -120,42 +120,22 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
         }
     };
 
-    // from
-    // http://stackoverflow.com/questions/5023514/how-do-i-normalize-css3-transition-functions-across-browsers
-    function transitionEndEventName() {
-        var i, undefined, el = document.createElement('div'), transitions = {
-            'transition' : 'transitionend',
-            'OTransition' : 'otransitionend', // oTransitionEnd in very old
-            // Opera
-            'MozTransition' : 'transitionend',
-            'WebkitTransition' : 'webkitTransitionEnd'
-        };
-
-        for (i in transitions) {
-            if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
-                return transitions[i];
-            }
-        }
-
-        // TODO: throw 'TransitionEnd event is not supported in this browser';
-    }
     var showOutput = function() {
         var inputPaddingLeft = parseFloat($("#inputcol").css("padding-left"))
         var inputPaddingRight = parseFloat($("#inputcol").css("padding-right"))
 
         // Configure the output column to:
         // * fade.IN
-        // * animate the opacity change
         // * flow right (growing) so it will expand to the left via
         // * larger1 which uses a keyframe to change the width from 1/3% to 2/3%
-        $("#outputcol").addClass("in animate growing larger1");
+        $("#outputcol").addClass("in growing larger1");
         // This is actually the first visiable movement: remove the offset that
         // keeps the input col in the page center
         $("#inputcol").removeClass("col-md-offset-4");
         // After the first shift is completed (set in the CSS to take 1s), now
         // tell the output column to shift to 100% width
         setTimeout(function() {
-            $("#outputcol").addClass("larger2")
+            $("#outputcol").addClass("larger2");
         }, 1000)
         // at the same time, we must remove the inputcol from the relative
         // positioning flow
@@ -176,7 +156,7 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
         // The inputcol just stays the way it is, it is not planned for it to come back
         setTimeout(function() {
             $("#inputcol").removeClass("col-md-4");
-            $("#outputcol").removeClass("animate growing larger1 larger2 col-md-4").addClass("col-md-12");
+            $("#outputcol").removeClass("growing larger1 larger2 col-md-4").addClass("col-md-12");
         }, 2000)
     }
 
