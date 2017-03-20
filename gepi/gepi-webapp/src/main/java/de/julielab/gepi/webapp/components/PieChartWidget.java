@@ -1,4 +1,4 @@
 package de.julielab.gepi.webapp.components;
 
-public class PieChartWidget extends GepiWidget {
+public class PieChartWidget extends GepiWidgetLayout {
 }

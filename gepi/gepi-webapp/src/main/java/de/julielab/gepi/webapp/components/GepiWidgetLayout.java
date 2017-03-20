@@ -20,7 +20,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 
 @SupportsInformalParameters
-public class GepiWidget {
+public class GepiWidgetLayout {
 	@Parameter(defaultPrefix = BindingConstants.LITERAL)
 	@Property
 	private String widgettitle;
@@ -49,8 +49,11 @@ public class GepiWidget {
 	@Environmental
 	private JavaScriptSupport javaScriptSupport;
 
+	/**
+	 * Overwrite in widget classes.
+	 */
 	@Property
-	protected String loadingMessage = "Data is loaded, please wait...";
+	protected String loadingMessage = "Data is being loaded, please wait...";
 
 	@Persist
 	private CompletableFuture<EventRetrievalResult> persistResult;
@@ -74,7 +77,7 @@ public class GepiWidget {
 
 	void onLoad() {
 		Link eventLink = resources.createEventLink("refreshContent");
-		javaScriptSupport.require("gepi/components/gepiwidget").invoke("loadWidgetContent")
+		javaScriptSupport.require("gepi/components/gepiwidgetlayout").invoke("loadWidgetContent")
 				.with(eventLink.toAbsoluteURI(), widgetZone.getClientId());
 	}
 }
