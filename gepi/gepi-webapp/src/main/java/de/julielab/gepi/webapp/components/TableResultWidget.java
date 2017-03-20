@@ -1,20 +1,31 @@
 package de.julielab.gepi.webapp.components;
 
-import java.util.concurrent.CompletableFuture;
-
-import org.apache.tapestry5.BindingConstants;
-import org.apache.tapestry5.annotations.Parameter;
+import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.beaneditor.BeanModel;
+import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.BeanModelSource;
 
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.Event;
 
-public class TableResultWidget  {
-	@Parameter(defaultPrefix = BindingConstants.LITERAL, name = "class")
+public class TableResultWidget extends GepiWidget {
 	@Property
-	private String classes;
+	private Event eventRow;
 
-	@Parameter
+	@Inject
+	private BeanModelSource beanModelSource;
+
+	@Inject
+	private Messages messages;
+
 	@Property
-	protected CompletableFuture<EventRetrievalResult> result;
-	
+	@Persist
+	private BeanModel<Event> tableModel;
+
+	void setupRender() {
+		super.setupRender();
+		tableModel = beanModelSource.createDisplayModel(Event.class, messages);
+		tableModel.include("firstArgumentGeneId", "secondArgumentGeneId", "mainEventType", "sentence");
+	}
 }

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
-<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Table View" t:clientId="tableresult-widget" class="${classes}" result="result" >
-Here is some table content!
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Table View" t:clientId="tableresult_widget" class="${classes}" result="result" >
+<t:grid source="persistresult.get().eventlist" row="eventrow" model="tableModel" rowsPerPage="20" pagerPosition="bottom">
+</t:grid>
 </div>

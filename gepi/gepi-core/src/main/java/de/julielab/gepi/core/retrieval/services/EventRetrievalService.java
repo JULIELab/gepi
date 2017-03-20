@@ -111,11 +111,13 @@ public class EventRetrievalService implements IEventRetrievalService {
 		searchServerComponent.process(carrier);
 		
 		return CompletableFuture.supplyAsync(() ->  {try {
-			Thread.sleep(3000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}return eventResponseProcessingService.getEventRetrievalResult(carrier.getSingleSearchServerResponse());});
+		}
+		
+		return eventResponseProcessingService.getEventRetrievalResult(carrier.getSingleSearchServerResponse());});
 	}
 
 }

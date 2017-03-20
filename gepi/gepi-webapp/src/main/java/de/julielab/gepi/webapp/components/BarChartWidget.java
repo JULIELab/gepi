@@ -1,4 +1,4 @@
 package de.julielab.gepi.webapp.components;
 
-public class BarChartWidget extends GepiWidgetLayout {
+public class BarChartWidget extends GepiWidget {
 }

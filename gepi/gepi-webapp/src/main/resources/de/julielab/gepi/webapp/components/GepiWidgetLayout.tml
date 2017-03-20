@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
-	<div class="${classes}">
-		<div class="panel panel-default" id="${clientId}">
-			<div class="panel-heading text-center">${widgettitle}</div>
-			<div class="panel-body">
-				<t:zone t:id="widgetZone" id="widgetZone">
+	<t:zone t:id="widgetZone" id="prop:${zoneid}">
+		<div class="${classes}">
+			<div class="panel panel-default" id="${clientId}">
+				<div class="panel-heading text-center">${widgettitle}</div>
+				<div class="panel-body">
 					<t:if test="resultready">
 						<t:body />
 					</t:if>
@@ -12,8 +12,8 @@
 						${loadingmessage}
 						<t:trigger event="load" />
 					</t:if>
-				</t:zone>
+				</div>
 			</div>
 		</div>
-	</div>
+	</t:zone>
 </t:container>

@@ -1,4 +1,4 @@
 <!DOCTYPE html>
-<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidget" widgettitle="Sankey Diagram" t:clientId="sankey-widget" class="${classes}">
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Sankey Diagram" t:clientId="sankey_widget" class="${classes}" result="result">
 Mr Sankey, the christimas-p...oh, wrong character.
 </div>

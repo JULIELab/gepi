@@ -80,4 +80,9 @@ public class GepiWidgetLayout {
 		javaScriptSupport.require("gepi/components/gepiwidgetlayout").invoke("loadWidgetContent")
 				.with(eventLink.toAbsoluteURI(), widgetZone.getClientId());
 	}
+	
+	public String getZoneId() {
+		String zoneId = "widgetzone_" + clientId;
+		return zoneId;
+	}
 }

@@ -1,4 +1,4 @@
 <!DOCTYPE html>
-<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidget" widgettitle="Pie Chart" t:clientId="piechart-widget" class="${classes}">
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Pie Chart" t:clientId="piechart_widget" class="${classes}" result="result">
 Here comes a pie chart!
 </div>

@@ -13,6 +13,9 @@
   <logger name="org.apache.tapestry5" level="INFO"/>
   
   <logger name="de.julielab.gepi.webapp.components.GepiInput" level="DEBUG"/>
+<logger
+		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
+		level="INFO" />
 
   <root level="DEBUG">
     <appender-ref ref="STDOUT" />

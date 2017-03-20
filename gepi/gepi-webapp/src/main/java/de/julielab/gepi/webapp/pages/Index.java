@@ -4,10 +4,12 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.annotations.ActivationRequestParameter;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
+import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -45,10 +47,17 @@ public class Index {
 	private Zone inputZone;
 
 	@Property
+	@Persist
 	private CompletableFuture<EventRetrievalResult> result;
 
 	@Property
 	private Event eventItem;
+	
+	/**
+	 * This is an emergency exit against being locked in an error during development.
+	 */
+	@ActivationRequestParameter
+	private boolean reset;
 
 	public Zone getOutputZone() {
 		return outputZone;
@@ -60,7 +69,30 @@ public class Index {
 
 	// Handle call with an unwanted context
 	Object onActivate(EventContext eventContext) {
+		if (reset)
+			result = null;
 		return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
+	}
+	
+	/**
+	 * 
+	 * @return The class "in", causing the outputcol to show immediately, or the empty string which will hide the outputcol initially.
+	 */
+	public String getShowOutputClass() {
+		if (result != null && result.isDone())
+			return "in";
+		return "";
+	}
+	
+	public String getShowInputClass() {
+		if (result == null)
+			return "in";
+		return "";
+	}
+	
+	public Object onReset() {
+		result = null;
+		return this;
 	}
 
 }

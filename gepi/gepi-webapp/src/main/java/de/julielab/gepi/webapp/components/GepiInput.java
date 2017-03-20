@@ -1,13 +1,11 @@
 package de.julielab.gepi.webapp.components;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
@@ -84,10 +82,15 @@ public class GepiInput {
 		}
 	}
 
-	@Log
 	void afterRender() {
 		javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize");
 		javaScriptSupport.require("gepi/base").invoke("setuptooltips");
+		// The following JavaScript call always causes the inputcol so disappear
+		// behind the left border of the viewport. This also happens when the
+		// page is reloaded with a nun-null result. But then, the index page is
+		// hiding the inputcol by default, thus noone sees the shift.
+		// Also, the outputcol is shown immediately by means of the index page
+		// if the result already exists and is finished loading.
 		if (result != null)
 			javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");
 	}

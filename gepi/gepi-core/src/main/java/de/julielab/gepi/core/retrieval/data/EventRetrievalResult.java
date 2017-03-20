@@ -6,13 +6,16 @@ import java.util.stream.Stream;
 
 public class EventRetrievalResult {
 	private Stream<Event> events;
+	private List<Event> eventList;
 
 	public Stream<Event> getEvents() {
 		return events;
 	}
 	
 	public List<Event> getEventList(){
-		return events.collect(Collectors.toList());
+		if (eventList == null)
+			eventList = events.collect(Collectors.toList());
+		return eventList;
 	}
 
 	public void setEvents(Stream<Event> events) {

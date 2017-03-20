@@ -34,11 +34,15 @@ public class Event {
 	}
 
 	public String getMainEventType() {
-		return mainEventType;
+		if (mainEventType != null)
+			return mainEventType;
+		return "";
 	}
 
 	public String getSentence() {
-		return sentence;
+		if (sentence != null)
+			return sentence;
+		return "";
 	}
 
 	/**
@@ -88,6 +92,15 @@ public class Event {
 	public String toString() {
 		return getMainEventType() + ": " + String.join(", ", getAllArguments());
 	}
-	
-	
+
+	public String getFirstArgumentGeneId() {
+		return getAllArguments().get(0);
+	}
+
+	public String getSecondArgumentGeneId() {
+		if (getNumArguments() > 1)
+			return getAllArguments().get(1);
+		return "";
+	}
+
 }
