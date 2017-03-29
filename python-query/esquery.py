@@ -194,7 +194,7 @@ class ESQuery():
                         else:
                             _others_names.append(_arg)
                 df1.loc[_key, "Gene Name 1"] = ", ".join(_mid_names)
-                df1.loc[_key, "Entrez ID 2"] = ", ".join(map(str, _others))
+                df1.loc[_key, "Entrez ID 2"] = ", ".join(map(str, set(_others)))
                 df1.loc[_key, "Gene Name 2"] = ", ".join(_others_names)
 
             df1.to_csv(rfile, sep='§', index=False)
