@@ -62,7 +62,7 @@ class ESQuery():
     def create_json_query(self, tid1, tid2):
         format_tpl = (tid1, tid2)
         q = ('{{"_source": false,"query": {{"filtered": {{' +
-             '"query": {{"match_all": {{}}}},' +
+             '"query": {{"terms": {{"_type": ["medline","pmc"]}}}},' +
              '"filter": {{"nested": {{"path": "events",' +
              '"query": {{"filtered": {{"query": {{"match_all": {{}}}},' +
              '"filter": {{"and": [' +
