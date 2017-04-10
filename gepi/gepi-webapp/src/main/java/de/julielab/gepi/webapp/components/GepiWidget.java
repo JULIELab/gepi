@@ -11,21 +11,6 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 
 public class GepiWidget {
 
-	public enum ViewMode {
-		/**
-		 * The widget is in its overview mode, shown in juxtaposition to other widgets.
-		 */
-		OVERVIEW, 
-		/**
-		 * The widget covers the main view area of GePi, hiding other widgets.
-		 */
-		LARGE, 
-		/**
-		 * The widget is in fullscreen mode, covering the complete computer screen.
-		 */
-		FULLSCREEN
-	}
-
 	@Parameter(defaultPrefix = BindingConstants.LITERAL, name = "class")
 	@Property
 	private String classes;
@@ -41,8 +26,5 @@ public class GepiWidget {
 	void setupRender() {
 		persistResult = result;
 	}
-
-
-	@Property
-	private ViewMode viewMode;
+	
 }
