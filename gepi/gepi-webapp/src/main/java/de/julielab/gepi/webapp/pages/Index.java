@@ -24,7 +24,7 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 /**
  * Start page of application gepi-webapp.
  */
-@Import(stylesheet = { "context:css-pages/index.css" })
+@Import(stylesheet = { "context:css-pages/index.less" })
 public class Index {
 	@Inject
 	private Logger logger;

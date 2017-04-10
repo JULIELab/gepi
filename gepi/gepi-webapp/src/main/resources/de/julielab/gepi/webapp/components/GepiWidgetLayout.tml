@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
-	<t:zone t:id="widgetZone" id="prop:${zoneid}">
-		<div class="${classes}">
-			<div class="panel panel-default" id="${clientId}">
-				<div class="panel-heading text-center">${widgettitle}</div>
-				<div class="panel-body">
+	<div class="${classes}">
+		<div class="panel panel-default" id="${clientId}">
+			<div class="panel-heading text-center">
+				${widgettitle}
+				<span id="${clientId}_resize" class="glyphicon float-right glyphicon-resize-full" />
+			</div>
+			<div class="panel-body">
+				<t:zone t:id="widgetZone" id="prop:${zoneid}">
 					<t:if test="resultready">
 						<t:body />
 					</t:if>
@@ -12,8 +15,8 @@
 						${loadingmessage}
 						<t:trigger event="load" />
 					</t:if>
-				</div>
+				</t:zone>
 			</div>
 		</div>
-	</t:zone>
+	</div>
 </t:container>
