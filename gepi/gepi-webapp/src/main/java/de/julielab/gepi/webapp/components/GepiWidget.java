@@ -17,7 +17,7 @@ public class GepiWidget {
 		 */
 		OVERVIEW, 
 		/**
-		 * The widget covers the main view area of GePi, hidding other widgets.
+		 * The widget covers the main view area of GePi, hiding other widgets.
 		 */
 		LARGE, 
 		/**
@@ -32,7 +32,7 @@ public class GepiWidget {
 
 	@Parameter
 	@Property
-	protected CompletableFuture<EventRetrievalResult> result;
+	private CompletableFuture<EventRetrievalResult> result;
 	
 	@Property
 	@Persist
