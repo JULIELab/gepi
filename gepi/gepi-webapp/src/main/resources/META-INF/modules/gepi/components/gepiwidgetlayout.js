@@ -5,24 +5,25 @@ define([ "jquery", "t5/core/zone" ], function($, zoneManager, widgetSize) {
 
     var setupViewModeHandle = function(handleId, widgetId, url, zoneElementId) {
         $("#" + handleId).click(function() {
-            var currentMode = $("#" + widgetId).hasClass("large") ? "large" : "overview";
+            var widget = $("#" + widgetId);
+            var currentMode = widget.hasClass("large") ? "large" : "overview";
             var newMode;
             switch (currentMode) {
             case "large":
-                $("#" + widgetId).removeClass("fixed");
+//                widget.removeClass("fixed");
                 newMode = "overview";
                 break;
             case "overview":
-                $("#" + widgetId).addClass("fixed");
+//                widget.addClass("fixed");
                 newMode = "large";
                 break;
             }
-//            var left = document.getElementById(widgetId).getBoundingClientRect().left;
+            var left = document.getElementById(widgetId).getBoundingClientRect().left;
 //            console.log(left)
 //            var difference = left - 15;
 //            console.log(difference)
-//            $("#" + widgetId).css("transform", "translate(-"+difference+"px)");
-            $("#" + widgetId).addClass(newMode).removeClass(currentMode);
+//            widget.css("transform", "translate(-"+difference+"px)");
+            widget.addClass(newMode).removeClass(currentMode);
             zoneManager.deferredZoneUpdate(zoneElementId, url);
         });
     }

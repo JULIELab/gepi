@@ -20,7 +20,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 
-@Import(stylesheet = { "context:css-components/gepiwidgetlayout.less" })
+@Import(stylesheet = { "context:css-components/gepiwidgetlayout.css" })
 @SupportsInformalParameters
 public class GepiWidgetLayout {
 	
