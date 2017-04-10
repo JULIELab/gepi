@@ -1,9 +1,22 @@
-define([ "jquery", "./diagrams/pie" ], function($, pie) {
+define([ "jquery" ], function($) {
 
-	//var plotPie = function(data) {
-	//	console.log(data);
-	//	$('div#pie').html('<span>Fool! The data: ' + JSON.stringify(data) + '</span>')
-	//}
+	return function drawPieChart(gepiDat) {
+
+		var data = new google.visualization.DataTable();
+		data.addColumn( 'string', 'Gene' );
+		data.addColumn( 'number', 'Count' );
 		
-	return pie;
+		data.addRows( gepiDat )
+		
+		var options = {
+			title : 'Gene occurrences'
+		};
+
+		var chart = new google.visualization.PieChart(document
+				.getElementById('piechart'));
+
+		chart.draw(data, options);
+	}
+
+
 })
