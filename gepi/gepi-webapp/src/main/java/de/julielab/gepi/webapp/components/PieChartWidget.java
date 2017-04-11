@@ -1,5 +1,12 @@
 package de.julielab.gepi.webapp.components;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
@@ -14,29 +21,76 @@ public class PieChartWidget extends GepiWidget {
 	
 	@Inject
     private JavaScriptSupport javaScriptSupport;
-
-	private JSONArray eventsJSON, tmp;
+	
+	@Property
+	private JSONArray eventsJSON;
+	
 
 	void setupRender() {
 		super.setupRender();
 	}
 		
-	void afterRender() {
-		javaScriptSupport.require("gepi/gcharts/piechart").with(this.getGePiData());
+	void afterRender() throws InterruptedException, ExecutionException {
+		if (persistResult != null && persistResult.isDone())
+			javaScriptSupport.require("gepi/gcharts/piechart").with(getPieData());
     }
 	
-	private JSONArray getGePiData() {
+	/**
+	 * Builds JSONArray that google charts understands for a pie chart.
+	 * @return JSONArray - array of tuples (array)
+	 */
+	private JSONArray getPieData() {
 		eventsJSON = new JSONArray();
+		
+		Map<String, Integer> evtPartnerCount = aggregateIDoccurrences();
+		
+		evtPartnerCount.forEach( (k, v) -> {
+			JSONArray tmp = new JSONArray();
+			tmp.put(k); 
+			tmp.put(v);
+			eventsJSON.put(tmp);
+		});
+		
+		return eventsJSON;	
+	}
+	
+	/**
+	 * Gathers all atids and provides count of each occurrence.
+	 * @return Map<String, Integer> String: Gene top homology ID, Integer: count
+	 */
+	private Map<String, Integer> aggregateIDoccurrences() {
+		Map<String, Integer> pieData = null;
+		List<String> atids = new ArrayList<String>();
+		
+		try {
+			// get all atids in one list
+			persistResult.get().getEventList().forEach(e -> 
+				atids.addAll(e.getFirstAtidArguments()) );
+		
+			// get the counts of elements for each element
+			pieData =  CollectionUtils.getCardinalityMap(atids);
 
-		tmp = new JSONArray();
-		tmp.put("Sleep"); tmp.put(7);
-		eventsJSON.put( tmp );
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return pieData;
+	}
+	
+	/**
+	 * demo function for testing purposes. remove once code is ready.
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	private void printEvtToStringOut() throws InterruptedException, ExecutionException {
+		Iterator<Event> it = persistResult.get().getEventList().iterator();
+		while ( it.hasNext() ) {
+			Event tmpEvt = it.next();
+			System.out.println(tmpEvt.getAllTokensToString());
+			System.out.println(tmpEvt.getAllArguments().toString() );
+			System.out.println(tmpEvt.getFirstAtidArguments().toString() );
+		}
 		
-		tmp = new JSONArray();
-		tmp.put("Work"); tmp.put(11);		
-		eventsJSON.put( tmp );
-		
-		return eventsJSON;
 	}
 	
 }
