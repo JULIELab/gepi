@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
+import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectComponent;
@@ -67,25 +68,19 @@ public class GepiWidgetLayout {
 	@Environmental
 	private JavaScriptSupport javaScriptSupport;
 
-	/**
-	 * Overwrite in widget classes.
-	 */
-	@Property
-	protected String loadingMessage = "Data is being loaded, please wait...";
-
 	@Persist
 	private CompletableFuture<EventRetrievalResult> persistResult;
 
-	@Persist
+	@Persist(PersistenceConstants.CLIENT)
 	@Property
-	private ViewMode viewMode;
+	private String viewMode;
 
 	void setupRender() {
 		persistResult = result;
 		if (result == null)
 			viewMode = null;
 		if (viewMode == null)
-			viewMode = ViewMode.OVERVIEW;
+			viewMode = ViewMode.OVERVIEW.name().toLowerCase();
 	}
 	
 	void afterRender() {
@@ -109,13 +104,13 @@ public class GepiWidgetLayout {
 	
 	void onToggleViewMode() {
 		switch (viewMode) {
-		case FULLSCREEN:
+		case "fullscreen":
 			break;
-		case LARGE:
-			viewMode = ViewMode.OVERVIEW;
+		case "large":
+			viewMode = ViewMode.OVERVIEW.name().toLowerCase();
 			break;
-		case OVERVIEW:
-			viewMode = ViewMode.LARGE;
+		case "overview":
+			viewMode = ViewMode.LARGE.name().toLowerCase();
 			break;
 		}
 		ajaxResponseRenderer.addRender(widgetZone);
@@ -137,6 +132,6 @@ public class GepiWidgetLayout {
 	}
 	
 	public String getSizeClass() {
-		return viewMode.name().toLowerCase();
+		return viewMode;
 	}
 }

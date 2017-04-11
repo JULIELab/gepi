@@ -12,7 +12,7 @@
 						<t:body />
 					</t:if>
 					<t:if test="resultloading">
-						${loadingmessage}
+						${message:loading}
 						<t:trigger event="load" />
 					</t:if>
 				</div>
