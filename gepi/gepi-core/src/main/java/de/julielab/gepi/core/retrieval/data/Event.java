@@ -1,5 +1,6 @@
 package de.julielab.gepi.core.retrieval.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,23 @@ public class Event {
 		if (allArguments == null)
 			allArguments = allArgumentTokens.stream().filter(a -> a.matches("^[0-9]+$")).collect(Collectors.toList());
 		return allArguments;
+	}
+	
+	/**
+	 * Since multiple atids are available per event partner only provide the first one, assuming this 
+	 * one corresponds to the aggregated id, where all homologous genes are connected to.
+	 * The first atid per event partner follows directly after the entrez gene id.
+	 * 
+	 * TODO: Make sure we filter for the correct atids (is the order (first atid is the group id) always guaranteed?).
+	 */
+	public List<String> getFirstAtidArguments() {
+		List<String> firstAtids = new ArrayList<String>();
+		
+		for (int i = 0; i < allArgumentTokens.size()-1; i++) {
+			if ( allArgumentTokens.get(i).matches("^[0-9]+$") )
+				firstAtids.add( allArgumentTokens.get(i+1) );
+		}
+		return firstAtids;
 	}
 
 	public List<String> getAllEventTypes() {
@@ -101,6 +119,14 @@ public class Event {
 		if (getNumArguments() > 1)
 			return getAllArguments().get(1);
 		return "";
+	}
+	
+	/**
+	 * Provide all Tokens known to this event as one String.
+	 * @return String representation of all tokens known to this event.
+	 */
+	public String getAllTokensToString() {
+		return "All tokens: " + String.join( ", ", allArgumentTokens.toString() );
 	}
 
 }
