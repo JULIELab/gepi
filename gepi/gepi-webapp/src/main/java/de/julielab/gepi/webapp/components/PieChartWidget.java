@@ -1,18 +1,15 @@
 package de.julielab.gepi.webapp.components;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.services.IGoogleChartsDataManager;
 
 public class PieChartWidget extends GepiWidget {
 	
@@ -21,6 +18,9 @@ public class PieChartWidget extends GepiWidget {
 	
 	@Inject
     private JavaScriptSupport javaScriptSupport;
+	
+	@Inject
+	private IGoogleChartsDataManager gChartMnger;
 	
 	@Property
 	private JSONArray eventsJSON;
@@ -40,41 +40,12 @@ public class PieChartWidget extends GepiWidget {
 	 * @return JSONArray - array of tuples (array)
 	 */
 	private JSONArray getPieData() {
-		eventsJSON = new JSONArray();
-		
-		Map<String, Integer> evtPartnerCount = aggregateIDoccurrences();
-		
-		evtPartnerCount.forEach( (k, v) -> {
-			JSONArray tmp = new JSONArray();
-			tmp.put(k); 
-			tmp.put(v);
-			eventsJSON.put(tmp);
-		});
-		
-		return eventsJSON;	
-	}
-	
-	/**
-	 * Gathers all atids and provides count of each occurrence.
-	 * @return Map<String, Integer> String: Gene top homology ID, Integer: count
-	 */
-	private Map<String, Integer> aggregateIDoccurrences() {
-		Map<String, Integer> pieData = null;
-		List<String> atids = new ArrayList<String>();
-		
 		try {
-			// get all atids in one list
-			persistResult.get().getEventList().forEach(e -> 
-				atids.addAll(e.getFirstAtidArguments()) );
-		
-			// get the counts of elements for each element
-			pieData =  CollectionUtils.getCardinalityMap(atids);
-
+			gChartMnger.setSingleArgCount(persistResult.get().getEventList());
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return pieData;
+		return gChartMnger.getSingleArgCount();
 	}
 	
 	/**
