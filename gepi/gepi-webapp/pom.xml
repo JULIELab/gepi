@@ -91,6 +91,11 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
     <artifactId>validation-api</artifactId>
     <version>1.0.0.GA</version>
 </dependency>
+        <dependency>
+        	<groupId>commons-collections</groupId>
+        	<artifactId>commons-collections</artifactId>
+        	<version>3.2.1</version>
+        </dependency>
         </dependencies>
     <build>
         <finalName>gepi-webapp</finalName>
