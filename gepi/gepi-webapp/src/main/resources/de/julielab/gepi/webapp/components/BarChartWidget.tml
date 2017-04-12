@@ -1,4 +1,10 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Bar Chart" t:clientId="barchart_widget" class="${classes}" result="result">
-Have some baaaaaars!
+    
+    <script type="text/javascript">
+      google.charts.load('45', {'packages':['corechart']});
+    </script>
+
+
+    <div id="barchart" style="width: 100%; height: 100%;"></div>
 </div>
