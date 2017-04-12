@@ -19,8 +19,7 @@ public class PieChartWidget extends GepiWidget {
 	@Inject
     private JavaScriptSupport javaScriptSupport;
 	
-	@Inject
-	private IGoogleChartsDataManager gChartMnger;
+
 	
 	@Property
 	private JSONArray eventsJSON;
@@ -32,21 +31,10 @@ public class PieChartWidget extends GepiWidget {
 		
 	void afterRender() throws InterruptedException, ExecutionException {
 		if (persistResult != null && persistResult.isDone())
-			javaScriptSupport.require("gepi/gcharts/piechart").with(getPieData());
+			javaScriptSupport.require("gepi/gcharts/piechart").with( super.getSingleArgsCount() );
     }
 	
-	/**
-	 * Builds JSONArray that google charts understands for a pie chart.
-	 * @return JSONArray - array of tuples (array)
-	 */
-	private JSONArray getPieData() {
-		try {
-			gChartMnger.setSingleArgCount(persistResult.get().getEventList());
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
-		return gChartMnger.getSingleArgCount();
-	}
+
 	
 	/**
 	 * demo function for testing purposes. remove once code is ready.
