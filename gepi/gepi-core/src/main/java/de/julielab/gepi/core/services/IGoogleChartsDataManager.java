@@ -11,7 +11,7 @@ public interface IGoogleChartsDataManager {
 	/**
 	 * Counts all top homology atids over all events.
 	 * Required for pie Chart and bar chart.
-	 * TODO: 
+	 * @param e
 	 */
 	void setSingleArgCount(List<Event> e);
 	
@@ -23,8 +23,13 @@ public interface IGoogleChartsDataManager {
 
 	/**
 	 * Counts over all events how many events have the same number of arguments.
+	 * @param e
 	 */
-	void setBothArgsCount();
+	void setBothArgsCount(List<Event> e);
 	
+	/**
+	 * input structure required for sankey graph
+	 * @return JSONArray - array of triplets ([<from, <to>, count])
+	 */	
 	JSONArray getBothArgsCount();
 }
