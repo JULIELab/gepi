@@ -1,7 +1,5 @@
 package de.julielab.gepi.webapp.components;
 
-import java.util.concurrent.ExecutionException;
-
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
@@ -24,10 +22,9 @@ public class BarChartWidget extends GepiWidget {
 		super.setupRender();
 	}
 	
-	void afterRender() throws InterruptedException, ExecutionException {
-		if (persistResult != null && persistResult.isDone())
-			javaScriptSupport.require("gepi/gcharts/barchart").with( super.getSingleArgsCount() );
-    }
+	void onDrawChart() {
+		javaScriptSupport.require("gepi/gcharts/barchart").with( super.getSingleArgsCount() );
+	}
 	
 
 }

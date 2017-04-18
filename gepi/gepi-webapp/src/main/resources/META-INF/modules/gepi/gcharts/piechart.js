@@ -1,23 +1,31 @@
-define([ "jquery" ], function($) {
+define([ "jquery", "gepi/pages/index" ], function($) {
 
-	return function drawPieChart( pieDat ) {
+    return function drawPieChart(pieDat) {
+        google.charts.setOnLoadCallback(function() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Gene');
+            data.addColumn('number', 'Count');
 
-		var data = new google.visualization.DataTable();
-		data.addColumn( 'string', 'Gene' );
-		data.addColumn( 'number', 'Count' );
-		
-		data.addRows( pieDat )
-		
-		var options = {
-			chartArea : {left:10, top:10, width:'100%', height:'90%'},
-			legend : { position : 'right', alignment : 'center' }
-		};
+            data.addRows(pieDat)
 
-		console.log(options)
-		
-		var chart = new google.visualization.PieChart(document
-				.getElementById('piechart'));
+            var options = {
+                chartArea : {
+                    left : 10,
+                    top : 10,
+                    width : '100%',
+                    height : '90%'
+                },
+                legend : {
+                    position : 'right',
+                    alignment : 'center'
+                }
+            };
 
-		chart.draw(data, options);
-	}
+            console.log(options)
+
+            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+            chart.draw(data, options);
+        })
+    };
 })

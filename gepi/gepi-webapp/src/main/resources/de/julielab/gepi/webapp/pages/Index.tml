@@ -1,6 +1,8 @@
 <html t:type="layout" title="GePI Index"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
-
+<!-- <script type="text/javascript"> -->
+<!--       google.charts.load('45', {'packages':['corechart']}); -->
+<!--     </script> -->
 
 		<div id="inputcol" class="center fade ${showInputClass}">
 			<t:zone t:id="inputzone" id="inputzone">

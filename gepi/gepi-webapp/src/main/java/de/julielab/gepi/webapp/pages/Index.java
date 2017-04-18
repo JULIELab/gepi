@@ -58,7 +58,7 @@ public class Index {
 	 */
 	@ActivationRequestParameter
 	private boolean reset;
-
+	
 	public Zone getOutputZone() {
 		return outputZone;
 	}
@@ -72,6 +72,10 @@ public class Index {
 		if (reset)
 			result = null;
 		return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
+	}
+	
+	void afterRender() {
+		javaScriptSupport.require("gepi/pages/index").invoke("loadGoogleCharts");
 	}
 	
 	/**
