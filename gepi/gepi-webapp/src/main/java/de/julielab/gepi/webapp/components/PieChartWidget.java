@@ -9,7 +9,6 @@ import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.services.IGoogleChartsDataManager;
 
 public class PieChartWidget extends GepiWidget {
 	
@@ -30,8 +29,11 @@ public class PieChartWidget extends GepiWidget {
 	}
 		
 	void afterRender() throws InterruptedException, ExecutionException {
-		if (persistResult != null && persistResult.isDone())
+//		super.getBothArgsCount();
+		if (persistResult != null && persistResult.isDone()) {
 			javaScriptSupport.require("gepi/gcharts/piechart").with( super.getSingleArgsCount() );
+		}
+			
     }
 	
 
@@ -47,7 +49,7 @@ public class PieChartWidget extends GepiWidget {
 			Event tmpEvt = it.next();
 			System.out.println(tmpEvt.getAllTokensToString());
 			System.out.println(tmpEvt.getAllArguments().toString() );
-			System.out.println(tmpEvt.getFirstAtidArguments().toString() );
+			System.out.println(tmpEvt.getTopHomologyArgs().toString() );
 		}
 		
 	}

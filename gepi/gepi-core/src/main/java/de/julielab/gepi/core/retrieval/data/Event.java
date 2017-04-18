@@ -1,13 +1,18 @@
 package de.julielab.gepi.core.retrieval.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class Event {
 	private List<String> allArgumentTokens;
-
 	private List<String> allEventTypes;
+	private List<String> topHomologyAtids;
+	private Map<String, String> evtTopHomologyAtidPairedArgs;
 
 	private String highlightedSentence;
 
@@ -15,6 +20,7 @@ public class Event {
 	private String mainEventType;
 	private String sentence;
 	private List<String> allArguments;
+	
 
 	public List<String> getAllArguments() {
 		if (allArguments == null)
@@ -29,14 +35,38 @@ public class Event {
 	 * 
 	 * TODO: Make sure we filter for the correct atids (is the order (first atid is the group id) always guaranteed?).
 	 */
-	public List<String> getFirstAtidArguments() {
-		List<String> firstAtids = new ArrayList<String>();
-		
-		for (int i = 0; i < allArgumentTokens.size()-1; i++) {
-			if ( allArgumentTokens.get(i).matches("^[0-9]+$") )
-				firstAtids.add( allArgumentTokens.get(i+1) );
+	public List<String> getTopHomologyArgs() {
+		if (this.topHomologyAtids == null) {
+			this.topHomologyAtids = new ArrayList<String>();
+
+			for (int i = 0; i < allArgumentTokens.size()-1; i++) {
+				if ( allArgumentTokens.get(i).matches("^[0-9]+$") )
+					topHomologyAtids.add( allArgumentTokens.get(i+1) );
+			}
+			
 		}
-		return firstAtids;
+		return this.topHomologyAtids;
+	}
+	
+	/**
+	 * provides a map of argument pairs (atids) for this event
+	 * TODO: Necessary? 
+	 * @return
+	 */
+	public Map<String, String> getEvtAtidArgs() {
+		if (this.evtTopHomologyAtidPairedArgs == null) {
+			this.evtTopHomologyAtidPairedArgs = new HashMap<String, String>();
+			
+			if (this.topHomologyAtids == null)
+				this.topHomologyAtids = getTopHomologyArgs();			
+			
+			if (topHomologyAtids.size() == 1) // DEPRECATED: Shall not occur, once ES index provides only two argument events
+				this.evtTopHomologyAtidPairedArgs.put(topHomologyAtids.get(0), null);
+			else
+				this.evtTopHomologyAtidPairedArgs.put(
+						topHomologyAtids.get(0), topHomologyAtids.get(1) );
+		}
+		return this.evtTopHomologyAtidPairedArgs;
 	}
 
 	public List<String> getAllEventTypes() {
