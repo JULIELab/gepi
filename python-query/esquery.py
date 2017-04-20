@@ -43,21 +43,26 @@ class QueryParser(argparse.ArgumentParser):
             action='store', nargs=1, default=None,
             type=str, help="Save the results to a specified csv file."
         )
+        self.add_argument(
+            '-x', '--index', metavar='index',
+            action='store', nargs=1, default="documents",
+            type=str, help="Name of the Elasticsearch index (default: 'documents')."
+        )
 
 
 class ESQuery():
-    def __init__(self, connection, mapping=None):
-        self.connection = connection
+    def __init__(self, _connection, _mapping=None, _timeout=50):
+        self.connection = _connection
         self.mapping = dict()
         if mapping:
-            self.mapping = mapping
-        self.es = Elasticsearch(hosts=self.connection, verify_certs=True)
+            self.mapping = _mapping
+        self.es = Elasticsearch(hosts=self.connection, verify_certs=True, timeout=_timeout)
         self.clear_results()
 
     def create_json_query(self, tid1, tid2):
         format_tpl = (tid1, tid2)
         q = ('{{"_source": false,"query": {{"filtered": {{' +
-             '"query": {{"match_all": {{}}}},' +
+             '"query": {{"terms": {{"_type": ["medline","pmc"]}}}},' +
              '"filter": {{"nested": {{"path": "events",' +
              '"query": {{"filtered": {{"query": {{"match_all": {{}}}},' +
              '"filter": {{"and": [' +
@@ -71,7 +76,7 @@ class ESQuery():
 
     def create_json_single_query(self, tid1):
         q = ('{{"_source": false,"query": {{"filtered": {{' +
-             '"query": {{"match_all": {{}}}},' +
+             '"query": {{"terms": {{"_type": ["medline","pmc"]}}}},' +
              '"filter": {{"nested": {{"path": "events",' +
              '"query": {{"filtered": {{"query": {{"match_all": {{}}}},' +
              '"filter": {{ ' +
@@ -82,11 +87,11 @@ class ESQuery():
              '"fields": ["pmid","pmcid"]}}').format(tid1)
         return q
 
-    def send_query(self, tid1, tid2):
+    def send_query(self, tid1, tid2, _index='documents'):
         if tid2 is None:
-            self.update_results(scan(self.es, self.create_json_single_query(tid1)), tid1)
+            self.update_results(scan(self.es, self.create_json_single_query(tid1), index=_index), tid1)
         else:
-            self.update_results(scan(self.es, self.create_json_query(tid1, tid2)), tid1)
+            self.update_results(scan(self.es, self.create_json_query(tid1, tid2), index=_index), tid1)
 
     def update_results(self, scan_results, ftid):
         if not scan_results:
@@ -297,6 +302,9 @@ if __name__ == "__main__":
         ofile = open(file_store, 'w')
         print("[Config] Saving results to '{}'".format(file_store))
 
+    index_name = args['index']
+    if not index_name == "documents":
+        index_name = args['index'][0]
     if tid_group2:
         for comb in itertools.product(tid_group1, tid_group2):
             tid1, tid2 = comb
@@ -304,7 +312,7 @@ if __name__ == "__main__":
             if tofile:
                 tofile = open("out/{}-{}.txt".format(mdict_reversed[tid1], mdict_reversed[tid2]), "w")
 
-            es.send_query(tid1, tid2)
+            es.send_query(tid1, tid2, index_name)
             es.print_results(tofile)
             es.save_results_dframe(ofile)
             es.clear_results()
@@ -313,7 +321,7 @@ if __name__ == "__main__":
             if tofile:
                 tofile = open("out/{}.txt".format(mdict_reversed[tid]), "w")
 
-            es.send_query(tid, None)
+            es.send_query(tid, None, index_name)
             es.print_results(tofile)
             es.save_results_dframe(ofile)
             es.clear_results()
