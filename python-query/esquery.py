@@ -135,7 +135,11 @@ class ESQuery():
             pmcid = r["fields"].get("pmcid", None)
             if (pmcid is not None) and len(pmcid) > 0:
                 pmcid = pmcid[0]
-        return {'pmid': pmid, 'pmcid': pmcid}
+        if (pmid is not None) and (pmcid is not None):
+            return {'pmid': pmid, 'pmcid': pmcid}
+        else:
+            return {'pmid': r.get("_id") if r.get("_type") == "medline" else None,
+                    'pmcid': r.get("_id") if r.get("_type") == "pmc" else None}
 
     def get_arguments(self, r):
         return self.get_fields_content(r, "events.allarguments")
