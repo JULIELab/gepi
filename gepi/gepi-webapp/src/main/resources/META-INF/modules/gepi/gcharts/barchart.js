@@ -9,10 +9,15 @@ define([ "jquery", "gepi/pages/index" ], function($) {
             data.addRows(barDat)
 
             var options = {
+            	chartArea : {
+                    left : 10,
+                    top : 10,
+                    width : '100%',
+                    height : '90%'
+            	},
                 legend : 'none',
                 colors : [ '#76A7FA' ]
             };
-            console.log(options)
 
             var chart = new google.visualization.BarChart(document.getElementById('barchart'));
 

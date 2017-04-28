@@ -21,8 +21,6 @@ define([ "jquery", "gepi/pages/index" ], function($) {
                 }
             };
 
-            console.log(options)
-
             var chart = new google.visualization.PieChart(document.getElementById('piechart'));
 
             chart.draw(data, options);

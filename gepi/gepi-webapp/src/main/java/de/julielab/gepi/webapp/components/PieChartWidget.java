@@ -6,7 +6,6 @@ import java.util.concurrent.ExecutionException;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
-import org.apache.tapestry5.services.javascript.InitializationPriority;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.retrieval.data.Event;
@@ -18,23 +17,15 @@ public class PieChartWidget extends GepiWidget {
 	
 	@Inject
     private JavaScriptSupport javaScriptSupport;
-	
-
-	
+		
 	@Property
 	private JSONArray eventsJSON;
 	
 
 	void setupRender() {
-		super.setupRender();
+		super.setupRender();		
 	}
 		
-//	void afterRender() throws InterruptedException, ExecutionException {
-////		super.getBothArgsCount();
-//		if (persistResult != null && persistResult.isDone()) {
-//			javaScriptSupport.require("gepi/gcharts/piechart").with( super.getSingleArgsCount() );
-//		}
-//    }
 	
 	void onDrawChart() {
 		javaScriptSupport.require("gepi/gcharts/piechart").with( super.getSingleArgsCount() );
