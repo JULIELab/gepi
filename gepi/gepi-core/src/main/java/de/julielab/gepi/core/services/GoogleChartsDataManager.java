@@ -6,10 +6,13 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tapestry5.json.JSONArray;
+
+import com.google.common.collect.HashMultimap;
 
 import de.julielab.gepi.core.retrieval.data.Event;
 
@@ -17,9 +20,15 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 	
 	private Map<String, Integer> singleArgCount;
 	private Map<String, Integer> pairedArgCount;	
-	private JSONArray eventsJSON;
-	
+	private JSONArray singleArgCountJson;
+	private JSONArray pairedArgCountJson;
+	private static final String GENE_PAIR_DELIMITER = "__$__";
 
+	/**
+	 * sets json formated input list for google charts that accept one entry name + number 
+	 * (here target event gene + count of occurrences)
+	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setSingleArgCount(List<Event> evtList) {
 		List<String> atids = new ArrayList<String>();
@@ -27,7 +36,7 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 			// get all atids in one list
 			evtList.forEach(e -> 
 				atids.addAll(e.getTopHomologyArgs()) );
-		
+			
 			// get the counts of how often event arguments appear
 			singleArgCount = CollectionUtils.getCardinalityMap(atids);
 			
@@ -40,52 +49,82 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 							LinkedHashMap::new));
 			
 			// put to json format
-			eventsJSON = new JSONArray();
+			singleArgCountJson = new JSONArray();
 			
 			this.singleArgCount.forEach( (k, v) -> {
 				JSONArray tmp = new JSONArray();
 				tmp.put(k); 
 				tmp.put(v);
-				eventsJSON.put(tmp);
+				singleArgCountJson.put(tmp);
 			});
 	}
 
+	/**
+	 * singleArgCountJson is array of arrays with [<gene name><count>]
+	 */
 	@Override
 	public JSONArray getSingleArgCount() {		
-		return eventsJSON;	
+		return singleArgCountJson;	
 	}
 
+	/**
+	 * sets json formated input list for google charts that accepts an entry pair + number 
+	 * (here gene pair (from + to) + count of occurrences)
+	 */
+	// <gene 1>,<gene 2>, <count>
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setBothArgsCount(List<Event> evtList) {
-		Hashtable<String, String> atids = new Hashtable<String, String>(); 
+
+		List<String> atids = new ArrayList<String>();
 		
 		// get all atid atid pairs in one list
 		evtList.forEach(e -> {
-			if (e.getTopHomologyArgs().size() == 1)
-				atids.put(e.getTopHomologyArgs().get(0), null);
-			else {
+			System.out.println(e);
+			if (e.getTopHomologyArgs().size() == 2) {
 				String a = e.getTopHomologyArgs().get(0);
 				String b = e.getTopHomologyArgs().get(1);
-				if (a.compareTo(b) <= 0)
-					atids.put(a, b);
+				if ( Integer.parseInt(a.substring(4)) < Integer.parseInt(b.substring(4)) )
+					atids.add(a + GENE_PAIR_DELIMITER + b);
 				else
-					atids.put(b, a);
+					atids.add(b + GENE_PAIR_DELIMITER + a);
 			}
 		});
 		
-		System.out.println(atids);
-		
 		// get the count for how often pairs appear
+		pairedArgCount = CollectionUtils.getCardinalityMap(atids);
 		
 		// sort the entries
+		pairedArgCount = pairedArgCount.entrySet()
+				.stream()
+				.sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+						(e1, e2) -> e1,
+						LinkedHashMap::new));
+		
+		System.out.println("counts: " + pairedArgCount);
 		
 		// put to json
+		pairedArgCountJson = new JSONArray();
+
+		this.pairedArgCount.forEach( (k, v) -> {
+			String[] tmpPair;
+			tmpPair = k.split( Pattern.quote( GENE_PAIR_DELIMITER ) );
+			JSONArray tmp = new JSONArray();
+			tmp.put( tmpPair[0] );
+			tmp.put( tmpPair[1] );
+			tmp.put( v );
+			pairedArgCountJson.put( tmp );
+		});
 	}
 
+	/**
+	 * singleArgCountJson is array of arrays with [<gene name 1><gene name 2><count>]
+	 */
 	@Override
 	public JSONArray getBothArgsCount() {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("json: " + this.pairedArgCountJson);
+		return pairedArgCountJson;
 	}
 
 }

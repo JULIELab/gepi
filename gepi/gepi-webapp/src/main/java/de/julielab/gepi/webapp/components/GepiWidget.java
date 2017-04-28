@@ -51,4 +51,14 @@ public class GepiWidget {
 		return gChartMnger.getSingleArgCount();
 	}
 	
+	protected JSONArray getBothArgsCount() {
+		try {
+			gChartMnger.setBothArgsCount(persistResult.get().getEventList());
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		return gChartMnger.getBothArgsCount();
+	}
+	
+	
 }
