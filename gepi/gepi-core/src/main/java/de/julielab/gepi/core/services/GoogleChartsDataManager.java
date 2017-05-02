@@ -2,7 +2,6 @@ package de.julielab.gepi.core.services;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +10,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tapestry5.json.JSONArray;
-
-import com.google.common.collect.HashMultimap;
 
 import de.julielab.gepi.core.retrieval.data.Event;
 

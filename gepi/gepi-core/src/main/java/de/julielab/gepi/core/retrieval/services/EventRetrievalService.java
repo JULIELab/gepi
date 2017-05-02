@@ -36,7 +36,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 	
 	public static final String FIELD_EVENT_ALLEVENTTYPES = FIELD_EVENTS + ".alleventtypes";
 
-	public static final String FIELD_EVENT_ALLARGUMENTS = FIELD_EVENTS + ".allarguments";
+	public static final String FIELD_EVENT_ALLARGUMENTS = FIELD_EVENTS + ".argumentsearch";
 
 	public static final String FIELD_EVENT_SENTENCE = FIELD_EVENTS + ".sentence";
 
@@ -61,8 +61,64 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 	@Override
 	public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Stream<String> idStream1, Stream<String> idStream2) {
-		// TODO Auto-generated method stub
-		return null;
+		TermsQuery listAQuery = new TermsQuery();
+		listAQuery.terms = idStream1.collect(Collectors.toList());
+		listAQuery.field = FIELD_EVENT_ALLARGUMENTS;
+		
+		TermsQuery listBQuery = new TermsQuery();
+		listBQuery.terms = idStream1.collect(Collectors.toList());
+		listBQuery.field = FIELD_EVENT_ALLARGUMENTS;
+
+		TermQuery filterQuery = new TermQuery();
+		filterQuery.term = 2;
+		filterQuery.field = FIELD_EVENT_NUMDISTINCTARGUMENTS;
+
+		BoolClause listAClause = new BoolClause();
+		listAClause.addQuery(listAQuery);
+		listAClause.occur = Occur.MUST;
+		
+		BoolClause listBClause = new BoolClause();
+		listBClause.addQuery(listBQuery);
+		listBClause.occur = Occur.MUST;
+		
+		BoolClause filterClause = new BoolClause();
+		filterClause.addQuery(filterQuery);
+		filterClause.occur = Occur.FILTER;
+
+		BoolQuery eventQuery = new BoolQuery();
+		eventQuery.addClause(listAClause);
+		eventQuery.addClause(listBClause);
+		eventQuery.addClause(filterClause);
+		
+		NestedQuery nestedQuery = new NestedQuery();
+		nestedQuery.path = FIELD_EVENTS;
+		nestedQuery.query = eventQuery;
+		nestedQuery.innerHits = new InnerHits();
+		nestedQuery.innerHits.addField(FIELD_EVENT_LIKELIHOOD);
+		nestedQuery.innerHits.addField(FIELD_EVENT_SENTENCE);
+		nestedQuery.innerHits.addField(FIELD_EVENT_ALLARGUMENTS);
+		nestedQuery.innerHits.addField(FIELD_EVENT_MAINEVENTTYPE);
+
+
+		SearchServerCommand serverCmd = new SearchServerCommand();
+		serverCmd.query = nestedQuery;
+		serverCmd.index = documentIndex;
+		serverCmd.rows = 5;
+		serverCmd.fieldsToReturn = Collections.emptyList();
+		serverCmd.downloadCompleteResults = true;
+
+		SearchCarrier carrier = new SearchCarrier("OutsideEvents");
+		carrier.addSearchServerCommand(serverCmd);
+		searchServerComponent.process(carrier);
+		
+		return CompletableFuture.supplyAsync(() ->  {try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return eventResponseProcessingService.getEventRetrievalResult(carrier.getSingleSearchServerResponse());});
 	}
 
 	@Override

@@ -26,6 +26,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 	@Log
 	@Override
 	public EventRetrievalResult getEventRetrievalResult(ISearchServerResponse response) {
+		if (response.getQueryError() != null)
+			return new EventRetrievalResult();
 		// Gets, first, from all document hits their inner (event) hits and,
 		// second, converts all inner event hits into instances of the Event
 		// class and hence returns all events.
