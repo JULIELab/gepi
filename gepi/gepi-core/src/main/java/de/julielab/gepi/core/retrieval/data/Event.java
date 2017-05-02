@@ -1,76 +1,33 @@
 package de.julielab.gepi.core.retrieval.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 public class Event {
-	private List<String> allArgumentTokens;
 	private List<String> allEventTypes;
-	private List<String> topHomologyAtids;
-	private Map<String, String> evtTopHomologyAtidPairedArgs;
+	
+	private List<Argument> arguments;
 
 	private String highlightedSentence;
 
 	private int likelihood;
+
 	private String mainEventType;
+
+	private int numDistinctArguments;
 	private String sentence;
-	private List<String> allArguments;
-	
-
-	public List<String> getAllArguments() {
-		if (allArguments == null)
-			allArguments = allArgumentTokens.stream().filter(a -> a.matches("^[0-9]+$")).collect(Collectors.toList());
-		return allArguments;
-	}
-	
-	/**
-	 * Since multiple atids are available per event partner only provide the first one, assuming this 
-	 * one corresponds to the aggregated id, where all homologous genes are connected to.
-	 * The first atid per event partner follows directly after the entrez gene id.
-	 * 
-	 * TODO: Make sure we filter for the correct atids (is the order (first atid is the group id) always guaranteed?).
-	 */
-	public List<String> getTopHomologyArgs() {
-		if (this.topHomologyAtids == null) {
-			this.topHomologyAtids = new ArrayList<String>();
-
-			for (int i = 0; i < allArgumentTokens.size()-1; i++) {
-				if ( allArgumentTokens.get(i).matches("^[0-9]+$") )
-					topHomologyAtids.add( allArgumentTokens.get(i+1) );
-			}
-			
-		}
-		return this.topHomologyAtids;
-	}
-	
-	/**
-	 * provides a map of argument pairs (atids) for this event
-	 * TODO: Necessary? 
-	 * @return
-	 */
-	public Map<String, String> getEvtAtidArgs() {
-		if (this.evtTopHomologyAtidPairedArgs == null) {
-			this.evtTopHomologyAtidPairedArgs = new HashMap<String, String>();
-			
-			if (this.topHomologyAtids == null)
-				this.topHomologyAtids = getTopHomologyArgs();			
-			
-			if (topHomologyAtids.size() == 1) // DEPRECATED: Shall not occur, once ES index provides only two argument events
-				this.evtTopHomologyAtidPairedArgs.put(topHomologyAtids.get(0), null);
-			else
-				this.evtTopHomologyAtidPairedArgs.put(
-						topHomologyAtids.get(0), topHomologyAtids.get(1) );
-		}
-		return this.evtTopHomologyAtidPairedArgs;
-	}
-
 	public List<String> getAllEventTypes() {
 		return allEventTypes;
+	}
+	public Argument getArgument(int position) {
+		return arguments.get(position);
+	}
+
+	public List<Argument> getArguments() {
+		return arguments;
+	}
+
+	public String getFirstArgumentGeneId() {
+		return arguments.get(0).getGeneId();
 	}
 
 	public String getHighlightedSentence() {
@@ -87,25 +44,33 @@ public class Event {
 		return "";
 	}
 
+	public int getNumArguments() {
+		return arguments.size();
+	}
+
+
+	public int getNumDistinctArguments() {
+		return numDistinctArguments;
+	}
+
+	public String getSecondArgumentGeneId() {
+		if (getNumArguments() > 1)
+			return arguments.get(1).getGeneId();
+		return "";
+	}
+
 	public String getSentence() {
 		if (sentence != null)
 			return sentence;
 		return "";
 	}
 
-	/**
-	 * The index might store multiple tokens for a single arguments, e.g. its
-	 * NCBI Gene ID, its term ID, its aggregate IDs, the original word etc. All
-	 * those are set here.
-	 * 
-	 * @param allArguments
-	 */
-	public void setAllArgumentTokens(List<String> allArguments) {
-		this.allArgumentTokens = allArguments;
-	}
-
 	public void setAllEventTypes(List<String> allEventTypes) {
 		this.allEventTypes = allEventTypes;
+	}
+
+	public void setArguments(List<Argument> arguments) {
+		this.arguments = arguments;
 	}
 
 	public void setHighlightedSentence(String highlightedSentence) {
@@ -120,43 +85,17 @@ public class Event {
 		this.mainEventType = mainEventType;
 	}
 
+	public void setNumDistinctArguments(int numDistinctArguments) {
+		this.numDistinctArguments = numDistinctArguments;
+	}
+
 	public void setSentence(String sentence) {
 		this.sentence = sentence;
 	}
 
-	public int getNumArguments() {
-		return getAllArguments().size();
-	}
-
-	public int getNumDistinctArguments() {
-		return (int) getAllArguments().stream().distinct().count();
-	}
-
-	public String getArgument(int position) {
-		return getAllArguments().get(position);
-	}
-
 	@Override
 	public String toString() {
-		return getMainEventType() + ": " + String.join(", ", getAllArguments());
-	}
-
-	public String getFirstArgumentGeneId() {
-		return getAllArguments().get(0);
-	}
-
-	public String getSecondArgumentGeneId() {
-		if (getNumArguments() > 1)
-			return getAllArguments().get(1);
-		return "";
-	}
-	
-	/**
-	 * Provide all Tokens known to this event as one String.
-	 * @return String representation of all tokens known to this event.
-	 */
-	public String getAllTokensToString() {
-		return "All tokens: " + String.join( ", ", allArgumentTokens.toString() );
+		return getMainEventType() + ": " + arguments;
 	}
 
 }

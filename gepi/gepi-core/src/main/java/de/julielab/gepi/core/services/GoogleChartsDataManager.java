@@ -29,10 +29,8 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 	@Override
 	public void setSingleArgCount(List<Event> evtList) {
 		List<String> atids = new ArrayList<String>();
-			
 			// get all atids in one list
-			evtList.forEach(e -> 
-				atids.addAll(e.getTopHomologyArgs()) );
+			evtList.forEach(e -> e.getArguments().forEach(a -> atids.add(a.getTopHomologyId())));
 			
 			// get the counts of how often event arguments appear
 			singleArgCount = CollectionUtils.getCardinalityMap(atids);
@@ -78,9 +76,9 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 		// get all atid atid pairs in one list
 		evtList.forEach(e -> {
 			System.out.println(e);
-			if (e.getTopHomologyArgs().size() == 2) {
-				String a = e.getTopHomologyArgs().get(0);
-				String b = e.getTopHomologyArgs().get(1);
+			if (e.getNumArguments() == 2) {
+				String a = e.getArgument(0).getTopHomologyId();
+				String b = e.getArgument(1).getTopHomologyId();
 				if ( Integer.parseInt(a.substring(4)) < Integer.parseInt(b.substring(4)) )
 					atids.add(a + GENE_PAIR_DELIMITER + b);
 				else

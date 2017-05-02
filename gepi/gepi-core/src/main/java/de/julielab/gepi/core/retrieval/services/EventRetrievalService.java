@@ -34,15 +34,25 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 	public static final String FIELD_EVENT_MAINEVENTTYPE = FIELD_EVENTS + ".maineventtype";
 	
-	public static final String FIELD_EVENT_ALLEVENTTYPES = FIELD_EVENTS + ".alleventtypes";
-
-	public static final String FIELD_EVENT_ALLARGUMENTS = FIELD_EVENTS + ".argumentsearch";
+	public static final String FIELD_EVENT_ARGUMENTSEARCH = FIELD_EVENTS + ".argumentsearch";
+	
+	public static final String FIELD_EVENT_ARG_GENE_IDS = FIELD_EVENTS + ".argumentgeneids";
+	
+	public static final String FIELD_EVENT_ARG_CONCEPT_IDS = FIELD_EVENTS + ".argumentconceptids";
+	
+	public static final String FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS = FIELD_EVENTS + ".argumenttophomologyids";
+	
+	public static final String FIELD_EVENT_ARG_TEXT = FIELD_EVENTS + ".argumenttext";
+	
+	public static final String FIELD_EVENT_ARG_PREFERRED_NAME = FIELD_EVENTS + ".argumentpreferrednames";
 
 	public static final String FIELD_EVENT_SENTENCE = FIELD_EVENTS + ".sentence";
 
 	public static final String FIELD_EVENT_LIKELIHOOD = FIELD_EVENTS + ".likelihood";
 
 	public static final String FIELD_EVENT_NUMDISTINCTARGUMENTS = FIELD_EVENTS + ".numdistinctarguments";
+	
+	public static final String FIELD_EVENT_NUMARGUMENTS = FIELD_EVENTS + ".numarguments";
 
 	private Logger log;
 	private ISearchServerComponent searchServerComponent;
@@ -63,15 +73,15 @@ public class EventRetrievalService implements IEventRetrievalService {
 	public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Stream<String> idStream1, Stream<String> idStream2) {
 		TermsQuery listAQuery = new TermsQuery();
 		listAQuery.terms = idStream1.collect(Collectors.toList());
-		listAQuery.field = FIELD_EVENT_ALLARGUMENTS;
+		listAQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 		
 		TermsQuery listBQuery = new TermsQuery();
 		listBQuery.terms = idStream1.collect(Collectors.toList());
-		listBQuery.field = FIELD_EVENT_ALLARGUMENTS;
+		listBQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
 		TermQuery filterQuery = new TermQuery();
 		filterQuery.term = 2;
-		filterQuery.field = FIELD_EVENT_NUMDISTINCTARGUMENTS;
+		filterQuery.field = FIELD_EVENT_NUMARGUMENTS;
 
 		BoolClause listAClause = new BoolClause();
 		listAClause.addQuery(listAQuery);
@@ -96,7 +106,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 		nestedQuery.innerHits = new InnerHits();
 		nestedQuery.innerHits.addField(FIELD_EVENT_LIKELIHOOD);
 		nestedQuery.innerHits.addField(FIELD_EVENT_SENTENCE);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ALLARGUMENTS);
+		nestedQuery.innerHits.addField(FIELD_EVENT_ARGUMENTSEARCH);
 		nestedQuery.innerHits.addField(FIELD_EVENT_MAINEVENTTYPE);
 
 
@@ -128,11 +138,11 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 		TermsQuery termsQuery = new TermsQuery();
 		termsQuery.terms = idStream.collect(Collectors.toList());
-		termsQuery.field = FIELD_EVENT_ALLARGUMENTS;
+		termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
 		TermQuery filterQuery = new TermQuery();
 		filterQuery.term = 2;
-		filterQuery.field = FIELD_EVENT_NUMDISTINCTARGUMENTS;
+		filterQuery.field = FIELD_EVENT_NUMARGUMENTS;
 
 		BoolClause termsClause = new BoolClause();
 		termsClause.addQuery(termsQuery);
@@ -151,7 +161,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 		nestedQuery.innerHits = new InnerHits();
 		nestedQuery.innerHits.addField(FIELD_EVENT_LIKELIHOOD);
 		nestedQuery.innerHits.addField(FIELD_EVENT_SENTENCE);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ALLARGUMENTS);
+		nestedQuery.innerHits.addField(FIELD_EVENT_ARGUMENTSEARCH);
 		nestedQuery.innerHits.addField(FIELD_EVENT_MAINEVENTTYPE);
 
 

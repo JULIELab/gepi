@@ -1,23 +1,26 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ALLARGUMENTS;
-import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ALLEVENTTYPES;
+import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_CONCEPT_IDS;
+import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_GENE_IDS;
+import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_PREFERRED_NAME;
+import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS;
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_LIKELIHOOD;
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_MAINEVENTTYPE;
-import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_NUMDISTINCTARGUMENTS;
-import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_SENTENCE;
+import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_NUMARGUMENTS;
+import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.tapestry5.annotations.Log;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.services.ISearchServerResponse;
+import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 
@@ -39,18 +42,34 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 
 	private Stream<Event> resultDocuments2Events(Stream<ISearchServerDocument> documents) {
 		return documents.map(eventDocument -> {
-			Optional<List<Object>> allArguments = eventDocument.getFieldValues(FIELD_EVENT_ALLARGUMENTS);
+			List<Object> conceptIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_CONCEPT_IDS).orElse(Collections.emptyList());
+			List<Object> geneIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_GENE_IDS).orElse(Collections.emptyList());
+			List<Object> topHomologyIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS).orElse(Collections.emptyList());
+			List<Object> texts = eventDocument.getFieldValues(FIELD_EVENT_ARG_TEXT).orElse(Collections.emptyList());
+			List<Object> preferredNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_PREFERRED_NAME).orElse(Collections.emptyList());
 			Optional<String> mainEventType = eventDocument.get(FIELD_EVENT_MAINEVENTTYPE);
-			Optional<List<Object>> allEventTypes = eventDocument.getFieldValues(FIELD_EVENT_ALLEVENTTYPES);
 			Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
 			Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE);
-			Optional<Integer> numArguments = eventDocument.get(FIELD_EVENT_NUMDISTINCTARGUMENTS);
+			Optional<Integer> numDistinctArguments = eventDocument.get(FIELD_EVENT_NUMDISTINCTARGUMENTS);
 
 			Map<String, List<String>> highlights = eventDocument.getHighlights();
 
+			
+			int numArguments = (int) eventDocument.get(FIELD_EVENT_NUMARGUMENTS).get();
+			List<Argument> arguments = new ArrayList<>();
+			for(int i = 0; i < numArguments; ++i) {
+				String conceptId = i < conceptIds.size() ? (String) conceptIds.get(i) :  null;
+				String geneId = i < geneIds.size() ? (String) geneIds.get(i) :  null;
+				String topHomologyId = i < topHomologyIds.size() ? (String) topHomologyIds.get(i) :  null;
+				String text = i < texts.size() ? (String) texts.get(i) :  null;
+				String preferredName = i < preferredNames.size() ? (String) preferredNames.get(i) :  null;
+				
+				arguments.add(new Argument(geneId, conceptId, topHomologyId, preferredName,text));
+			}
+			
 			Event event = new Event();
-			event.setAllArgumentTokens(allArguments.orElse(Collections.emptyList()).stream().map(o -> (String)o).collect(Collectors.toList()));
-			event.setAllEventTypes(allEventTypes.orElse(Collections.emptyList()).stream().map(o -> (String)o).collect(Collectors.toList()));
+			event.setArguments(arguments);
+			event.setNumDistinctArguments(numDistinctArguments.get());
 			event.setLikelihood(likelihood.get());
 			event.setMainEventType(mainEventType.get());
 			event.setHighlightedSentence(highlights.getOrDefault(FIELD_EVENT_SENTENCE, Collections.emptyList()).stream().findFirst().orElse(null));
