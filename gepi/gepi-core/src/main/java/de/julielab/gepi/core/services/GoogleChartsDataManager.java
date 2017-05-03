@@ -9,17 +9,20 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.json.JSONArray;
 
 import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.data.Argument;
+import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
 
 public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 
-	private Map<String, Integer> singleArgCount;
-	private Map<String, Integer> pairedArgCount;
+	private Map<Argument, Integer> singleArgCount;
+	private Map<Pair<Argument, Argument>, Integer> pairedArgCount;
 	private JSONArray singleArgCountJson;
 	private JSONArray pairedArgCountJson;
-	private static final String GENE_PAIR_DELIMITER = "__$__";
 
 	/**
 	 * sets json formated input list for google charts that accept one entry
@@ -28,12 +31,18 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setSingleArgCount(List<Event> evtList) {
-		List<String> atids = new ArrayList<String>();
-		// get all atids in one list
-		evtList.forEach(e -> e.getArguments().forEach(a -> atids.add(a.getTopHomologyId())));
+		List<Argument> arguments = new ArrayList<>();
+		// get those arguments that were not part of the input
+		evtList.forEach(e -> {
+			for (int i = 1; i < e.getNumArguments(); ++i) {
+				Argument a = e.getArgument(i);
+				a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY);
+				arguments.add(a);
+			};
+		});
 
 		// get the counts of how often event arguments appear
-		singleArgCount = CollectionUtils.getCardinalityMap(atids);
+		singleArgCount = CollectionUtils.getCardinalityMap(arguments);
 
 		// sort entries
 		singleArgCount = singleArgCount.entrySet().stream()
@@ -45,7 +54,7 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 
 		this.singleArgCount.forEach((k, v) -> {
 			JSONArray tmp = new JSONArray();
-			tmp.put(k);
+			tmp.put(k.getPreferredName());
 			tmp.put(v);
 			singleArgCountJson.put(tmp);
 		});
@@ -68,18 +77,12 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 	@Override
 	public void setBothArgsCount(List<Event> evtList) {
 
-		List<String> atids = new ArrayList<String>();
+		List<Pair<Argument, Argument>> atids = new ArrayList<>();
 
 		// get all atid atid pairs in one list
 		evtList.forEach(e -> {
-			System.out.println(e);
 			if (e.getNumArguments() == 2) {
-				String a = e.getArgument(0).getTopHomologyId();
-				String b = e.getArgument(1).getTopHomologyId();
-				if (Integer.parseInt(a.substring(4)) < Integer.parseInt(b.substring(4)))
-					atids.add(a + GENE_PAIR_DELIMITER + b);
-				else
-					atids.add(b + GENE_PAIR_DELIMITER + a);
+			atids.add(new ImmutablePair<Argument, Argument>(e.getFirstArgument(), e.getSecondArgument()));
 			}
 		});
 
@@ -91,17 +94,13 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 				.sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-		System.out.println("counts: " + pairedArgCount);
-
 		// put to json
 		pairedArgCountJson = new JSONArray();
 
 		this.pairedArgCount.forEach((k, v) -> {
-			String[] tmpPair;
-			tmpPair = k.split(Pattern.quote(GENE_PAIR_DELIMITER));
 			JSONArray tmp = new JSONArray();
-			tmp.put(tmpPair[0]);
-			tmp.put(tmpPair[1]);
+			tmp.put(k.getLeft().getPreferredName());
+			tmp.put(k.getRight().getPreferredName());
 			tmp.put(v);
 			pairedArgCountJson.put(tmp);
 		});

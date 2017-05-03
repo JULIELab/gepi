@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Event {
 	protected List<String> allEventTypes;
-	
-	protected List<Gene> arguments;
+
+	protected List<Argument> arguments;
 
 	protected String highlightedSentence;
 
@@ -15,19 +15,17 @@ public class Event {
 
 	protected int numDistinctArguments;
 	protected String sentence;
+
 	public List<String> getAllEventTypes() {
 		return allEventTypes;
 	}
-	public Gene getArgument(int position) {
+
+	public Argument getArgument(int position) {
 		return arguments.get(position);
 	}
 
-	public List<Gene> getArguments() {
+	public List<Argument> getArguments() {
 		return arguments;
-	}
-
-	public String getFirstArgumentGeneId() {
-		return arguments.get(0).getGeneId();
 	}
 
 	public String getHighlightedSentence() {
@@ -48,15 +46,8 @@ public class Event {
 		return arguments.size();
 	}
 
-
 	public int getNumDistinctArguments() {
 		return numDistinctArguments;
-	}
-
-	public String getSecondArgumentGeneId() {
-		if (getNumArguments() > 1)
-			return arguments.get(1).getGeneId();
-		return "";
 	}
 
 	public String getSentence() {
@@ -69,7 +60,7 @@ public class Event {
 		this.allEventTypes = allEventTypes;
 	}
 
-	public void setArguments(List<Gene> arguments) {
+	public void setArguments(List<Argument> arguments) {
 		this.arguments = arguments;
 	}
 
@@ -92,12 +83,12 @@ public class Event {
 	public void setSentence(String sentence) {
 		this.sentence = sentence;
 	}
-	
-	public Gene getFirstArgument() {
+
+	public Argument getFirstArgument() {
 		return getArgument(0);
 	}
-	
-	public Gene getSecondArgument() {
+
+	public Argument getSecondArgument() {
 		if (arguments.size() < 2)
 			return null;
 		return getArgument(1);

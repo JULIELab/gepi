@@ -25,7 +25,7 @@ import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
-import de.julielab.gepi.core.retrieval.data.Gene;
+import de.julielab.gepi.core.retrieval.data.Argument;
 
 /**
  * Gets any IDs, converts them to GePi IDs (or just queries the index?!) and
@@ -221,7 +221,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 				}
 				int inputIdPosition = -1;
 				for (int i = 0; i < e.getNumArguments(); ++i) {
-					Gene g = e.getArgument(i);
+					Argument g = e.getArgument(i);
 					// TODO support other IDs
 					if (idSet.contains(g.getGeneId())) {
 						inputIdPosition = i;
@@ -232,8 +232,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 					throw new IllegalStateException(
 							"An event was returned that does not contain an input argument ID: " + e);
 				if (inputIdPosition > 0) {
-					List<Gene> arguments = e.getArguments();
-					Gene tmp = arguments.get(0);
+					List<Argument> arguments = e.getArguments();
+					Argument tmp = arguments.get(0);
 					arguments.set(0, arguments.get(inputIdPosition));
 					arguments.set(inputIdPosition, tmp);
 				}

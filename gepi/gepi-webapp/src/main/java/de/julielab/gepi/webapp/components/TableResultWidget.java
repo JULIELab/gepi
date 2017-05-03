@@ -12,7 +12,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.BeanModelSource;
 
 import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.data.Gene;
+import de.julielab.gepi.core.retrieval.data.Argument;
 
 public class TableResultWidget extends GepiWidget {
 	@Property
@@ -35,9 +35,11 @@ public class TableResultWidget extends GepiWidget {
 	void setupRender() {
 		super.setupRender();
 		tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
-		tableModel.include("firstArgumentTextWithPreferredName", "secondArgumentTextWithPreferredName", "sentence");
-		tableModel.get("firstArgumentTextWithPreferredName").label("gene A");
-		tableModel.get("secondArgumentTextWithPreferredName").label("gene B");
+		tableModel.include("firstArgumentText", "firstArgumentPreferredName", "secondArgumentText", "secondArgumentPreferredName", "sentence");
+		tableModel.get("firstArgumentText").label("gene A text");
+		tableModel.get("firstArgumentPreferredName").label("gene A symbol");
+		tableModel.get("secondArgumentText").label("gene B text");
+		tableModel.get("secondArgumentPreferredName").label("gene B symbol");
 	}
 
 	void onUpdateTableData() {
@@ -49,24 +51,41 @@ public class TableResultWidget extends GepiWidget {
 		}
 	}
 	
-	public static class BeanModelEvent extends Event {
+	public static class BeanModelEvent {
+
+		private Event event;
 
 		public BeanModelEvent(Event event) {
-			this.arguments = event.getArguments();
-			this.highlightedSentence = event.getHighlightedSentence();
-			this.sentence = event.getSentence();
-			this.numDistinctArguments = event.getNumDistinctArguments();
-			this.allEventTypes = event.getAllEventTypes();
-			this.mainEventType = event.getMainEventType();
+			this.event = event;
+		}
+		
+		public String getFirstArgumentText() {
+			return event.getFirstArgument().getText();
+		}
+		
+		public String getSecondArgumentText() {
+			return event.getSecondArgument().getText();
+		}
+		
+		public String getFirstArgumentPreferredName() {
+			return event.getFirstArgument().getPreferredName();
+		}
+		
+		public String getSecondArgumentPreferredName() {
+			return event.getSecondArgument().getPreferredName();
 		}
 
 		public String getFirstArgumentTextWithPreferredName() {
-			Gene argument = getFirstArgument();
+			Argument argument = event.getFirstArgument();
 			return argument.getText() + " (" + argument.getPreferredName() + ")";
+		}
+		
+		public String getSentence() {
+			return event.getSentence();
 		}
 
 		public String getSecondArgumentTextWithPreferredName() {
-			Gene argument = getSecondArgument();
+			Argument argument = event.getSecondArgument();
 			if (null != argument)
 				return argument.getText() + " (" + argument.getPreferredName() + ")";
 			return "";

@@ -25,7 +25,7 @@ import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.Gene;
+import de.julielab.gepi.core.retrieval.data.Argument;
 
 public class EventResponseProcessingService implements IEventResponseProcessingService {
 
@@ -40,7 +40,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 	public EventRetrievalResult getEventRetrievalResult(ISearchServerResponse response) {
 		if (response.getQueryError() != null) {
 			log.error("Error while querying ElasticSearch: {}", response.getQueryErrorMessage());
-			return new EventRetrievalResult();
+			throw new IllegalStateException("The ElasticSearch server is down or was not queried correctly: There was no response.");
+//			return new EventRetrievalResult();
 		}
 		// Gets, first, from all document hits their inner (event) hits and,
 		// second, converts all inner event hits into instances of the Event
@@ -67,7 +68,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 
 			
 			int numArguments = (int) eventDocument.get(FIELD_EVENT_NUMARGUMENTS).get();
-			List<Gene> arguments = new ArrayList<>();
+			List<Argument> arguments = new ArrayList<>();
 			for(int i = 0; i < numArguments; ++i) {
 				String conceptId = i < conceptIds.size() ? (String) conceptIds.get(i) :  null;
 				String geneId = i < geneIds.size() ? (String) geneIds.get(i) :  null;
@@ -75,7 +76,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 				String text = i < texts.size() ? (String) texts.get(i) :  null;
 				String preferredName = i < preferredNames.size() ? (String) preferredNames.get(i) :  null;
 				
-				arguments.add(new Gene(geneId, conceptId, topHomologyId, preferredName,text));
+				arguments.add(new Argument(geneId, conceptId, topHomologyId, preferredName,text));
 			}
 			
 			Event event = new Event();
