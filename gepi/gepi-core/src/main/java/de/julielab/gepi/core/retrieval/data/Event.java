@@ -3,26 +3,26 @@ package de.julielab.gepi.core.retrieval.data;
 import java.util.List;
 
 public class Event {
-	private List<String> allEventTypes;
+	protected List<String> allEventTypes;
 	
-	private List<Argument> arguments;
+	protected List<Gene> arguments;
 
-	private String highlightedSentence;
+	protected String highlightedSentence;
 
-	private int likelihood;
+	protected int likelihood;
 
-	private String mainEventType;
+	protected String mainEventType;
 
-	private int numDistinctArguments;
-	private String sentence;
+	protected int numDistinctArguments;
+	protected String sentence;
 	public List<String> getAllEventTypes() {
 		return allEventTypes;
 	}
-	public Argument getArgument(int position) {
+	public Gene getArgument(int position) {
 		return arguments.get(position);
 	}
 
-	public List<Argument> getArguments() {
+	public List<Gene> getArguments() {
 		return arguments;
 	}
 
@@ -69,7 +69,7 @@ public class Event {
 		this.allEventTypes = allEventTypes;
 	}
 
-	public void setArguments(List<Argument> arguments) {
+	public void setArguments(List<Gene> arguments) {
 		this.arguments = arguments;
 	}
 
@@ -91,6 +91,16 @@ public class Event {
 
 	public void setSentence(String sentence) {
 		this.sentence = sentence;
+	}
+	
+	public Gene getFirstArgument() {
+		return getArgument(0);
+	}
+	
+	public Gene getSecondArgument() {
+		if (arguments.size() < 2)
+			return null;
+		return getArgument(1);
 	}
 
 	@Override

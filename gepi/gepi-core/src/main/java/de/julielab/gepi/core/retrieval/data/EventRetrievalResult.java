@@ -5,20 +5,23 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EventRetrievalResult {
-	private Stream<Event> events;
+	public enum EventResultType {OUTSIDE, BIPARTITE}
 	private List<Event> eventList;
+	private EventResultType resultType;
 
-	public Stream<Event> getEvents() {
-		return events;
-	}
-	
-	public List<Event> getEventList(){
-		if (eventList == null)
-			eventList = events.collect(Collectors.toList());
+	public List<Event> getEventList() {
 		return eventList;
 	}
 
 	public void setEvents(Stream<Event> events) {
-		this.events = events;
+		eventList = events.collect(Collectors.toList());
+	}
+
+	public EventResultType getResultType() {
+		return resultType;
+	}
+
+	public void setResultType(EventResultType resultType) {
+		this.resultType = resultType;
 	}
 }

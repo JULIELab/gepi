@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Table View" t:clientId="tableresult_widget" class="${classes}" result="result" >
-<t:grid source="persistresult.get().eventlist" row="eventrow" model="tableModel" rowsPerPage="20" pagerPosition="bottom">
+<t:trigger event="updateTableData"/>
+<t:grid source="beanevents" row="eventrow" model="tableModel" rowsPerPage="20" pagerPosition="bottom">
 </t:grid>
 </div>

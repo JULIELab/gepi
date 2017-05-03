@@ -1,13 +1,13 @@
 package de.julielab.gepi.core.retrieval.data;
 
-public class Argument {
+public class Gene {
 	private String geneId;
 	private String conceptId;
 	private String topHomologyId;
 	private String preferredName;
 	private String text;
 
-	public Argument(String geneId, String conceptId, String topHomologyId, String preferredName, String text) {
+	public Gene(String geneId, String conceptId, String topHomologyId, String preferredName, String text) {
 		super();
 		this.geneId = geneId;
 		this.conceptId = conceptId;
@@ -54,6 +54,9 @@ public class Argument {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+	public String toString() {
+		return preferredName;
 	}
 
 }
