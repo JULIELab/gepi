@@ -10,12 +10,6 @@ define([ "jquery", "gepi/pages/index" ], function($) {
             data.addRows(sankeyDat)
 
             var options = {
-                chartArea : {
-                    left : 10,
-                    top : 10,
-                    width : '100%',
-                    height : '90%'
-                }
             };
 
             var chart = new google.visualization.Sankey(document.getElementById('sankeychart'));
