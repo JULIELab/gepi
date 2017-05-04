@@ -30,8 +30,4 @@ public class GepiWidget {
 	void setupRender() {
 		persistResult = result;
 	}
-	
-
-	
-	
 }
