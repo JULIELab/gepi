@@ -1,11 +1,14 @@
 package de.julielab.gepi.webapp.components;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.services.IGoogleChartsDataManager;
 
 public class PieChartWidget extends GepiWidget {
 	
@@ -14,6 +17,9 @@ public class PieChartWidget extends GepiWidget {
 	
 	@Inject
     private JavaScriptSupport javaScriptSupport;
+	
+	@Inject
+	private IGoogleChartsDataManager gChartMnger;
 		
 	@Property
 	private JSONArray eventsJSON;
@@ -25,7 +31,13 @@ public class PieChartWidget extends GepiWidget {
 		
 	
 	void onDrawChart() {
-		javaScriptSupport.require("gepi/gcharts/piechart").with( super.getSingleArgsCount() );
+		try {
+			javaScriptSupport.require("gepi/gcharts/piechart").with( 
+					gChartMnger.getTargetArgCount(persistResult.get().getEventList() ) );
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	

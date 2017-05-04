@@ -1,5 +1,7 @@
 package de.julielab.gepi.webapp.components;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
@@ -23,7 +25,13 @@ public class SankeyWidget extends GepiWidget {
 	}
 	
 	void onDrawChart() {
-		javaScriptSupport.require("gepi/gcharts/sankeychart").with( super.getBothArgsCount() );
+		try {
+			javaScriptSupport.require("gepi/gcharts/sankeychart").with( 
+					gChartMnger.getPairedArgsCount(persistResult.get().getEventList()) );
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 		
 }

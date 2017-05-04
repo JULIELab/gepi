@@ -18,9 +18,6 @@ public class GepiWidget {
 	@Parameter(defaultPrefix = BindingConstants.LITERAL, name = "class")
 	@Property
 	private String classes;
-
-	@Inject
-	private IGoogleChartsDataManager gChartMnger;
 	
 	@Parameter
 	@Property
@@ -32,33 +29,9 @@ public class GepiWidget {
 
 	void setupRender() {
 		persistResult = result;
-		if (persistResult != null && persistResult.isDone()) {
-			// TODO: input event information handling
-			
-		}
 	}
 	
-	/**
-	 * Builds JSONArray that google charts requires for a pie and bar chart.
-	 * @return JSONArray - array of tuples (array)
-	 */
-	protected JSONArray getSingleArgsCount() {
-		try {
-			gChartMnger.setSingleArgCount(persistResult.get().getEventList());
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
-		return gChartMnger.getSingleArgCount();
-	}
-	
-	protected JSONArray getBothArgsCount() {
-		try {
-			gChartMnger.setBothArgsCount(persistResult.get().getEventList());
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
-		return gChartMnger.getBothArgsCount();
-	}
+
 	
 	
 }

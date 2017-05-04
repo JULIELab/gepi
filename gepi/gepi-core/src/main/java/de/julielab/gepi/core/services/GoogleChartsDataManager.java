@@ -27,10 +27,11 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 	/**
 	 * sets json formated input list for google charts that accept one entry
 	 * name + number (here target event gene + count of occurrences)
+	 * singleArgCountJson is array of arrays with [<gene name><count>]
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setSingleArgCount(List<Event> evtList) {
+	public JSONArray getTargetArgCount(List<Event> evtList) {
 		List<Argument> arguments = new ArrayList<>();
 		// get those arguments that were not part of the input
 		evtList.forEach(e -> {
@@ -58,25 +59,18 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 			tmp.put(v);
 			singleArgCountJson.put(tmp);
 		});
-	}
-
-	/**
-	 * singleArgCountJson is array of arrays with [<gene name><count>]
-	 */
-	@Override
-	public JSONArray getSingleArgCount() {
 		return singleArgCountJson;
 	}
 
 	/**
 	 * sets json formated input list for google charts that accepts an entry
 	 * pair + number (here gene pair (from + to) + count of occurrences)
+	 * singleArgCountJson is array of arrays with [<gene name 1><gene name
+	 * 2><count>]
 	 */
-	// <gene 1>,<gene 2>, <count>
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setBothArgsCount(List<Event> evtList) {
-
+	public JSONArray getPairedArgsCount(List<Event> evtList) {
 		List<Pair<Argument, Argument>> atids = new ArrayList<>();
 
 		// get all atid atid pairs in one list
@@ -104,15 +98,7 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 			tmp.put(v);
 			pairedArgCountJson.put(tmp);
 		});
-	}
 
-	/**
-	 * singleArgCountJson is array of arrays with [<gene name 1><gene name
-	 * 2><count>]
-	 */
-	@Override
-	public JSONArray getBothArgsCount() {
-		System.out.println("json: " + this.pairedArgCountJson);
 		return pairedArgCountJson;
 	}
 
