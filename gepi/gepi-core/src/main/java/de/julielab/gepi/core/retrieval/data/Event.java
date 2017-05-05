@@ -1,5 +1,6 @@
 package de.julielab.gepi.core.retrieval.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Event {
@@ -97,6 +98,18 @@ public class Event {
 	@Override
 	public String toString() {
 		return getMainEventType() + ": " + arguments;
+	}
+
+	public Event copy() {
+		Event e = new Event();
+		e.allEventTypes = allEventTypes != null ? new ArrayList<>(allEventTypes) : null;
+		e.arguments = arguments != null ? new ArrayList<>(arguments) : null;
+		e.highlightedSentence = highlightedSentence;
+		e.likelihood = likelihood;
+		e.mainEventType = mainEventType;
+		e.numDistinctArguments = numDistinctArguments;
+		e.sentence = sentence;
+		return e;
 	}
 
 }

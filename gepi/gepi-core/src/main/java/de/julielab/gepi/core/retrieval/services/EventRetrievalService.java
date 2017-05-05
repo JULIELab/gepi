@@ -1,5 +1,6 @@
 package de.julielab.gepi.core.retrieval.services;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -22,10 +23,10 @@ import de.julielab.elastic.query.components.data.query.NestedQuery;
 import de.julielab.elastic.query.components.data.query.TermQuery;
 import de.julielab.elastic.query.components.data.query.TermsQuery;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
+import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
-import de.julielab.gepi.core.retrieval.data.Argument;
 
 /**
  * Gets any IDs, converts them to GePi IDs (or just queries the index?!) and
@@ -77,14 +78,20 @@ public class EventRetrievalService implements IEventRetrievalService {
 	}
 
 	@Override
-	public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Stream<String> idStream1,
-			Stream<String> idStream2) {
+	public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Stream<String> idStreamA,
+			Stream<String> idStreamB) {
+		List<Object> idListA = idStreamA.collect(Collectors.toList());
+		Set<String> idSetA = idListA.stream().map(String.class::cast).collect(Collectors.toSet());
+
+		List<Object> idListB = idStreamB.collect(Collectors.toList());
+		Set<String> idSetB = idListB.stream().map(String.class::cast).collect(Collectors.toSet());
+
 		TermsQuery listAQuery = new TermsQuery();
-		listAQuery.terms = idStream1.collect(Collectors.toList());
+		listAQuery.terms = idListA;
 		listAQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
 		TermsQuery listBQuery = new TermsQuery();
-		listBQuery.terms = idStream1.collect(Collectors.toList());
+		listBQuery.terms = idListB;
 		listBQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
 		TermQuery filterQuery = new TermQuery();
@@ -124,23 +131,92 @@ public class EventRetrievalService implements IEventRetrievalService {
 		serverCmd.fieldsToReturn = Collections.emptyList();
 		serverCmd.downloadCompleteResults = true;
 
-		SearchCarrier carrier = new SearchCarrier("OutsideEvents");
+		SearchCarrier carrier = new SearchCarrier("BipartiteEvents");
 		carrier.addSearchServerCommand(serverCmd);
 		searchServerComponent.process(carrier);
 
 		return CompletableFuture.supplyAsync(() -> {
-			// try {
-			// Thread.sleep(2000);
-			// } catch (InterruptedException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
 
 			EventRetrievalResult eventResult = eventResponseProcessingService
 					.getEventRetrievalResult(carrier.getSingleSearchServerResponse());
 			eventResult.setResultType(EventResultType.BIPARTITE);
+			reorderBipartiteEventResultArguments(idSetA, idSetB, eventResult);
 			return eventResult;
 		});
+	}
+
+	/**
+	 * Reorders the arguments of the events to make the first argument
+	 * correspond to the A ID list and the second argument to the B ID list.
+	 * Also adds new events in case of more than two ID hits in the same so we
+	 * can handle all results as binary events.
+	 * 
+	 * @param idSetA
+	 *            The set of list A query IDs.
+	 * @param idSetB
+	 *            The set of list B query IDs.
+	 * @param eventResult
+	 *            The event result as returned by the
+	 *            {@link EventResponseProcessingService}.
+	 */
+	private void reorderBipartiteEventResultArguments(Set<String> idSetA, Set<String> idSetB,
+			EventRetrievalResult eventResult) {
+		// reorder all arguments such that the first argument corresponds to
+		// an input ID from list A and the second argument corresponds to an
+		// ID from list B
+
+		// It might happen that an event has more than two gene arguments.
+		// Thus, it might also happen, that more than two input IDs are
+		// found in the event. However, GePi currently only handles binary
+		// events. Hence, we split larger events into pairs of arguments if
+		// necessary.
+		List<Event> extendedResults = new ArrayList<>();
+		for (Iterator<Event> it = eventResult.getEventList().iterator(); it.hasNext();) {
+			Event e = it.next();
+			List<Integer> idAHits = new ArrayList<>();
+			List<Integer> idBHits = new ArrayList<>();
+			for (int i = 0; i < e.getNumArguments(); ++i) {
+				Argument g = e.getArgument(i);
+				// TODO support other IDs
+				if (idSetA.contains(g.getGeneId())) {
+					idAHits.add(i);
+				}
+				if (idSetB.contains(g.getGeneId())) {
+					idBHits.add(i);
+				}
+			}
+			if (idAHits.size() + idBHits.size() < 2)
+				throw new IllegalStateException(
+						"An event was returned that does not contain one of the input argument IDs: " + e);
+			// create events for all pairs of indices containing an input
+			// ID, if the IDs at those indices are different
+			List<Argument> originalArguments = new ArrayList<>(e.getArguments());
+			for (int i = 0; i < idAHits.size(); ++i) {
+				for (int j = 0; j < idBHits.size(); ++j) {
+					// for the first combination, use the original event
+					// object; for all others, we need a copy
+					Event event;
+					List<Argument> arguments;
+					if (i == 0 && j == 0) {
+						event = e;
+						arguments = e.getArguments();
+					} else {
+						event = e.copy();
+						extendedResults.add(event);
+						arguments = new ArrayList<>(originalArguments);
+					}
+					// arrange the arguments according to the positions of
+					// listAId and listBId
+					int inputAIdPosition = idAHits.get(i);
+					int inputBIdPosition = idBHits.get(j);
+					if (inputAIdPosition > 0)
+						Collections.swap(arguments, 0, inputAIdPosition);
+					if (inputBIdPosition > 1)
+						Collections.swap(arguments, 1, inputBIdPosition);
+				}
+			}
+		}
+		eventResult.getEventList().addAll(extendedResults);
 	}
 
 	@Override
@@ -198,48 +274,55 @@ public class EventRetrievalService implements IEventRetrievalService {
 		searchServerComponent.process(carrier);
 
 		return CompletableFuture.supplyAsync(() -> {
-			// try {
-			// Thread.sleep(2000);
-			// } catch (InterruptedException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			//
 			EventRetrievalResult eventResult = eventResponseProcessingService
 					.getEventRetrievalResult(carrier.getSingleSearchServerResponse());
 			eventResult.setResultType(EventResultType.OUTSIDE);
-			// reorder all arguments such that the first argument corresponds to
-			// the input ID that caused the match
-
-			for (Iterator<Event> it = eventResult.getEventList().iterator(); it.hasNext();) {
-				Event e = it.next();
-				// remove events that do not have any other argument than the
-				// input ID itself
-				if (e.getArguments().stream().map(a -> a.getTopHomologyId()).distinct().count() < 2) {
-					it.remove();
-					continue;
-				}
-				int inputIdPosition = -1;
-				for (int i = 0; i < e.getNumArguments(); ++i) {
-					Argument g = e.getArgument(i);
-					// TODO support other IDs
-					if (idSet.contains(g.getGeneId())) {
-						inputIdPosition = i;
-						break;
-					}
-				}
-				if (inputIdPosition == -1)
-					throw new IllegalStateException(
-							"An event was returned that does not contain an input argument ID: " + e);
-				if (inputIdPosition > 0) {
-					List<Argument> arguments = e.getArguments();
-					Argument tmp = arguments.get(0);
-					arguments.set(0, arguments.get(inputIdPosition));
-					arguments.set(inputIdPosition, tmp);
-				}
-			}
+			reorderOutsideEventResultsArguments(idSet, eventResult);
 			return eventResult;
 		});
+	}
+
+	/**
+	 * Reorder the arguments of the result events such that the first argument
+	 * always corresponds to an ID in the query ID list.
+	 * 
+	 * @param idSet
+	 *            The set of query IDs.
+	 * @param eventResult
+	 *            The event result as returned by
+	 *            {@link EventResponseProcessingService}.
+	 */
+	private void reorderOutsideEventResultsArguments(Set<String> idSet, EventRetrievalResult eventResult) {
+		// reorder all arguments such that the first argument corresponds to
+		// the input ID that caused the match
+
+		for (Iterator<Event> it = eventResult.getEventList().iterator(); it.hasNext();) {
+			Event e = it.next();
+			// remove events that do not have any other argument than the
+			// input ID itself
+			if (e.getArguments().stream().map(a -> a.getTopHomologyId()).distinct().count() < 2) {
+				it.remove();
+				continue;
+			}
+			int inputIdPosition = -1;
+			for (int i = 0; i < e.getNumArguments(); ++i) {
+				Argument g = e.getArgument(i);
+				// TODO support other IDs
+				if (idSet.contains(g.getGeneId())) {
+					inputIdPosition = i;
+					break;
+				}
+			}
+			if (inputIdPosition == -1)
+				throw new IllegalStateException(
+						"An event was returned that does not contain an input argument ID: " + e);
+			if (inputIdPosition > 0) {
+				List<Argument> arguments = e.getArguments();
+				Argument tmp = arguments.get(0);
+				arguments.set(0, arguments.get(inputIdPosition));
+				arguments.set(inputIdPosition, tmp);
+			}
+		}
 	}
 
 }

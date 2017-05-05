@@ -1,41 +1,107 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
-import org.apache.tapestry5.ioc.Registry;
-import org.apache.tapestry5.ioc.RegistryBuilder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
+import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.services.GePiCoreTestModule;
 
 public class EventRetrievalServiceTest {
-	private static Registry registry;
+	@Test
+	public void testReorderBipartiteEventResultArguments() throws Exception {
+		EventRetrievalService retrievalService = new EventRetrievalService(null,
+				LoggerFactory.getLogger(EventRetrievalService.class), null, null);
+		Method method = retrievalService.getClass().getDeclaredMethod("reorderBipartiteEventResultArguments", Set.class,
+				Set.class, EventRetrievalResult.class);
+		method.setAccessible(true);
 
-	@BeforeClass
-	public static void setup() {
-		registry = RegistryBuilder.buildAndStartupRegistry(GePiCoreTestModule.class);
-	}
+		Set<String> idsA = new HashSet<>(Arrays.asList("1", "2", "3"));
+		Set<String> idsB = new HashSet<>(Arrays.asList("4", "5", "6"));
 
-	@AfterClass
-	public static void shutdown() {
-		registry.shutdown();
+		EventRetrievalResult result = new EventRetrievalResult();
+		Builder<Event> streamBuilder = Stream.builder();
+		Event e = new Event();
+		e.setArguments(Arrays.asList(getArg("4"), getArg("1")));
+		streamBuilder.accept(e);
+		
+		result.setEvents(streamBuilder.build());
+		
+		method.invoke(retrievalService, idsA, idsB, result);
+		
+		assertEquals("1", result.getEventList().get(0).getFirstArgument().getGeneId());
+		assertEquals("4", result.getEventList().get(0).getSecondArgument().getGeneId());
 	}
 	
 	@Test
-	public void testGetOutsideEvents() throws Exception {
-		IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-		CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(Arrays.asList("5327").stream());
-		assertTrue(0 < outsideEvents.get().getEventList().size());
+	public void testReorderBipartiteEventResultArguments2() throws Exception {
+		EventRetrievalService retrievalService = new EventRetrievalService(null,
+				LoggerFactory.getLogger(EventRetrievalService.class), null, null);
+		Method method = retrievalService.getClass().getDeclaredMethod("reorderBipartiteEventResultArguments", Set.class,
+				Set.class, EventRetrievalResult.class);
+		method.setAccessible(true);
+
+		Set<String> idsA = new HashSet<>(Arrays.asList("1", "2", "3"));
+		Set<String> idsB = new HashSet<>(Arrays.asList("4", "5", "6"));
+
+		EventRetrievalResult result = new EventRetrievalResult();
+		Builder<Event> streamBuilder = Stream.builder();
+		Event e = new Event();
+		e.setArguments(Arrays.asList(getArg("4"), getArg("1"), getArg("4")));
+		streamBuilder.accept(e);
 		
-		for (Event e : outsideEvents.get().getEventList()) {
-			System.out.println(e);
+		result.setEvents(streamBuilder.build());
+		
+		method.invoke(retrievalService, idsA, idsB, result);
+		
+		assertEquals(2, result.getEventList().size());
+		
+		assertEquals("1", result.getEventList().get(0).getFirstArgument().getGeneId());
+		assertEquals("4", result.getEventList().get(0).getSecondArgument().getGeneId());
+		
+		assertEquals("1", result.getEventList().get(1).getFirstArgument().getGeneId());
+		assertEquals("4", result.getEventList().get(1).getSecondArgument().getGeneId());
+	}
+	
+	@Test
+	public void testReorderBipartiteEventResultArguments3() throws Exception {
+		EventRetrievalService retrievalService = new EventRetrievalService(null,
+				LoggerFactory.getLogger(EventRetrievalService.class), null, null);
+		Method method = retrievalService.getClass().getDeclaredMethod("reorderBipartiteEventResultArguments", Set.class,
+				Set.class, EventRetrievalResult.class);
+		method.setAccessible(true);
+
+		Set<String> idsA = new HashSet<>(Arrays.asList("1", "2", "3"));
+		Set<String> idsB = new HashSet<>(Arrays.asList("4", "5", "6"));
+
+		EventRetrievalResult result = new EventRetrievalResult();
+		Builder<Event> streamBuilder = Stream.builder();
+		Event e = new Event();
+		e.setArguments(Arrays.asList(getArg("4"), getArg("1"), getArg("3"), getArg("6")));
+		streamBuilder.accept(e);
+		
+		result.setEvents(streamBuilder.build());
+		
+		method.invoke(retrievalService, idsA, idsB, result);
+		
+		assertEquals(4, result.getEventList().size());
+		
+		for (Event event : result.getEventList()) {
+			assertTrue(idsA.contains(event.getFirstArgument().getGeneId()));
+			assertTrue(idsB.contains(event.getSecondArgument().getGeneId()));
 		}
+	}
+
+	private Argument getArg(String id) {
+		return new Argument(id, null, null, "id: " + id, null);
 	}
 }
