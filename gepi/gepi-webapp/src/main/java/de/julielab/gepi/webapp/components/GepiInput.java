@@ -55,7 +55,8 @@ public class GepiInput {
 	private CompletableFuture<EventRetrievalResult> result;
 
 	void setupRender() {
-		listATextAreaValue = "5327";
+//		listATextAreaValue = "5327";
+		listATextAreaValue = "2475";
 	}
 
 	void onValidateFromInputForm() {
@@ -69,7 +70,11 @@ public class GepiInput {
 	}
 
 	void onSuccessFromInputForm() {
-		result = eventRetrievalService.getOutsideEvents(Stream.of(listATextAreaValue.split("\n")));
+		if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null && listBTextAreaValue.trim().length() > 0)
+			result = eventRetrievalService.getBipartiteEvents(Stream.of(listATextAreaValue.split("\n")),
+					Stream.of(listBTextAreaValue.split("\n")));
+		else if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0)
+			result = eventRetrievalService.getOutsideEvents(Stream.of(listATextAreaValue.split("\n")));
 
 		Index indexPage = (Index) resources.getContainer();
 		ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());

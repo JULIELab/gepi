@@ -28,22 +28,22 @@
 									<button type="button" class="btn btn-primary" id="cleara">Clear</button>
 								</div>
 							</div>
-							<div id="listaoptions">
-								<div class="radio">
-									<label data-toggle="tooltip"
-										title="Return interactions within elements of List A">
-										<input type="radio" name="interactiontarget" checked="true" />
-										Interactions Within
-									</label>
-								</div>
-								<div class="radio">
-									<label data-toggle="tooltip"
-										title="Return interactions between elements of List A and any other genes / proteins">
-										<input type="radio" name="interactiontarget" />
-										Interactions Outside
-									</label>
-								</div>
-							</div>
+<!-- 							<div id="listaoptions"> -->
+<!-- 								<div class="radio"> -->
+<!-- 									<label data-toggle="tooltip" -->
+<!-- 										title="Return interactions within elements of List A"> -->
+<!-- 										<input type="radio" name="interactiontarget" checked="true" /> -->
+<!-- 										Interactions Within -->
+<!-- 									</label> -->
+<!-- 								</div> -->
+<!-- 								<div class="radio"> -->
+<!-- 									<label data-toggle="tooltip" -->
+<!-- 										title="Return interactions between elements of List A and any other genes / proteins"> -->
+<!-- 										<input type="radio" name="interactiontarget" /> -->
+<!-- 										Interactions Outside -->
+<!-- 									</label> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
 						</div>
 						<div class="col-md-6 text-center">
 							<div id="listbdiv" data-toggle="tooltip"
