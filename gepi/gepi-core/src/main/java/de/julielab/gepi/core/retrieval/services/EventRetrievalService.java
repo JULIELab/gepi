@@ -86,6 +86,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 		List<Object> idListB = idStreamB.collect(Collectors.toList());
 		Set<String> idSetB = idListB.stream().map(String.class::cast).collect(Collectors.toSet());
 
+		log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idListA.size(), idListB.size());
+
 		TermsQuery listAQuery = new TermsQuery();
 		listAQuery.terms = idListA;
 		listAQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
@@ -121,8 +123,15 @@ public class EventRetrievalService implements IEventRetrievalService {
 		nestedQuery.innerHits = new InnerHits();
 		nestedQuery.innerHits.addField(FIELD_EVENT_LIKELIHOOD);
 		nestedQuery.innerHits.addField(FIELD_EVENT_SENTENCE);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARGUMENTSEARCH);
 		nestedQuery.innerHits.addField(FIELD_EVENT_MAINEVENTTYPE);
+		nestedQuery.innerHits.addField(FIELD_EVENT_ARGUMENTSEARCH);
+		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_CONCEPT_IDS);
+		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_GENE_IDS);
+		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_PREFERRED_NAME);
+		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS);
+		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_TEXT);
+		nestedQuery.innerHits.addField(FIELD_EVENT_NUMARGUMENTS);
+		nestedQuery.innerHits.addField(FIELD_EVENT_NUMDISTINCTARGUMENTS);
 
 		SearchServerCommand serverCmd = new SearchServerCommand();
 		serverCmd.query = nestedQuery;
@@ -227,6 +236,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 		List<Object> idList = idStream.collect(Collectors.toList());
 		Set<String> idSet = idList.stream().map(String.class::cast).collect(Collectors.toSet());
 
+		log.debug("Retrieving outside events for {} A IDs", idList.size());
+		
 		TermsQuery termsQuery = new TermsQuery();
 		termsQuery.terms = idList;
 		termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
