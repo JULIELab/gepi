@@ -11,11 +11,15 @@ define([ "jquery", "t5/core/zone" ], function($, zoneManager, widgetSize) {
             switch (currentMode) {
             case "large":
 //                widget.removeClass("fixed");
+                $("body").removeClass("noScroll");
+                $("#widgetOverlay").removeClass("in");
                 newMode = "overview";
                 break;
             case "overview":
 //                widget.addClass("fixed");
+                $("body").addClass("noScroll");
                 newMode = "large";
+                $("#widgetOverlay").addClass("in");
                 break;
             }
             var left = document.getElementById(widgetId).getBoundingClientRect().left;

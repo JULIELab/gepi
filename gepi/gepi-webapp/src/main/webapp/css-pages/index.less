@@ -1,3 +1,7 @@
+body.noScroll {
+	overflow: hidden;
+}
+
 #resultResizeHandle {
 	float: right;
 	transform: rotate(90deg) scale(1.1);
@@ -11,6 +15,7 @@
 	transition: margin 1s ease;
 	width: calc(100% / 3);
 	position: absolute;
+	z-index: 1;
 }
 
 #inputcol.center {
@@ -41,3 +46,13 @@
 	opacity: 1;
 }
 
+#widgetOverlay {
+	position: fixed;
+	top: 50px;
+	left: 0;
+	width: 100%;
+	height: ~"calc(100vh - 50px)";
+	background-color: #ffffff;
+	z-index: 10;
+	pointer-events: none;
+}

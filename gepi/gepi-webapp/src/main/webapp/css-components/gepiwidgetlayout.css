@@ -15,6 +15,7 @@
 	-moz-transition: all 1s ease;
 	-o-transition: all 1s ease;
 	transition: all 1s ease;
+	overflow: hidden;
 }
 
 .chart {
@@ -38,6 +39,13 @@
 	top: 70px;
 	left: 15px;
 	width: calc(100% - 30px);
-	height: calc(100vh - 85px);
-	z-index: 10;
+	/* One above #widgetOverlay in index.tml/index.less */
+	z-index: 11;
+}
+
+.widget.large .panel-body {
+	height: calc(100vh - 126px);
+	/* One above #widgetOverlay in index.tml/index.less */
+	z-index: 11;
+	overflow-y: auto;
 }

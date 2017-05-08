@@ -53,6 +53,9 @@ public class Index {
 	@Property
 	private Event eventItem;
 	
+	@Persist
+	private boolean hasLargeWidget;
+	
 	/**
 	 * This is an emergency exit against being locked in an error during development.
 	 */
@@ -99,4 +102,20 @@ public class Index {
 		return this;
 	}
 
+	public boolean hasLargeWidget() {
+		return hasLargeWidget;
+	}
+
+	public void setHasLargeWidget(boolean hasLargeWidget) {
+		this.hasLargeWidget = hasLargeWidget;
+	}
+	
+	public String getBodyScrollClass() {
+		return hasLargeWidget ? "noScroll" : "";
+	}
+	
+	public String getWidgetOverlayShowClass() {
+		return hasLargeWidget ? "in" : "";
+	}
+	
 }

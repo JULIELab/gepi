@@ -6,10 +6,11 @@ import java.util.concurrent.ExecutionException;
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
-import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectComponent;
+import org.apache.tapestry5.annotations.InjectPage;
+import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
@@ -20,6 +21,7 @@ import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.webapp.pages.Index;
 
 @Import(stylesheet = { "context:css-components/gepiwidgetlayout.css" })
 @SupportsInformalParameters
@@ -71,7 +73,7 @@ public class GepiWidgetLayout {
 	@Persist
 	private CompletableFuture<EventRetrievalResult> persistResult;
 
-	@Persist(PersistenceConstants.CLIENT)
+	@Persist
 	@Property
 	private String viewMode;
 
@@ -102,15 +104,19 @@ public class GepiWidgetLayout {
 		ajaxResponseRenderer.addRender(widgetZone);
 	}
 	
+	@InjectPage
+	private Index index;
 	void onToggleViewMode() {
 		switch (viewMode) {
 		case "fullscreen":
 			break;
 		case "large":
 			viewMode = ViewMode.OVERVIEW.name().toLowerCase();
+			index.setHasLargeWidget(false);
 			break;
 		case "overview":
 			viewMode = ViewMode.LARGE.name().toLowerCase();
+			index.setHasLargeWidget(true);
 			break;
 		}
 		ajaxResponseRenderer.addRender(widgetZone);
@@ -133,5 +139,10 @@ public class GepiWidgetLayout {
 	
 	public String getSizeClass() {
 		return viewMode;
+	}
+	
+	@Log
+	public boolean isLarge() {
+		return viewMode.equals(ViewMode.LARGE.name().toLowerCase());
 	}
 }
