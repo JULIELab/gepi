@@ -1,5 +1,5 @@
-elasticquery.clustername=semedicoDev
+elasticquery.clustername=gepi-leipzig
 elasticquery.url=localhost
 elasticquery.port=9300
 
-gepi.documents.index.name=gepi-dev
+gepi.documents.index.name=gepi

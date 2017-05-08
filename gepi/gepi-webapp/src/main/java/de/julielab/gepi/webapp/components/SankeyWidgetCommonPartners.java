@@ -9,7 +9,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.services.IGoogleChartsDataManager;
 
-public class SankeyWidget extends GepiWidget {
+public class SankeyWidgetCommonPartners extends GepiWidget {
 	
 	@Inject
     private JavaScriptSupport javaScriptSupport;
@@ -26,8 +26,8 @@ public class SankeyWidget extends GepiWidget {
 	
 	void onDrawChart() {
 		try {
-			javaScriptSupport.require("gepi/gcharts/sankeychart").with("sankeychart",
-					gChartMnger.getPairedArgsCount(persistResult.get().getEventList()) );
+			javaScriptSupport.require("gepi/gcharts/sankeychart").with( "sankeychartcommonpartners",
+					gChartMnger.getPairesWithCommonTarget(persistResult.get().getEventList()) );
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}

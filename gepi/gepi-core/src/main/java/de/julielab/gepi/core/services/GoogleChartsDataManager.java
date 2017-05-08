@@ -2,10 +2,14 @@ package de.julielab.gepi.core.services;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -13,9 +17,9 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.json.JSONArray;
 
-import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
+import de.julielab.gepi.core.retrieval.data.Event;
 
 public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 
@@ -39,7 +43,8 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 				Argument a = e.getArgument(i);
 				a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY);
 				arguments.add(a);
-			};
+			}
+			;
 		});
 
 		// get the counts of how often event arguments appear
@@ -76,7 +81,7 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 		// get all atid atid pairs in one list
 		evtList.forEach(e -> {
 			if (e.getNumArguments() == 2) {
-			atids.add(new ImmutablePair<Argument, Argument>(e.getFirstArgument(), e.getSecondArgument()));
+				atids.add(new ImmutablePair<Argument, Argument>(e.getFirstArgument(), e.getSecondArgument()));
 			}
 		});
 
@@ -87,6 +92,88 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 		pairedArgCount = pairedArgCount.entrySet().stream()
 				.sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+		int i = 0;
+		for (Iterator<Entry<Pair<Argument, Argument>, Integer>> it = pairedArgCount.entrySet().iterator(); it
+				.hasNext();) {
+			@SuppressWarnings("unused")
+			Entry<Pair<Argument, Argument>, Integer> entry = it.next();
+			if (i++ > 10)
+				it.remove();
+		}
+
+		// put to json
+		pairedArgCountJson = new JSONArray();
+
+		this.pairedArgCount.forEach((k, v) -> {
+			JSONArray tmp = new JSONArray();
+			tmp.put(k.getLeft().getPreferredName());
+			tmp.put(k.getRight().getPreferredName());
+			tmp.put(v);
+			pairedArgCountJson.put(tmp);
+		});
+
+		return pairedArgCountJson;
+	}
+
+	/**
+	 * sets json formated input list for google charts that accepts an entry
+	 * pair + number (here gene pair (from + to) + count of occurrences)
+	 * singleArgCountJson is array of arrays with [<gene name 1><gene name
+	 * 2><count>]
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONArray getPairesWithCommonTarget(List<Event> evtList) {
+		List<Pair<Argument, Argument>> atids = new ArrayList<>();
+
+		// get all atid atid pairs in one list
+		evtList.forEach(e -> {
+			if (e.getNumArguments() == 2) {
+				atids.add(new ImmutablePair<Argument, Argument>(e.getFirstArgument(), e.getSecondArgument()));
+			}
+		});
+
+		Map<Argument, Set<Argument>> sourcesByTargets = atids.stream().collect(
+				Collectors.groupingBy(p -> p.getRight(), Collectors.mapping(p -> p.getLeft(), Collectors.toSet())));
+		// sort the entries
+		LinkedHashMap<Argument, Set<Argument>> sortedSourcesByTargets = sourcesByTargets.entrySet().stream()
+				.sorted((e1, e2) -> e2.getValue().size() -e1.getValue().size())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+		int maxNumSources = 20;
+		int maxNumTargets = 20;
+
+		int numSources = 0;
+		int numTargets = 0;
+		Map<Argument, Set<Argument>> limitedSortedSourcesByTargets = new HashMap<>();
+		for (Iterator<Entry<Argument, Set<Argument>>> it = sortedSourcesByTargets.entrySet().iterator(); it
+				.hasNext();) {
+			Entry<Argument, Set<Argument>> entry = it.next();
+			++numTargets;
+			numSources += entry.getValue().size();
+			limitedSortedSourcesByTargets.put(entry.getKey(), entry.getValue());
+			if (numSources > maxNumSources || numTargets > maxNumTargets)
+				break;
+		}
+
+		// get the count for how often pairs appear
+		pairedArgCount = CollectionUtils.getCardinalityMap(atids);
+
+		// sort the entries
+		pairedArgCount = pairedArgCount.entrySet().stream()
+				.sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+		for (Iterator<Entry<Pair<Argument, Argument>, Integer>> it = pairedArgCount.entrySet().iterator(); it
+				.hasNext();) {
+			Entry<Pair<Argument, Argument>, Integer> entry = it.next();
+			Argument source = entry.getKey().getLeft();
+			Argument target = entry.getKey().getRight();
+			Set<Argument> sources = limitedSortedSourcesByTargets.get(target);
+			if (sources == null || !sources.contains(source))
+				it.remove();
+
+		}
 
 		// put to json
 		pairedArgCountJson = new JSONArray();

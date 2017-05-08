@@ -19,4 +19,6 @@ public interface IGoogleChartsDataManager {
 	 * @return JSONArray - array of triplets ([<from, <to>, count])
 	 */	
 	JSONArray getPairedArgsCount(List<Event> e);
+
+	JSONArray getPairesWithCommonTarget(List<Event> evtList);
 }
