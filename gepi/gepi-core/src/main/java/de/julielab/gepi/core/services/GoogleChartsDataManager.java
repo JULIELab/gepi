@@ -140,19 +140,19 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 		LinkedHashMap<Argument, Set<Argument>> sortedSourcesByTargets = sourcesByTargets.entrySet().stream()
 				.sorted((e1, e2) -> e2.getValue().size() -e1.getValue().size())
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-		int maxNumSources = 20;
-		int maxNumTargets = 20;
+		int maxNumSources = 15;
+		int maxNumTargets = 15;
 
-		int numSources = 0;
+		Set<Argument> includedSources = new HashSet<>();
 		int numTargets = 0;
 		Map<Argument, Set<Argument>> limitedSortedSourcesByTargets = new HashMap<>();
 		for (Iterator<Entry<Argument, Set<Argument>>> it = sortedSourcesByTargets.entrySet().iterator(); it
 				.hasNext();) {
 			Entry<Argument, Set<Argument>> entry = it.next();
 			++numTargets;
-			numSources += entry.getValue().size();
+			includedSources.addAll(entry.getValue());
 			limitedSortedSourcesByTargets.put(entry.getKey(), entry.getValue());
-			if (numSources > maxNumSources || numTargets > maxNumTargets)
+			if (includedSources.size() >= maxNumSources || numTargets >= maxNumTargets)
 				break;
 		}
 
