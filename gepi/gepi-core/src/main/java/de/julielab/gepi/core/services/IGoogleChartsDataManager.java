@@ -1,7 +1,6 @@
 package de.julielab.gepi.core.services;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.tapestry5.json.JSONArray;
 

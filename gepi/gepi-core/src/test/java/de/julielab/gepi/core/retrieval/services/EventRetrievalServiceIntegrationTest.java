@@ -9,12 +9,15 @@ import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.RegistryBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.services.GePiCoreTestModule;
 
+// TODO this should be a self-contained integration test
+@Ignore
 public class EventRetrievalServiceIntegrationTest {
 	private static Registry registry;
 

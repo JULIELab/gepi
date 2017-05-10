@@ -149,7 +149,7 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
     <parent>
     	<groupId>de.julielab</groupId>
     	<artifactId>gepi</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
+    	<version>0.1.0-SNAPSHOT</version>
     	<relativePath>..</relativePath>
     </parent>
 </project>
