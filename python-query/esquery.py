@@ -141,6 +141,7 @@ class ESQuery():
             return {'pmid': r.get("_id") if r.get("_type") == "medline" else None,
                     'pmcid': (r.get("_id")).lstrip("PMC") if r.get("_type") == "pmc" else None}
 
+
     def get_arguments(self, r):
         return self.get_fields_content(r, "events.allarguments")
 

@@ -1,3 +1,0 @@
-This directory holds the configuration to turn a vanilla ElasticSearch download to a Semedico compatible ElasticSearch installation.
-Just download a fresh ElasticSearch distribution from http://elasticsearch.org, extract its contents and use the
-setupSemedicoElasticsearch.sh" script on the extracted directory.
