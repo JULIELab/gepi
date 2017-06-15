@@ -1,0 +1,5 @@
+elasticquery.clustername=gepi-leipzig
+elasticquery.url=localhost
+elasticquery.port=9300
+
+gepi.documents.index.name=gepi
