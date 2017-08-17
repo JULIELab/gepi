@@ -40,4 +40,14 @@ public interface IGeneIdService {
 	IdType recognizeIdType(Stream<String> idStream);
 
 	Stream<String> convert2Gepi(Stream<String> idStream);
+	
+	/**
+	 * Upon given IDs or gene names converts the input into atids that resemble 
+	 * the top homology atid of the respective gene 
+	 * 
+	 * @param input
+	 * @return
+	 */
+	Stream<String> convertInput2Atid( String input);
+	
 }
