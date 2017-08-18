@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.ComponentResources;
@@ -165,6 +169,7 @@ public class GepiWidgetLayout {
 	StreamResponse onActionFromDownload( ) {
 		if (!persistResult.isDone()) {
 			//TODO: how to handle case when download button is clicked, but the request is not yet fully done
+			
 		}
 		return new StreamResponse() 
 		{
@@ -208,30 +213,39 @@ public class GepiWidgetLayout {
 				return "text/csv";
 			}
 			
+			private String createLine(String[] argList) {
+				Optional<String> singleLine = Stream
+						.of(argList)
+						.reduce((x,y) -> x+delim+y);
+				if (singleLine.isPresent()) {
+					return singleLine.get() + System.getProperty("line.separator");
+				}
+				return System.getProperty("line.separator");
+			}
+			
 			private String createCSV(EventRetrievalResult eResult) {
-				StringBuilder sResult = new StringBuilder();
+				String header = createLine(new String[]{
+						"Gene1 Name", "Gene1 EntrezID", "Gene1 PreferredName",
+						"Gene2 Name", "Gene2 EntrezID", "Gene2 PreferredName",
+						"Medline ID", "PMC ID", "Sentence"
+				});
+				StringBuilder sResult = new StringBuilder(header);
+				
 				for (Event e : eResult.getEventList()) {
 					Argument firstArgument = e.getFirstArgument();
 					Argument secondArgument = e.getSecondArgument();
-					String gene1Text = firstArgument.getText();
-					String gene2Text = secondArgument.getText();
-					String gene1ID = firstArgument.getGeneId();
-					String gene2ID = secondArgument.getGeneId();
-					String gene1PrefName = firstArgument.getPreferredName();
-					String gene2PrefName = secondArgument.getPreferredName();
-					String medlineID = "Medline";
-					String pmcID = "PMC";
-					String sentence = e.getSentence();
-					
-					sResult.append(gene1Text + delim);
-					sResult.append(gene1ID + delim);
-					sResult.append(gene1PrefName + delim);
-					sResult.append(gene2Text + delim);
-					sResult.append(gene2ID + delim);
-					sResult.append(gene2PrefName + delim);
-					sResult.append(medlineID + delim);
-					sResult.append(pmcID + delim);
-					sResult.append(sentence.replaceAll("\\R", " ") + System.getProperty("line.separator"));
+					String line = createLine(new String[] {
+							firstArgument.getText() != null ? firstArgument.getText() : "",
+							firstArgument.getGeneId() != null ? firstArgument.getGeneId() : "",
+							firstArgument.getPreferredName() != null ? firstArgument.getPreferredName() : "",
+							secondArgument.getText() != null ? secondArgument.getText() : "" ,
+							secondArgument.getGeneId() != null ? secondArgument.getGeneId() : "",
+							secondArgument.getPreferredName() != null ? secondArgument.getPreferredName() : "",
+							"Medline",
+							"PMC",
+							e.getSentence() != null ? e.getSentence().replaceAll("\\R", " ") : "",
+					});
+					sResult.append(line);
 				};
 				
 				return sResult.toString();
