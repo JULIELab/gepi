@@ -6,7 +6,9 @@
 				${widgettitle}
 				<span id="${resizeHandleId}" class="glyphicon float-right glyphicon-resize-full" />
 				<t:if test="download">
-					<span class="glyphicon float-right glyphicon-download" style="margin-right:10px"/>
+					<t:actionlink t:id="download">
+						<span class="glyphicon float-right glyphicon-download" style="margin-right:10px"/>
+					</t:actionlink>
 				</t:if>
 			</div>
 			<t:zone t:id="widgetZone" id="prop:${zoneid}">

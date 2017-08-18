@@ -19,9 +19,6 @@
 					<div class="row">
 						<t:barchartwidget result="result" class="col-md-12" />
 					</div>
-					<p>
-						<t:actionlink t:id="download"> Download Table Results </t:actionlink>
-					</p>
 					<div class="row">
 						<t:tableresultwidget result="result" class="col-md-12" />
 					</div>
