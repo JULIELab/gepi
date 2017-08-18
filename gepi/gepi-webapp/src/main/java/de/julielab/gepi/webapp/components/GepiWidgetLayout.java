@@ -49,7 +49,7 @@ public class GepiWidgetLayout {
 	@Parameter(defaultPrefix = BindingConstants.LITERAL)
 	@Property
 	private String clientId;
-
+	
 	@Parameter(defaultPrefix = BindingConstants.LITERAL, name = "class")
 	@Property
 	private String classes;
@@ -91,6 +91,10 @@ public class GepiWidgetLayout {
 				.with(getResizeHandleId(), clientId, eventLink.toAbsoluteURI(), widgetZone.getClientId());
 	}
 
+	public boolean isDownload() {
+		return clientId.equals("tableresult_widget");
+	}
+	
 	public boolean isResultReady() {
 		return persistResult != null && persistResult.isDone();
 	}
