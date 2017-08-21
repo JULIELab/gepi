@@ -241,8 +241,8 @@ public class GepiWidgetLayout {
 							secondArgument.getText() != null ? secondArgument.getText() : "" ,
 							secondArgument.getGeneId() != null ? secondArgument.getGeneId() : "",
 							secondArgument.getPreferredName() != null ? secondArgument.getPreferredName() : "",
-							"Medline",
-							"PMC",
+							e.getDocumentType().toLowerCase().equals("medline") ? e.getDocumentId(): "",
+							e.getDocumentType().toLowerCase().equals("pmc") ? e.getDocumentId(): "",
 							e.getSentence() != null ? e.getSentence().replaceAll("\\R", " ") : "",
 					});
 					sResult.append(line);
