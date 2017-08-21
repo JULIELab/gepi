@@ -48,6 +48,6 @@ public interface IGeneIdService {
 	 * @param input
 	 * @return
 	 */
-	Stream<String> convertInput2Atid( String input);
+	String[] convertInput2Atid( String input);
 	
 }

@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.services;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.neo4j.driver.v1.*;
@@ -9,11 +10,11 @@ import static org.neo4j.driver.v1.Values.parameters;
 public class GeneIdService implements IGeneIdService {
 
 	private String BASE_URL;
-	
-	public GeneIdService () {
-		this.BASE_URL = "dawkins://7676";
+
+	public GeneIdService() {
+		this.BASE_URL = "bolt://localhost:7575";
 	}
-	
+
 	@Override
 	public Stream<String> convertUniprot2Gene(Stream<String> uniprotIds) {
 		// TODO Auto-generated method stub
@@ -38,34 +39,44 @@ public class GeneIdService implements IGeneIdService {
 		return null;
 	}
 
-	// TODO: What if gene name is given and top_homology is ambiguous? Has to be handled via, e.g. majority vote
+
 	@Override
-	public Stream<String> convertInput2Atid(String input) {
+	public String[] convertInput2Atid(String input) {
 
-		Record record;
-		Driver driver = GraphDatabase.driver( this.BASE_URL );
-		Session session = driver.session();
+		Config neo4jconf = Config.build().withoutEncryption().toConfig();
+		Driver driver = GraphDatabase.driver(this.BASE_URL, neo4jconf);
 
-		String[] searchInput = {"196", "11622"};
-		
-		StatementResult result = session.run( "MATCH (t:ID_MAP_NCBI_GENES) <-[:HAS_ELEMENT*2]-(a:AGGREGATE_TOP_HOMOLOGY) "
-				+ "WHERE t.originalId IN {originalIds} RETURN DISTINCT(a.id) AS ATID",
-		        parameters( "originalIds", searchInput ) );
+		try (Session session = driver.session()) {
 
-		StringBuilder outputAtids = new StringBuilder();
-		
-		while ( result.hasNext() )
-		{
-			record = result.next();
-			outputAtids.append(record.get( "ATID" ).asString() + "\n");
+			return session.readTransaction(new TransactionWork<String[]>() {
+				@Override
+				public String[] execute(Transaction tx) {
+					return queryNeo4j(tx, input);
+				}
+			});
+
 		}
-
-		session.close();
-		driver.close();
-		
-		return Stream.of(outputAtids.toString().split("\n"));
 	}
 
-	
-	
+	// TODO: What if gene name is given and top_homology is ambiguous? Has to be
+	// handled via, e.g. majority vote
+	private String[] queryNeo4j(Transaction tx, String input) {
+		Record record;
+		List<String> topAtids = new ArrayList<String>();
+
+		String[] searchInput = input.split("\n");
+
+		StatementResult result = tx.run(
+				"MATCH (t:ID_MAP_NCBI_GENES) <-[:HAS_ELEMENT*2]-(a:AGGREGATE_TOP_HOMOLOGY) "
+						+ "WHERE t.originalId IN {originalIds} RETURN DISTINCT(a.id) AS ATID",
+				parameters("originalIds", searchInput));
+
+		while (result.hasNext()) {
+			record = result.next();
+			topAtids.add(record.get("ATID").asString());
+		}
+		return topAtids.toArray(new String[topAtids.size()]);
+
+	}
+
 }
