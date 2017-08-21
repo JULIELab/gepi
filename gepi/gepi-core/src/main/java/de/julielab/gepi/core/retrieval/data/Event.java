@@ -15,7 +15,28 @@ public class Event {
 	protected String mainEventType;
 
 	protected int numDistinctArguments;
+	
 	protected String sentence;
+	
+	protected String documentId;
+	
+	protected String documentType;
+
+	public String getDocumentId() {
+		return documentId;
+	}
+
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
+	}
+
+	public String getDocumentType() {
+		return documentType;
+	}
+
+	public void setDocumentType(String documentType) {
+		this.documentType = documentType;
+	}
 
 	public List<String> getAllEventTypes() {
 		return allEventTypes;

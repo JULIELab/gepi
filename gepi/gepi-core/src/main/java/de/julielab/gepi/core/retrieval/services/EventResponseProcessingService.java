@@ -68,6 +68,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
 			Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE);
 			Optional<Integer> numDistinctArguments = eventDocument.get(FIELD_EVENT_NUMDISTINCTARGUMENTS);
+			String documentId = eventDocument.getId();
+			String documentType = eventDocument.getIndexType();
 
 			Map<String, List<String>> highlights = eventDocument.getHighlights();
 
@@ -84,6 +86,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			}
 
 			Event event = new Event();
+			event.setDocumentId(documentId);
+			event.setDocumentType(documentType);
 			event.setArguments(arguments);
 			event.setNumDistinctArguments(numDistinctArguments.get());
 			if (likelihood.isPresent())
