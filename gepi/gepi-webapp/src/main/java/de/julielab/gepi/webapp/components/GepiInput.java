@@ -17,6 +17,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
+import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.pages.Index;
 
 public class GepiInput {
@@ -51,11 +52,14 @@ public class GepiInput {
 	@Inject
 	private IEventRetrievalService eventRetrievalService;
 
+	@Inject
+	private IGeneIdService geneIdService;
+
 	@Parameter
 	private CompletableFuture<EventRetrievalResult> result;
 
 	void setupRender() {
-//		listATextAreaValue = "5327";
+		// listATextAreaValue = "5327";
 		listATextAreaValue = "2475\n196";
 	}
 
@@ -70,11 +74,13 @@ public class GepiInput {
 	}
 
 	void onSuccessFromInputForm() {
-		if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null && listBTextAreaValue.trim().length() > 0)
-			result = eventRetrievalService.getBipartiteEvents(Stream.of(listATextAreaValue.split("\n")),
-					Stream.of(listBTextAreaValue.split("\n")));
+		if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
+				&& listBTextAreaValue.trim().length() > 0)
+			result = eventRetrievalService.getBipartiteEvents(
+					Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)),
+					Stream.of(geneIdService.convertInput2Atid(listBTextAreaValue)));
 		else if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0)
-			result = eventRetrievalService.getOutsideEvents(Stream.of(listATextAreaValue.split("\n")));
+			result = eventRetrievalService.getOutsideEvents(Stream.of(geneIdService.convertInput2Atid(listBTextAreaValue)));
 
 		Index indexPage = (Index) resources.getContainer();
 		ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
