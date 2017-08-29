@@ -80,7 +80,7 @@ public class GepiInput {
 					Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)),
 					Stream.of(geneIdService.convertInput2Atid(listBTextAreaValue)));
 		else if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0)
-			result = eventRetrievalService.getOutsideEvents(Stream.of(geneIdService.convertInput2Atid(listBTextAreaValue)));
+			result = eventRetrievalService.getOutsideEvents(Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)));
 
 		Index indexPage = (Index) resources.getContainer();
 		ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
