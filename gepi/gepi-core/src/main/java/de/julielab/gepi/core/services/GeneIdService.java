@@ -12,7 +12,7 @@ public class GeneIdService implements IGeneIdService {
 	private String BASE_URL;
 
 	public GeneIdService() {
-		this.BASE_URL = "bolt://localhost:7575";
+		this.BASE_URL = "bolt://dawkins:7687";
 	}
 
 	@Override
@@ -42,9 +42,9 @@ public class GeneIdService implements IGeneIdService {
 
 	@Override
 	public String[] convertInput2Atid(String input) {
-
+		
 		Config neo4jconf = Config.build().withoutEncryption().toConfig();
-		Driver driver = GraphDatabase.driver(this.BASE_URL, neo4jconf);
+		Driver driver = GraphDatabase.driver(this.BASE_URL, AuthTokens.basic("neo4j", "julielab"), neo4jconf);
 
 		try (Session session = driver.session()) {
 
@@ -63,9 +63,9 @@ public class GeneIdService implements IGeneIdService {
 	private String[] queryNeo4j(Transaction tx, String input) {
 		Record record;
 		List<String> topAtids = new ArrayList<String>();
-
+		
 		String[] searchInput = input.split("\n");
-
+		
 		StatementResult result = tx.run(
 				"MATCH (t:ID_MAP_NCBI_GENES) <-[:HAS_ELEMENT*2]-(a:AGGREGATE_TOP_HOMOLOGY) "
 						+ "WHERE t.originalId IN {originalIds} RETURN DISTINCT(a.id) AS ATID",
