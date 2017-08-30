@@ -69,7 +69,7 @@ public class GeneIdService implements IGeneIdService {
 		StatementResult result = tx.run(
 				"MATCH (n:ID_MAP_NCBI_GENES) WHERE n.originalId IN {originalIds} "
 				+ "OPTIONAL MATCH (n)<-[:HAS_ELEMENT*2]-(a:AGGREGATE_TOP_HOMOLOGY) "
-				+ "RETURN COALESCE(a.id,n.id) AS SEARCH_ID",
+				+ "RETURN DISTINCT( COALESCE(a.id,n.id) ) AS SEARCH_ID",
 				parameters("originalIds", searchInput));
 		
 		while (result.hasNext()) {
