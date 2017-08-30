@@ -96,6 +96,11 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
         	<artifactId>commons-collections</artifactId>
         	<version>3.2.1</version>
         </dependency>
+        <dependency>
+        	<groupId>org.neo4j.driver</groupId>
+        	<artifactId>neo4j-java-driver</artifactId>
+        	<version>1.4.3</version>
+        </dependency>
         </dependencies>
     <build>
         <finalName>gepi-webapp</finalName>

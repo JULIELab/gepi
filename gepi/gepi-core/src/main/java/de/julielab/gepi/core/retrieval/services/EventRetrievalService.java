@@ -41,7 +41,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 	public static final String FIELD_EVENT_MAINEVENTTYPE = FIELD_EVENTS + ".maineventtype";
 
-	public static final String FIELD_EVENT_ARGUMENTSEARCH = FIELD_EVENTS + ".argumentsearch";
+	public static final String FIELD_EVENT_ARGUMENTSEARCH = FIELD_EVENTS + ".argumenttophomologyids";
 
 	public static final String FIELD_EVENT_ARG_GENE_IDS = FIELD_EVENTS + ".argumentgeneids";
 
@@ -324,9 +324,9 @@ public class EventRetrievalService implements IEventRetrievalService {
 					break;
 				}
 			}
-			if (inputIdPosition == -1)
-				throw new IllegalStateException(
-						"An event was returned that does not contain an input argument ID: " + e);
+//			if (inputIdPosition == -1)
+//				throw new IllegalStateException(
+//						"An event was returned that does not contain an input argument ID: " + e);
 			if (inputIdPosition > 0) {
 				List<Argument> arguments = e.getArguments();
 				Argument tmp = arguments.get(0);
