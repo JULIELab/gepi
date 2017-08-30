@@ -67,13 +67,14 @@ public class GeneIdService implements IGeneIdService {
 		String[] searchInput = input.split("\n");
 		
 		StatementResult result = tx.run(
-				"MATCH (t:ID_MAP_NCBI_GENES) <-[:HAS_ELEMENT*2]-(a:AGGREGATE_TOP_HOMOLOGY) "
-						+ "WHERE t.originalId IN {originalIds} RETURN DISTINCT(a.id) AS ATID",
+				"MATCH (n:ID_MAP_NCBI_GENES) WHERE n.originalId IN {originalIds} "
+				+ "OPTIONAL MATCH (n)<-[:HAS_ELEMENT*2]-(a:AGGREGATE_TOP_HOMOLOGY) "
+				+ "RETURN COALESCE(a.id,n.id) AS SEARCH_ID",
 				parameters("originalIds", searchInput));
-
+		
 		while (result.hasNext()) {
 			record = result.next();
-			topAtids.add(record.get("ATID").asString());
+			topAtids.add(record.get("SEARCH_ID").asString());
 		}
 		return topAtids.toArray(new String[topAtids.size()]);
 
