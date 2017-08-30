@@ -1,4 +1,4 @@
-elasticquery.clustername=gepi-leipzig
+elasticquery.clustername=julielab-es
 elasticquery.url=localhost
 elasticquery.port=9300
 
