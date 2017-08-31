@@ -186,11 +186,13 @@ public class EventRetrievalService implements IEventRetrievalService {
 			List<Integer> idBHits = new ArrayList<>();
 			for (int i = 0; i < e.getNumArguments(); ++i) {
 				Argument g = e.getArgument(i);
+				// As we expand given ids to top-homology ids we need to compare to those
+				// not the input genes, e.g. g.geneId(); see also #60 and #62
 				// TODO support other IDs
-				if (idSetA.contains(g.getGeneId())) {
+				if (idSetA.contains(g.getTopHomologyId())) {
 					idAHits.add(i);
 				}
-				if (idSetB.contains(g.getGeneId())) {
+				if (idSetB.contains(g.getTopHomologyId())) {
 					idBHits.add(i);
 				}
 			}
@@ -318,15 +320,17 @@ public class EventRetrievalService implements IEventRetrievalService {
 			int inputIdPosition = -1;
 			for (int i = 0; i < e.getNumArguments(); ++i) {
 				Argument g = e.getArgument(i);
+				// see also above comment in reorderBipartiteEventResultArguments method:
+				// compare via top-homologyId, not geneId; see also #60 and #62
 				// TODO support other IDs
-				if (idSet.contains(g.getGeneId())) {
+				if (idSet.contains(g.getTopHomologyId())) {
 					inputIdPosition = i;
 					break;
 				}
 			}
-//			if (inputIdPosition == -1)
-//				throw new IllegalStateException(
-//						"An event was returned that does not contain an input argument ID: " + e);
+			if (inputIdPosition == -1)
+				throw new IllegalStateException(
+						"An event was returned that does not contain an input argument ID: " + e);
 			if (inputIdPosition > 0) {
 				List<Argument> arguments = e.getArguments();
 				Argument tmp = arguments.get(0);
