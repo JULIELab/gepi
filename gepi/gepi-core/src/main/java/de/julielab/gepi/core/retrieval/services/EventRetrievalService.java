@@ -41,7 +41,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 	public static final String FIELD_EVENT_MAINEVENTTYPE = FIELD_EVENTS + ".maineventtype";
 
-	public static final String FIELD_EVENT_ARGUMENTSEARCH = FIELD_EVENTS + ".argumentsearch";
+	public static final String FIELD_EVENT_ARGUMENTSEARCH = FIELD_EVENTS + ".argumenttophomologyids";
 
 	public static final String FIELD_EVENT_ARG_GENE_IDS = FIELD_EVENTS + ".argumentgeneids";
 
@@ -186,11 +186,13 @@ public class EventRetrievalService implements IEventRetrievalService {
 			List<Integer> idBHits = new ArrayList<>();
 			for (int i = 0; i < e.getNumArguments(); ++i) {
 				Argument g = e.getArgument(i);
+				// As we expand given ids to top-homology ids we need to compare to those
+				// not the input genes, e.g. g.geneId(); see also #60 and #62
 				// TODO support other IDs
-				if (idSetA.contains(g.getGeneId())) {
+				if (idSetA.contains(g.getTopHomologyId())) {
 					idAHits.add(i);
 				}
-				if (idSetB.contains(g.getGeneId())) {
+				if (idSetB.contains(g.getTopHomologyId())) {
 					idBHits.add(i);
 				}
 			}
@@ -318,8 +320,10 @@ public class EventRetrievalService implements IEventRetrievalService {
 			int inputIdPosition = -1;
 			for (int i = 0; i < e.getNumArguments(); ++i) {
 				Argument g = e.getArgument(i);
+				// see also above comment in reorderBipartiteEventResultArguments method:
+				// compare via top-homologyId, not geneId; see also #60 and #62
 				// TODO support other IDs
-				if (idSet.contains(g.getGeneId())) {
+				if (idSet.contains(g.getTopHomologyId())) {
 					inputIdPosition = i;
 					break;
 				}

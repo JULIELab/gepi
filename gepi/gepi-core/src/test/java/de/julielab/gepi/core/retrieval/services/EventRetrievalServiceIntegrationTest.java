@@ -17,7 +17,7 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.services.GePiCoreTestModule;
 
 // TODO this should be a self-contained integration test
-@Ignore
+//@Ignore
 public class EventRetrievalServiceIntegrationTest {
 	private static Registry registry;
 
@@ -38,7 +38,7 @@ public class EventRetrievalServiceIntegrationTest {
 		assertTrue(0 < outsideEvents.get().getEventList().size());
 		
 		for (Event e : outsideEvents.get().getEventList()) {
-			System.out.println(e);
+			System.out.println(e.getDocumentId() + ", " + e.getDocumentType());
 		}
 	}
 }
