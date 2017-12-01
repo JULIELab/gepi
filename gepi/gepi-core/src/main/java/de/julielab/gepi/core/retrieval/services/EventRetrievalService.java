@@ -239,7 +239,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 		Set<String> idSet = idList.stream().map(String.class::cast).collect(Collectors.toSet());
 
 		log.debug("Retrieving outside events for {} A IDs", idList.size());
-		
+		log.trace("The A IDs are: {}", idList);
 		TermsQuery termsQuery = new TermsQuery();
 		termsQuery.terms = idList;
 		termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
@@ -275,6 +275,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 		nestedQuery.innerHits.addField(FIELD_EVENT_NUMARGUMENTS);
 		nestedQuery.innerHits.addField(FIELD_EVENT_NUMDISTINCTARGUMENTS);
 
+		log.trace("The nestedQuery object has the fields: {}", nestedQuery.innerHits.fields);
+		
 		SearchServerCommand serverCmd = new SearchServerCommand();
 		serverCmd.query = nestedQuery;
 		serverCmd.index = documentIndex;
