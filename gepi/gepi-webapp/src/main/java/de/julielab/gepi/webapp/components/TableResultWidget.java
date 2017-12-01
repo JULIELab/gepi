@@ -37,13 +37,14 @@ public class TableResultWidget extends GepiWidget {
 		tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
 		tableModel.include("firstArgumentText", "firstArgumentPreferredName",
 				"secondArgumentText", "secondArgumentPreferredName",
-				"medlineId", "pmcId", "sentence");
+				"medlineId", "pmcId", "mainEventType", "sentence");
 		tableModel.get("firstArgumentText").label("gene A text");
 		tableModel.get("firstArgumentPreferredName").label("gene A symbol");
 		tableModel.get("secondArgumentText").label("gene B text");
 		tableModel.get("secondArgumentPreferredName").label("gene B symbol");
 		tableModel.get("medlineId").label("medline id");
 		tableModel.get("pmcId").label("pmc id");
+		tableModel.get("mainEventType").label("event type");
 	}
 
 	void onUpdateTableData() {
@@ -87,11 +88,15 @@ public class TableResultWidget extends GepiWidget {
 			return event.getSecondArgument().getPreferredName();
 		}
 
+		public String getMainEventType() {
+			return event.getMainEventType();
+		}
+		
 		public String getFirstArgumentTextWithPreferredName() {
 			Argument argument = event.getFirstArgument();
 			return argument.getText() + " (" + argument.getPreferredName() + ")";
 		}
-		
+				
 		public String getSentence() {
 			return event.getSentence();
 		}

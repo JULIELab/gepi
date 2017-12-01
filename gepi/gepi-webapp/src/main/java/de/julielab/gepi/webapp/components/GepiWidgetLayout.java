@@ -227,7 +227,7 @@ public class GepiWidgetLayout {
 				String header = createLine(new String[]{
 						"Gene1 Name", "Gene1 EntrezID", "Gene1 PreferredName",
 						"Gene2 Name", "Gene2 EntrezID", "Gene2 PreferredName",
-						"Medline ID", "PMC ID", "Sentence"
+						"Medline ID", "PMC ID", "Event type", "Sentence"
 				});
 				StringBuilder sResult = new StringBuilder(header);
 				
@@ -243,6 +243,7 @@ public class GepiWidgetLayout {
 							secondArgument.getPreferredName() != null ? secondArgument.getPreferredName() : "",
 							e.getDocumentType().toLowerCase().equals("medline") ? e.getDocumentId(): "",
 							e.getDocumentType().toLowerCase().equals("pmc") ? e.getDocumentId(): "",
+							e.getMainEventType() != null ? e.getMainEventType(): "",
 							e.getSentence() != null ? e.getSentence().replaceAll("\\R", " ") : "",
 					});
 					sResult.append(line);
