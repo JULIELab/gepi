@@ -174,7 +174,7 @@ public class GepiWidgetLayout {
 		return new StreamResponse() 
 		{
 			private InputStream inputStream;
-			private String delim = "§";
+			private String delim = "\t";
 			
 			@Override public void prepareResponse(Response response)
 			{
