@@ -3,6 +3,7 @@ package de.julielab.gepi.webapp.components;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
@@ -12,6 +13,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.BeanModelSource;
 
 import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.services.EventPostProcessingService;
 import de.julielab.gepi.core.retrieval.data.Argument;
 
 public class TableResultWidget extends GepiWidget {
@@ -27,7 +29,10 @@ public class TableResultWidget extends GepiWidget {
 
 	@Inject
 	private Messages messages;
-
+	
+	@Inject
+	private EventPostProcessingService eventPPService;
+	
 	@Property
 	@Persist
 	private BeanModel<BeanModelEvent> tableModel;
@@ -49,7 +54,11 @@ public class TableResultWidget extends GepiWidget {
 
 	void onUpdateTableData() {
 		try {
-				beanEvents = persistResult.get().getEventList().stream().map(e -> new BeanModelEvent(e))
+			// postprocess eventPreferred names first with given neo4j information
+			List<Event> evs = eventPPService.getPreferredNameFromAtid(
+					persistResult.get().getEventList() );
+			
+			beanEvents = evs.stream().map(e -> new BeanModelEvent(e))
 				.collect(Collectors.toList());
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
