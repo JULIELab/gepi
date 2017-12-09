@@ -3,7 +3,6 @@ package de.julielab.gepi.webapp.components;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
@@ -12,9 +11,9 @@ import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.BeanModelSource;
 
-import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.services.EventPostProcessingService;
 import de.julielab.gepi.core.retrieval.data.Argument;
+import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.services.IEventPostProcessingService;
 
 public class TableResultWidget extends GepiWidget {
 	@Property
@@ -31,7 +30,7 @@ public class TableResultWidget extends GepiWidget {
 	private Messages messages;
 	
 	@Inject
-	private EventPostProcessingService eventPPService;
+	private IEventPostProcessingService eventPPService;
 	
 	@Property
 	@Persist
