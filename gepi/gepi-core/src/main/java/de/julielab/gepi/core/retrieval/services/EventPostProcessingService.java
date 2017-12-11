@@ -4,6 +4,7 @@ import static org.neo4j.driver.v1.Values.parameters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,7 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 
 	private Logger log;
 	private String BASE_NEO4J_URL = "bolt://dawkins:7687";
+
 	
 	/*
 	 * Currently checks against geneId rather than top homology (th)
@@ -33,37 +35,41 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 	 * connection.
 	 */
 	@Override
-	public List<Event> getPreferredNameFromAtid(List<Event> ev) {
+	public List<Event> setPreferredNameFromGeneId(List<Event> ev) {
+		// the following hashmaps gather information of which gene is appearing 
+		// in which event(s)
+		// two maps are created to differentiate between first and second argument
 		HashMap<String, List<Event>> geneIdEvtMap1stArg, geneIdEvtMap2ndArg;
+		// the following hashmap maps gene ids as they appear in the previous hashmaps
+		// to their respective preferred name as it is written in the neo4j database
 		HashMap<String, String> geneIdPrefNameMap;
 		
-		// initialise hashmaps 
 		geneIdEvtMap1stArg = new HashMap<String, List<Event>>();
 		geneIdEvtMap2ndArg = new HashMap<String, List<Event>>();
 		setGeneIdEvtMap(ev, geneIdEvtMap1stArg, geneIdEvtMap2ndArg);
-				
 		// get preferred names from neo4j database
-		Set<String> geneIds = geneIdEvtMap1stArg.keySet();
+		Set<String> geneIds = new HashSet<String>( geneIdEvtMap1stArg.size() + geneIdEvtMap2ndArg.size() );
+		geneIds.addAll(geneIdEvtMap1stArg.keySet());
 		geneIds.addAll(geneIdEvtMap2ndArg.keySet());
 		geneIdPrefNameMap = new HashMap<String, String>();		
 		getGeneIdPrefNameMap(geneIdPrefNameMap, geneIds);
 		
 		// associate the correct preferred name to the event
-		String tmpPrefName;
-		List<Event> tmpEvs;
-		for (String key : geneIdPrefNameMap.keySet()) {
+		String tmpPrefName = new String();
+		// check 1st arguments
+		for (String key : geneIdEvtMap1stArg.keySet()) {
 			tmpPrefName = geneIdPrefNameMap.get(key);
-			// check 1st arguments
-			tmpEvs = geneIdEvtMap1stArg.get(key);
-			Iterator<Event> tmpIt = tmpEvs.iterator();		
-			while (tmpIt.hasNext()) {
-				tmpIt.next().getFirstArgument().setPreferredName(tmpPrefName);
+			Iterator<Event> it = geneIdEvtMap1stArg.get(key).iterator();		
+			while (it.hasNext()) {
+				it.next().getFirstArgument().setPreferredName(tmpPrefName);
 			}
-			// check 2nd arguments
-			tmpEvs = geneIdEvtMap2ndArg.get(key);
-			tmpIt = tmpEvs.iterator();		
-			while (tmpIt.hasNext()) {
-				tmpIt.next().getFirstArgument().setPreferredName(tmpPrefName);
+		}
+		// check 2nd arguments
+		for (String key : geneIdEvtMap2ndArg.keySet()) {
+			tmpPrefName = geneIdPrefNameMap.get(key);
+			Iterator<Event> it = geneIdEvtMap2ndArg.get(key).iterator();		
+			while (it.hasNext()) {
+				it.next().getSecondArgument().setPreferredName(tmpPrefName);
 			}
 		}
 		
@@ -89,10 +95,8 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 				@Override
 				public HashMap<String, String> execute(Transaction tx) {
 					Record record;
-					
-					String[] searchInput = geneIds.toArray(new String[geneIds.size()]);
-					
-					log.debug("{} different entrez ids are queried for preferred name.", searchInput.length);
+					String[] searchInput = new String[geneIds.size()];
+					searchInput = geneIds.toArray(new String[geneIds.size()]);
 					
 					StatementResult result = tx.run(
 							"MATCH (t:ID_MAP_NCBI_GENES) where t.originalId IN {entrezIds} "
@@ -105,8 +109,8 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 					
 					while (result.hasNext()) {
 						record = result.next();
-						geneIdPrefNameMap.put(record.get("ENTREZ_ID").toString(), 
-								record.get("PNAME").toString());						
+						geneIdPrefNameMap.put(record.get("ENTREZ_ID").toString().replaceAll("\"", ""), 
+								record.get("PNAME").toString().replaceAll("\"", ""));						
 					}
 					return geneIdPrefNameMap;
 				}
