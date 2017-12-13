@@ -13,7 +13,6 @@ import org.apache.tapestry5.services.BeanModelSource;
 
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.services.IEventPostProcessingService;
 
 public class TableResultWidget extends GepiWidget {
 	@Property
@@ -28,9 +27,6 @@ public class TableResultWidget extends GepiWidget {
 
 	@Inject
 	private Messages messages;
-	
-	@Inject
-	private IEventPostProcessingService eventPPService;
 	
 	@Property
 	@Persist
