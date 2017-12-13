@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.tapestry5.annotations.Log;
+import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
@@ -29,6 +30,9 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 
 public class EventResponseProcessingService implements IEventResponseProcessingService {
 
+	@Inject
+	private IEventPostProcessingService eventPPService;
+	
 	private Logger log;
 
 	public EventResponseProcessingService(Logger log) {
@@ -50,6 +54,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 		Stream<Event> eventStream = resultDocuments2Events(getEventDocuments(response));
 		EventRetrievalResult eventRetrievalResult = new EventRetrievalResult();
 		eventRetrievalResult.setEvents(eventStream);
+		// postprocess eventPreferred names first with given neo4j information
+		eventPPService.setPreferredNameFromGeneId(eventRetrievalResult.getEventList());
 		return eventRetrievalResult;
 	}
 

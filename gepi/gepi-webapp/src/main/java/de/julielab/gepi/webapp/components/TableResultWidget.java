@@ -53,16 +53,9 @@ public class TableResultWidget extends GepiWidget {
 
 	void onUpdateTableData() {
 		try {
-			// postprocess eventPreferred names first with given neo4j information
-			List<Event> evs = eventPPService.setPreferredNameFromGeneId(
-					persistResult.get().getEventList() );
-			
-			beanEvents = evs.stream().map(e -> new BeanModelEvent(e))
-				.collect(Collectors.toList());
-			
-//			beanEvents = persistResult.get().getEventList().stream()
-//					.map(e -> new BeanModelEvent(e))
-//					.collect(Collectors.toList());
+			beanEvents = persistResult.get().getEventList().stream()
+					.map(e -> new BeanModelEvent(e))
+					.collect(Collectors.toList());
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
