@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.tapestry5.annotations.Log;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Config;
 import org.neo4j.driver.v1.Driver;
@@ -18,13 +19,11 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 import org.neo4j.driver.v1.TransactionWork;
-import org.slf4j.Logger;
 
 import de.julielab.gepi.core.retrieval.data.Event;
 
 public class EventPostProcessingService implements IEventPostProcessingService {
 
-	private Logger log;
 	private String BASE_NEO4J_URL = "bolt://dawkins:7687";
 
 	
@@ -34,6 +33,7 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 	 * Thus, the cypher query is sensitive to a present/absent th node
 	 * connection.
 	 */
+	@Log
 	@Override
 	public List<Event> setPreferredNameFromGeneId(List<Event> ev) {
 		// the following hashmaps gather information of which gene is appearing 
@@ -43,7 +43,7 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 		// the following hashmap maps gene ids as they appear in the previous hashmaps
 		// to their respective preferred name as it is written in the neo4j database
 		HashMap<String, String> geneIdPrefNameMap;
-		
+
 		geneIdEvtMap1stArg = new HashMap<String, List<Event>>();
 		geneIdEvtMap2ndArg = new HashMap<String, List<Event>>();
 		setGeneIdEvtMap(ev, geneIdEvtMap1stArg, geneIdEvtMap2ndArg);
