@@ -11,8 +11,8 @@ import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.BeanModelSource;
 
-import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.Argument;
+import de.julielab.gepi.core.retrieval.data.Event;
 
 public class TableResultWidget extends GepiWidget {
 	@Property
@@ -27,7 +27,7 @@ public class TableResultWidget extends GepiWidget {
 
 	@Inject
 	private Messages messages;
-
+	
 	@Property
 	@Persist
 	private BeanModel<BeanModelEvent> tableModel;
@@ -49,8 +49,9 @@ public class TableResultWidget extends GepiWidget {
 
 	void onUpdateTableData() {
 		try {
-				beanEvents = persistResult.get().getEventList().stream().map(e -> new BeanModelEvent(e))
-				.collect(Collectors.toList());
+			beanEvents = persistResult.get().getEventList().stream()
+					.map(e -> new BeanModelEvent(e))
+					.collect(Collectors.toList());
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
