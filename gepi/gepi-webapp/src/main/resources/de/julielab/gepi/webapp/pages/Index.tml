@@ -17,9 +17,6 @@
 							class="col-md-4" />
 					</div>
 					<div class="row">
-						<t:barchartwidget result="result" class="col-md-12" />
-					</div>
-					<div class="row">
 						<t:tableresultwidget result="result" class="col-md-12" />
 					</div>
 				</t:zone>
