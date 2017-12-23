@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.julielab.de/conceptdatabase" xmlns:tns="http://www.julielab.de/conceptdatabase"
+	elementFormDefault="qualified">
+
+	<xs:element name="conceptdatabase">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="connection" minOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="uri"></xs:element>
+							<xs:element name="user" minOccurs="0"></xs:element>
+							<xs:element name="password" minOccurs="0"></xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="imports" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="import" minOccurs="1" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="conceptcreator" type="xs:string">
+										<xs:annotation>
+												<xs:documentation>
+													<!-- suggested enumerations -->
+													<xs:enumeration value="julielabgenes" />
+													<xs:enumeration value="julielabontologies" />
+												</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="configuration"></xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="exports" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="export" minOccurs="1" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="exporter" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>
+													<!-- suggested enumerations -->
+													<xs:enumeration value="ServerPluginExporter" />
+													<xs:enumeration value="JavaClassexporter" />
+												</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="configuration" minOccurs="0">
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
