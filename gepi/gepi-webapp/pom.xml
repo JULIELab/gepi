@@ -101,6 +101,11 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
         	<artifactId>neo4j-java-driver</artifactId>
         	<version>1.4.3</version>
         </dependency>
+        <dependency>
+        	<groupId>org.apache.poi</groupId>
+        	<artifactId>poi</artifactId>
+        	<version>3.15</version>
+        </dependency>
         </dependencies>
     <build>
         <finalName>gepi-webapp</finalName>
