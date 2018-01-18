@@ -1,0 +1,10 @@
+#Format: tax_id GeneID Symbol LocusTag Synonyms dbXrefs chromosome map_location description type_of_gene Symbol_from_nomenclature_authority Full_name_from_nomenclature_authority Nomenclature_status Other_designations Modification_date (tab is used as a separator, pound sign - start of a comment)
+9606	3558	IL2	-	IL-2|TCGF|lymphokine	HGNC:6001|MIM:147680|HPRD:00979	4	4q26-q27	interleukin 2	protein-coding	IL2	interleukin 2	O	T cell growth factor|aldesleukin|interleukin-2|involved in regulation of T-cell clonal expansion	20140807
+# mouse
+10090	11459	Acta1	-	AA959943|Acta-2|Acts|Actsk-1	MGI:87902|Ensembl:ENSMUSG00000031972	8	8 E2|8 72.26 cM	actin, alpha 1, skeletal muscle	protein-coding	Acta1	actin, alpha 1, skeletal muscle	O	actin, alpha skeletal muscle|alpha-actin-1	20140807
+# human
+9606	58	ACTA1	RP5-1068B5.2	ACTA|ASMA|CFTD|CFTD1|CFTDM|MPFD|NEM1|NEM2|NEM3	HGNC:129|MIM:102610|Ensembl:ENSG00000143632|HPRD:00030|Vega:OTTHUMG00000038006	1	1q42.13	actin, alpha 1, skeletal muscle	protein-coding	ACTA1	actin, alpha 1, skeletal muscle	O	actin, alpha skeletal muscle|nemaline myopathy type 3	20140807
+# norway rat; is left out in the organisms_snippet.taxid file!
+10116	29437	Acta1	-	-	RGD:2025|Ensembl:ENSRNOG00000017786	19	19q12	actin, alpha 1, skeletal muscle	protein-coding	Acta1	actin, alpha 1, skeletal muscle	O	actin alpha 1|actin, alpha skeletal muscle|alpha-actin-1	20140807
+# chicken
+9031	421534	ACTA1	-	-	CGNC:8420|Ensembl:ENSGALG00000011086	3	-	actin, alpha 1, skeletal muscle	protein-coding	ACTA1	actin, alpha 1, skeletal muscle	I	a-actin|actin, alpha skeletal muscle|alpha-actin-1	20140807
