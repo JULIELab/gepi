@@ -14,6 +14,7 @@
   
   <logger name="de.julielab.gepi.webapp.components.GepiInput" level="DEBUG"/>
   <logger name="de.julielab.gepi.core.services.GepiCoreModule.IEventRetrievalService" level="TRACE"/>
+<!--   <logger name="de.julielab.gepi.core.services.GepiCoreModule.IEventPostProcessingService" level="TRACE"/> -->
 <logger
 		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
 		level="INFO" />

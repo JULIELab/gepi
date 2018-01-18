@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.tapestry5.annotations.Log;
@@ -18,14 +19,20 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 import org.neo4j.driver.v1.TransactionWork;
+import org.slf4j.Logger;
 
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 
 public class EventPostProcessingService implements IEventPostProcessingService {
-
+	
+	private Logger log;
+	
 	private String BASE_NEO4J_URL = "bolt://dawkins:7687";
 
+	public EventPostProcessingService(Logger log) {
+		this.log = log;
+	}
 	
 	/*
 	 * Currently checks against geneId rather than top homology (th)
@@ -97,6 +104,8 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 				}
 			});
 		}
+		
+		geneIdPrefNameMap.entrySet().stream().map(Entry::toString).forEach(log::trace);
 		
 		return geneIdPrefNameMap;
 		
