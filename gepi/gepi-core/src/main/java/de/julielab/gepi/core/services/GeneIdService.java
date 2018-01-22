@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -12,7 +13,7 @@ public class GeneIdService implements IGeneIdService {
 	private String BASE_URL;
 
 	public GeneIdService() {
-		this.BASE_URL = "bolt://dawkins:7687";
+		this.BASE_URL = "bolt://darwin:7687";
 	}
 
 	@Override
@@ -65,7 +66,6 @@ public class GeneIdService implements IGeneIdService {
 		List<String> topAtids = new ArrayList<String>();
 		
 		String[] searchInput = input.split("\n");
-		
 		StatementResult result = tx.run(
 				"MATCH (n:ID_MAP_NCBI_GENES) WHERE n.originalId IN {originalIds} "
 				+ "OPTIONAL MATCH (n)<-[:HAS_ELEMENT*2]-(a:AGGREGATE_TOP_HOMOLOGY) "

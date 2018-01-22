@@ -1,6 +1,7 @@
 define([ "jquery", "gepi/pages/index" ], function($) {
 
     return function drawSankeyChart(elementId, sankeyDat) {
+        console.log(sankeyDat)
         google.charts.setOnLoadCallback(function() {
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'FromGene');

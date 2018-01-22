@@ -83,6 +83,14 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 			if (e.getNumArguments() == 2) {
 				atids.add(new ImmutablePair<Argument, Argument>(e.getFirstArgument(), e.getSecondArgument()));
 			}
+			if (e.getFirstArgument().getPreferredName() == null) {
+				System.out.println("Concept ID: " + e.getFirstArgument().getConceptId() + ", Gene ID: " + e.getFirstArgument().getGeneId() + ", Top Homology ID: " + e.getFirstArgument().getTopHomologyId() + ": " + e.getFirstArgument().getPreferredName());
+				System.exit(1);
+			}
+			if (e.getSecondArgument().getPreferredName() == null) {
+				System.out.println("Concept ID: " + e.getSecondArgument().getConceptId() + ", Gene ID: " + e.getSecondArgument().getGeneId() + ", Top Homology ID: " + e.getSecondArgument().getTopHomologyId() + ": " + e.getSecondArgument().getPreferredName());
+				System.exit(1);
+			}
 		});
 
 		// get the count for how often pairs appear
@@ -104,7 +112,6 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 
 		// put to json
 		pairedArgCountJson = new JSONArray();
-
 		this.pairedArgCount.forEach((k, v) -> {
 			JSONArray tmp = new JSONArray();
 			tmp.put(k.getLeft().getPreferredName());
@@ -113,6 +120,15 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 			pairedArgCountJson.put(tmp);
 		});
 
+//		for (Pair<Argument, Argument> p : pairedArgCount.keySet()) {
+//			if (p.getLeft() == null || p.getRight() == null || pairedArgCount.get(p) == null || p.getLeft().getPreferredName() == null || p.getRight().getPreferredName() == null ) {
+//				System.out.println("Arguments: " + p);
+//				System.out.println("Count: " + pairedArgCount.get(p));
+//				System.exit(1);
+//			}
+//			
+//		}
+		
 		return pairedArgCountJson;
 	}
 
