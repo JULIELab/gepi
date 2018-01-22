@@ -16,6 +16,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.json.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
@@ -23,6 +25,7 @@ import de.julielab.gepi.core.retrieval.data.Event;
 
 public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 
+private static final Logger log = LoggerFactory.getLogger(GoogleChartsDataManager.class);
 	private Map<Argument, Integer> singleArgCount;
 	private Map<Pair<Argument, Argument>, Integer> pairedArgCount;
 	private JSONArray singleArgCountJson;
@@ -44,7 +47,6 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 				a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY);
 				arguments.add(a);
 			}
-			;
 		});
 
 		// get the counts of how often event arguments appear
@@ -78,18 +80,12 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 	public JSONArray getPairedArgsCount(List<Event> evtList) {
 		List<Pair<Argument, Argument>> atids = new ArrayList<>();
 
+		log.trace("Number of events for pair counting: {}", evtList.size());
+		
 		// get all atid atid pairs in one list
 		evtList.forEach(e -> {
 			if (e.getNumArguments() == 2) {
 				atids.add(new ImmutablePair<Argument, Argument>(e.getFirstArgument(), e.getSecondArgument()));
-			}
-			if (e.getFirstArgument().getPreferredName() == null) {
-				System.out.println("Concept ID: " + e.getFirstArgument().getConceptId() + ", Gene ID: " + e.getFirstArgument().getGeneId() + ", Top Homology ID: " + e.getFirstArgument().getTopHomologyId() + ": " + e.getFirstArgument().getPreferredName());
-				System.exit(1);
-			}
-			if (e.getSecondArgument().getPreferredName() == null) {
-				System.out.println("Concept ID: " + e.getSecondArgument().getConceptId() + ", Gene ID: " + e.getSecondArgument().getGeneId() + ", Top Homology ID: " + e.getSecondArgument().getTopHomologyId() + ": " + e.getSecondArgument().getPreferredName());
-				System.exit(1);
 			}
 		});
 
@@ -120,15 +116,6 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 			pairedArgCountJson.put(tmp);
 		});
 
-//		for (Pair<Argument, Argument> p : pairedArgCount.keySet()) {
-//			if (p.getLeft() == null || p.getRight() == null || pairedArgCount.get(p) == null || p.getLeft().getPreferredName() == null || p.getRight().getPreferredName() == null ) {
-//				System.out.println("Arguments: " + p);
-//				System.out.println("Count: " + pairedArgCount.get(p));
-//				System.exit(1);
-//			}
-//			
-//		}
-		
 		return pairedArgCountJson;
 	}
 

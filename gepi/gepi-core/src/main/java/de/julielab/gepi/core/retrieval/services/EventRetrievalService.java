@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import de.julielab.elastic.query.components.ISearchServerComponent;
 import de.julielab.elastic.query.components.data.SearchCarrier;
 import de.julielab.elastic.query.components.data.SearchServerCommand;
+import de.julielab.elastic.query.components.data.SortCommand.SortOrder;
 import de.julielab.elastic.query.components.data.query.BoolClause;
 import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
@@ -65,7 +66,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 	private ISearchServerComponent searchServerComponent;
 
 	private String documentIndex;
-
+	private static final int SCROLL_SIZE = 500;
 	private IEventResponseProcessingService eventResponseProcessingService;
 
 	public EventRetrievalService(@Symbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS) String documentIndex, Logger log,
@@ -136,9 +137,10 @@ public class EventRetrievalService implements IEventRetrievalService {
 		SearchServerCommand serverCmd = new SearchServerCommand();
 		serverCmd.query = nestedQuery;
 		serverCmd.index = documentIndex;
-		serverCmd.rows = 5;
+		serverCmd.rows = SCROLL_SIZE;
 		serverCmd.fieldsToReturn = Collections.emptyList();
 		serverCmd.downloadCompleteResults = true;
+		serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
 		SearchCarrier carrier = new SearchCarrier("BipartiteEvents");
 		carrier.addSearchServerCommand(serverCmd);
@@ -155,10 +157,10 @@ public class EventRetrievalService implements IEventRetrievalService {
 	}
 
 	/**
-	 * Reorders the arguments of the events to make the first argument
-	 * correspond to the A ID list and the second argument to the B ID list.
-	 * Also adds new events in case of more than two ID hits in the same so we
-	 * can handle all results as binary events.
+	 * Reorders the arguments of the events to make the first argument correspond to
+	 * the A ID list and the second argument to the B ID list. Also adds new events
+	 * in case of more than two ID hits in the same so we can handle all results as
+	 * binary events.
 	 * 
 	 * @param idSetA
 	 *            The set of list A query IDs.
@@ -276,13 +278,14 @@ public class EventRetrievalService implements IEventRetrievalService {
 		nestedQuery.innerHits.addField(FIELD_EVENT_NUMDISTINCTARGUMENTS);
 
 		log.trace("The nestedQuery object has the fields: {}", nestedQuery.innerHits.fields);
-		
+
 		SearchServerCommand serverCmd = new SearchServerCommand();
 		serverCmd.query = nestedQuery;
 		serverCmd.index = documentIndex;
-		serverCmd.rows = 5;
+		serverCmd.rows = SCROLL_SIZE;
 		serverCmd.fieldsToReturn = Collections.emptyList();
 		serverCmd.downloadCompleteResults = true;
+		serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
 		SearchCarrier carrier = new SearchCarrier("OutsideEvents");
 		carrier.addSearchServerCommand(serverCmd);

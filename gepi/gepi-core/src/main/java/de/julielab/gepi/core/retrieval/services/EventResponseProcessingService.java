@@ -2,7 +2,6 @@ package de.julielab.gepi.core.retrieval.services;
 
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_CONCEPT_IDS;
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_GENE_IDS;
-import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_PREFERRED_NAME;
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_TEXT;
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS;
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_LIKELIHOOD;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -24,15 +24,15 @@ import org.slf4j.Logger;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.services.ISearchServerResponse;
+import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.Argument;
 
 public class EventResponseProcessingService implements IEventResponseProcessingService {
 
 	@Inject
 	private IEventPostProcessingService eventPPService;
-	
+
 	private Logger log;
 
 	public EventResponseProcessingService(Logger log) {
@@ -54,6 +54,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 		Stream<Event> eventStream = resultDocuments2Events(getEventDocuments(response));
 		EventRetrievalResult eventRetrievalResult = new EventRetrievalResult();
 		eventRetrievalResult.setEvents(eventStream);
+		log.trace("Size of the event retrieval result (number of events): {}", eventRetrievalResult.getEventList().size());
 		// postprocess eventPreferred names first with given neo4j information
 		eventPPService.setPreferredNameFromGeneId(eventRetrievalResult.getEventList());
 		return eventRetrievalResult;
@@ -68,8 +69,6 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			List<Object> topHomologyIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS)
 					.orElse(Collections.emptyList());
 			List<Object> texts = eventDocument.getFieldValues(FIELD_EVENT_ARG_TEXT).orElse(Collections.emptyList());
-			List<Object> preferredNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_PREFERRED_NAME)
-					.orElse(Collections.emptyList());
 			Optional<String> mainEventType = eventDocument.get(FIELD_EVENT_MAINEVENTTYPE);
 			Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
 			Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE);
@@ -86,9 +85,22 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 				String geneId = i < geneIds.size() ? (String) geneIds.get(i) : null;
 				String topHomologyId = i < topHomologyIds.size() ? (String) topHomologyIds.get(i) : null;
 				String text = i < texts.size() ? (String) texts.get(i) : null;
-				String preferredName = i < preferredNames.size() ? (String) preferredNames.get(i) : null;
 
-				arguments.add(new Argument(geneId, conceptId, topHomologyId, preferredName, text));
+				if (conceptId != null) {
+
+					// assert conceptId != null : "No concept ID received from event document with
+					// ID " + eventDocument.getId() + ":\n" + eventDocument;
+					assert geneId != null;
+					assert topHomologyId != null;
+					assert text != null;
+
+					arguments.add(new Argument(geneId, conceptId, topHomologyId, text));
+				} else {
+					log.warn(
+							"Came over event document where the concept Id of an argument missing. Document is skipped. This must be fixed in the index. The document was {}",
+							eventDocument);
+					return null;
+				}
 			}
 
 			Event event = new Event();
@@ -105,7 +117,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 				event.setSentence(sentence.get());
 
 			return event;
-		});
+		}).filter(Objects::nonNull);
 	}
 
 	private Stream<ISearchServerDocument> getEventDocuments(ISearchServerResponse response) {

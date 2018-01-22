@@ -102,6 +102,6 @@ public class EventRetrievalServiceTest {
 	}
 
 	private Argument getArg(String id) {
-		return new Argument(id, null, null, "id: " + id, null);
+		return new Argument(id, null, "id: " + id, null);
 	}
 }
