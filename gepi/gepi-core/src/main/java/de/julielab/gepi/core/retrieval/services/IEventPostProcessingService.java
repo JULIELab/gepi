@@ -6,6 +6,7 @@ import de.julielab.gepi.core.retrieval.data.Event;
 
 public interface IEventPostProcessingService {
 
-	public List<Event> setPreferredNameFromGeneId(List<Event> event);
+	public List<Event> setPreferredNameFromConceptId(List<Event> event);
 	
+	public void setArgumentGeneIds(List<Event> events);
 }
