@@ -9,7 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import org.apache.tapestry5.annotations.Log;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Config;
 import org.neo4j.driver.v1.Driver;
@@ -31,14 +33,12 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 
 	private Logger log;
 
-	private String BASE_NEO4J_URL = "bolt://darwin:7687";
-
 	private Driver driver;
 
-	public EventPostProcessingService(Logger log) {
+	public EventPostProcessingService(Logger log, @Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
 		this.log = log;
 		Config neo4jconf = Config.build().withoutEncryption().toConfig();
-		driver = GraphDatabase.driver(this.BASE_NEO4J_URL, AuthTokens.basic("neo4j", "julielab"), neo4jconf);
+		driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"), neo4jconf);
 
 	}
 
