@@ -13,7 +13,7 @@ public class GeneIdService implements IGeneIdService {
 	private String BASE_URL;
 
 	public GeneIdService() {
-		this.BASE_URL = "bolt://darwin:7687";
+		this.BASE_URL = "bolt://dawkins:7687";
 	}
 
 	@Override

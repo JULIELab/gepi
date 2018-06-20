@@ -31,7 +31,7 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 
 	private Logger log;
 
-	private String BASE_NEO4J_URL = "bolt://darwin:7687";
+	private String BASE_NEO4J_URL = "bolt://dawkins:7687";
 
 	private Driver driver;
 
