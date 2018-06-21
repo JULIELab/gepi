@@ -5,16 +5,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import de.julielab.gepi.core.GepiCoreSymbolConstants;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.v1.*;
 import static org.neo4j.driver.v1.Values.parameters;
 
 public class GeneIdService implements IGeneIdService {
 
-	private String BASE_URL;
 
+<<<<<<< HEAD
 	public GeneIdService() {
 		this.BASE_URL = "bolt://dawkins:7687";
 	}
+=======
+    private String boltUrl;
+
+    public GeneIdService(@Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
+
+        this.boltUrl = boltUrl;
+    }
+>>>>>>> 7fa12b03816b4b0cf6468d240afc29173e4f2c46
 
 	@Override
 	public Stream<String> convertUniprot2Gene(Stream<String> uniprotIds) {
@@ -45,7 +55,7 @@ public class GeneIdService implements IGeneIdService {
 	public String[] convertInput2Atid(String input) {
 		
 		Config neo4jconf = Config.build().withoutEncryption().toConfig();
-		Driver driver = GraphDatabase.driver(this.BASE_URL, AuthTokens.basic("neo4j", "julielab"), neo4jconf);
+		Driver driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"), neo4jconf);
 
 		try (Session session = driver.session()) {
 
