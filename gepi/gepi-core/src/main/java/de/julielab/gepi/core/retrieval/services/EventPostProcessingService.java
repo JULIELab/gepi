@@ -33,11 +33,6 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 
 	private Logger log;
 
-<<<<<<< HEAD
-	private String BASE_NEO4J_URL = "bolt://dawkins:7687";
-
-=======
->>>>>>> 7fa12b03816b4b0cf6468d240afc29173e4f2c46
 	private Driver driver;
 
 	public EventPostProcessingService(Logger log, @Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
@@ -115,7 +110,6 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 	 * available if not available take preferred name of species identified by its
 	 * current ncbi entrez gene id
 	 * 
-	 * @param geneIdPrefNameMap
 	 * @param conceptIds
 	 */
 	private Map<String, String> getGeneIdPrefNameMap(Set<String> conceptIds) {
