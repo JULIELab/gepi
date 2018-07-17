@@ -77,6 +77,6 @@
 		</dependency>
 	</dependencies>
 	<properties>
-		<concept-db-version>0.0.1</concept-db-version>
+		<concept-db-version>1.0.0-SNAPSHOT</concept-db-version>
 	</properties>
 </project>

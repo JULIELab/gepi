@@ -1,0 +1,106 @@
+{
+  "settings" : {
+    "number_of_shards" : 2,
+    "number_of_replicas" : 0,
+    "analysis": {
+      "analyzer": {
+        "postprocessing_for_preanalyzed_tokens": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "snow_english"
+          ]
+        }
+      },
+      "filter": {
+        "snow_english": {
+          "type": "snowball",
+          "language": "english"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "relations": {
+      "_source": {
+        "enabled": false
+      },
+      "_parent": {
+        "type": "sentences"
+      },
+      "properties": {
+        "pmid": {
+          "type": "keyword",
+          "store": true
+        },
+        "pmcid": {
+          "type": "keyword",
+          "store": true
+        },
+        "allarguments": {
+          "type": "keyword",
+          "store": true
+        },
+        "maineventtype": {
+          "type": "keyword",
+          "store": true
+        },
+        "alleventtypes": {
+          "type": "keyword",
+          "store": true
+        },
+        "id": {
+          "type": "keyword",
+          "store": true
+        },
+        "likelihood": {
+          "type": "integer",
+          "store": true
+        },
+        "sentence_filtering": {
+          "type": "text",
+          "norms": {
+            "enabled": false
+          }
+        },
+        "sentenceid": {
+          "type": "keyword",
+          "store": true
+        }
+      },
+      "sentences": {
+        "_source": {
+          "enabled": false
+        },
+        "properties": {
+          "pmid": {
+            "type": "keyword",
+            "store": true
+          },
+          "pmcid": {
+            "type": "keyword",
+            "store": true
+          },
+          "sentence": {
+            "type": "preanalyzed",
+            "analyzer": "postprocessing_for_preanalyzed_tokens",
+            "store": true,
+            "term_vector": "with_positions_offsets",
+            "norms": {
+              "enabled": false
+            }
+          },
+          "likelihood": {
+            "type": "integer",
+            "store": true
+          },
+          "id": {
+            "type": "keyword",
+            "store": true
+          }
+        }
+      }
+    }
+  }
+}

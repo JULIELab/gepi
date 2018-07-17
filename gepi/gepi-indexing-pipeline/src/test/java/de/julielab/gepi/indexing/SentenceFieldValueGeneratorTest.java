@@ -1,17 +1,11 @@
 package de.julielab.gepi.indexing;
 
-import com.google.common.annotations.VisibleForTesting;
-import de.julielab.jcore.consumer.es.ArrayFieldValue;
 import de.julielab.jcore.consumer.es.FieldGenerationException;
 import de.julielab.jcore.consumer.es.FilterRegistry;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
-import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
 import de.julielab.jcore.consumer.es.preanalyzed.PreanalyzedFieldValue;
-import de.julielab.jcore.consumer.es.preanalyzed.RawToken;
 import de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider;
-import de.julielab.jcore.consumer.es.sharedresources.IMapProvider;
 import de.julielab.jcore.consumer.es.sharedresources.ListProvider;
-import de.julielab.jcore.consumer.es.sharedresources.MapProvider;
 import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.pubmed.Header;
 import de.julielab.jcore.types.pubmed.OtherID;
@@ -27,8 +21,6 @@ import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.Array;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.testng.Assert.assertNotNull;
 
@@ -39,14 +31,14 @@ public class SentenceFieldValueGeneratorTest {
 
     @Test
     public void testFilterBoard() throws ResourceInitializationException, ResourceAccessException {
-        ExternalResourceDescription gene2tid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/geneToDatabaseIds.txt");
-        ExternalResourceDescription tid2atid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/geneDatabaseIdsToAggregates.txt");
+        ExternalResourceDescription gene2tid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/egid2tid.txt");
+        ExternalResourceDescription tid2atid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/tid2atid.txt");
         ExternalResourceDescription stopwords = ExternalResourceFactory.createExternalResourceDescription(ListProvider.class, "file:src/test/resources/stopwords.txt");
-        UimaContext uimaContext = UimaContextFactory.createUimaContext("geneToDatabaseIds", gene2tid, "geneDatabaseIdsToAggregates", tid2atid, "stopwords", stopwords);
+        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid, "tid2atid", tid2atid, "stopwords", stopwords);
         filterRegistry = new FilterRegistry(uimaContext);
-        filterRegistry.addFilterBoard(GepiFilterBoard.class, new GepiFilterBoard());
-        GepiFilterBoard fb = filterRegistry.getFilterBoard(GepiFilterBoard.class);
-        assertNotNull(fb.geneDatabaseIdsToAggregatesFilter);
+        filterRegistry.addFilterBoard(GeneFilterBoard.class, new GeneFilterBoard());
+        GeneFilterBoard fb = filterRegistry.getFilterBoard(GeneFilterBoard.class);
+        assertNotNull(fb.gene2tid2atidAddonFilter);
     }
 
     @Test(dependsOnMethods = "testFilterBoard")
