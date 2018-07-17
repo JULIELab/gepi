@@ -13,12 +13,18 @@ import static org.neo4j.driver.v1.Values.parameters;
 public class GeneIdService implements IGeneIdService {
 
 
+<<<<<<< HEAD
+	public GeneIdService() {
+		this.BASE_URL = "bolt://dawkins:7687";
+	}
+=======
     private String boltUrl;
 
     public GeneIdService(@Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
 
         this.boltUrl = boltUrl;
     }
+>>>>>>> 7fa12b03816b4b0cf6468d240afc29173e4f2c46
 
 	@Override
 	public Stream<String> convertUniprot2Gene(Stream<String> uniprotIds) {
