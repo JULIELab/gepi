@@ -21,10 +21,12 @@ import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.testng.annotations.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertNotNull;
 
-public class SentenceFieldValueGeneratorTest {
+public class RelationFieldValueGeneratorTest {
 
 
     private FilterRegistry filterRegistry;
@@ -32,13 +34,14 @@ public class SentenceFieldValueGeneratorTest {
     @Test
     public void testFilterBoard() throws ResourceInitializationException, ResourceAccessException {
         ExternalResourceDescription gene2tid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/egid2tid.txt");
+        ExternalResourceDescription eventName2tid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/eventName2tid.txt");
         ExternalResourceDescription tid2atid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/tid2atid.txt");
         ExternalResourceDescription stopwords = ExternalResourceFactory.createExternalResourceDescription(ListProvider.class, "file:src/test/resources/stopwords.txt");
-        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid, "tid2atid", tid2atid, "stopwords", stopwords);
+        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid, "eventName2tid", eventName2tid, "tid2atid", tid2atid, "stopwords", stopwords);
         filterRegistry = new FilterRegistry(uimaContext);
         filterRegistry.addFilterBoard(GeneFilterBoard.class, new GeneFilterBoard());
-        filterRegistry.addFilterBoard(TextFilterBoard.class, new TextFilterBoard());
         assertNotNull(filterRegistry.getFilterBoard(GeneFilterBoard.class));
+        assertNotNull(filterRegistry.getFilterBoard(RelationFilterBoard.class));
         assertNotNull(filterRegistry.getFilterBoard(TextFilterBoard.class));
     }
 
@@ -48,48 +51,63 @@ public class SentenceFieldValueGeneratorTest {
                 "de.julielab.jcore.types.jcore-semantics-biology-types",
                 "de.julielab.jcore.types.jcore-document-meta-pubmed-types");
 
-        jCas.setDocumentText("This is a-gene.");
+        jCas.setDocumentText("A regulates B.");
 
         Header header = new Header(jCas);
         header.setDocId("123456");
-        OtherID otherID = new OtherID(jCas);
-        otherID.setId("654321");
-        otherID.setSource("PMC");
-        header.setOtherIDs(JCoReTools.addToFSArray(null, otherID));
         header.addToIndexes();
 
         LikelihoodIndicator likelihoodIndicator = new LikelihoodIndicator(jCas, 0, 5);
         likelihoodIndicator.setLikelihood("high");
         likelihoodIndicator.addToIndexes();
 
-        new Token(jCas, 0, 4).addToIndexes();
-        new Token(jCas, 5, 7).addToIndexes();
-        // This token is obviously a bad one; "a-gene.". This is basically a test that the LuceneStandardTokenizer
-        // is doing its job.
-        new Token(jCas, 8, 15).addToIndexes();
+        new Token(jCas, 0, 1).addToIndexes();
+        new Token(jCas, 2, 11).addToIndexes();
+        new Token(jCas, 12, 13).addToIndexes();
+        new Token(jCas, 13, 14).addToIndexes();
 
-        Gene gene = new Gene(jCas, 10, 14);
+        Gene gene = new Gene(jCas, 0, 1);
         gene.addToIndexes();
-        GeneResourceEntry geneResourceEntry = new GeneResourceEntry(jCas, 10, 14);
+        GeneResourceEntry geneResourceEntry = new GeneResourceEntry(jCas, 0, 1);
         geneResourceEntry.setEntryId("42");
         gene.setResourceEntryList(JCoReTools.addToFSArray(null, geneResourceEntry));
+
+        Gene gene2 = new Gene(jCas, 12, 13);
+        gene2.addToIndexes();
+        GeneResourceEntry geneResourceEntry2 = new GeneResourceEntry(jCas, 12, 13);
+        geneResourceEntry2.setEntryId("43");
+        gene2.setResourceEntryList(JCoReTools.addToFSArray(null, geneResourceEntry2));
+
+        EventMention em = new EventMention(jCas, 2, 11);
+        em.addToIndexes();
+        // note that the actual specificType for regulation is the one from the BioNLP Shared Task and not just "regulation",
+        // this is just for the test
+        em.setSpecificType("regulation");
+        ArgumentMention am1 = new ArgumentMention(jCas, 0, 1);
+        am1.setRef(gene);
+        ArgumentMention am2 = new ArgumentMention(jCas, 12, 13);
+        am2.setRef(gene2);
+        em.setArguments(JCoReTools.addToFSArray(null, Arrays.asList(am1, am2)));
 
         Sentence sentence = new Sentence(jCas, 0, jCas.getDocumentText().length());
         sentence.setId("0");
         sentence.addToIndexes();
 
-        SentenceFieldValueGenerator fvGenerator = new SentenceFieldValueGenerator(filterRegistry);
-        Document sentenceDocument = (Document) fvGenerator.generateFieldValue(sentence);
+        RelationFieldValueGenerator fvGenerator = new RelationFieldValueGenerator(filterRegistry);
+        Document relationDocument = (Document) fvGenerator.generateFieldValue(sentence);
 
-        assertNotNull(sentenceDocument);
-        assertThat(sentenceDocument).containsKeys("pmid", "pmcid", "id", "likelihood", "sentence");
+        assertNotNull(relationDocument);
+        assertThat(relationDocument).containsKeys("pmid", "id", "likelihood", "sentence_filtering", "allarguments",
+                "alleventtypes", "maineventtype", "sentenceid");
 
-        PreanalyzedFieldValue preAnalyzedSentence = (PreanalyzedFieldValue) sentenceDocument.get("sentence");
-        assertThat(preAnalyzedSentence.fieldString).isEqualTo("This is a-gene.");
-        assertThat(preAnalyzedSentence.tokens).extracting(t -> t.term).containsExactly("this", "is", "a", "gene", "42", "tid42", "atid42");
+        PreanalyzedFieldValue preAnalyzedSentence = (PreanalyzedFieldValue) relationDocument.get("sentence_filtering");
+        assertThat(preAnalyzedSentence.fieldString).isBlank();
+        assertThat(preAnalyzedSentence.tokens).extracting(t -> t.term).containsExactly("a", "42", "tid42", "atid43", "regulat", "tid7", "atid7", "b", "43", "tid43", "atid43");
 
-        assertThat(sentenceDocument.get("likelihood")).extracting("tokenValue").containsExactly(5);
+        assertThat(relationDocument.get("likelihood")).extracting("tokenValue").containsExactly(5);
 
-        assertThat(sentenceDocument.get("id")).extracting("tokenValue").containsExactly("123456_0");
+        assertThat(relationDocument.get("id")).extracting("tokenValue").containsExactly("123456_FE0");
+
+        assertThat(relationDocument.get("sentenceid")).extracting("tokenValue").containsExactly("123456_0");
     }
 }
