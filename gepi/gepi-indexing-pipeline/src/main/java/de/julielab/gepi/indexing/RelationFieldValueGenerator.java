@@ -2,22 +2,15 @@ package de.julielab.gepi.indexing;
 
 import de.julielab.jcore.consumer.es.*;
 import de.julielab.jcore.consumer.es.filter.FilterChain;
-import de.julielab.jcore.consumer.es.filter.UniqueFilter;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
-import de.julielab.jcore.consumer.es.preanalyzed.PreanalyzedToken;
-import de.julielab.jcore.types.Gene;
 import de.julielab.jcore.types.LikelihoodIndicator;
 import de.julielab.jcore.types.Sentence;
-import de.julielab.jcore.types.Token;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.utility.JCoReTools;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * "_parent": {
@@ -76,7 +69,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
         relationFb = filterRegistry.getFilterBoard(RelationFilterBoard.class);
         textFb = filterRegistry.getFilterBoard(TextFilterBoard.class);
         geneFb = filterRegistry.getFilterBoard(GeneFilterBoard.class);
-        eventName2tid2atidAddonFilter = new FilterChain(relationFb.eventName2tidAddonFilter, textFb.tid2atidAddonFilter);
+        eventName2tid2atidAddonFilter = new FilterChain(relationFb.eventName2tidReplaceFilter, textFb.tid2atidAddonFilter);
     }
 
     /**
@@ -99,11 +92,11 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
             document.addField("allarguments", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
             document.addField("alleventtypes", createRawFieldValueForAnnotations(rel.getRelations().toArray(), "/specificType", eventName2tid2atidAddonFilter));
             document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", eventName2tid2atidAddonFilter));
-
+            document.addField("likelihood", FieldCreationUtils.likelihoodValues.get(rel.getRootRelation().getLikelihood().getLikelihood()));
 
         } catch (CASException e) {
             throw new FieldGenerationException(e);
         }
-        return null;
+        return document;
     }
 }

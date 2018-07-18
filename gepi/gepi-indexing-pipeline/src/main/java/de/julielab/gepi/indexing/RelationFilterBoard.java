@@ -8,12 +8,13 @@ import java.util.Map;
 
 public class RelationFilterBoard extends FilterBoard {
 
+    ReplaceFilter eventName2tidReplaceFilter;
     @ExternalResource(key = "eventName2tid")
-    private Map<String, String[]> eventName2tid;
-    AddonTermsFilter eventName2tidAddonFilter;
+    private Map<String, String> eventName2tid;
 
     @Override
     public void setupFilters() {
-        eventName2tidAddonFilter = new AddonTermsFilter(eventName2tid);
+        eventName2tidReplaceFilter = new ReplaceFilter(eventName2tid);
+
     }
 }
