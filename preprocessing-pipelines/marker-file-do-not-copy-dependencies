@@ -1,1 +1,0 @@
-This file only exists to prevent the dependencies of the parent POM to be copied by the copy-dependencies plugin. See the profile configuration in pom.xml.
