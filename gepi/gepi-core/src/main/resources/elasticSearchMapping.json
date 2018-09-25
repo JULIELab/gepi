@@ -26,9 +26,6 @@
       "_source": {
         "enabled": false
       },
-      "_parent": {
-        "type": "sentences"
-      },
       "properties": {
         "pmid": {
           "type": "keyword",
@@ -58,46 +55,25 @@
           "type": "integer",
           "store": true
         },
-        "sentence_filtering": {
-          "type": "text",
-          "norms": {
-            "enabled": false
-          }
-        },
-        "sentenceid": {
-          "type": "keyword",
-          "store": true
-        }
-      },
-      "sentences": {
-        "_source": {
-          "enabled": false
-        },
-        "properties": {
-          "pmid": {
-            "type": "keyword",
-            "store": true
-          },
-          "pmcid": {
-            "type": "keyword",
-            "store": true
-          },
-          "sentence": {
-            "type": "preanalyzed",
-            "analyzer": "postprocessing_for_preanalyzed_tokens",
-            "store": true,
-            "term_vector": "with_positions_offsets",
-            "norms": {
-              "enabled": false
+        "sentence": {
+          "properties": {
+            "text": {
+              "type": "preanalyzed",
+              "analyzer": "postprocessing_for_preanalyzed_tokens",
+              "store": true,
+              "term_vector": "with_positions_offsets",
+              "norms": {
+                "enabled": false
+              }
+            },
+            "id": {
+              "type": "keyword",
+              "store": true
+            },
+            "likelihood": {
+              "type": "integer",
+              "store": true
             }
-          },
-          "likelihood": {
-            "type": "integer",
-            "store": true
-          },
-          "id": {
-            "type": "keyword",
-            "store": true
           }
         }
       }

@@ -92,8 +92,10 @@ public class RelationFieldValueGeneratorTest {
         em.setLikelihood(likelihoodIndicator);
         ArgumentMention am1 = new ArgumentMention(jCas, 0, 1);
         am1.setRef(gene);
+        am1.addToIndexes();
         ArgumentMention am2 = new ArgumentMention(jCas, 12, 13);
         am2.setRef(gene2);
+        am2.addToIndexes();
         em.setArguments(JCoReTools.addToFSArray(null, Arrays.asList(am1, am2)));
 
         FlattenedRelation fr = new FlattenedRelation(jCas, 2, 11);
@@ -111,12 +113,12 @@ public class RelationFieldValueGeneratorTest {
         Document relationDocument = relationDocumentGenerator.createDocuments(jCas).get(0);
 
         assertNotNull(relationDocument);
-        assertThat(relationDocument).containsKeys("pmid", "id", "likelihood", "sentence_filtering", "allarguments",
-                "alleventtypes", "maineventtype", "sentenceid");
+        assertThat(relationDocument).containsKeys("pmid", "id", "likelihood", "sentence", "allarguments",
+                "alleventtypes", "maineventtype");
 
-        PreanalyzedFieldValue preAnalyzedSentence = (PreanalyzedFieldValue) relationDocument.get("sentence_filtering");
-        assertThat(preAnalyzedSentence.fieldString).isBlank();
-        assertThat(preAnalyzedSentence.tokens).extracting(t -> t.term).containsExactly("a", "42", "tid42", "atid42", "regul", "tid7", "atid7", "b", "43", "tid43", "atid43");
+        PreanalyzedFieldValue preAnalyzedSentence = (PreanalyzedFieldValue) ((Document)relationDocument.get("sentence")).get("text");
+        assertThat(preAnalyzedSentence.fieldString).isNotBlank();
+        assertThat(preAnalyzedSentence.tokens).extracting(t -> t.term).containsExactly("a", "42", "tid42", "atid42", "#argument#", "regul", "#trigger#", "b", "43", "tid43", "atid43", "#argument#");
 
         assertThat((ArrayFieldValue) relationDocument.get("allarguments")).extracting("tokenValue").containsExactly("42", "tid42", "atid42", "43", "tid43", "atid43");
 
@@ -124,6 +126,6 @@ public class RelationFieldValueGeneratorTest {
 
         assertThat(relationDocument.get("id")).extracting("tokenValue").containsExactly("123456_FE0");
 
-        assertThat(relationDocument.get("sentenceid")).extracting("tokenValue").containsExactly("123456_0");
+        assertThat(((Document)relationDocument.get("sentence")).get("id")).extracting("tokenValue").containsExactly("123456_0");
     }
 }

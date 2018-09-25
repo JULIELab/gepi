@@ -73,7 +73,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
     }
 
     /**
-     * @param fs The {@link Sentence} to get overlapped {@link de.julielab.jcore.types.ext.FlattenedRelation} instances from.
+     * @param fs The {@link de.julielab.jcore.types.ext.FlattenedRelation} to create an index document for.
      * @return
      * @throws FieldGenerationException
      */
@@ -92,8 +92,6 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
             document.addField("allarguments", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
             document.addField("alleventtypes", createRawFieldValueForAnnotations(rel.getRelations().toArray(), "/specificType", eventName2tid2atidAddonFilter));
             document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", eventName2tid2atidAddonFilter));
-            document.addField("likelihood", FieldCreationUtils.likelihoodValues.get(rel.getRootRelation().getLikelihood().getLikelihood()));
-
         } catch (CASException e) {
             throw new FieldGenerationException(e);
         }
