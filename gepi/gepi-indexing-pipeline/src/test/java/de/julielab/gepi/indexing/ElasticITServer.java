@@ -41,16 +41,7 @@ public class ElasticITServer {
 
     @BeforeSuite(groups = "integration-tests")
     public static void setup() throws Exception {
-        // Setting the authentication for elasticsearch. The docker image comes with a default X-Shield installation.
-        //Authenticator.setDefault(new Authenticator() {
-        //protected PasswordAuthentication getPasswordAuthentication() {
-        //      return new PasswordAuthentication("elastic", "changeme".toCharArray());
-        //     }
-        //});
         es.start();
-       // es.withClasspathResourceMapping("elasticsearch-mapper-preanalyzed-5.4.0.jar",
-         //       "/usr/share/elasticsearch/plugins/elasticsearch-mapper-preanalyzed-5.4.0.jar",
-           //     BindMode.READ_WRITE);
         Slf4jLogConsumer toStringConsumer = new Slf4jLogConsumer(log);
         es.followOutput(toStringConsumer, OutputFrame.OutputType.STDOUT);
 
@@ -83,7 +74,7 @@ public class ElasticITServer {
         {
             URL url = new URL("http://localhost:" + es.getMappedPort(9200) + "/" + TEST_INDEX);
             URLConnection urlConnection = url.openConnection();
-            System.out.println(IOUtils.toString(urlConnection.getInputStream()));
+           log.debug(IOUtils.toString(urlConnection.getInputStream()));
         }
 
 
