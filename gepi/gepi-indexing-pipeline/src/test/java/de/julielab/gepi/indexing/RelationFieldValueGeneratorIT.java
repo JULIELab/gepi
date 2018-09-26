@@ -1,11 +1,11 @@
 package de.julielab.gepi.indexing;
 
 import de.julielab.jcore.consumer.es.ArrayFieldValue;
+import de.julielab.jcore.consumer.es.ElasticSearchConsumer;
 import de.julielab.jcore.consumer.es.FieldGenerationException;
 import de.julielab.jcore.consumer.es.FilterRegistry;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.PreanalyzedFieldValue;
-import de.julielab.jcore.consumer.es.preanalyzed.RawToken;
 import de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider;
 import de.julielab.jcore.consumer.es.sharedresources.ListProvider;
 import de.julielab.jcore.consumer.es.sharedresources.MapProvider;
@@ -15,6 +15,9 @@ import de.julielab.jcore.types.pubmed.Header;
 import de.julielab.jcore.utility.JCoReTools;
 import org.apache.uima.UIMAException;
 import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.ExternalResourceFactory;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.factory.UimaContextFactory;
@@ -29,9 +32,8 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertNotNull;
 
-public class RelationFieldValueGeneratorTest {
-
-
+@Test(suiteName = "integration-tests")
+public class RelationFieldValueGeneratorIT {
     private FilterRegistry filterRegistry;
 
     @Test
@@ -51,7 +53,7 @@ public class RelationFieldValueGeneratorTest {
     }
 
     @Test(dependsOnMethods = "testFilterBoard")
-    public void testCreateRelationDocument() throws UIMAException, FieldGenerationException {
+    public void testIndexing() throws UIMAException, FieldGenerationException {
         JCas jCas = JCasFactory.createJCas("de.julielab.jcore.types.jcore-morpho-syntax-types",
                 "de.julielab.jcore.types.jcore-semantics-biology-types",
                 "de.julielab.jcore.types.jcore-document-meta-pubmed-types",
@@ -109,23 +111,19 @@ public class RelationFieldValueGeneratorTest {
         sentence.setId("0");
         sentence.addToIndexes();
 
-        RelationDocumentGenerator relationDocumentGenerator = new RelationDocumentGenerator(filterRegistry);
-        Document relationDocument = relationDocumentGenerator.createDocuments(jCas).get(0);
+        AnalysisEngineDescription esConsumer = AnalysisEngineFactory.createEngineDescription(ElasticSearchConsumer.class,
+                ElasticSearchConsumer.PARAM_DOC_GENERATORS, new String[]{RelationDocumentGenerator.class.getCanonicalName()},
+                ElasticSearchConsumer.PARAM_FILTER_BOARDS, new String[]{TextFilterBoard.class.getCanonicalName(), GeneFilterBoard.class.getCanonicalName(), RelationFilterBoard.class.getCanonicalName()},
+                ElasticSearchConsumer.PARAM_URLS, new String[]{"http://localhost:" + ElasticITServer.es.getMappedPort(9200)},
+                ElasticSearchConsumer.PARAM_INDEX_NAME, ElasticITServer.TEST_INDEX,
+                ElasticSearchConsumer.PARAM_TYPE, "relations");
+        ExternalResourceFactory.createDependencyAndBind(esConsumer, "egid2tid", AddonTermsProvider.class, "file:egid2tid.txt");
+        ExternalResourceFactory.createDependencyAndBind(esConsumer, "eventName2tid", MapProvider.class, "file:eventName2tid.txt");
+        ExternalResourceFactory.createDependencyAndBind(esConsumer, "stopwords", ListProvider.class, "file:stopwords.txt");
+        ExternalResourceFactory.createDependencyAndBind(esConsumer, "tid2atid", AddonTermsProvider.class, "file:tid2atid.txt");
 
-        assertNotNull(relationDocument);
-        assertThat(relationDocument).containsKeys("pmid", "id", "likelihood", "sentence", "allarguments",
-                "alleventtypes", "maineventtype");
+        AnalysisEngine engine = AnalysisEngineFactory.createEngine(esConsumer);
+        engine.process(jCas);
 
-        PreanalyzedFieldValue preAnalyzedSentence = (PreanalyzedFieldValue) ((Document)relationDocument.get("sentence")).get("text");
-        assertThat(preAnalyzedSentence.fieldString).isNotBlank();
-        assertThat(preAnalyzedSentence.tokens).extracting(t -> t.term).containsExactly("a", "42", "tid42", "atid42", "#argument#", "regul", "#trigger#", "b", "43", "tid43", "atid43", "#argument#");
-
-        assertThat((ArrayFieldValue) relationDocument.get("allarguments")).extracting("tokenValue").containsExactly("42", "tid42", "atid42", "43", "tid43", "atid43");
-
-        assertThat(relationDocument.get("likelihood")).extracting("tokenValue").containsExactly(5);
-
-        assertThat(relationDocument.get("id")).extracting("tokenValue").containsExactly("123456_FE0");
-
-        assertThat(((Document)relationDocument.get("sentence")).get("id")).extracting("tokenValue").containsExactly("123456_0");
     }
 }

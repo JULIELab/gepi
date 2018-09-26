@@ -88,6 +88,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
             LikelihoodIndicator likelihood = rel.getRootRelation().getLikelihood();
             if (likelihood != null)
                 document.addField("likelihood", FieldCreationUtils.likelihoodValues.get(likelihood.getLikelihood()));
+            document.setId(docId + "_" + rel.getId());
             document.addField("id", docId + "_" + rel.getId());
             document.addField("allarguments", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
             document.addField("alleventtypes", createRawFieldValueForAnnotations(rel.getRelations().toArray(), "/specificType", eventName2tid2atidAddonFilter));
