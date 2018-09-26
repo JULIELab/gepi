@@ -1,11 +1,8 @@
 package de.julielab.gepi.indexing;
 
-import de.julielab.jcore.consumer.es.ArrayFieldValue;
 import de.julielab.jcore.consumer.es.ElasticSearchConsumer;
 import de.julielab.jcore.consumer.es.FieldGenerationException;
 import de.julielab.jcore.consumer.es.FilterRegistry;
-import de.julielab.jcore.consumer.es.preanalyzed.Document;
-import de.julielab.jcore.consumer.es.preanalyzed.PreanalyzedFieldValue;
 import de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider;
 import de.julielab.jcore.consumer.es.sharedresources.ListProvider;
 import de.julielab.jcore.consumer.es.sharedresources.MapProvider;
@@ -13,6 +10,7 @@ import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.types.pubmed.Header;
 import de.julielab.jcore.utility.JCoReTools;
+import org.apache.commons.io.IOUtils;
 import org.apache.uima.UIMAException;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -27,9 +25,12 @@ import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.testng.annotations.Test;
 
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.testng.Assert.assertNotNull;
 
 @Test(suiteName = "integration-tests")
@@ -53,7 +54,7 @@ public class RelationFieldValueGeneratorIT {
     }
 
     @Test(dependsOnMethods = "testFilterBoard")
-    public void testIndexing() throws UIMAException, FieldGenerationException {
+    public void testIndexing() throws Exception {
         JCas jCas = JCasFactory.createJCas("de.julielab.jcore.types.jcore-morpho-syntax-types",
                 "de.julielab.jcore.types.jcore-semantics-biology-types",
                 "de.julielab.jcore.types.jcore-document-meta-pubmed-types",
@@ -123,7 +124,23 @@ public class RelationFieldValueGeneratorIT {
         ExternalResourceFactory.createDependencyAndBind(esConsumer, "tid2atid", AddonTermsProvider.class, "file:tid2atid.txt");
 
         AnalysisEngine engine = AnalysisEngineFactory.createEngine(esConsumer);
-        engine.process(jCas);
+        assertThatCode(() -> engine.process(jCas)).doesNotThrowAnyException();
+        assertThatCode(() -> engine.collectionProcessComplete()).doesNotThrowAnyException();
+        // Give ES a second for indexing
+        Thread.sleep(1000);
+    }
 
+    @Test(dependsOnMethods = "testIndexing")
+    public void testSearch() throws Exception {
+        URLConnection urlConnection = new URL("http://localhost:" + ElasticITServer.es.getMappedPort(9200) + "/" + ElasticITServer.TEST_INDEX + "/_search?q=*:*").openConnection();
+        String result = IOUtils.toString(urlConnection.getInputStream());
+        assertThat(result.contains("hits\":\"{\"total\":1"));
+
+        urlConnection = new URL("http://localhost:" + ElasticITServer.es.getMappedPort(9200) + "/" + ElasticITServer.TEST_INDEX + "/_search?q=allarguments:tid42").openConnection();
+        assertThat(result.contains("hits\":\"{\"total\":1"));
+
+        urlConnection = new URL("http://localhost:" + ElasticITServer.es.getMappedPort(9200) + "/" + ElasticITServer.TEST_INDEX + "/_search?q=maineventtype:atid7&stored_fields=sentence.text").openConnection();
+        result = IOUtils.toString(urlConnection.getInputStream());
+        assertThat(result.contains("A regulates B."));
     }
 }
