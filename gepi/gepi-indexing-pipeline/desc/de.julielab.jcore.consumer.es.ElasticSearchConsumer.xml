@@ -85,7 +85,25 @@
             <nameValuePair>
                 <name>indexName</name>
                 <value>
-                    <string>gepi-0.2</string>
+                    <string>gepi_0.2</string>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>DocumentGenerators</name>
+                <value>
+                    <array>
+                        <string>de.julielab.gepi.indexing.RelationDocumentGenerator</string>
+                    </array>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>FilterBoards</name>
+                <value>
+                    <array>
+                        <string>de.julielab.gepi.indexing.RelationFilterBoard</string>
+                        <string>de.julielab.gepi.indexing.TextFilterBoard</string>
+                        <string>de.julielab.gepi.indexing.GeneFilterBoard</string>
+                    </array>
                 </value>
             </nameValuePair>
         </configurationParameterSettings>
@@ -99,4 +117,81 @@
             <outputsNewCASes>false</outputsNewCASes>
         </operationalProperties>
     </analysisEngineMetaData>
+    <externalResourceDependencies>
+        <externalResourceDependency>
+            <key>tid2atid</key>
+            <description>Gene concept ID to aggregate ID mapping</description>
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+            <optional>false</optional>
+        </externalResourceDependency>
+        <externalResourceDependency>
+            <key>stopwords</key>
+            <description>stopwords</description>
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IListProvider</interfaceName>
+            <optional>false</optional>
+        </externalResourceDependency>
+        <externalResourceDependency>
+            <key>egid2tid</key>
+            <description>gene ids to gene concepts ids</description>
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+            <optional>false</optional>
+        </externalResourceDependency>
+    </externalResourceDependencies>
+    <resourceManagerConfiguration>
+        <externalResources>
+            <externalResource>
+                <name>Gene concept ID to aggregate ID mapping</name>
+                <description>a mapping</description>
+                <configurableDataResourceSpecifier>
+                    <url>resources/tid2atid.map</url>
+                    <resourceMetaData>
+                        <name/>
+                        <configurationParameters/>
+                        <configurationParameterSettings/>
+                    </resourceMetaData>
+                </configurableDataResourceSpecifier>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider</implementationName>
+            </externalResource>
+            <externalResource>
+                <name>gene ids to gene concepts ids</name>
+                <description>gene ids to gene concepts ids</description>
+                <configurableDataResourceSpecifier>
+                    <url>resources/egid2tid.map</url>
+                    <resourceMetaData>
+                        <name/>
+                        <configurationParameters/>
+                        <configurationParameterSettings/>
+                    </resourceMetaData>
+                </configurableDataResourceSpecifier>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider</implementationName>
+            </externalResource>
+            <externalResource>
+                <name>stopwords</name>
+                <description>stopwords</description>
+                <configurableDataResourceSpecifier>
+                    <url>resources/stopwords.txt</url>
+                    <resourceMetaData>
+                        <name/>
+                        <configurationParameters/>
+                        <configurationParameterSettings/>
+                    </resourceMetaData>
+                </configurableDataResourceSpecifier>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.ListProvider</implementationName>
+            </externalResource>
+        </externalResources>
+        <externalResourceBindings>
+            <externalResourceBinding>
+                <key>egid2tid</key>
+                <resourceName>gene ids to gene concepts ids</resourceName>
+            </externalResourceBinding>
+            <externalResourceBinding>
+                <key>tid2atid</key>
+                <resourceName>Gene concept ID to aggregate ID mapping</resourceName>
+            </externalResourceBinding>
+            <externalResourceBinding>
+                <key>stopwords</key>
+                <resourceName>stopwords</resourceName>
+            </externalResourceBinding>
+        </externalResourceBindings>
+    </resourceManagerConfiguration>
 </analysisEngineDescription>

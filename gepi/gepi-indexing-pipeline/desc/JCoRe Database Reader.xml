@@ -113,7 +113,7 @@
             <nameValuePair>
                 <name>Table</name>
                 <value>
-                    <string>gepi.random10</string>
+                    <string>gepi.events_100</string>
                 </value>
             </nameValuePair>
             <nameValuePair>
@@ -126,6 +126,17 @@
                 <name>ReadsBaseDocument</name>
                 <value>
                     <boolean>true</boolean>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>AdditionalTables</name>
+                <value>
+                    <array>
+                        <string>de.julielab.jcore.types.Gene</string>
+                        <string>de.julielab.jcore.types.EventMention</string>
+                        <string>de.julielab.jcore.types.Token</string>
+                        <string>de.julielab.jcore.types.Sentence</string>
+                    </array>
                 </value>
             </nameValuePair>
         </configurationParameterSettings>

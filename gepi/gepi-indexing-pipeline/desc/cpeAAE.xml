@@ -3,8 +3,11 @@
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>false</primitive>
     <delegateAnalysisEngineSpecifiers>
+        <delegateAnalysisEngine key="JCoRe Pipeline AAE">
+            <import location="aggregateAnalysisEngine.xml"/>
+        </delegateAnalysisEngine>
         <delegateAnalysisEngine key="de.julielab.jcore.consumer.es.ElasticSearchConsumer">
-            <import name="CAS Consumers" location="de.julielab.jcore.consumer.es.ElasticSearchConsumer.xml"/>
+            <import location="de.julielab.jcore.consumer.es.ElasticSearchConsumer.xml"/>
         </delegateAnalysisEngine>
     </delegateAnalysisEngineSpecifiers>
     <analysisEngineMetaData>
@@ -13,6 +16,7 @@
         <configurationParameterSettings/>
         <flowConstraints>
             <fixedFlow>
+                <node>JCoRe Pipeline AAE</node>
                 <node>de.julielab.jcore.consumer.es.ElasticSearchConsumer</node>
             </fixedFlow>
         </flowConstraints>

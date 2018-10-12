@@ -37,16 +37,13 @@ public class RelationFieldValueGeneratorTest {
     @Test
     public void testFilterBoard() throws ResourceInitializationException, ResourceAccessException {
         ExternalResourceDescription gene2tid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/egid2tid.txt");
-        ExternalResourceDescription eventName2tid = ExternalResourceFactory.createExternalResourceDescription(MapProvider.class, "file:src/test/resources/eventName2tid.txt");
         ExternalResourceDescription tid2atid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/tid2atid.txt");
         ExternalResourceDescription stopwords = ExternalResourceFactory.createExternalResourceDescription(ListProvider.class, "file:src/test/resources/stopwords.txt");
-        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid, "eventName2tid", eventName2tid, "tid2atid", tid2atid, "stopwords", stopwords);
+        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid, "tid2atid", tid2atid, "stopwords", stopwords);
         filterRegistry = new FilterRegistry(uimaContext);
         filterRegistry.addFilterBoard(GeneFilterBoard.class, new GeneFilterBoard());
-        filterRegistry.addFilterBoard(RelationFilterBoard.class, new RelationFilterBoard());
         filterRegistry.addFilterBoard(TextFilterBoard.class, new TextFilterBoard());
         assertNotNull(filterRegistry.getFilterBoard(GeneFilterBoard.class));
-        assertNotNull(filterRegistry.getFilterBoard(RelationFilterBoard.class));
         assertNotNull(filterRegistry.getFilterBoard(TextFilterBoard.class));
     }
 

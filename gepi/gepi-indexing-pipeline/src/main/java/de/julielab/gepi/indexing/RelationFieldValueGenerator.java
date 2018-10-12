@@ -1,11 +1,12 @@
 package de.julielab.gepi.indexing;
 
-import de.julielab.jcore.consumer.es.*;
+import de.julielab.jcore.consumer.es.FieldGenerationException;
+import de.julielab.jcore.consumer.es.FieldValueGenerator;
+import de.julielab.jcore.consumer.es.FilterRegistry;
 import de.julielab.jcore.consumer.es.filter.FilterChain;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
 import de.julielab.jcore.types.LikelihoodIndicator;
-import de.julielab.jcore.types.Sentence;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.utility.JCoReTools;
 import org.apache.uima.cas.CASException;
@@ -59,17 +60,13 @@ import org.apache.uima.jcas.JCas;
 public class RelationFieldValueGenerator extends FieldValueGenerator {
 
 
-    private final RelationFilterBoard relationFb;
     private final TextFilterBoard textFb;
-    private final FilterChain eventName2tid2atidAddonFilter;
     private final GeneFilterBoard geneFb;
 
     public RelationFieldValueGenerator(FilterRegistry filterRegistry) {
         super(filterRegistry);
-        relationFb = filterRegistry.getFilterBoard(RelationFilterBoard.class);
         textFb = filterRegistry.getFilterBoard(TextFilterBoard.class);
         geneFb = filterRegistry.getFilterBoard(GeneFilterBoard.class);
-        eventName2tid2atidAddonFilter = new FilterChain(relationFb.eventName2tidReplaceFilter, textFb.tid2atidAddonFilter);
     }
 
     /**
@@ -91,8 +88,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
             document.setId(docId + "_" + rel.getId());
             document.addField("id", docId + "_" + rel.getId());
             document.addField("allarguments", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
-            document.addField("alleventtypes", createRawFieldValueForAnnotations(rel.getRelations().toArray(), "/specificType", eventName2tid2atidAddonFilter));
-            document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", eventName2tid2atidAddonFilter));
+            document.addField("alleventtypes", createRawFieldValueForAnnotations(rel.getRelations().toArray(), "/specificType"));
+            document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
         } catch (CASException e) {
             throw new FieldGenerationException(e);
         }

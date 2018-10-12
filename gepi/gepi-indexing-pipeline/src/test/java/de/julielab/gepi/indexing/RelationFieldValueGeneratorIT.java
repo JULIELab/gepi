@@ -1,17 +1,14 @@
 package de.julielab.gepi.indexing;
 
 import de.julielab.jcore.consumer.es.ElasticSearchConsumer;
-import de.julielab.jcore.consumer.es.FieldGenerationException;
 import de.julielab.jcore.consumer.es.FilterRegistry;
 import de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider;
 import de.julielab.jcore.consumer.es.sharedresources.ListProvider;
-import de.julielab.jcore.consumer.es.sharedresources.MapProvider;
 import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.types.pubmed.Header;
 import de.julielab.jcore.utility.JCoReTools;
 import org.apache.commons.io.IOUtils;
-import org.apache.uima.UIMAException;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -40,16 +37,13 @@ public class RelationFieldValueGeneratorIT {
     @Test
     public void testFilterBoard() throws ResourceInitializationException, ResourceAccessException {
         ExternalResourceDescription gene2tid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/egid2tid.txt");
-        ExternalResourceDescription eventName2tid = ExternalResourceFactory.createExternalResourceDescription(MapProvider.class, "file:src/test/resources/eventName2tid.txt");
         ExternalResourceDescription tid2atid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/tid2atid.txt");
         ExternalResourceDescription stopwords = ExternalResourceFactory.createExternalResourceDescription(ListProvider.class, "file:src/test/resources/stopwords.txt");
-        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid, "eventName2tid", eventName2tid, "tid2atid", tid2atid, "stopwords", stopwords);
+        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid,  "tid2atid", tid2atid, "stopwords", stopwords);
         filterRegistry = new FilterRegistry(uimaContext);
         filterRegistry.addFilterBoard(GeneFilterBoard.class, new GeneFilterBoard());
-        filterRegistry.addFilterBoard(RelationFilterBoard.class, new RelationFilterBoard());
         filterRegistry.addFilterBoard(TextFilterBoard.class, new TextFilterBoard());
         assertNotNull(filterRegistry.getFilterBoard(GeneFilterBoard.class));
-        assertNotNull(filterRegistry.getFilterBoard(RelationFilterBoard.class));
         assertNotNull(filterRegistry.getFilterBoard(TextFilterBoard.class));
     }
 
@@ -114,12 +108,11 @@ public class RelationFieldValueGeneratorIT {
 
         AnalysisEngineDescription esConsumer = AnalysisEngineFactory.createEngineDescription(ElasticSearchConsumer.class,
                 ElasticSearchConsumer.PARAM_DOC_GENERATORS, new String[]{RelationDocumentGenerator.class.getCanonicalName()},
-                ElasticSearchConsumer.PARAM_FILTER_BOARDS, new String[]{TextFilterBoard.class.getCanonicalName(), GeneFilterBoard.class.getCanonicalName(), RelationFilterBoard.class.getCanonicalName()},
+                ElasticSearchConsumer.PARAM_FILTER_BOARDS, new String[]{TextFilterBoard.class.getCanonicalName(), GeneFilterBoard.class.getCanonicalName()},
                 ElasticSearchConsumer.PARAM_URLS, new String[]{"http://localhost:" + ElasticITServer.es.getMappedPort(9200)},
                 ElasticSearchConsumer.PARAM_INDEX_NAME, ElasticITServer.TEST_INDEX,
                 ElasticSearchConsumer.PARAM_TYPE, "relations");
         ExternalResourceFactory.createDependencyAndBind(esConsumer, "egid2tid", AddonTermsProvider.class, "file:egid2tid.txt");
-        ExternalResourceFactory.createDependencyAndBind(esConsumer, "eventName2tid", MapProvider.class, "file:eventName2tid.txt");
         ExternalResourceFactory.createDependencyAndBind(esConsumer, "stopwords", ListProvider.class, "file:stopwords.txt");
         ExternalResourceFactory.createDependencyAndBind(esConsumer, "tid2atid", AddonTermsProvider.class, "file:tid2atid.txt");
 
@@ -132,15 +125,13 @@ public class RelationFieldValueGeneratorIT {
 
     @Test(dependsOnMethods = "testIndexing")
     public void testSearch() throws Exception {
-        URLConnection urlConnection = new URL("http://localhost:" + ElasticITServer.es.getMappedPort(9200) + "/" + ElasticITServer.TEST_INDEX + "/_search?q=*:*").openConnection();
+        URLConnection urlConnection = new URL("http://localhost:" + ElasticITServer.es.getMappedPort(9200) + "/" + ElasticITServer.TEST_INDEX + "/_search?q=allarguments:tid42").openConnection();
         String result = IOUtils.toString(urlConnection.getInputStream());
-        assertThat(result.contains("hits\":\"{\"total\":1"));
+        System.out.println(result);
+        assertThat(result.contains("hits\":{\"total\":1")).isTrue();
 
-        urlConnection = new URL("http://localhost:" + ElasticITServer.es.getMappedPort(9200) + "/" + ElasticITServer.TEST_INDEX + "/_search?q=allarguments:tid42").openConnection();
-        assertThat(result.contains("hits\":\"{\"total\":1"));
-
-        urlConnection = new URL("http://localhost:" + ElasticITServer.es.getMappedPort(9200) + "/" + ElasticITServer.TEST_INDEX + "/_search?q=maineventtype:atid7&stored_fields=sentence.text").openConnection();
+        urlConnection = new URL("http://localhost:" + ElasticITServer.es.getMappedPort(9200) + "/" + ElasticITServer.TEST_INDEX + "/_search?q=maineventtype:regulation&stored_fields=sentence.text").openConnection();
         result = IOUtils.toString(urlConnection.getInputStream());
-        assertThat(result.contains("A regulates B."));
+        assertThat(result.contains("A regulates B.")).isTrue();
     }
 }
