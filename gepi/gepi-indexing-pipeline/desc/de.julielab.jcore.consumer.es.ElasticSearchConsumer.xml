@@ -71,8 +71,8 @@
                 <name>urls</name>
                 <value>
                     <array>
-                        <string>http://h5:9300</string>
-                        <string>http://h6:9300</string>
+                        <string>http://h5:9200</string>
+                        <string>http://h6:9200</string>
                     </array>
                 </value>
             </nameValuePair>
@@ -100,7 +100,6 @@
                 <name>FilterBoards</name>
                 <value>
                     <array>
-                        <string>de.julielab.gepi.indexing.RelationFilterBoard</string>
                         <string>de.julielab.gepi.indexing.TextFilterBoard</string>
                         <string>de.julielab.gepi.indexing.GeneFilterBoard</string>
                     </array>
@@ -143,7 +142,7 @@
                 <name>Gene concept ID to aggregate ID mapping</name>
                 <description>a mapping</description>
                 <configurableDataResourceSpecifier>
-                    <url>resources/tid2atid.map</url>
+                    <url>file:resources/tid2atid.map</url>
                     <resourceMetaData>
                         <name/>
                         <configurationParameters/>
@@ -156,7 +155,7 @@
                 <name>gene ids to gene concepts ids</name>
                 <description>gene ids to gene concepts ids</description>
                 <configurableDataResourceSpecifier>
-                    <url>resources/egid2tid.map</url>
+                    <url>file:resources/egid2tid.map</url>
                     <resourceMetaData>
                         <name/>
                         <configurationParameters/>
@@ -169,7 +168,7 @@
                 <name>stopwords</name>
                 <description>stopwords</description>
                 <configurableDataResourceSpecifier>
-                    <url>resources/stopwords.txt</url>
+                    <url>file:resources/stopwords.txt</url>
                     <resourceMetaData>
                         <name/>
                         <configurationParameters/>

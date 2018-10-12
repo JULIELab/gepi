@@ -55,6 +55,9 @@
           "type": "integer",
           "store": true
         },
+        "numargs": {
+          "type": "integer"
+        },
         "sentence": {
           "properties": {
             "text": {
