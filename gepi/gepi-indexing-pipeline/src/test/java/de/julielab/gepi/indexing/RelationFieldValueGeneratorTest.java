@@ -38,8 +38,9 @@ public class RelationFieldValueGeneratorTest {
     public void testFilterBoard() throws ResourceInitializationException, ResourceAccessException {
         ExternalResourceDescription gene2tid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/egid2tid.txt");
         ExternalResourceDescription tid2atid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/tid2atid.txt");
+        ExternalResourceDescription tid2prefName = ExternalResourceFactory.createExternalResourceDescription(MapProvider.class, "file:src/test/resources/tid2prefName.txt");
         ExternalResourceDescription stopwords = ExternalResourceFactory.createExternalResourceDescription(ListProvider.class, "file:src/test/resources/stopwords.txt");
-        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid, "tid2atid", tid2atid, "stopwords", stopwords);
+        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid,  "tid2atid", tid2atid, "stopwords", stopwords, "tid2prefName", tid2prefName);
         filterRegistry = new FilterRegistry(uimaContext);
         filterRegistry.addFilterBoard(GeneFilterBoard.class, new GeneFilterBoard());
         filterRegistry.addFilterBoard(TextFilterBoard.class, new TextFilterBoard());
@@ -118,6 +119,8 @@ public class RelationFieldValueGeneratorTest {
         assertThat(preAnalyzedSentence.tokens).extracting(t -> t.term).containsExactly("a", "42", "tid42", "atid42", "#argument#", "regul", "#trigger#", "b", "43", "tid43", "atid43", "#argument#");
 
         assertThat((ArrayFieldValue) relationDocument.get("allarguments")).extracting("tokenValue").containsExactly("42", "tid42", "atid42", "43", "tid43", "atid43");
+
+        assertThat((ArrayFieldValue) relationDocument.get("allargumentprefnames")).extracting("tokenValue").containsExactly("prefname42", "prefname43");
 
         assertThat(relationDocument.get("likelihood")).extracting("tokenValue").containsExactly(5);
 

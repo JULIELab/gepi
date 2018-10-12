@@ -4,6 +4,7 @@ import de.julielab.jcore.consumer.es.ElasticSearchConsumer;
 import de.julielab.jcore.consumer.es.FilterRegistry;
 import de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider;
 import de.julielab.jcore.consumer.es.sharedresources.ListProvider;
+import de.julielab.jcore.consumer.es.sharedresources.MapProvider;
 import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.types.pubmed.Header;
@@ -38,8 +39,9 @@ public class RelationFieldValueGeneratorIT {
     public void testFilterBoard() throws ResourceInitializationException, ResourceAccessException {
         ExternalResourceDescription gene2tid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/egid2tid.txt");
         ExternalResourceDescription tid2atid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/tid2atid.txt");
+        ExternalResourceDescription tid2prefName = ExternalResourceFactory.createExternalResourceDescription(MapProvider.class, "file:src/test/resources/tid2prefName.txt");
         ExternalResourceDescription stopwords = ExternalResourceFactory.createExternalResourceDescription(ListProvider.class, "file:src/test/resources/stopwords.txt");
-        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid,  "tid2atid", tid2atid, "stopwords", stopwords);
+        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid,  "tid2atid", tid2atid, "stopwords", stopwords, "tid2prefName", tid2prefName);
         filterRegistry = new FilterRegistry(uimaContext);
         filterRegistry.addFilterBoard(GeneFilterBoard.class, new GeneFilterBoard());
         filterRegistry.addFilterBoard(TextFilterBoard.class, new TextFilterBoard());
@@ -115,12 +117,13 @@ public class RelationFieldValueGeneratorIT {
         ExternalResourceFactory.createDependencyAndBind(esConsumer, "egid2tid", AddonTermsProvider.class, "file:egid2tid.txt");
         ExternalResourceFactory.createDependencyAndBind(esConsumer, "stopwords", ListProvider.class, "file:stopwords.txt");
         ExternalResourceFactory.createDependencyAndBind(esConsumer, "tid2atid", AddonTermsProvider.class, "file:tid2atid.txt");
+        ExternalResourceFactory.createDependencyAndBind(esConsumer, "tid2prefName", MapProvider.class, "file:tid2prefName.txt");
 
         AnalysisEngine engine = AnalysisEngineFactory.createEngine(esConsumer);
         assertThatCode(() -> engine.process(jCas)).doesNotThrowAnyException();
         assertThatCode(() -> engine.collectionProcessComplete()).doesNotThrowAnyException();
         // Give ES a second for indexing
-        Thread.sleep(1000);
+        Thread.sleep(1500);
     }
 
     @Test(dependsOnMethods = "testIndexing")

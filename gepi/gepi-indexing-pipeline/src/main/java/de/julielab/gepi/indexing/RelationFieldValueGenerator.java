@@ -3,7 +3,6 @@ package de.julielab.gepi.indexing;
 import de.julielab.jcore.consumer.es.FieldGenerationException;
 import de.julielab.jcore.consumer.es.FieldValueGenerator;
 import de.julielab.jcore.consumer.es.FilterRegistry;
-import de.julielab.jcore.consumer.es.filter.FilterChain;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
 import de.julielab.jcore.types.LikelihoodIndicator;
@@ -89,6 +88,9 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
             document.addField("id", docId + "_" + rel.getId());
             document.addField("numargs", rel.getArguments().size());
             document.addField("allarguments", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
+            document.addField("allargumentgeneids", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId"));
+            document.addField("allargumentcoveredtext", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/:coveredText()"));
+            document.addField("allargumentprefnames", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
             document.addField("alleventtypes", createRawFieldValueForAnnotations(rel.getRelations().toArray(), "/specificType"));
             document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
         } catch (CASException e) {

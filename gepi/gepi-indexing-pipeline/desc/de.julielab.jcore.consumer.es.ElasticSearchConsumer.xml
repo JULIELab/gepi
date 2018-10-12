@@ -135,6 +135,12 @@
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
             <optional>false</optional>
         </externalResourceDependency>
+        <externalResourceDependency>
+            <key>tid2prefName</key>
+            <description>gene ids to gene preferred names</description>
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+            <optional>false</optional>
+        </externalResourceDependency>
     </externalResourceDependencies>
     <resourceManagerConfiguration>
         <externalResources>
@@ -177,6 +183,19 @@
                 </configurableDataResourceSpecifier>
                 <implementationName>de.julielab.jcore.consumer.es.sharedresources.ListProvider</implementationName>
             </externalResource>
+            <externalResource>
+                <name>gene ids to gene preferred names</name>
+                <description>gene ids to gene preferred names</description>
+                <configurableDataResourceSpecifier>
+                    <url>file:resources/tid2prefName.map</url>
+                    <resourceMetaData>
+                        <name/>
+                        <configurationParameters/>
+                        <configurationParameterSettings/>
+                    </resourceMetaData>
+                </configurableDataResourceSpecifier>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.MapProvider</implementationName>
+            </externalResource>
         </externalResources>
         <externalResourceBindings>
             <externalResourceBinding>
@@ -186,6 +205,10 @@
             <externalResourceBinding>
                 <key>tid2atid</key>
                 <resourceName>Gene concept ID to aggregate ID mapping</resourceName>
+            </externalResourceBinding>
+            <externalResourceBinding>
+                <key>tid2prefName</key>
+                <resourceName>gene ids to gene preferred names</resourceName>
             </externalResourceBinding>
             <externalResourceBinding>
                 <key>stopwords</key>
