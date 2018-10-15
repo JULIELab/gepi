@@ -39,8 +39,9 @@ public class RelationFieldValueGeneratorTest {
         ExternalResourceDescription gene2tid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/egid2tid.txt");
         ExternalResourceDescription tid2atid = ExternalResourceFactory.createExternalResourceDescription(AddonTermsProvider.class, "file:src/test/resources/tid2atid.txt");
         ExternalResourceDescription tid2prefName = ExternalResourceFactory.createExternalResourceDescription(MapProvider.class, "file:src/test/resources/tid2prefName.txt");
+        ExternalResourceDescription tid2tophomo = ExternalResourceFactory.createExternalResourceDescription(MapProvider.class, "file:src/test/resources/tid2tophomo.txt");
         ExternalResourceDescription stopwords = ExternalResourceFactory.createExternalResourceDescription(ListProvider.class, "file:src/test/resources/stopwords.txt");
-        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid,  "tid2atid", tid2atid, "stopwords", stopwords, "tid2prefName", tid2prefName);
+        UimaContext uimaContext = UimaContextFactory.createUimaContext("egid2tid", gene2tid,  "tid2atid", tid2atid, "tid2tophomo", tid2tophomo, "stopwords", stopwords, "tid2prefName", tid2prefName);
         filterRegistry = new FilterRegistry(uimaContext);
         filterRegistry.addFilterBoard(GeneFilterBoard.class, new GeneFilterBoard());
         filterRegistry.addFilterBoard(TextFilterBoard.class, new TextFilterBoard());

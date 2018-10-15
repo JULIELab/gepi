@@ -141,6 +141,12 @@
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
             <optional>false</optional>
         </externalResourceDependency>
+        <externalResourceDependency>
+            <key>tid2tophomo</key>
+            <description>gene ids to top homology ids</description>
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+            <optional>false</optional>
+        </externalResourceDependency>
     </externalResourceDependencies>
     <resourceManagerConfiguration>
         <externalResources>
@@ -196,6 +202,19 @@
                 </configurableDataResourceSpecifier>
                 <implementationName>de.julielab.jcore.consumer.es.sharedresources.MapProvider</implementationName>
             </externalResource>
+            <externalResource>
+                <name>gene ids to top homology ids</name>
+                <description>gene ids to top homology ids</description>
+                <configurableDataResourceSpecifier>
+                    <url>file:resources/tid2tophomo.map</url>
+                    <resourceMetaData>
+                        <name/>
+                        <configurationParameters/>
+                        <configurationParameterSettings/>
+                    </resourceMetaData>
+                </configurableDataResourceSpecifier>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.MapProvider</implementationName>
+            </externalResource>
         </externalResources>
         <externalResourceBindings>
             <externalResourceBinding>
@@ -209,6 +228,10 @@
             <externalResourceBinding>
                 <key>tid2prefName</key>
                 <resourceName>gene ids to gene preferred names</resourceName>
+            </externalResourceBinding>
+            <externalResourceBinding>
+                <key>tid2tophomo</key>
+                <resourceName>gene ids to top homology ids</resourceName>
             </externalResourceBinding>
             <externalResourceBinding>
                 <key>stopwords</key>

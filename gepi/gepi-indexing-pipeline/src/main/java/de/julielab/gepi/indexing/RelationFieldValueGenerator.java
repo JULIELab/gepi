@@ -89,6 +89,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
             document.addField("numargs", rel.getArguments().size());
             document.addField("allarguments", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
             document.addField("allargumentgeneids", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId"));
+            document.addField("allargumentconceptids", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.eg2tidReplaceFilter));
+            document.addField("allargumenttophomoids", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.eg2tophomoFilter));
             document.addField("allargumentcoveredtext", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/:coveredText()"));
             document.addField("allargumentprefnames", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
             document.addField("alleventtypes", createRawFieldValueForAnnotations(rel.getRelations().toArray(), "/specificType"));

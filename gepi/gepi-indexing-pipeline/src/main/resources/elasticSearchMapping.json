@@ -51,6 +51,14 @@
           "type": "keyword",
           "store": true
         },
+        "allargumentconceptids": {
+          "type": "keyword",
+          "store": true
+        },
+        "allargumenttophomoids": {
+          "type": "keyword",
+          "store": true
+        },
         "maineventtype": {
           "type": "keyword",
           "store": true
