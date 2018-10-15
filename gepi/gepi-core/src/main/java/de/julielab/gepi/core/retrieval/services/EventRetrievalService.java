@@ -1,10 +1,6 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,35 +34,31 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType
  */
 public class EventRetrievalService implements IEventRetrievalService {
 
-	public static final String FIELD_EVENTS = "events";
+	public static final String FIELD_EVENT_MAINEVENTTYPE =  "maineventtype";
 
-	public static final String FIELD_EVENT_MAINEVENTTYPE = FIELD_EVENTS + ".maineventtype";
+	public static final String FIELD_EVENT_ARGUMENTSEARCH =  "allarguments";
 
-	public static final String FIELD_EVENT_ARGUMENTSEARCH = FIELD_EVENTS + ".argumenttophomologyids";
+	public static final String FIELD_EVENT_ARG_GENE_IDS =  "allargumentgeneids";
 
-	public static final String FIELD_EVENT_ARG_GENE_IDS = FIELD_EVENTS + ".argumentgeneids";
+	public static final String FIELD_EVENT_ARG_CONCEPT_IDS =  "allargumentconceptids";
 
-	public static final String FIELD_EVENT_ARG_CONCEPT_IDS = FIELD_EVENTS + ".argumentconceptids";
+	public static final String FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS =  "allargumenttophomoids";
 
-	public static final String FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS = FIELD_EVENTS + ".argumenttophomologyids";
+	public static final String FIELD_EVENT_ARG_TEXT =  "allargumentcoveredtext";
 
-	public static final String FIELD_EVENT_ARG_TEXT = FIELD_EVENTS + ".argumenttext";
+	public static final String FIELD_EVENT_ARG_PREFERRED_NAME =  "allargumentprefnames";
 
-	public static final String FIELD_EVENT_ARG_PREFERRED_NAME = FIELD_EVENTS + ".argumentpreferrednames";
+	public static final String FIELD_EVENT_SENTENCE =  "sentence.text";
 
-	public static final String FIELD_EVENT_SENTENCE = FIELD_EVENTS + ".sentence";
+	public static final String FIELD_EVENT_LIKELIHOOD =  "likelihood";
 
-	public static final String FIELD_EVENT_LIKELIHOOD = FIELD_EVENTS + ".likelihood";
-
-	public static final String FIELD_EVENT_NUMDISTINCTARGUMENTS = FIELD_EVENTS + ".numdistinctarguments";
-
-	public static final String FIELD_EVENT_NUMARGUMENTS = FIELD_EVENTS + ".numarguments";
+	public static final String FIELD_EVENT_NUMARGUMENTS =  "numargs";
 
 	private Logger log;
 	private ISearchServerComponent searchServerComponent;
 
 	private String documentIndex;
-	private static final int SCROLL_SIZE = 500;
+	private static final int SCROLL_SIZE = 100;
 	private IEventResponseProcessingService eventResponseProcessingService;
 
 	public EventRetrievalService(@Symbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS) String documentIndex, Logger log,
@@ -78,6 +70,12 @@ public class EventRetrievalService implements IEventRetrievalService {
 		this.searchServerComponent = searchServerComponent;
 	}
 
+    /**
+     * BROKEN AS OF OCTOBER 2018 DUE TO INDEX REBUILD; COPY QUERY PART FROM OUTSIDE EVENTS AND ADAPT
+     * @param idStreamA
+     * @param idStreamB
+     * @return
+     */
 	@Override
 	public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Stream<String> idStreamA,
 			Stream<String> idStreamB) {
@@ -119,7 +117,6 @@ public class EventRetrievalService implements IEventRetrievalService {
 		eventQuery.addClause(filterClause);
 
 		NestedQuery nestedQuery = new NestedQuery();
-		nestedQuery.path = FIELD_EVENTS;
 		nestedQuery.query = eventQuery;
 		nestedQuery.innerHits = new InnerHits();
 		nestedQuery.innerHits.addField(FIELD_EVENT_LIKELIHOOD);
@@ -132,7 +129,6 @@ public class EventRetrievalService implements IEventRetrievalService {
 		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS);
 		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_TEXT);
 		nestedQuery.innerHits.addField(FIELD_EVENT_NUMARGUMENTS);
-		nestedQuery.innerHits.addField(FIELD_EVENT_NUMDISTINCTARGUMENTS);
 
 		SearchServerCommand serverCmd = new SearchServerCommand();
 		serverCmd.query = nestedQuery;
@@ -261,29 +257,20 @@ public class EventRetrievalService implements IEventRetrievalService {
 		eventQuery.addClause(termsClause);
 		eventQuery.addClause(filterClause);
 
-		NestedQuery nestedQuery = new NestedQuery();
-		nestedQuery.path = FIELD_EVENTS;
-		nestedQuery.query = eventQuery;
-		nestedQuery.innerHits = new InnerHits();
-		nestedQuery.innerHits.addField(FIELD_EVENT_LIKELIHOOD);
-		nestedQuery.innerHits.addField(FIELD_EVENT_SENTENCE);
-		nestedQuery.innerHits.addField(FIELD_EVENT_MAINEVENTTYPE);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARGUMENTSEARCH);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_CONCEPT_IDS);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_GENE_IDS);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_PREFERRED_NAME);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_TEXT);
-		nestedQuery.innerHits.addField(FIELD_EVENT_NUMARGUMENTS);
-		nestedQuery.innerHits.addField(FIELD_EVENT_NUMDISTINCTARGUMENTS);
-
-		log.trace("The nestedQuery object has the fields: {}", nestedQuery.innerHits.fields);
 
 		SearchServerCommand serverCmd = new SearchServerCommand();
-		serverCmd.query = nestedQuery;
+		serverCmd.query = eventQuery;
 		serverCmd.index = documentIndex;
 		serverCmd.rows = SCROLL_SIZE;
-		serverCmd.fieldsToReturn = Collections.emptyList();
+		serverCmd.fieldsToReturn = Arrays.asList(FIELD_EVENT_LIKELIHOOD,
+				FIELD_EVENT_SENTENCE,
+				FIELD_EVENT_MAINEVENTTYPE,
+				FIELD_EVENT_ARG_GENE_IDS,
+				FIELD_EVENT_ARG_CONCEPT_IDS,
+				FIELD_EVENT_ARG_PREFERRED_NAME,
+				FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
+				FIELD_EVENT_ARG_TEXT,
+				FIELD_EVENT_NUMARGUMENTS);
 		serverCmd.downloadCompleteResults = true;
 		serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 

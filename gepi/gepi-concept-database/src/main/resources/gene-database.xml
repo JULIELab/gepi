@@ -3,17 +3,23 @@
                  xmlns="http://www.julielab.de/conceptdb"
                  xsi:schemaLocation="http://www.julielab.de/conceptdb http://www.julielab.de/conceptdb/conceptdb-1.0.0.xsd
                  http://www.julielab.de/conceptdb/concepts/ncbigene http://www.julielab.de/conceptdb/concepts/ncbigene-1.0.0.xsd
-                 http://www.julielab.de/conceptdb/exporters/serverplugin http://www.julielab.de/conceptdb/exporters/serverplugin-1.0.0.xsd">
+                 http://www.julielab.de/conceptdb/exporters/serverplugin http://www.julielab.de/conceptdb/exporters/serverplugin-1.0.0.xsd
+                 http://www.julielab.de/conceptdb/exporters/cypher http://www.julielab.de/conceptdb/exporters/cypher-1.0.0.xsd
+                 http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacetcreator-1.0.0.xsd">
     <versioning>
-        <version>1.0</version>
+        <version>0.2</version>
     </versioning>
     <connection>
-        <uri>http://localhost:7474</uri>
+        <uri>http://dawkins:7778</uri>
         <user>neo4j</user>
-        <password>erik</password>
+        <password>julielab</password>
     </connection>
     <imports>
         <import>
+            <serverplugininserter>
+                <pluginname>ConceptManager</pluginname>
+                <pluginendpoint>insert_concepts</pluginendpoint>
+            </serverplugininserter>
             <concepts>
                 <creator xmlns="http://www.julielab.de/conceptdb/concepts/ncbigene">
                     <name>de.julielab.concepts.db.creators.NCBIGeneConceptCreator</name>
@@ -28,19 +34,32 @@
                     </configuration>
                 </creator>
             </concepts>
+            <facet>
+                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
+                    <name>DefaultFacetCreator</name>
+                    <configuration>
+                        <name>Genes</name>
+                        <sourcetype>hierarchical</sourcetype>
+                        <facetgroup>
+                            <name>Genes</name>
+                        </facetgroup>
+                    </configuration>
+                </creator>
+            </facet>
         </import>
     </imports>
     <exports>
         <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
+            <exporter>ServerPluginExporter</exporter>
+            <pluginname>
+                Export
+            </pluginname>
+            <pluginendpoint>
+                term_id_mapping
+            </pluginendpoint>
             <configuration>
-                <pluginname>
-                    Export
-                </pluginname>
-                <pluginendpoint>
-                    term_id_mapping
-                </pluginendpoint>
                 <outputfile>
-                    genes.idmap
+                    ../gepi-indexing-pipeline/resources/egid2tid.map
                 </outputfile>
                 <decoding>
                     <json2bytearray>true</json2bytearray>
@@ -57,50 +76,25 @@
                 </parameters>
             </configuration>
         </export>
-        <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
-            <exporter>ServerPluginExporter</exporter>
+        <export name="allgeneaggregates" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
+            <exporter>CypherExporter</exporter>
             <configuration>
-                <pluginname>
-                    Export
-                </pluginname>
-                <pluginendpoint>
-                    element_aggregate_id_mapping
-                </pluginendpoint>
-                <outputfile>
-                    elements.2aggid
-                </outputfile>
-                <decoding>
-                    <json2bytearray>false</json2bytearray>
-                    <base64>true</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <parameters>
-                    <parameter parametername="labels" tojson="true">
-                        <label>AGGREGATE_TOP_HOMOLOGY</label>
-                        <label>AGGREGATE_HOMOLOGENE</label>
-                        <label>AGGREGATE_GENEGROUP</label>
-                    </parameter>
-                </parameters>
+                <cypherquery>MATCH (th)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE (th:AGGREGATE_TOP_HOMOLOGY OR th:AGGREGATE_HOMOLOGENE OR th:AGGREGATE_GENEGROUP) AND NOT c:AGGREGATE RETURN DISTINCT c.id,th.id</cypherquery>
+                <outputfile>../gepi-indexing-pipeline/resources/tid2atid.map</outputfile>
             </configuration>
         </export>
-        <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
-            <exporter>ServerPluginExporter</exporter>
+        <export name="tophomologyids" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
+            <exporter>CypherExporter</exporter>
             <configuration>
-                <pluginname>
-                    Export
-                </pluginname>
-                <pluginendpoint>
-                    hypernyms
-                </pluginendpoint>
-                <outputfile>
-                    hypernyms.tid
-                </outputfile>
-                <decoding>
-                    <json2bytearray>true</json2bytearray>
-                    <base64>false</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <parameters/>
+                <cypherquery>MATCH (th:AGGREGATE_TOP_HOMOLOGY)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE NOT c:AGGREGATE RETURN DISTINCT c.id,th.id</cypherquery>
+                <outputfile>../gepi-indexing-pipeline/resources/tid2tophomo.map</outputfile>
+            </configuration>
+        </export>
+        <export name="preferredNames" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
+            <exporter>CypherExporter</exporter>
+            <configuration>
+                <cypherquery>MATCH (gene:ID_MAP_NCBI_GENES) return gene.id,gene.preferredName</cypherquery>
+                <outputfile>../gepi-indexing-pipeline/resources/tid2prefName.map</outputfile>
             </configuration>
         </export>
     </exports>
