@@ -9,6 +9,16 @@ public class Argument implements Comparable<Argument> {
 	private String geneId;
 	private String conceptId;
 	private String topHomologyId;
+
+    public String getTopHomologyPreferredName() {
+        return topHomologyPreferredName;
+    }
+
+    public void setTopHomologyPreferredName(String topHomologyPreferredName) {
+        this.topHomologyPreferredName = topHomologyPreferredName;
+    }
+
+    private String topHomologyPreferredName;
 	private String preferredName;
 	private String text;
 	private ComparisonMode comparisonMode = ComparisonMode.TOP_HOMOLOGY;

@@ -1,6 +1,8 @@
 package de.julielab.gepi.core.retrieval.services;
 
+import de.julielab.elastic.query.components.data.ElasticServerResponse;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
+import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
@@ -27,8 +29,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 
 	@Log
 	@Override
-	public EventRetrievalResult getEventRetrievalResult(ISearchServerResponse response) {
-		if (response.getQueryError() != null) {
+	public EventRetrievalResult getEventRetrievalResult(IElasticServerResponse response) {
+		if (response.getQueryErrorMessage() != null) {
 			log.error("Error while querying ElasticSearch: {}", response.getQueryErrorMessage());
 			throw new IllegalStateException(
 					"The ElasticSearch server is down or was not queried correctly: There was no response.");
@@ -42,8 +44,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 		eventRetrievalResult.setEvents(eventStream);
 		log.trace("Size of the event retrieval result (number of events): {}", eventRetrievalResult.getEventList().size());
 		// postprocess eventPreferred names first with given neo4j information
-		eventPPService.setPreferredNameFromConceptId(eventRetrievalResult.getEventList());
-		eventPPService.setArgumentGeneIds(eventRetrievalResult.getEventList());
+//		eventPPService.setPreferredNameFromConceptId(eventRetrievalResult.getEventList());
+//		eventPPService.setArgumentGeneIds(eventRetrievalResult.getEventList());
 		return eventRetrievalResult;
 	}
 
@@ -55,6 +57,10 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 					.orElse(Collections.emptyList());
 			List<Object> topHomologyIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS)
 					.orElse(Collections.emptyList());
+            List<Object> argPrefNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_PREFERRED_NAME)
+                    .orElse(Collections.emptyList());
+            List<Object> argHomologyPrefNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME)
+                    .orElse(Collections.emptyList());
 			List<Object> texts = eventDocument.getFieldValues(FIELD_EVENT_ARG_TEXT).orElse(Collections.emptyList());
 			Optional<String> mainEventType = eventDocument.get(FIELD_EVENT_MAINEVENTTYPE);
 			Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
@@ -100,6 +106,10 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 					.findFirst().orElse(null));
 			if (sentence.isPresent())
 				event.setSentence(sentence.get());
+			for (int i = 0; i < event.getNumArguments(); i++) {
+                event.getArgument(i).setPreferredName((String) argPrefNames.get(i));
+                event.getArgument(i).setTopHomologyPreferredName((String) argHomologyPrefNames.get(i));
+            }
 
 			return event;
 		}).filter(Objects::nonNull);

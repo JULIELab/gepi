@@ -1,29 +1,24 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.slf4j.Logger;
-
 import de.julielab.elastic.query.components.ISearchServerComponent;
-import de.julielab.elastic.query.components.data.SearchCarrier;
-import de.julielab.elastic.query.components.data.SearchServerCommand;
+import de.julielab.elastic.query.components.data.ElasticSearchCarrier;
+import de.julielab.elastic.query.components.data.ElasticServerResponse;
+import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.elastic.query.components.data.SortCommand.SortOrder;
-import de.julielab.elastic.query.components.data.query.BoolClause;
+import de.julielab.elastic.query.components.data.query.*;
 import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
-import de.julielab.elastic.query.components.data.query.BoolQuery;
-import de.julielab.elastic.query.components.data.query.InnerHits;
-import de.julielab.elastic.query.components.data.query.NestedQuery;
-import de.julielab.elastic.query.components.data.query.TermQuery;
-import de.julielab.elastic.query.components.data.query.TermsQuery;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
+
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Gets any IDs, converts them to GePi IDs (or just queries the index?!) and
@@ -47,6 +42,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 	public static final String FIELD_EVENT_ARG_TEXT =  "allargumentcoveredtext";
 
 	public static final String FIELD_EVENT_ARG_PREFERRED_NAME =  "allargumentprefnames";
+
+    public static final String FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME =  "allargumenthomoprefnames";
 
 	public static final String FIELD_EVENT_SENTENCE =  "sentence.text";
 
@@ -87,12 +84,10 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 		log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idListA.size(), idListB.size());
 
-		TermsQuery listAQuery = new TermsQuery();
-		listAQuery.terms = idListA;
+		TermsQuery listAQuery = new TermsQuery(idListA);
 		listAQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
-		TermsQuery listBQuery = new TermsQuery();
-		listBQuery.terms = idListB;
+		TermsQuery listBQuery = new TermsQuery(idListB);
 		listBQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
 		TermQuery filterQuery = new TermQuery();
@@ -130,16 +125,17 @@ public class EventRetrievalService implements IEventRetrievalService {
 		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_TEXT);
 		nestedQuery.innerHits.addField(FIELD_EVENT_NUMARGUMENTS);
 
-		SearchServerCommand serverCmd = new SearchServerCommand();
+		SearchServerRequest serverCmd = new SearchServerRequest();
 		serverCmd.query = nestedQuery;
 		serverCmd.index = documentIndex;
+        serverCmd.indexTypes = Arrays.asList("relations");
 		serverCmd.rows = SCROLL_SIZE;
 		serverCmd.fieldsToReturn = Collections.emptyList();
 		serverCmd.downloadCompleteResults = true;
 		serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
-		SearchCarrier carrier = new SearchCarrier("BipartiteEvents");
-		carrier.addSearchServerCommand(serverCmd);
+		ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier<>("BipartiteEvents");
+		carrier.addSearchServerRequest(serverCmd);
 		searchServerComponent.process(carrier);
 
 		return CompletableFuture.supplyAsync(() -> {
@@ -238,8 +234,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 		log.debug("Retrieving outside events for {} A IDs", idList.size());
 		log.trace("The A IDs are: {}", idList);
-		TermsQuery termsQuery = new TermsQuery();
-		termsQuery.terms = idList;
+		TermsQuery termsQuery = new TermsQuery(idList);
 		termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
 		TermQuery filterQuery = new TermQuery();
@@ -258,9 +253,10 @@ public class EventRetrievalService implements IEventRetrievalService {
 		eventQuery.addClause(filterClause);
 
 
-		SearchServerCommand serverCmd = new SearchServerCommand();
+		SearchServerRequest serverCmd = new SearchServerRequest();
 		serverCmd.query = eventQuery;
 		serverCmd.index = documentIndex;
+        serverCmd.indexTypes = Arrays.asList("relations");
 		serverCmd.rows = SCROLL_SIZE;
 		serverCmd.fieldsToReturn = Arrays.asList(FIELD_EVENT_LIKELIHOOD,
 				FIELD_EVENT_SENTENCE,
@@ -268,14 +264,15 @@ public class EventRetrievalService implements IEventRetrievalService {
 				FIELD_EVENT_ARG_GENE_IDS,
 				FIELD_EVENT_ARG_CONCEPT_IDS,
 				FIELD_EVENT_ARG_PREFERRED_NAME,
+                FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
 				FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
 				FIELD_EVENT_ARG_TEXT,
 				FIELD_EVENT_NUMARGUMENTS);
 		serverCmd.downloadCompleteResults = true;
 		serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
-		SearchCarrier carrier = new SearchCarrier("OutsideEvents");
-		carrier.addSearchServerCommand(serverCmd);
+		ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
+		carrier.addSearchServerRequest(serverCmd);
 		searchServerComponent.process(carrier);
 
 		return CompletableFuture.supplyAsync(() -> {
@@ -314,8 +311,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 				Argument g = e.getArgument(i);
 				// see also above comment in reorderBipartiteEventResultArguments method:
 				// compare via top-homologyId, not geneId; see also #60 and #62
-				// TODO support other IDs
-				if (idSet.contains(g.getTopHomologyId())) {
+				if (idSet.contains(g.getTopHomologyId()) || idSet.contains(g.getConceptId()) || idSet.contains(g.getGeneId())) {
 					inputIdPosition = i;
 					break;
 				}

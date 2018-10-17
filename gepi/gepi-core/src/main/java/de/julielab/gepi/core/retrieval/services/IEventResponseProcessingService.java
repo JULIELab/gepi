@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import de.julielab.elastic.query.services.ISearchServerResponse;
+import de.julielab.elastic.query.components.data.ElasticServerResponse;
+import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 
 /**
@@ -12,6 +13,6 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
  */
 public interface IEventResponseProcessingService {
 
-	EventRetrievalResult getEventRetrievalResult(ISearchServerResponse response);
+	EventRetrievalResult getEventRetrievalResult(IElasticServerResponse response);
 
 }
