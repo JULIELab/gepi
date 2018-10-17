@@ -111,26 +111,22 @@ public class EventRetrievalService implements IEventRetrievalService {
 		eventQuery.addClause(listBClause);
 		eventQuery.addClause(filterClause);
 
-		NestedQuery nestedQuery = new NestedQuery();
-		nestedQuery.query = eventQuery;
-		nestedQuery.innerHits = new InnerHits();
-		nestedQuery.innerHits.addField(FIELD_EVENT_LIKELIHOOD);
-		nestedQuery.innerHits.addField(FIELD_EVENT_SENTENCE);
-		nestedQuery.innerHits.addField(FIELD_EVENT_MAINEVENTTYPE);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARGUMENTSEARCH);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_CONCEPT_IDS);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_GENE_IDS);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_PREFERRED_NAME);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS);
-		nestedQuery.innerHits.addField(FIELD_EVENT_ARG_TEXT);
-		nestedQuery.innerHits.addField(FIELD_EVENT_NUMARGUMENTS);
-
 		SearchServerRequest serverCmd = new SearchServerRequest();
-		serverCmd.query = nestedQuery;
+		serverCmd.query = eventQuery;
 		serverCmd.index = documentIndex;
         serverCmd.indexTypes = Arrays.asList("relations");
 		serverCmd.rows = SCROLL_SIZE;
 		serverCmd.fieldsToReturn = Collections.emptyList();
+        serverCmd.fieldsToReturn = Arrays.asList(FIELD_EVENT_LIKELIHOOD,
+                FIELD_EVENT_SENTENCE,
+                FIELD_EVENT_MAINEVENTTYPE,
+                FIELD_EVENT_ARG_GENE_IDS,
+                FIELD_EVENT_ARG_CONCEPT_IDS,
+                FIELD_EVENT_ARG_PREFERRED_NAME,
+                FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
+                FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
+                FIELD_EVENT_ARG_TEXT,
+                FIELD_EVENT_NUMARGUMENTS);
 		serverCmd.downloadCompleteResults = true;
 		serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
@@ -182,11 +178,10 @@ public class EventRetrievalService implements IEventRetrievalService {
 				Argument g = e.getArgument(i);
 				// As we expand given ids to top-homology ids we need to compare to those
 				// not the input genes, e.g. g.geneId(); see also #60 and #62
-				// TODO support other IDs
-				if (idSetA.contains(g.getTopHomologyId())) {
+				if (idSetA.contains(g.getTopHomologyId()) || idSetA.contains(g.getConceptId()) || idSetA.contains(g.getGeneId())) {
 					idAHits.add(i);
 				}
-				if (idSetB.contains(g.getTopHomologyId())) {
+				if (idSetB.contains(g.getTopHomologyId()) || idSetB.contains(g.getConceptId()) || idSetB.contains(g.getGeneId())) {
 					idBHits.add(i);
 				}
 			}
