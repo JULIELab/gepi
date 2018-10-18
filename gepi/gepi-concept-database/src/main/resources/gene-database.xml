@@ -79,7 +79,7 @@
         <export name="allgeneaggregates" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
             <exporter>CypherExporter</exporter>
             <configuration>
-                <cypherquery>MATCH (th)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE (th:AGGREGATE_TOP_HOMOLOGY OR th:AGGREGATE_HOMOLOGENE OR th:AGGREGATE_GENEGROUP) AND NOT c:AGGREGATE RETURN DISTINCT c.id,th.id</cypherquery>
+                <cypherquery>MATCH (th)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE (th:AGGREGATE_TOP_HOMOLOGY OR th:AGGREGATE_HOMOLOGENE OR th:AGGREGATE_GENEGROUP) AND NOT c:AGGREGATE with c.id as cid,COLLECT(DISTINCT th.id) AS atids RETURN cid, REDUCE(acc=HEAD(atids), atid in TAIL(atids) | acc + "|" + atid)</cypherquery>
                 <outputfile>../gepi-indexing-pipeline/resources/tid2atid.map</outputfile>
             </configuration>
         </export>
@@ -95,6 +95,13 @@
             <configuration>
                 <cypherquery>MATCH (gene:ID_MAP_NCBI_GENES) return gene.id,gene.preferredName</cypherquery>
                 <outputfile>../gepi-indexing-pipeline/resources/tid2prefName.map</outputfile>
+            </configuration>
+        </export>
+        <export name="preferredTophomologyNames" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
+            <exporter>CypherExporter</exporter>
+            <configuration>
+                <cypherquery>MATCH (t:ID_MAP_NCBI_GENES) WITH t OPTIONAL MATCH (t)-[:HAS_ELEMENT*2]-(n:AGGREGATE_TOP_HOMOLOGY) RETURN DISTINCT t.id, COALESCE(n.preferredName, t.preferredName)</cypherquery>
+                <outputfile>../gepi-indexing-pipeline/resources/tid2topHomologyPrefName.map</outputfile>
             </configuration>
         </export>
     </exports>
