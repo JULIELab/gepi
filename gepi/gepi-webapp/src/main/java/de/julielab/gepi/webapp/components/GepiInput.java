@@ -1,16 +1,19 @@
 package de.julielab.gepi.webapp.components;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.SelectModel;
+import org.apache.tapestry5.ValueEncoder;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.TextArea;
+import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.InjectService;
+import org.apache.tapestry5.ioc.services.TypeCoercer;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -19,7 +22,10 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.pages.Index;
+import org.apache.tapestry5.util.EnumSelectModel;
+import org.apache.tapestry5.util.EnumValueEncoder;
 
+@Import(stylesheet = { "context:css-components/gepiinput.css" })
 public class GepiInput {
 
 	@Inject
@@ -58,9 +64,31 @@ public class GepiInput {
 	@Parameter
 	private CompletableFuture<EventRetrievalResult> result;
 
+	@Inject
+	private TypeCoercer typeCoercer;
+
+	@Inject
+	private Messages messages;
+
+	@Property
+	private List<EventTypes> selectedEventTypes;
+
+	@Property
+    private String filterString;
+
+	private enum EventTypes {REGULATION, POSITIVE_REGULATION, NEGATIVE_REGULATION, BINDING, LOCALIZATION, PHOSPHORYLATION}
+
+	public ValueEncoder getEventTypeEncoder() {
+		return new EnumValueEncoder(typeCoercer, EventTypes.class);
+	}
+
+	public SelectModel getEventTypeModel() {
+		return new EnumSelectModel(EventTypes.class, messages);
+	}
+
 	void setupRender() {
-		// listATextAreaValue = "5327";
-		listATextAreaValue = "2475\n196";
+		 listATextAreaValue = "3930";
+		//listATextAreaValue = "2475\n196";
 	}
 
 	void onValidateFromInputForm() {
@@ -78,9 +106,9 @@ public class GepiInput {
 				&& listBTextAreaValue.trim().length() > 0)
 			result = eventRetrievalService.getBipartiteEvents(
 					Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)),
-					Stream.of(geneIdService.convertInput2Atid(listBTextAreaValue)));
+					Stream.of(geneIdService.convertInput2Atid(listBTextAreaValue)), selectedEventTypes, filterString);
 		else if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0)
-			result = eventRetrievalService.getOutsideEvents(Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)));
+			result = eventRetrievalService.getOutsideEvents(Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)), selectedEventTypes, filterString);
 
 		Index indexPage = (Index) resources.getContainer();
 		ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());

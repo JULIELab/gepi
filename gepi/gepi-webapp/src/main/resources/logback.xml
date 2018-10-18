@@ -32,10 +32,10 @@
 	<logger
 		name="de.julielab.gepi.core.services.GepiCoreModule.IEventPostProcessingService"
 		level="INFO" />
+-->
 	<logger
 		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
-		level="INFO" />
--->
+		level="TRACE" />
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />

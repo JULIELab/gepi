@@ -1,0 +1,13 @@
+#eventtypes div {
+    display: inline-block;
+    margin:5px 15px 5px 10px;
+    width:150px;
+}
+
+#lista, #listb {
+    height: 400px;
+}
+
+#sentencefilter {
+    width: 100%;
+}
