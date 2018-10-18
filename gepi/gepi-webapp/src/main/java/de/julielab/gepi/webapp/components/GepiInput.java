@@ -2,6 +2,7 @@ package de.julielab.gepi.webapp.components;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.tapestry5.ComponentResources;
@@ -76,7 +77,7 @@ public class GepiInput {
 	@Property
     private String filterString;
 
-	private enum EventTypes {REGULATION, POSITIVE_REGULATION, NEGATIVE_REGULATION, BINDING, LOCALIZATION, PHOSPHORYLATION}
+	private enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
 
 	public ValueEncoder getEventTypeEncoder() {
 		return new EnumValueEncoder(typeCoercer, EventTypes.class);
@@ -102,13 +103,15 @@ public class GepiInput {
 	}
 
 	void onSuccessFromInputForm() {
+        final ValueEncoder eventTypeEncoder = getEventTypeEncoder();
+        final List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
 		if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
 				&& listBTextAreaValue.trim().length() > 0)
 			result = eventRetrievalService.getBipartiteEvents(
 					Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)),
-					Stream.of(geneIdService.convertInput2Atid(listBTextAreaValue)), selectedEventTypes, filterString);
+					Stream.of(geneIdService.convertInput2Atid(listBTextAreaValue)), selectedEventTypeNames, filterString);
 		else if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0)
-			result = eventRetrievalService.getOutsideEvents(Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)), selectedEventTypes, filterString);
+			result = eventRetrievalService.getOutsideEvents(Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)), selectedEventTypeNames, filterString);
 
 		Index indexPage = (Index) resources.getContainer();
 		ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
