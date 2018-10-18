@@ -26,14 +26,6 @@
 	
 }
 
-/*
-@keyframe move {
-	100% {
-		position: fixed;
-	}
-}*/
-
-
 .widget.large {
 	position: fixed;
 	top: 70px;

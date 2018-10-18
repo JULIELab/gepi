@@ -127,9 +127,9 @@ public class GepiInput {
 	void afterRender() {
 		javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize");
 		javaScriptSupport.require("gepi/base").invoke("setuptooltips");
-		// The following JavaScript call always causes the inputcol so disappear
+		// The following JavaScript call always causes the inputcol to disappear
 		// behind the left border of the viewport. This also happens when the
-		// page is reloaded with a nun-null result. But then, the index page is
+		// page is reloaded with a non-null result. But then, the index page is
 		// hiding the inputcol by default, thus noone sees the shift.
 		// Also, the outputcol is shown immediately by means of the index page
 		// if the result already exists and is finished loading.

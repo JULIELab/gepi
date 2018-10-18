@@ -11,6 +11,7 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
         observelistachange();
         setuplistfileselectors();
         setupclearbuttons();
+        setupShowInputPanel();
 
         $('#inputform').on("t5.form.validate", function() {
             console.log("validate!!")
@@ -118,9 +119,26 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
                 listbdiv.tooltip("disable");
             }
         }
+
+        function setupShowInputPanel() {
+            $("#handle").on("click", function(){toggleShowInputPanel();})
+        }
     };
 
+    function toggleShowInputPanel() {
+                console.log("Input shown: " + $("#inputcol").data("shown"))
+                if ($("#inputcol").data("shown") === 0){
+                    console.log("Showing input")
+                    showInput();
+                }
+                else {
+                    console.log("Hiding input")
+                    showOutput();
+                }
+            }
+
     var showOutput = function() {
+        console.log("Hiding the input, showing the output")
         // The inputcol's width is one third. However, when we push it out of
         // the screen for one third, the body container's padding won't be
         // accounted for and the inputcol would still be visible for this exact
@@ -140,11 +158,20 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
         // Show the outputcol. The CSS defines all the timings, including a
         // delay for the let the inputcol disappear first.
         $("#outputcol").addClass("in");
-        $("#inputcol").removeClass("center").css("margin-left", marginLeftPercent + "%");
+        $("#inputcol").css("margin-left", marginLeftPercent + "%");
+        $("#inputcol").data("shown", 0);
+    }
+
+    var showInput = function() {
+        console.log("Fetching the input panel back into view")
+        $("#outputcol").removeClass("in").addClass("fade");
+        $("#inputcol").css("margin-left", 0);
+        $("#inputcol").data("shown", 1);
     }
 
     return {
         "initialize" : initialize,
-        "showOutput" : showOutput
+        "showOutput" : showOutput,
+        "showInput"  : showInput
     };
 })
