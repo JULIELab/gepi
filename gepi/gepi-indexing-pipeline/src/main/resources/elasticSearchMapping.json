@@ -48,7 +48,11 @@
           "store": true
         },
         "allargumentprefnames": {
-          "type": "keyword",
+          "type": "text",
+          "store": true
+        },
+        "allargumenthomoprefnames": {
+          "type": "text",
           "store": true
         },
         "allargumentconceptids": {

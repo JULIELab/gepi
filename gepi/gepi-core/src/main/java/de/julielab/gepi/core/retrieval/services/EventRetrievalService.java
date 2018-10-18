@@ -12,6 +12,7 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
+import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
@@ -19,6 +20,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.FILTER;
 
 /**
  * Gets any IDs, converts them to GePi IDs (or just queries the index?!) and
@@ -75,7 +78,7 @@ public class EventRetrievalService implements IEventRetrievalService {
      */
 	@Override
 	public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Stream<String> idStreamA,
-			Stream<String> idStreamB) {
+			Stream<String> idStreamB, List<String> eventTypes, String sentenceFilter) {
 		List<Object> idListA = idStreamA.collect(Collectors.toList());
 		Set<String> idSetA = idListA.stream().map(String.class::cast).collect(Collectors.toSet());
 
@@ -104,12 +107,32 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 		BoolClause filterClause = new BoolClause();
 		filterClause.addQuery(filterQuery);
-		filterClause.occur = Occur.FILTER;
+		filterClause.occur = FILTER;
 
 		BoolQuery eventQuery = new BoolQuery();
 		eventQuery.addClause(listAClause);
 		eventQuery.addClause(listBClause);
 		eventQuery.addClause(filterClause);
+
+        if (!eventTypes.isEmpty()) {
+            TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
+            eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
+            BoolClause eventTypeClause = new BoolClause();
+            eventTypeClause.addQuery(eventTypesQuery);
+            eventTypeClause.occur = FILTER;
+            eventQuery.addClause(eventTypeClause);
+        }
+
+        if (!StringUtils.isBlank(sentenceFilter)) {
+            final SimpleQueryStringQuery sentenceFilterQuery = new SimpleQueryStringQuery();
+            sentenceFilterQuery.query = sentenceFilter;
+            sentenceFilterQuery.fields = Arrays.asList(FIELD_EVENT_SENTENCE);
+            sentenceFilterQuery.flags = Arrays.asList(SimpleQueryStringQuery.Flag.AND, SimpleQueryStringQuery.Flag.NOT, SimpleQueryStringQuery.Flag.OR);
+            final BoolClause sentenceFilterClause = new BoolClause();
+            sentenceFilterClause.addQuery(sentenceFilterQuery);
+            sentenceFilterClause.occur = FILTER;
+            eventQuery.addClause(sentenceFilterClause);
+        }
 
 		SearchServerRequest serverCmd = new SearchServerRequest();
 		serverCmd.query = eventQuery;
@@ -220,7 +243,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 	}
 
 	@Override
-	public CompletableFuture<EventRetrievalResult> getOutsideEvents(Stream<String> idStream) {
+	public CompletableFuture<EventRetrievalResult> getOutsideEvents(Stream<String> idStream, List<String> eventTypes, String sentenceFilter) {
 
 		// Stream<String> gepiGeneIds =
 		// conversionService.convert2Gepi(idStream);
@@ -241,11 +264,31 @@ public class EventRetrievalService implements IEventRetrievalService {
 		termsClause.occur = Occur.MUST;
 		BoolClause filterClause = new BoolClause();
 		filterClause.addQuery(filterQuery);
-		filterClause.occur = Occur.FILTER;
+		filterClause.occur = FILTER;
 
 		BoolQuery eventQuery = new BoolQuery();
 		eventQuery.addClause(termsClause);
 		eventQuery.addClause(filterClause);
+
+		if (!eventTypes.isEmpty()) {
+            TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
+            eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
+            BoolClause eventTypeClause = new BoolClause();
+            eventTypeClause.addQuery(eventTypesQuery);
+            eventTypeClause.occur = FILTER;
+            eventQuery.addClause(eventTypeClause);
+		}
+
+        if (!StringUtils.isBlank(sentenceFilter)) {
+            final SimpleQueryStringQuery sentenceFilterQuery = new SimpleQueryStringQuery();
+            sentenceFilterQuery.query = sentenceFilter;
+            sentenceFilterQuery.fields = Arrays.asList(FIELD_EVENT_SENTENCE);
+            sentenceFilterQuery.flags = Arrays.asList(SimpleQueryStringQuery.Flag.AND, SimpleQueryStringQuery.Flag.NOT, SimpleQueryStringQuery.Flag.OR);
+            final BoolClause sentenceFilterClause = new BoolClause();
+            sentenceFilterClause.addQuery(sentenceFilterQuery);
+            sentenceFilterClause.occur = FILTER;
+            eventQuery.addClause(sentenceFilterClause);
+        }
 
 
 		SearchServerRequest serverCmd = new SearchServerRequest();

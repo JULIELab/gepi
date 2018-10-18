@@ -93,6 +93,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
             document.addField("allargumenttophomoids", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.eg2tophomoFilter));
             document.addField("allargumentcoveredtext", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/:coveredText()"));
             document.addField("allargumentprefnames", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
+            document.addField("allargumenthomoprefnames", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
             document.addField("alleventtypes", createRawFieldValueForAnnotations(rel.getRelations().toArray(), "/specificType"));
             document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
         } catch (CASException e) {
