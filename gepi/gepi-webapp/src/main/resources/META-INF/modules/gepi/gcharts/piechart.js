@@ -2,6 +2,7 @@ define([ "jquery", "gepi/pages/index" ], function($) {
 
     return function drawPieChart(pieDat) {
         console.log(pieDat)
+        /*
         google.charts.setOnLoadCallback(function() {
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Gene');
@@ -26,5 +27,6 @@ define([ "jquery", "gepi/pages/index" ], function($) {
 
             chart.draw(data, options);
         })
+        */
     };
 })
