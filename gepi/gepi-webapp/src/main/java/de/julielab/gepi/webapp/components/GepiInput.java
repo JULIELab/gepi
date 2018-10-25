@@ -88,8 +88,7 @@ public class GepiInput {
 	}
 
 	void setupRender() {
-		 listATextAreaValue = "3930";
-		//listATextAreaValue = "2475\n196";
+		listATextAreaValue = "2475\n196";
 	}
 
 	void onValidateFromInputForm() {
