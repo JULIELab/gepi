@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -127,69 +128,25 @@ private static final Logger log = LoggerFactory.getLogger(GoogleChartsDataManage
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONArray getPairesWithCommonTarget(List<Event> evtList) {
-		List<Pair<Argument, Argument>> atids = new ArrayList<>();
+	public JSONArray getPairsWithCommonTarget(List<Event> evtList) {
+        final Map<Argument, Map<Event, Integer>> target2EventCardinalities = evtList.stream().collect(Collectors.groupingBy(e -> e.getArgument(1),
+                Collectors.collectingAndThen(Collectors.toList(), CollectionUtils::getCardinalityMap)));
+        System.out.println(target2EventCardinalities);
+        // The general harmonic mean formula for x1,...,xn: n / ( 1/x1 + ... + 1/xn)
+        Function<Map<Event,Integer>, Double> harmonicMean = eventCounts -> eventCounts.size() / (eventCounts.values().stream().map(c -> 1d/c).reduce(1d, (sum, c) -> sum + c));
+        final LinkedHashMap<Argument, Map<Event, Integer>> orderedMap = target2EventCardinalities.entrySet().stream().sorted((e1,e2) -> (int)Math.signum(harmonicMean.apply(e2.getValue()) - harmonicMean.apply(e1.getValue()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (k, v) -> k, LinkedHashMap::new));
 
-		// get all atid atid pairs in one list
-		evtList.forEach(e -> {
-			if (e.getNumArguments() == 2) {
-				atids.add(new ImmutablePair<Argument, Argument>(e.getFirstArgument(), e.getSecondArgument()));
-			}
-		});
+        pairedArgCountJson = new JSONArray();
+        orderedMap.values().stream().limit(20).forEachOrdered(map -> map.forEach((k, v) -> {
+            JSONArray tmp = new JSONArray();
+            tmp.put(k.getArgument(0).getPreferredName());
+            tmp.put(k.getArgument(1).getPreferredName());
+            tmp.put(v);
+            pairedArgCountJson.put(tmp);
+        }));
 
-		Map<Argument, Set<Argument>> sourcesByTargets = atids.stream().collect(
-				Collectors.groupingBy(p -> p.getRight(), Collectors.mapping(p -> p.getLeft(), Collectors.toSet())));
-		// sort the entries
-		LinkedHashMap<Argument, Set<Argument>> sortedSourcesByTargets = sourcesByTargets.entrySet().stream()
-				.sorted((e1, e2) -> e2.getValue().size() -e1.getValue().size())
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-		int maxNumSources = 15;
-		int maxNumTargets = 15;
 
-		Set<Argument> includedSources = new HashSet<>();
-		int numTargets = 0;
-		Map<Argument, Set<Argument>> limitedSortedSourcesByTargets = new HashMap<>();
-		for (Iterator<Entry<Argument, Set<Argument>>> it = sortedSourcesByTargets.entrySet().iterator(); it
-				.hasNext();) {
-			Entry<Argument, Set<Argument>> entry = it.next();
-			++numTargets;
-			includedSources.addAll(entry.getValue());
-			limitedSortedSourcesByTargets.put(entry.getKey(), entry.getValue());
-			if (includedSources.size() >= maxNumSources || numTargets >= maxNumTargets)
-				break;
-		}
-
-		// get the count for how often pairs appear
-		pairedArgCount = CollectionUtils.getCardinalityMap(atids);
-
-		// sort the entries
-		pairedArgCount = pairedArgCount.entrySet().stream()
-				.sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-		for (Iterator<Entry<Pair<Argument, Argument>, Integer>> it = pairedArgCount.entrySet().iterator(); it
-				.hasNext();) {
-			Entry<Pair<Argument, Argument>, Integer> entry = it.next();
-			Argument source = entry.getKey().getLeft();
-			Argument target = entry.getKey().getRight();
-			Set<Argument> sources = limitedSortedSourcesByTargets.get(target);
-			if (sources == null || !sources.contains(source))
-				it.remove();
-
-		}
-
-		// put to json
-		pairedArgCountJson = new JSONArray();
-
-		this.pairedArgCount.forEach((k, v) -> {
-			JSONArray tmp = new JSONArray();
-			tmp.put(k.getLeft().getPreferredName());
-			tmp.put(k.getRight().getPreferredName());
-			tmp.put(v);
-			pairedArgCountJson.put(tmp);
-		});
-
-		return pairedArgCountJson;
+         return pairedArgCountJson;
 	}
 
 }
