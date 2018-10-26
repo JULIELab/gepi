@@ -19,9 +19,29 @@ public class Event {
 	
 	protected String sentence;
 	
-	protected String documentId;
+	protected String eventId;
 	
 	protected String documentType;
+
+	protected String pmid;
+
+	protected String pmcid;
+
+	public String getPmid() {
+		return pmid;
+	}
+
+	public void setPmid(String pmid) {
+		this.pmid = pmid;
+	}
+
+	public String getPmcid() {
+		return pmcid;
+	}
+
+	public void setPmcid(String pmcid) {
+		this.pmcid = pmcid;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -37,12 +57,12 @@ public class Event {
 		return Objects.hash(arguments);
 	}
 
-	public String getDocumentId() {
-		return documentId;
+	public String getEventId() {
+		return eventId;
 	}
 
-	public void setDocumentId(String documentId) {
-		this.documentId = documentId;
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
 	}
 
 	public String getDocumentType() {

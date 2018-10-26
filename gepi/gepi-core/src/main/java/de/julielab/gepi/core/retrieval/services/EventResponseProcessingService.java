@@ -1,9 +1,7 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import de.julielab.elastic.query.components.data.ElasticServerResponse;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.services.IElasticServerResponse;
-import de.julielab.elastic.query.services.ISearchServerResponse;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
@@ -51,6 +49,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 
 	private Stream<Event> resultDocuments2Events(Stream<ISearchServerDocument> documents) {
 		return documents.map(eventDocument -> {
+            Optional<String> pmid = eventDocument.getFieldValue(FIELD_PMID);
+            Optional<String> pmcid = eventDocument.getFieldValue(FIELD_PMCID);
 			List<Object> conceptIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_CONCEPT_IDS)
 					.orElse(Collections.emptyList());
 			List<Object> geneIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_GENE_IDS)
@@ -65,7 +65,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			Optional<String> mainEventType = eventDocument.get(FIELD_EVENT_MAINEVENTTYPE);
 			Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
 			Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE);
-			String documentId = eventDocument.getId();
+			String eventId = eventDocument.getId();
 			String documentType = eventDocument.getIndexType();
 
 			Map<String, List<String>> highlights = eventDocument.getHighlights();
@@ -96,7 +96,9 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			}
 
 			Event event = new Event();
-			event.setDocumentId(documentId);
+			pmid.ifPresent(event::setPmid);
+			pmcid.ifPresent(event::setPmcid);
+			event.setEventId(eventId);
 			event.setDocumentType(documentType);
 			event.setArguments(arguments);
 			if (likelihood.isPresent())

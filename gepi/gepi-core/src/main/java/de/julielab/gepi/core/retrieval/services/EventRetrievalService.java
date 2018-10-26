@@ -32,6 +32,10 @@ import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.F
  */
 public class EventRetrievalService implements IEventRetrievalService {
 
+	public static final String FIELD_PMID = "pmid";
+
+	public static final String FIELD_PMCID = "pmcid";
+
 	public static final String FIELD_EVENT_MAINEVENTTYPE =  "maineventtype";
 
 	public static final String FIELD_EVENT_ARGUMENTSEARCH =  "allarguments";
@@ -140,7 +144,10 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverCmd.indexTypes = Arrays.asList("relations");
 		serverCmd.rows = SCROLL_SIZE;
 		serverCmd.fieldsToReturn = Collections.emptyList();
-        serverCmd.fieldsToReturn = Arrays.asList(FIELD_EVENT_LIKELIHOOD,
+        serverCmd.fieldsToReturn = Arrays.asList(
+				FIELD_PMID,
+				FIELD_PMCID,
+        		FIELD_EVENT_LIKELIHOOD,
                 FIELD_EVENT_SENTENCE,
                 FIELD_EVENT_MAINEVENTTYPE,
                 FIELD_EVENT_ARG_GENE_IDS,
@@ -296,7 +303,10 @@ public class EventRetrievalService implements IEventRetrievalService {
 		serverCmd.index = documentIndex;
         serverCmd.indexTypes = Arrays.asList("relations");
 		serverCmd.rows = SCROLL_SIZE;
-		serverCmd.fieldsToReturn = Arrays.asList(FIELD_EVENT_LIKELIHOOD,
+		serverCmd.fieldsToReturn = Arrays.asList(
+				FIELD_PMID,
+				FIELD_PMCID,
+				FIELD_EVENT_LIKELIHOOD,
 				FIELD_EVENT_SENTENCE,
 				FIELD_EVENT_MAINEVENTTYPE,
 				FIELD_EVENT_ARG_GENE_IDS,
