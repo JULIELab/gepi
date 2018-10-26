@@ -66,20 +66,24 @@ public class TableResultWidget extends GepiWidget {
 		}
 		
 		public String getMedlineId() {
-			return event.getDocumentType().toLowerCase().equals("medline") ? event.getDocumentId(): "";
+			return event.getPmid() != null ?  event.getPmid() : "";
 		}
 		
 		public String getPmcId() {
-			return event.getDocumentType().toLowerCase().equals("pmc") ? event.getDocumentId(): "";
+			return event.getPmcid() != null ? event.getPmcid() : "";
 		}
 		
 		public String getFirstArgumentText() {
 			return event.getFirstArgument().getText();
 		}
-		
+
+		public String getFirstArgumentGeneId() { return event.getFirstArgument().getGeneId(); }
+
 		public String getSecondArgumentText() {
 			return event.getSecondArgument().getText();
 		}
+
+        public String getSecondArgumentGeneId() { return event.getSecondArgument().getGeneId(); }
 		
 		public String getFirstArgumentPreferredName() {
 			return event.getFirstArgument().getPreferredName();

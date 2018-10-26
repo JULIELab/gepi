@@ -13,10 +13,6 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
         setupclearbuttons();
         setupShowInputPanel();
 
-        $('#inputform').on("t5.form.validate", function() {
-            console.log("validate!!")
-        })
-
         /*
          * On changes of list B, checks if the list is empty. If not, some
          * control elements for single-list operations are disabled.

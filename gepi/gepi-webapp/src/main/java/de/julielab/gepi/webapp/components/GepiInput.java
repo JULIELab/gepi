@@ -88,7 +88,7 @@ public class GepiInput {
 	}
 
 	void setupRender() {
-		listATextAreaValue = "2475\n196";
+		//listATextAreaValue = "2475\n196";
 	}
 
 	void onValidateFromInputForm() {
@@ -102,7 +102,6 @@ public class GepiInput {
 	}
 
 	void onSuccessFromInputForm() {
-        final ValueEncoder eventTypeEncoder = getEventTypeEncoder();
         final List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
 		if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
 				&& listBTextAreaValue.trim().length() > 0)

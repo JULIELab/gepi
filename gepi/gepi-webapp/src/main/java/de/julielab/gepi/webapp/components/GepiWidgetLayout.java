@@ -9,7 +9,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 import java.util.Optional;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -270,8 +269,8 @@ public class GepiWidgetLayout {
 							secondArgument.getText() != null ? secondArgument.getText() : "" ,
 							secondArgument.getGeneId() != null ? secondArgument.getGeneId() : "",
 							secondArgument.getPreferredName() != null ? secondArgument.getPreferredName() : "",
-							e.getDocumentType().toLowerCase().equals("medline") ? e.getDocumentId(): "",
-							e.getDocumentType().toLowerCase().equals("pmc") ? e.getDocumentId(): "",
+							e.getDocumentType().toLowerCase().equals("medline") ? e.getEventId(): "",
+							e.getDocumentType().toLowerCase().equals("pmc") ? e.getEventId(): "",
 							e.getMainEventType() != null ? e.getMainEventType(): "",
 							e.getSentence() != null ? e.getSentence().replaceAll("\\R", " ") : "",
 					});
@@ -310,8 +309,8 @@ public class GepiWidgetLayout {
 					curRow.createCell(3).setCellValue(secondArgument.getText() != null ? secondArgument.getText() : "");
 					curRow.createCell(4).setCellValue(secondArgument.getGeneId() != null ? secondArgument.getGeneId() : "");
 					curRow.createCell(5).setCellValue(secondArgument.getPreferredName() != null ? secondArgument.getPreferredName() : "");
-					curRow.createCell(6).setCellValue(e.getDocumentType().toLowerCase().equals("medline") ? e.getDocumentId(): "");
-					curRow.createCell(7).setCellValue(e.getDocumentType().toLowerCase().equals("pmc") ? e.getDocumentId(): "");
+					curRow.createCell(6).setCellValue(e.getDocumentType().toLowerCase().equals("medline") ? e.getEventId(): "");
+					curRow.createCell(7).setCellValue(e.getDocumentType().toLowerCase().equals("pmc") ? e.getEventId(): "");
 					curRow.createCell(8).setCellValue(e.getMainEventType() != null ? e.getMainEventType(): "");
 					curRow.createCell(9).setCellValue(e.getSentence() != null ? e.getSentence().replaceAll("\\R", " ") : "");
 				}
