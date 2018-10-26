@@ -1,15 +1,7 @@
 package de.julielab.gepi.core.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,127 +18,148 @@ import de.julielab.gepi.core.retrieval.data.Event;
 
 public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 
-private static final Logger log = LoggerFactory.getLogger(GoogleChartsDataManager.class);
-	private Map<Argument, Integer> singleArgCount;
-	private Map<Pair<Argument, Argument>, Integer> pairedArgCount;
-	private JSONArray singleArgCountJson;
-	private JSONArray pairedArgCountJson;
+    private static final Logger log = LoggerFactory.getLogger(GoogleChartsDataManager.class);
+    private Map<Argument, Integer> singleArgCount;
+    private Map<Pair<Argument, Argument>, Integer> pairedArgCount;
+    private JSONArray singleArgCountJson;
+    private JSONArray pairedArgCountJson;
 
-	/**
-	 * sets json formated input list for google charts that accept one entry
-	 * name + number (here target event gene + count of occurrences)
-	 * singleArgCountJson is array of arrays with [<gene name><count>]
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public JSONArray getTargetArgCount(List<Event> evtList) {
-		List<Argument> arguments = new ArrayList<>();
-		// get those arguments that were not part of the input
-		evtList.forEach(e -> {
-			for (int i = 1; i < e.getNumArguments(); ++i) {
-				Argument a = e.getArgument(i);
-				a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY);
-				arguments.add(a);
-			}
-		});
+    /**
+     * sets json formated input list for google charts that accept one entry
+     * name + number (here target event gene + count of occurrences)
+     * singleArgCountJson is array of arrays with [<gene name><count>]
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public JSONArray getTargetArgCount(List<Event> evtList) {
+        List<Argument> arguments = new ArrayList<>();
+        // get those arguments that were not part of the input
+        evtList.forEach(e -> {
+            for (int i = 1; i < e.getNumArguments(); ++i) {
+                Argument a = e.getArgument(i);
+                a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY);
+                arguments.add(a);
+            }
+        });
 
-		// get the counts of how often event arguments appear
-		singleArgCount = CollectionUtils.getCardinalityMap(arguments);
+        // get the counts of how often event arguments appear
+        singleArgCount = CollectionUtils.getCardinalityMap(arguments);
 
-		// sort entries
-		singleArgCount = singleArgCount.entrySet().stream()
-				.sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        // sort entries
+        singleArgCount = singleArgCount.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-		// put to json format
-		singleArgCountJson = new JSONArray();
+        // put to json format
+        singleArgCountJson = new JSONArray();
 
-		this.singleArgCount.forEach((k, v) -> {
-			JSONArray tmp = new JSONArray();
-			tmp.put(k.getPreferredName());
-			tmp.put(v);
-			singleArgCountJson.put(tmp);
-		});
-		return singleArgCountJson;
-	}
-
-	/**
-	 * sets json formated input list for google charts that accepts an entry
-	 * pair + number (here gene pair (from + to) + count of occurrences)
-	 * singleArgCountJson is array of arrays with [<gene name 1><gene name
-	 * 2><count>]
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public JSONArray getPairedArgsCount(List<Event> evtList) {
-		List<Pair<Argument, Argument>> atids = new ArrayList<>();
-
-		log.trace("Number of events for pair counting: {}", evtList.size());
-		
-		// get all atid atid pairs in one list
-		evtList.forEach(e -> {
-			if (e.getNumArguments() == 2) {
-				atids.add(new ImmutablePair<Argument, Argument>(e.getFirstArgument(), e.getSecondArgument()));
-			}
-		});
-
-		// get the count for how often pairs appear
-		pairedArgCount = CollectionUtils.getCardinalityMap(atids);
-
-		// sort the entries
-		pairedArgCount = pairedArgCount.entrySet().stream()
-				.sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-		int i = 0;
-		for (Iterator<Entry<Pair<Argument, Argument>, Integer>> it = pairedArgCount.entrySet().iterator(); it
-				.hasNext();) {
-			@SuppressWarnings("unused")
-			Entry<Pair<Argument, Argument>, Integer> entry = it.next();
-			if (i++ > 10)
-				it.remove();
-		}
-
-		// put to json
-		pairedArgCountJson = new JSONArray();
-		this.pairedArgCount.forEach((k, v) -> {
-			JSONArray tmp = new JSONArray();
-			tmp.put(k.getLeft().getPreferredName());
-			tmp.put(k.getRight().getPreferredName());
-			tmp.put(v);
-			pairedArgCountJson.put(tmp);
-		});
-
-		return pairedArgCountJson;
-	}
-
-	/**
-	 * sets json formated input list for google charts that accepts an entry
-	 * pair + number (here gene pair (from + to) + count of occurrences)
-	 * singleArgCountJson is array of arrays with [<gene name 1><gene name
-	 * 2><count>]
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public JSONArray getPairsWithCommonTarget(List<Event> evtList) {
-        final Map<Argument, Map<Event, Integer>> target2EventCardinalities = evtList.stream().collect(Collectors.groupingBy(e -> e.getArgument(1),
-                Collectors.collectingAndThen(Collectors.toList(), CollectionUtils::getCardinalityMap)));
-        System.out.println(target2EventCardinalities);
-        // The general harmonic mean formula for x1,...,xn: n / ( 1/x1 + ... + 1/xn)
-        Function<Map<Event,Integer>, Double> harmonicMean = eventCounts -> eventCounts.size() / (eventCounts.values().stream().map(c -> 1d/c).reduce(1d, (sum, c) -> sum + c));
-        final LinkedHashMap<Argument, Map<Event, Integer>> orderedMap = target2EventCardinalities.entrySet().stream().sorted((e1,e2) -> (int)Math.signum(harmonicMean.apply(e2.getValue()) - harmonicMean.apply(e1.getValue()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (k, v) -> k, LinkedHashMap::new));
-
-        pairedArgCountJson = new JSONArray();
-        orderedMap.values().stream().limit(20).forEachOrdered(map -> map.forEach((k, v) -> {
+        this.singleArgCount.forEach((k, v) -> {
             JSONArray tmp = new JSONArray();
-            tmp.put(k.getArgument(0).getPreferredName());
-            tmp.put(k.getArgument(1).getPreferredName());
+            tmp.put(k.getPreferredName());
+            tmp.put(v);
+            singleArgCountJson.put(tmp);
+        });
+        return singleArgCountJson;
+    }
+
+    /**
+     * sets json formated input list for google charts that accepts an entry
+     * pair + number (here gene pair (from + to) + count of occurrences)
+     * singleArgCountJson is array of arrays with [<gene name 1><gene name
+     * 2><count>]
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public JSONArray getPairedArgsCount(List<Event> evtList) {
+        List<Pair<Argument, Argument>> atids = new ArrayList<>();
+
+        log.trace("Number of events for pair counting: {}", evtList.size());
+
+        // get all atid atid pairs in one list
+        evtList.forEach(e -> {
+            if (e.getNumArguments() == 2) {
+                atids.add(new ImmutablePair<Argument, Argument>(e.getFirstArgument(), e.getSecondArgument()));
+            }
+        });
+
+        // get the count for how often pairs appear
+        pairedArgCount = CollectionUtils.getCardinalityMap(atids);
+
+        // sort the entries
+        pairedArgCount = pairedArgCount.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        int i = 0;
+        for (Iterator<Entry<Pair<Argument, Argument>, Integer>> it = pairedArgCount.entrySet().iterator(); it
+                .hasNext(); ) {
+            @SuppressWarnings("unused")
+            Entry<Pair<Argument, Argument>, Integer> entry = it.next();
+            if (i++ > 10)
+                it.remove();
+        }
+
+        // put to json
+        pairedArgCountJson = new JSONArray();
+        this.pairedArgCount.forEach((k, v) -> {
+            JSONArray tmp = new JSONArray();
+            tmp.put(k.getLeft().getPreferredName());
+            tmp.put(k.getRight().getPreferredName());
             tmp.put(v);
             pairedArgCountJson.put(tmp);
+        });
+
+        return pairedArgCountJson;
+    }
+
+    /**
+     * sets json formated input list for google charts that accepts an entry
+     * pair + number (here gene pair (from + to) + count of occurrences)
+     * singleArgCountJson is array of arrays with [<gene name 1><gene name
+     * 2><count>]
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public JSONArray getPairsWithCommonTarget(List<Event> evtList) {
+        // First, we build a structure that counts how often each target gene (genes on the - possibly implicit - B list)
+        // interacts how often with which source (A list) gene. We build a map whose keys are the targets and the values
+        // are maps counting for each source gene the number of interactions with the target.
+        final Map<Argument, Map<Event, Integer>> target2EventCardinalities = evtList.stream().collect(Collectors.groupingBy(e -> e.getArgument(1),
+                Collectors.collectingAndThen(Collectors.toList(), CollectionUtils::getCardinalityMap)));
+        // Now we want to rank the target genes according to how strong they connect the source genes they are associated with.
+        // We do this by computing the harmonic mean of the number of relations target<-source for all sources as given
+        // by the map values we created above. In other words, we take each value map, take its counts and compute
+        // the harmonic mean of those.
+
+        // The general harmonic mean formula for x1,...,xn: n / ( 1/x1 + ... + 1/xn)
+        Function<Map<Event, Integer>, Double> harmonicMean = eventCounts -> eventCounts.size() / (eventCounts.values().stream().map(c -> 1d / c).reduce(1d, (sum, c) -> sum + c));
+        // Now we sort the target -> MAP(source counts) entries according to the harmonic mean values of the MAP(source counts) entries
+        final LinkedHashMap<Argument, Map<Event, Integer>> orderedMap = target2EventCardinalities.entrySet().stream().sorted((e1, e2) -> (int) Math.signum(harmonicMean.apply(e2.getValue()) - harmonicMean.apply(e1.getValue()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (k, v) -> k, LinkedHashMap::new));
+
+
+        pairedArgCountJson = new JSONArray();
+        // At the moment, we cannot send all the data to the client, for much data it would just break the Sankey Diagram.
+        // In the map below we memorize how often we already did output an edge from a source gene to a target gene.
+        // Then we set a limit on the number of source gene occurrences: We will only show n many target genes for
+        // each source gene. This will possibly exclude weaker connections to other source genes, but we can't help it right now.
+        Map<Argument, Integer> sourceOccurrenceCount = new HashMap<>();
+        orderedMap.values().stream().limit(20).forEachOrdered(map -> map.forEach((k, v) -> {
+            final Integer numOccurrence = sourceOccurrenceCount.compute(k.getArgument(0), (a, i) -> {
+                Integer count = i;
+                if (count == null) count = 0;
+                return ++count;
+            });
+            if (numOccurrence < 10) {
+                JSONArray tmp = new JSONArray();
+                tmp.put(k.getArgument(0).getPreferredName());
+                tmp.put(k.getArgument(1).getPreferredName());
+                tmp.put(v);
+                pairedArgCountJson.put(tmp);
+            }
         }));
 
 
-         return pairedArgCountJson;
-	}
+        return pairedArgCountJson;
+    }
 
 }
