@@ -1,8 +1,9 @@
 define([ "jquery", "gepi/pages/index" ], function($) {
 
     return function drawPieChart(pieDat) {
-        console.log(pieDat)
         google.charts.setOnLoadCallback(function() {
+         $("#inputcol").data("animationtimer").then(() => {
+
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Gene');
             data.addColumn('number', 'Count');
@@ -25,6 +26,7 @@ define([ "jquery", "gepi/pages/index" ], function($) {
             var chart = new google.visualization.PieChart(document.getElementById('piechart'));
 
             chart.draw(data, options);
-        })
+            });
+        });
     };
 })

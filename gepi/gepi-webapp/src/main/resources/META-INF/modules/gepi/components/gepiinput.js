@@ -153,9 +153,13 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
 
         // Show the outputcol. The CSS defines all the timings, including a
         // delay for the let the inputcol disappear first.
-        $("#outputcol").addClass("in");
         $("#inputcol").css("margin-left", marginLeftPercent + "%");
-        $("#inputcol").data("shown", 0);
+        $("#outputcol").addClass("in");
+        $("#inputcol").data("shown", 0)
+        var semaphor = $.Deferred();
+        $("#inputcol").data("animationtimer", semaphor);
+        setTimeout(() => semaphor.resolve(), 1000);
+
     }
 
     var showInput = function() {
