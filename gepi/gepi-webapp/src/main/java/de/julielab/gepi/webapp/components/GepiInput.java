@@ -25,9 +25,13 @@ import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.pages.Index;
 import org.apache.tapestry5.util.EnumSelectModel;
 import org.apache.tapestry5.util.EnumValueEncoder;
+import org.slf4j.Logger;
 
 @Import(stylesheet = { "context:css-components/gepiinput.css" })
 public class GepiInput {
+
+    @Inject
+    private Logger log;
 
 	@Inject
 	private AjaxResponseRenderer ajaxResponseRenderer;
@@ -106,10 +110,15 @@ public class GepiInput {
 		if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
 				&& listBTextAreaValue.trim().length() > 0)
 			result = eventRetrievalService.getBipartiteEvents(
-					Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)),
-					Stream.of(geneIdService.convertInput2Atid(listBTextAreaValue)), selectedEventTypeNames, filterString);
-		else if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0)
-			result = eventRetrievalService.getOutsideEvents(Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)), selectedEventTypeNames, filterString);
+					geneIdService.convertInput2Atid(listATextAreaValue),
+					geneIdService.convertInput2Atid(listBTextAreaValue), selectedEventTypeNames, filterString);
+		else if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0) {
+			log.debug("Calling EventRetrievalService for outside events");
+			result = eventRetrievalService.getOutsideEvents(geneIdService.convertInput2Atid(listATextAreaValue), selectedEventTypeNames, filterString);
+            if (result != null)
+			log.debug("Retrieved the response future. It is " + (result.isDone() ? "" : "not ") + "finished.");
+            else log.debug("After retrieving the result");
+		}
 
 		Index indexPage = (Index) resources.getContainer();
 		ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());

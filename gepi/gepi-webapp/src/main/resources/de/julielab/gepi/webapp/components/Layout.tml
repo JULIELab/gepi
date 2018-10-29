@@ -42,7 +42,7 @@
 								in</t:pagelink> -->
 <!-- 						</li> -->
 							<t:any element="li" class="prop:classForPageName">
-								<t:EventLink event="reset">Reset</t:EventLink>
+								<t:EventLink event="reset">New Session</t:EventLink>
 							</t:any>
 					</span>
 
