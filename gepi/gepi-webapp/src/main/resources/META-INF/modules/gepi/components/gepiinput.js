@@ -1,4 +1,4 @@
-define([ "jquery", "bootstrap/tooltip" ], function($) {
+define(["jquery", "bootstrap/tooltip"], function($) {
 
     var initialize = function() {
         var listaId = "lista";
@@ -117,45 +117,29 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
         }
 
         function setupShowInputPanel() {
-            $("#handle").on("click", function(){toggleShowInputPanel();})
+            $("#handle").on("click", function() {
+                toggleShowInputPanel();
+            })
         }
     };
 
     function toggleShowInputPanel() {
-                console.log("Input shown: " + $("#inputcol").data("shown"))
-                if ($("#inputcol").data("shown") === 0){
-                    console.log("Showing input")
-                    showInput();
-                }
-                else {
-                    console.log("Hiding input")
-                    showOutput();
-                }
-            }
+        let shown = $("#inputcol").data("shown")
+        console.log("Input shown: " + shown)
+
+        if (!shown || shown === 0) {
+            console.log("Showing input")
+            showInput();
+        } else {
+            console.log("Hiding input")
+            showOutput();
+        }
+    }
 
     var showOutput = function() {
-        console.log("Hiding the input, showing the output")
-        // The inputcol's width is one third. However, when we push it out of
-        // the screen for one third, the body container's padding won't be
-        // accounted for and the inputcol would still be visible for this exact
-        // amount. Thus, we also have to add the padding when computing the
-        // negative left margin.
-        // However, when we would just set the negative left margin for this
-        // exact number of pixels, resizing the viewport will lead to the
-        // inputcol to grow since its width is defined in percent. As the margin
-        // would be defined absolute, the inputcol would be visible again at the
-        // left border of the screen. Thus, we need to compute the percentage
-        // the margin needs to have so that it also adjusts automatically.
-        var availableWidth = $("#body-container").innerWidth();
-        var bodyPadding = parseFloat($("#body-container").css("padding-left"));
-        var marginLeft = -(availableWidth / 3) - bodyPadding;
-        var marginLeftPercent = marginLeft / availableWidth * 100;
-
-        // Show the outputcol. The CSS defines all the timings, including a
-        // delay for the let the inputcol disappear first.
-        $("#inputcol").css("margin-left", marginLeftPercent + "%");
+        $("#inputcol").addClass("hideleftslide").removeClass("center").removeClass("showleft");
         $("#outputcol").addClass("in");
-        $("#inputcol").data("shown", 0)
+        $("#inputcol").data("shown", 0);
         var semaphor = $.Deferred();
         $("#inputcol").data("animationtimer", semaphor);
         setTimeout(() => semaphor.resolve(), 1000);
@@ -165,13 +149,13 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
     var showInput = function() {
         console.log("Fetching the input panel back into view")
         $("#outputcol").removeClass("in").addClass("fade");
-        $("#inputcol").css("margin-left", 0);
+        $("#inputcol").removeClass("hideleft").addClass("showleft");
         $("#inputcol").data("shown", 1);
     }
 
     return {
-        "initialize" : initialize,
-        "showOutput" : showOutput,
-        "showInput"  : showInput
+        "initialize": initialize,
+        "showOutput": showOutput,
+        "showInput": showInput
     };
 })

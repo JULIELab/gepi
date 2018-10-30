@@ -71,9 +71,17 @@ public class GepiWidgetLayout {
 	@Property
 	private String classes;
 
+	@Parameter(defaultPrefix = BindingConstants.LITERAL)
+	@Property
+	private String sizeClass;
+
 	@Parameter
 	@Property
 	protected CompletableFuture<EventRetrievalResult> result;
+
+	@Parameter(name="viewMode")
+    @Property
+    private String viewModeParam;
 
 	@InjectComponent
 	private Zone widgetZone;
@@ -156,10 +164,6 @@ public class GepiWidgetLayout {
 
 	public String getResizeHandleId() {
 		return clientId + "_resize";
-	}
-	
-	public String getSizeClass() {
-		return viewMode;
 	}
 	
 	@Log

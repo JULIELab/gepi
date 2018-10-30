@@ -55,6 +55,8 @@ public class Index {
 	
 	@Persist
 	private boolean hasLargeWidget;
+
+    private boolean resultNonNullOnLoad;
 	
 	/**
 	 * This is an emergency exit against being locked in an error during development.
@@ -68,6 +70,10 @@ public class Index {
 
 	public Zone getInputZone() {
 		return inputZone;
+	}
+
+	void setupRender() {
+		resultNonNullOnLoad = result != null;
 	}
 
 	// Handle call with an unwanted context
@@ -117,5 +123,8 @@ public class Index {
 	public String getWidgetOverlayShowClass() {
 		return hasLargeWidget ? "in" : "";
 	}
-	
+
+	public String getOutputColumnVisibilityClass() {
+        return resultNonNullOnLoad ? "hideleft" : "center";
+    }
 }

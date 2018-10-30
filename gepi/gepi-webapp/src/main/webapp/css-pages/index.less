@@ -19,8 +19,21 @@ body.noScroll {
 }
 
 #inputcol.center {
-	margin-left: calc(100% / 3);
-	margin-right: calc(100% / 3);
+	left: calc(100% / 3);
+}
+
+#inputcol.hideleftslide {
+    left: calc(-100% / 3);
+    transition: 1s;
+}
+
+#inputcol.hideleft {
+    left: calc(-100% / 3);
+}
+
+#inputcol.showleft {
+    left: 0;
+    transition: 1s;
 }
 
 #outputcol.in {

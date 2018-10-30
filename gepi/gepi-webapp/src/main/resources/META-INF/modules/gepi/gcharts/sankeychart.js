@@ -25,8 +25,12 @@ define([ "jquery", "gepi/pages/index" ], function($) {
 
     return function drawSankeyChart(elementId, sankeyDat) {
         google.charts.setOnLoadCallback(function() {
-            $("#inputcol").data("animationtimer").then(() =>
-                draw(elementId, sankeyDat));
+            let promise = $("#inputcol").data("animationtimer");
+            if (promise)
+                 promise.then(() =>
+                    draw(elementId, sankeyDat));
+            else
+               draw(elementId, sankeyDat);
         });
     };
 })

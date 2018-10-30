@@ -15,6 +15,10 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 
 public class TableResultWidget extends GepiWidget {
+
+    @Property
+    private String viewMode;
+
 	@Property
 	private BeanModelEvent eventRow;
 
@@ -112,5 +116,9 @@ public class TableResultWidget extends GepiWidget {
 				return argument.getText() + " (" + argument.getPreferredName() + ")";
 			return "";
 		}
+	}
+
+	public int getRowsPerPage() {
+		return GepiWidgetLayout.ViewMode.valueOf(viewMode.toUpperCase()) == GepiWidgetLayout.ViewMode.OVERVIEW ? 5 : 20;
 	}
 }

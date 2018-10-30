@@ -1,7 +1,7 @@
 <html t:type="layout" title="GePI Index"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
 	<body class="${bodyScrollClass}">
-		<div id="inputcol" class="center">
+		<div id="inputcol" class="${outputcolumnVisibilityClass}">
 			<t:zone t:id="inputzone" id="inputzone">
 				<t:gepiinput result="result" />
 			</t:zone>
