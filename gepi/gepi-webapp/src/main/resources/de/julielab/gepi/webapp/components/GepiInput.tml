@@ -77,6 +77,5 @@
                 <t:errors globalOnly="false"/>
             </form>
         </div>
-        <div id="handle"/>
     </div>
 </t:container>

@@ -38,7 +38,7 @@
                     </ul>
                     <ul class="navbar-right navbar-nav nav">
                         <li>
-                            <a href="#">Show Input Panel</a>
+                            <a href="#" id="inputToggleButton">Toggle Input Panel</a>
                         </li>
                         <t:any element="li" class="prop:classForPageName">
                             <t:EventLink event="reset">Reset Session</t:EventLink>

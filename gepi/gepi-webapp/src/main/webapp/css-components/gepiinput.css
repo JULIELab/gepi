@@ -8,16 +8,6 @@
     height: 350px;
 }
 
-
-#handle {
-    position: absolute;
-    top: 42px;
-    left: 100%;
-    background-color:black;
-    width: 10px;
-    height: 40px;
-}
-
 hr.nomargin {
     margin: 0;
 }

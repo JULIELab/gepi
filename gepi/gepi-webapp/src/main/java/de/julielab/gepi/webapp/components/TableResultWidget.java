@@ -119,6 +119,6 @@ public class TableResultWidget extends GepiWidget {
 	}
 
 	public int getRowsPerPage() {
-		return GepiWidgetLayout.ViewMode.valueOf(viewMode.toUpperCase()) == GepiWidgetLayout.ViewMode.OVERVIEW ? 5 : 20;
+		return 5;
 	}
 }

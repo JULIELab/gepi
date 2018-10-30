@@ -117,14 +117,15 @@ define(["jquery", "bootstrap/tooltip"], function($) {
         }
 
         function setupShowInputPanel() {
-            $("#handle").on("click", function() {
+            $("#inputToggleButton,#disableplane").off("click");
+            $("#inputToggleButton,#disableplane").on("click", function() {
                 toggleShowInputPanel();
             })
         }
     };
 
     function toggleShowInputPanel() {
-        let shown = $("#inputcol").data("shown")
+        let shown = $("#inputcol").hasClass("into")
         console.log("Input shown: " + shown)
 
         if (!shown || shown === 0) {
@@ -137,9 +138,9 @@ define(["jquery", "bootstrap/tooltip"], function($) {
     }
 
     var showOutput = function() {
-        $("#inputcol").addClass("hideleftslide").removeClass("center").removeClass("showleft");
+        $("#inputcol").removeClass("into");
+        $("#disableplane").removeClass("into");
         $("#outputcol").addClass("in");
-        $("#inputcol").data("shown", 0);
         var semaphor = $.Deferred();
         $("#inputcol").data("animationtimer", semaphor);
         setTimeout(() => semaphor.resolve(), 1000);
@@ -148,9 +149,9 @@ define(["jquery", "bootstrap/tooltip"], function($) {
 
     var showInput = function() {
         console.log("Fetching the input panel back into view")
-        $("#outputcol").removeClass("in").addClass("fade");
-        $("#inputcol").removeClass("hideleft").addClass("showleft");
-        $("#inputcol").data("shown", 1);
+      //  $("#outputcol").removeClass("show").addClass("fade");
+        $("#inputcol").addClass("into");
+        $("#disableplane").addClass("into");
     }
 
     return {

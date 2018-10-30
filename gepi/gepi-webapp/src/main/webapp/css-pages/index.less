@@ -9,46 +9,31 @@ body.noScroll {
 }
 
 #inputcol {
-	-webkit-transition: margin 1s ease;
-	-moz-transition: margin 1s ease;
-	-o-transition: margin 1s ease;
-	transition: margin 1s ease;
-	width: calc(100% / 3);
-	position: absolute;
-	z-index: 1;
+    position: absolute;
+    z-index: 10;
 }
 
-#inputcol.center {
-	left: calc(100% / 3);
-}
-
-#inputcol.hideleftslide {
-    left: calc(-100% / 3);
-    transition: 1s;
-}
-
-#inputcol.hideleft {
-    left: calc(-100% / 3);
-}
-
-#inputcol.showleft {
+#disableplane.fade.into {
+    background-color: blue;
+    opacity: .3;
+    z-index: 9;
+    position: fixed;
+    width: 100%;
+    height: ~"calc(100vh - 50px)";
+    top: 50px;
     left: 0;
-    transition: 1s;
-}
-
-#outputcol.in {
-	opacity: 1;
-        transition-delay: 0s;
-        transition-duration:0.5s;
-        transition-timing-function: linear;
 }
 
 .fade {
 	opacity: 0;
+	transition-property: opacity;
+	transition-duration: .3s;
 }
 
-.in {
+.into {
 	opacity: 1;
+	transition-property: opacity;
+	transition-duration: .7s;
 }
 
 #widgetOverlay {

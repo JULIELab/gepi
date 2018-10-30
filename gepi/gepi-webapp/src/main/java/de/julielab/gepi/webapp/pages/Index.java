@@ -24,107 +24,103 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 /**
  * Start page of application gepi-webapp.
  */
-@Import(stylesheet = { "context:css-pages/index.less" })
+@Import(stylesheet = {"context:css-pages/index.less"})
 public class Index {
-	@Inject
-	private Logger logger;
+    @Inject
+    private Logger logger;
 
-	@Environmental
-	private JavaScriptSupport javaScriptSupport;
+    @Environmental
+    private JavaScriptSupport javaScriptSupport;
 
-	@Property
-	@Inject
-	@Symbol(SymbolConstants.TAPESTRY_VERSION)
-	private String tapestryVersion;
+    @Property
+    @Inject
+    @Symbol(SymbolConstants.TAPESTRY_VERSION)
+    private String tapestryVersion;
 
-	@InjectPage
-	private About about;
+    @InjectPage
+    private About about;
 
-	@InjectComponent
-	private Zone outputZone;
+    @InjectComponent
+    private Zone outputZone;
 
-	@InjectComponent
-	private Zone inputZone;
+    @InjectComponent
+    private Zone inputZone;
 
-	@Property
-	@Persist
-	private CompletableFuture<EventRetrievalResult> result;
+    @Property
+    @Persist
+    private CompletableFuture<EventRetrievalResult> result;
 
-	@Property
-	private Event eventItem;
-	
-	@Persist
-	private boolean hasLargeWidget;
+    @Property
+    private Event eventItem;
+
+    @Persist
+    private boolean hasLargeWidget;
 
     private boolean resultNonNullOnLoad;
-	
-	/**
-	 * This is an emergency exit against being locked in an error during development.
-	 */
-	@ActivationRequestParameter
-	private boolean reset;
-	
-	public Zone getOutputZone() {
-		return outputZone;
-	}
 
-	public Zone getInputZone() {
-		return inputZone;
-	}
+    /**
+     * This is an emergency exit against being locked in an error during development.
+     */
+    @ActivationRequestParameter
+    private boolean reset;
 
-	void setupRender() {
-		resultNonNullOnLoad = result != null;
-	}
+    public Zone getOutputZone() {
+        return outputZone;
+    }
 
-	// Handle call with an unwanted context
-	Object onActivate(EventContext eventContext) {
-		if (reset)
-			result = null;
-		return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
-	}
-	
-	void afterRender() {
-		javaScriptSupport.require("gepi/pages/index").invoke("loadGoogleCharts");
-	}
-	
-	/**
-	 * 
-	 * @return The class "in", causing the outputcol to show immediately, or the empty string which will hide the outputcol initially.
-	 */
-	public String getShowOutputClass() {
-		if (result != null && result.isDone())
-			return "in";
-		return "";
-	}
-	
-	public String getShowInputClass() {
-		if (result == null)
-			return "in";
-		return "";
-	}
-	
-	public Object onReset() {
-		result = null;
-		return this;
-	}
+    public Zone getInputZone() {
+        return inputZone;
+    }
 
-	public boolean hasLargeWidget() {
-		return hasLargeWidget;
-	}
+    void setupRender() {
+        resultNonNullOnLoad = result != null;
+    }
 
-	public void setHasLargeWidget(boolean hasLargeWidget) {
-		this.hasLargeWidget = hasLargeWidget;
-	}
-	
-	public String getBodyScrollClass() {
-		return hasLargeWidget ? "noScroll" : "";
-	}
-	
-	public String getWidgetOverlayShowClass() {
-		return hasLargeWidget ? "in" : "";
-	}
+    // Handle call with an unwanted context
+    Object onActivate(EventContext eventContext) {
+        if (reset)
+            result = null;
+        return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
+    }
 
-	public String getOutputColumnVisibilityClass() {
-        return resultNonNullOnLoad ? "hideleft" : "center";
+    void afterRender() {
+        javaScriptSupport.require("gepi/pages/index").invoke("loadGoogleCharts");
+        javaScriptSupport.require("gepi/base").invoke("setuptooltips");
+    }
+
+    /**
+     * @return The class "in", causing the outputcol to show immediately, or the empty string which will hide the outputcol initially.
+     */
+    public String getShowOutputClass() {
+        if (result != null && result.isDone())
+            return "into";
+        return "";
+    }
+
+    public String getShowInputClass() {
+        if (result == null)
+            return "into";
+        return "";
+    }
+
+    public Object onReset() {
+        result = null;
+        return this;
+    }
+
+    public boolean hasLargeWidget() {
+        return hasLargeWidget;
+    }
+
+    public void setHasLargeWidget(boolean hasLargeWidget) {
+        this.hasLargeWidget = hasLargeWidget;
+    }
+
+    public String getBodyScrollClass() {
+        return hasLargeWidget ? "noScroll" : "";
+    }
+
+    public String getWidgetOverlayShowClass() {
+        return hasLargeWidget ? "into" : "";
     }
 }

@@ -6,14 +6,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.TextArea;
+import org.apache.tapestry5.internal.services.FlashPersistentFieldStrategy;
 import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.services.TypeCoercer;
+import org.apache.tapestry5.services.PersistentFieldStrategy;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -82,6 +85,7 @@ public class GepiInput {
 	@Property
     private String filterString;
 
+	@Persist(PersistenceConstants.FLASH)
 	private boolean newSearch;
 
 	private enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
@@ -110,6 +114,7 @@ public class GepiInput {
 
 	void onSuccessFromInputForm() {
 	    newSearch = true;
+        System.out.println("Setting newsearch to true");
         final List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
 		if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
 				&& listBTextAreaValue.trim().length() > 0)
@@ -137,13 +142,14 @@ public class GepiInput {
 
 	void afterRender() {
 		javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize");
-		javaScriptSupport.require("gepi/base").invoke("setuptooltips");
 		// The following JavaScript call always causes the inputcol to disappear
 		// behind the left border of the viewport. This also happens when the
 		// page is reloaded with a non-null result. But then, the index page is
 		// hiding the inputcol by default, thus noone sees the shift.
 		// Also, the outputcol is shown immediately by means of the index page
 		// if the result already exists and is finished loading.
+        System.out.println("Result: " + result);
+        System.out.println("newSearch: " + newSearch);
         if (result != null && newSearch) {
             javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");
         }
