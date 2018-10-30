@@ -2,6 +2,7 @@ define(["jquery", "gepi/pages/index"], function($) {
 
     function draw(pieDat) {
 
+        $('#piechart').removeClass('into');
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Gene');
         data.addColumn('number', 'Count');
@@ -24,6 +25,7 @@ define(["jquery", "gepi/pages/index"], function($) {
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
 
         chart.draw(data, options);
+        $('#piechart').addClass('into');
     }
 
     return function drawPieChart(pieDat) {
