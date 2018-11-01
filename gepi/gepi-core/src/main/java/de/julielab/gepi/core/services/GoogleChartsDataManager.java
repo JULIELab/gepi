@@ -17,6 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,18 +104,20 @@ private static final Logger log = LoggerFactory.getLogger(GoogleChartsDataManage
 				.hasNext();) {
 			@SuppressWarnings("unused")
 			Entry<Pair<Argument, Argument>, Integer> entry = it.next();
-			if (i++ > 10)
-				it.remove();
+			//if (i++ > 10)
+			//	it.remove();
 		}
 
 		// put to json
 		pairedArgCountJson = new JSONArray();
 		this.pairedArgCount.forEach((k, v) -> {
-			JSONArray tmp = new JSONArray();
-			tmp.put(k.getLeft().getPreferredName());
-			tmp.put(k.getRight().getPreferredName());
-			tmp.put(v);
-			pairedArgCountJson.put(tmp);
+            JSONObject o = new JSONObject();
+            o.put("source", k.getLeft().getPreferredName());
+            o.put("target", k.getRight().getPreferredName());
+            o.put("weight", v);
+            o.put("color", "grey");
+
+            pairedArgCountJson.put(o);
 		});
 
 		return pairedArgCountJson;
@@ -137,16 +140,21 @@ private static final Logger log = LoggerFactory.getLogger(GoogleChartsDataManage
         final LinkedHashMap<Argument, Map<Event, Integer>> orderedMap = target2EventCardinalities.entrySet().stream().sorted((e1,e2) -> (int)Math.signum(harmonicMean.apply(e2.getValue()) - harmonicMean.apply(e1.getValue()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (k, v) -> k, LinkedHashMap::new));
 
         pairedArgCountJson = new JSONArray();
-        orderedMap.values().stream().limit(20).forEachOrdered(map -> map.forEach((k, v) -> {
-            JSONArray tmp = new JSONArray();
-            tmp.put(k.getArgument(0).getPreferredName());
-            tmp.put(k.getArgument(1).getPreferredName());
-            tmp.put(v);
-            pairedArgCountJson.put(tmp);
+        orderedMap.values().stream().forEachOrdered(map -> map.forEach((k, v) -> {
+
+            JSONObject o = new JSONObject();
+            o.put("source", k.getArgument(0).getPreferredName());
+            o.put("target", k.getArgument(1).getPreferredName());
+            o.put("weight", v);
+            o.put("color", "grey");
+
+            pairedArgCountJson.put(o);
         }));
 
+        // TODO assemble List of relevant nodes
 
-         return pairedArgCountJson;
+
+        return pairedArgCountJson;
 	}
 
 }

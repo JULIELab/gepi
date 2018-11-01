@@ -1,10 +1,9 @@
 define(function() {
     function convert_data(input_links) {
         let nodes = {};
-        let raw_links = [];
 
-        for (let [n1, n2, weight] of input_links) {
-            for (let n of [n1, n2]) {
+        for (let {source, target} of input_links) {
+            for (let n of [source, target]) {
                 if (!nodes[n]) {
                     nodes[n] = {
                         id: n,
@@ -12,19 +11,13 @@ define(function() {
                     }
                 }
             }
-            raw_links.push({
-                source: n1,
-                target: n2,
-                weight,
-                color: "teal",
-            });
         }
 
         let raw_nodes = Object.values(nodes);
 
         return {
             raw_nodes,
-            raw_links,
+            raw_links: input_links,
         };
     }
 
