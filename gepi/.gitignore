@@ -2,3 +2,7 @@ target/
 .settings
 .classpath
 .project
+.idea
+gepi-indexing-pipeline/config/jcore-pipeline-config.jar
+gepi-indexing-pipeline/resources/
+gepi-indexing-pipeline/lib/

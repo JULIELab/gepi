@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseConnectorConfiguration>
+	<DBSchemaInformation>
+	<activePostgresSchema>erik</activePostgresSchema>
+	<activeTableSchema>medline_2017</activeTableSchema>
+	<tableSchemas>
+	<tableSchema name="xmi_anno_view" forEach=".">
+				<field name="pmid" type="text" xpath="PMID" primaryKey="true"
+					retrieve="true"></field>
+				<field name="xmi" type="text" xpath="." returnXMLFragment="true"
+					retrieve="true" gzip="true"></field>
+			</tableSchema>
+ <tableSchema name="xmi_pmc_annotation_gzip_retrieve" forEach=".">
+                                <field name="pmcid" type="text" xpath="PMID" primaryKey="true"
+                                        retrieve="true"></field>
+                                <field name="xmi" type="bytea" xpath="." returnXMLFragment="true"
+                                        retrieve="true" gzip="true"></field>
+                        </tableSchema>
+	</tableSchemas>
+	</DBSchemaInformation>
+	<DBConnectionInformation>
+	<activeDBConnection>pubmed_2018</activeDBConnection>
+	<maxActiveDBConnections>2</maxActiveDBConnections>
+	<DBConnections>
+		<DBConnection name="pubmed_2018" url="jdbc:postgresql://h4:5432/pubmed_2018" />
+        </DBConnections>
+        </DBConnectionInformation>
+</databaseConnectorConfiguration>
