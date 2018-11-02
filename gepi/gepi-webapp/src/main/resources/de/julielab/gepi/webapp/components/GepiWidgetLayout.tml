@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
 	<div class="${classes}">
-		<div class="panel panel-default ${sizeclass} widget" id="${clientId}">
+		<div class="panel panel-default ${viewmode} widget" id="${clientId}">
 			<div class="panel-heading text-center">
 				${widgettitle}
 				<span id="${resizeHandleId}" class="glyphicon float-right glyphicon-resize-full" />
@@ -12,7 +12,7 @@
 				</t:if>
 			</div>
 			<t:zone t:id="widgetZone" id="prop:${zoneid}">
-				<div class="panel-body">
+				<div class="panel-body ${sizeclass}">
 					<t:if test="resultready">
 						<t:body />
 					</t:if>

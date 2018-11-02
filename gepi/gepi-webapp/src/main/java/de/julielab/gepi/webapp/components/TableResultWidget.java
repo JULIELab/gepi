@@ -15,6 +15,10 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 
 public class TableResultWidget extends GepiWidget {
+
+    @Property
+    private String viewMode;
+
 	@Property
 	private BeanModelEvent eventRow;
 
@@ -66,20 +70,24 @@ public class TableResultWidget extends GepiWidget {
 		}
 		
 		public String getMedlineId() {
-			return event.getDocumentType().toLowerCase().equals("medline") ? event.getDocumentId(): "";
+			return event.getPmid() != null ?  event.getPmid() : "";
 		}
 		
 		public String getPmcId() {
-			return event.getDocumentType().toLowerCase().equals("pmc") ? event.getDocumentId(): "";
+			return event.getPmcid() != null ? event.getPmcid() : "";
 		}
 		
 		public String getFirstArgumentText() {
 			return event.getFirstArgument().getText();
 		}
-		
+
+		public String getFirstArgumentGeneId() { return event.getFirstArgument().getGeneId(); }
+
 		public String getSecondArgumentText() {
 			return event.getSecondArgument().getText();
 		}
+
+        public String getSecondArgumentGeneId() { return event.getSecondArgument().getGeneId(); }
 		
 		public String getFirstArgumentPreferredName() {
 			return event.getFirstArgument().getPreferredName();
@@ -108,5 +116,9 @@ public class TableResultWidget extends GepiWidget {
 				return argument.getText() + " (" + argument.getPreferredName() + ")";
 			return "";
 		}
+	}
+
+	public int getRowsPerPage() {
+		return 5;
 	}
 }

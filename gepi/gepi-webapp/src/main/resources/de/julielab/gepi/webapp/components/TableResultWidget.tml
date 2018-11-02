@@ -1,6 +1,19 @@
 <!DOCTYPE html>
-<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Table View" t:clientId="tableresult_widget" class="${classes}" result="result" >
-<t:trigger event="updateTableData"/>
-<t:grid source="beanevents" row="eventrow" model="tableModel" rowsPerPage="20" pagerPosition="bottom">
-</t:grid>
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
+     widgettitle="Table View" t:clientId="tableresult_widget" class="${classes}" sizeClass="widget-large" result="result"
+     viewMode="viewMode"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
+    <t:trigger event="updateTableData"/>
+    <div>${viewmode}</div>
+    <t:grid source="beanevents" row="eventrow" model="tableModel" rowsPerPage="${rowsperpage}" pagerPosition="bottom">
+        <p:firstArgumentPreferredNameCell>
+            <a href="https://www.ncbi.nlm.nih.gov/gene/2475/${eventrow.firstargumentgeneid}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open in NCBI Gene">${eventrow.firstArgumentPreferredName}</a>
+        </p:firstArgumentPreferredNameCell>
+        <p:secondArgumentPreferredNameCell>
+            <a href="https://www.ncbi.nlm.nih.gov/gene/2475/${eventrow.secondargumentgeneid}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open in NCBI Gene">${eventrow.secondArgumentPreferredName}</a>
+        </p:secondArgumentPreferredNameCell>
+        <p:medlineIdCell>
+            <a href="https://www.ncbi.nlm.nih.gov/pubmed/${eventrow.medlineId}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open in PubMed">${eventrow.medlineId}</a>
+        </p:medlineIdCell>
+    </t:grid>
 </div>

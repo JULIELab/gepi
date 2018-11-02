@@ -1,11 +1,6 @@
 <!DOCTYPE html>
-<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Sankey Diagram: Most Frequent Interaction Partners" t:clientId="${elementId}-outer" class="${classes}" result="result">
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Sankey Diagram: Most Frequent Interaction Partners" t:clientId="sankey_widget" class="${classes}" sizeClass="widget-small" result="result">
 
-    <div id="${elementId}" style="width: 100%; height: 100%;">
-        <div class="settings">
-            <div class="sliders"></div>
-            <div class="buttons"></div>
-        </div>
-    </div>
+<div id="sankeychart" class="fade" style="width: 100%; height: 100%;"></div>
     <t:trigger event="drawChart" />
 </div>

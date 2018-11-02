@@ -1,22 +1,29 @@
-#eventtypes div {
+#eventtypediv > div > div {
     display: inline-block;
-    margin:5px 15px 5px 10px;
+    margin:0px 0px 0px 30px;
     width:150px;
 }
 
-#lista, #listb {
-    height: 400px;
+#listacontainer > textarea, #listbcontainer > textarea {
+    height: 350px;
 }
 
-#sentencefilter {
-    width: 100%;
+hr.nomargin {
+    margin: 0;
 }
 
-#handle {
-    position: absolute;
-    top: 42px;
-    left: 100%;
-    background-color:black;
-    width: 10px;
-    height: 40px;
+hr.thin.bottom {
+    margin-bottom: 5px;
+}
+
+hr.thin.top {
+    margin-top: 5px;
+}
+
+hr.medium.bottom {
+    margin-bottom: 10px;
+}
+
+hr.medium.top {
+    margin-top: 10px;
 }

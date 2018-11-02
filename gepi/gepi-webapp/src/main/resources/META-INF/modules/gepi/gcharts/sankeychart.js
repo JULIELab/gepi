@@ -1,6 +1,17 @@
 define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($, index, data) {
 
     return function drawSankeyChart(elementId, sankeyDat) {
+            google.charts.setOnLoadCallback(function() {
+                let promise = $("#inputcol").data("animationtimer");
+                if (promise)
+                     promise.then(() =>
+                        draw(elementId, sankeyDat));
+                else
+                   draw(elementId, sankeyDat);
+            });
+        };
+
+    function draw(elementId, sankeyDat) {
         console.log("sankey-data:");
         console.log(sankeyDat);
 
@@ -32,7 +43,7 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
                 running = false;
             }
         };
-        
+
         function create_svg() {
             settings.width = chart_elem.clientWidth - 2 * settings.padding_x - 10;
             /*settings.height = chart_elem.clientHeight - 2 * settings.padding_y - 10;
