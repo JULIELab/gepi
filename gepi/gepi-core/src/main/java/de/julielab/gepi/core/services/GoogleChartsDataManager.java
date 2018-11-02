@@ -146,7 +146,8 @@ private static final Logger log = LoggerFactory.getLogger(GoogleChartsDataManage
             o.put("source", k.getArgument(0).getPreferredName());
             o.put("target", k.getArgument(1).getPreferredName());
             o.put("weight", v);
-            o.put("color", "grey");
+			o.put("color", "grey");
+            //o.put("type", k.getMainEventType());
 
             pairedArgCountJson.put(o);
         }));

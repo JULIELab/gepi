@@ -2,7 +2,8 @@ define(function() {
     function convert_data(input_links) {
         let nodes = {};
 
-        for (let {source, target} of input_links) {
+        for (let link of input_links) {
+            let {source, target, type} = link;
             for (let n of [source, target]) {
                 if (!nodes[n]) {
                     nodes[n] = {
@@ -10,6 +11,12 @@ define(function() {
                         name: n,
                     }
                 }
+            }
+            let color = "";
+            if (type) {
+                color = "red";
+
+                link.color = color;
             }
         }
 

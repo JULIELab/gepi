@@ -2,6 +2,8 @@ package de.julielab.gepi.webapp.components;
 
 import java.util.concurrent.ExecutionException;
 
+import org.apache.tapestry5.BindingConstants;
+import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
@@ -19,15 +21,29 @@ public class SankeyWidget extends GepiWidget {
 	
 	@Property
 	private JSONArray eventsJSON;
-	
+
+	@Parameter(defaultPrefix = BindingConstants.LITERAL)
+	@Property
+	private String elementId;
+
+	@Parameter(defaultPrefix = BindingConstants.LITERAL)
+	@Property
+	private boolean commonPartners;
+
+
 	void setupRender() {
 		super.setupRender();
 	}
 	
 	void onDrawChart() {
 		try {
-			javaScriptSupport.require("gepi/gcharts/sankeychart").with("sankeychart",
-					gChartMnger.getPairedArgsCount(persistResult.get().getEventList()) );
+			if (commonPartners) {
+				javaScriptSupport.require("gepi/gcharts/sankeychart").with( elementId,
+						gChartMnger.getPairsWithCommonTarget(persistResult.get().getEventList()) );
+			} else {
+				javaScriptSupport.require("gepi/gcharts/sankeychart").with(elementId,
+						gChartMnger.getPairedArgsCount(persistResult.get().getEventList()));
+			}
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}

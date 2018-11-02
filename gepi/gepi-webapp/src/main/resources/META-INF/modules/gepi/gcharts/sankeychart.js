@@ -35,14 +35,14 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
         
         function create_svg() {
             settings.width = chart_elem.clientWidth - 2 * settings.padding_x - 10;
-            settings.height = chart_elem.clientHeight - 2 * settings.padding_y - 10;
+            /*settings.height = chart_elem.clientHeight - 2 * settings.padding_y - 10;
             if (settings.height < settings.min_height) {
                 settings.height = settings.min_height;
-            }
+            }*/
 
             let chart = d3.select(chart_elem);
 
-            chart.selectAll("*").remove();
+            chart.selectAll("svg").remove();
 
             let svg = chart
                 .append("svg")
@@ -59,6 +59,7 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
 
             add_slider("padding-slider", "Padding: ", 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = value);
             add_slider("min-size-slider", "Minimum node size: ", 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
+            add_slider("node-height-slider", "Chart height: ", 0, 10000, 2, settings.height, (value) => settings.height = value - 0);
 
             add_button("Clear selection", () => {
                 selected_by_node_id = {};
@@ -170,7 +171,7 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
         }
 
         function add_slider(id, label_text, min, max, step, value, change_handler) {
-            let p = d3.select("#sliders").append("p");
+            let p = d3.select(chart_elem).select(".settings").select(".sliders").append("p");
 
             p.append("label")
                 .attr("for", id)
@@ -191,7 +192,7 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
         }
 
         function add_button(text, click_handler) {
-            d3.select("#buttons")
+            d3.select(elementId).select(".buttons")
                 .append("button")
                 .text(text)
                 .on("click", click_handler);
