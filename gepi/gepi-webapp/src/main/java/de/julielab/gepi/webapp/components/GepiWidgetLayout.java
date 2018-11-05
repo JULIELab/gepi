@@ -42,7 +42,7 @@ import de.julielab.gepi.webapp.pages.Index;
 
 @Import(stylesheet = { "context:css-components/gepiwidgetlayout.css" })
 @SupportsInformalParameters
-public class GepiWidgetLayout {
+final public class GepiWidgetLayout {
 	
 	public enum ViewMode {
 		/**
@@ -132,7 +132,11 @@ public class GepiWidgetLayout {
 		persistResult.get();
 		ajaxResponseRenderer.addRender(widgetZone);
 	}
-	
+
+	public ViewMode viewMode() {
+        return ViewMode.valueOf(viewMode.toUpperCase());
+    }
+
 	@InjectPage
 	private Index index;
 	void onToggleViewMode() {

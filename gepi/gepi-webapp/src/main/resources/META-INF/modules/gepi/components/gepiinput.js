@@ -1,10 +1,11 @@
 define(["jquery", "bootstrap/tooltip"], function($) {
 
-    var initialize = function() {
+    var initialize = function(resultExists) {
         var listaId = "lista";
         var listbId = "listb";
         var lista = '#' + listaId;
         var listb = '#' + listbId;
+        inputCol = $("#inputcol");
 
         observelistbchange();
         togglelistb();
@@ -117,15 +118,26 @@ define(["jquery", "bootstrap/tooltip"], function($) {
         }
 
         function setupShowInputPanel() {
-            $("#inputToggleButton,#disableplane").off("click");
-            $("#inputToggleButton,#disableplane").on("click", function() {
-                toggleShowInputPanel();
-            })
+            let button = $("#inputToggleButton");
+            if (resultExists) {
+                if (button.hasClass("disabled")) {
+                    button.addClass("navbar-highlight");
+                    setTimeout(() => button.removeClass("navbar-highlight"), 3000);
+                }
+                $("#inputToggleButton").removeClass("disabled");
+                inputCol.addClass("hidden");
+                $("#inputToggleButton,#disableplane").off("click");
+                $("#inputToggleButton,#disableplane").on("click", function() {
+                 toggleShowInputPanel();
+                })
+            } else {
+                $("#inputToggleButton").addClass("disabled");
+            }
         }
     };
 
     function toggleShowInputPanel() {
-        let shown = $("#inputcol").hasClass("into")
+        let shown = inputCol.hasClass("into")
         console.log("Input shown: " + shown)
 
         if (!shown || shown === 0) {
@@ -138,19 +150,21 @@ define(["jquery", "bootstrap/tooltip"], function($) {
     }
 
     var showOutput = function() {
-        $("#inputcol").removeClass("into");
+        inputCol.removeClass("into");
         $("#disableplane").removeClass("into");
         $("#outputcol").addClass("in");
         var semaphor = $.Deferred();
-        $("#inputcol").data("animationtimer", semaphor);
-        setTimeout(() => semaphor.resolve(), 1000);
+        inputCol.data("animationtimer", semaphor);
+        setTimeout(() => semaphor.resolve(), 300);
+        semaphor.then(() => inputCol.addClass("hidden"));
 
     }
 
     var showInput = function() {
         console.log("Fetching the input panel back into view")
       //  $("#outputcol").removeClass("show").addClass("fade");
-        $("#inputcol").addClass("into");
+        inputCol.removeClass("hidden");
+        inputCol.addClass("into");
         $("#disableplane").addClass("into");
     }
 

@@ -63,6 +63,12 @@
     -webkit-animation-iteration-count: infinite;
 }
 
+.navbar-highlight {
+    -webkit-animation-name: highlight;
+    -webkit-animation-duration: 1.5s;
+    -webkit-animation-iteration-count: 2;
+}
+
 @-webkit-keyframes shine
 {
     0%
@@ -72,5 +78,20 @@
     100%
     {
         background-position: top right;
+    }
+}
+
+@-webkit-keyframes highlight
+{
+    20%
+    {
+        color: #9d9d9d;
+    }
+    50% {
+        color: gold;
+    }
+    80%
+    {
+        color: #9d9d9d;
     }
 }
