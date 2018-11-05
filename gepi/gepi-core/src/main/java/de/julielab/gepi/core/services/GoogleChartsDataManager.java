@@ -9,6 +9,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,21 +93,23 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 
         int i = 0;
         for (Iterator<Entry<Pair<Argument, Argument>, Integer>> it = pairedArgCount.entrySet().iterator(); it
-                .hasNext(); ) {
+                .hasNext();) {
             @SuppressWarnings("unused")
             Entry<Pair<Argument, Argument>, Integer> entry = it.next();
-            if (i++ > 10)
-                it.remove();
+            //if (i++ > 10)
+            //	it.remove();
         }
 
         // put to json
         pairedArgCountJson = new JSONArray();
         this.pairedArgCount.forEach((k, v) -> {
-            JSONArray tmp = new JSONArray();
-            tmp.put(k.getLeft().getPreferredName());
-            tmp.put(k.getRight().getPreferredName());
-            tmp.put(v);
-            pairedArgCountJson.put(tmp);
+            JSONObject o = new JSONObject();
+            o.put("source", k.getLeft().getPreferredName());
+            o.put("target", k.getRight().getPreferredName());
+            o.put("weight", v);
+            o.put("color", "grey");
+
+            pairedArgCountJson.put(o);
         });
 
         return pairedArgCountJson;
@@ -137,20 +140,19 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
         // Then we set a limit on the number of source gene occurrences: We will only show n many target genes for
         // each source gene. This will possibly exclude weaker connections to other source genes, but we can't help it right now.
         Map<Argument, Integer> sourceOccurrenceCount = new HashMap<>();
-        orderedMap.values().stream().limit(20).forEachOrdered(map -> map.forEach((k, v) -> {
-            final Integer numOccurrence = sourceOccurrenceCount.compute(k.getArgument(0), (a, i) -> {
-                Integer count = i;
-                if (count == null) count = 0;
-                return ++count;
-            });
-            if (numOccurrence < 10) {
-                JSONArray tmp = new JSONArray();
-                tmp.put(k.getArgument(0).getPreferredName());
-                tmp.put(k.getArgument(1).getPreferredName());
-                tmp.put(v);
-                pairedArgCountJson.put(tmp);
-            }
+        orderedMap.values().stream().forEachOrdered(map -> map.forEach((k, v) -> {
+
+            JSONObject o = new JSONObject();
+            o.put("source", k.getArgument(0).getPreferredName());
+            o.put("target", k.getArgument(1).getPreferredName());
+            o.put("weight", v);
+            o.put("color", "grey");
+            //o.put("type", k.getMainEventType());
+
+            pairedArgCountJson.put(o);
         }));
+
+        // TODO assemble List of relevant nodes
 
 
         return pairedArgCountJson;

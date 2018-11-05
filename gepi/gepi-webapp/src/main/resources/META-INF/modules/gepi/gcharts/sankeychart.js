@@ -1,15 +1,13 @@
 define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($, index, data) {
 
     return function drawSankeyChart(elementId, sankeyDat) {
-            google.charts.setOnLoadCallback(function() {
                 let promise = $("#inputcol").data("animationtimer");
                 if (promise)
                      promise.then(() =>
                         draw(elementId, sankeyDat));
                 else
                    draw(elementId, sankeyDat);
-            });
-        };
+    }
 
     function draw(elementId, sankeyDat) {
         console.log("sankey-data:");
