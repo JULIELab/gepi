@@ -180,7 +180,7 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
         }
 
         function add_slider(id, label_text, min, max, step, value, change_handler) {
-            let p = d3.select(chart_elem).select(".settings").select(".sliders").append("p");
+            let p = d3.select("#"+elementId +"-container .settings").select(".sliders").append("p");
 
             p.append("label")
                 .attr("for", id)
