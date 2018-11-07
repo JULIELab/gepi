@@ -83,28 +83,28 @@ public class GoogleChartsDataManagerTest {
         System.out.println(pairs);
         // These asserts base on first printing the pairs array above, checking that it is correct
         // and writing down what I saw then.
-        assertThat(pairs.getJSONArray(0).getString(0)).isEqualTo("arg7");
-        assertThat(pairs.getJSONArray(0).getString(1)).isEqualTo("arg8");
-        assertThat(pairs.getJSONArray(0).getInt(2)).isEqualTo(10);
+        assertThat(pairs.getJSONObject(0).getString("source")).isEqualTo("arg7");
+        assertThat(pairs.getJSONObject(0).getString("target")).isEqualTo("arg8");
+        assertThat(pairs.getJSONObject(0).getInt("weight")).isEqualTo(10);
 
-        assertThat(pairs.getJSONArray(1).getString(0)).isEqualTo("arg9");
-        assertThat(pairs.getJSONArray(1).getString(1)).isEqualTo("arg8");
-        assertThat(pairs.getJSONArray(1).getInt(2)).isEqualTo(10);
+        assertThat(pairs.getJSONObject(1).getString("source")).isEqualTo("arg9");
+        assertThat(pairs.getJSONObject(1).getString("target")).isEqualTo("arg8");
+        assertThat(pairs.getJSONObject(1).getInt("weight")).isEqualTo(10);
 
-        assertThat(pairs.getJSONArray(2).getString(0)).isEqualTo("arg1");
-        assertThat(pairs.getJSONArray(2).getString(1)).isEqualTo("arg2");
-        assertThat(pairs.getJSONArray(2).getInt(2)).isEqualTo(2);
+        assertThat(pairs.getJSONObject(2).getString("source")).isEqualTo("arg1");
+        assertThat(pairs.getJSONObject(2).getString("target")).isEqualTo("arg2");
+        assertThat(pairs.getJSONObject(2).getInt("weight")).isEqualTo(2);
 
-        assertThat(pairs.getJSONArray(3).getString(0)).isEqualTo("arg3");
-        assertThat(pairs.getJSONArray(3).getString(1)).isEqualTo("arg2");
-        assertThat(pairs.getJSONArray(3).getInt(2)).isEqualTo(3);
+        assertThat(pairs.getJSONObject(3).getString("source")).isEqualTo("arg3");
+        assertThat(pairs.getJSONObject(3).getString("target")).isEqualTo("arg2");
+        assertThat(pairs.getJSONObject(3).getInt("weight")).isEqualTo(3);
 
-        assertThat(pairs.getJSONArray(4).getString(0)).isEqualTo("arg4");
-        assertThat(pairs.getJSONArray(4).getString(1)).isEqualTo("arg5");
-        assertThat(pairs.getJSONArray(4).getInt(2)).isEqualTo(10);
+        assertThat(pairs.getJSONObject(4).getString("source")).isEqualTo("arg4");
+        assertThat(pairs.getJSONObject(4).getString("target")).isEqualTo("arg5");
+        assertThat(pairs.getJSONObject(4).getInt("weight")).isEqualTo(10);
 
-        assertThat(pairs.getJSONArray(5).getString(0)).isEqualTo("arg6");
-        assertThat(pairs.getJSONArray(5).getString(1)).isEqualTo("arg5");
-        assertThat(pairs.getJSONArray(5).getInt(2)).isEqualTo(1);
+        assertThat(pairs.getJSONObject(5).getString("source")).isEqualTo("arg6");
+        assertThat(pairs.getJSONObject(5).getString("target")).isEqualTo("arg5");
+        assertThat(pairs.getJSONObject(5).getInt("weight")).isEqualTo(1);
     }
 }
