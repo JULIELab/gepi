@@ -26,25 +26,36 @@
                     <button type="button" class="navbar-toggle" data-toggle="collapse"
                             data-target=".navbar-collapse">
                         <span class="sr-only">Toggle navigation</span>
+                        <!-- These three spans form the "burger" icon when the menu is collapsed -->
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <t:pagelink page="index" class="navbar-brand">Home</t:pagelink>
+                    <!--<t:pagelink page="index" class="navbar-brand">Home</t:pagelink>-->
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <t:loop source="pageNames" value="pageName">
-                            <t:any element="li" class="prop:classForPageName">
-                                <t:pagelink page="prop:pageName">${pageName}</t:pagelink>
-                            </t:any>
-                        </t:loop>
+                        <!--<t:loop source="pageNames" value="pageName">-->
+                            <!--<t:any element="li" class="prop:classForPageName">-->
+                                <!--<t:pagelink page="prop:pageName">${pageName}</t:pagelink>-->
+                            <!--</t:any>-->
+                        <!--</t:loop>-->
+                        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Results Filter <span class="caret"/></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Filter all widgets for selected genes</a></li>
+                                <li><a href="#">Filter table widget for selected genes</a></li>
+                                <li role="separator" class="divider"/>
+                                <li><a href="#">Show a table for selected genes in a new window</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Filter for Selected Genes</a></li>
+                        <li><a href="#">Make Selectes Genes A-list</a></li>
                     </ul>
                     <ul class="navbar-right navbar-nav nav">
                         <li>
                             <a href="#" id="inputToggleButton">Toggle Input Panel</a>
                         </li>
-                        <t:any element="li" class="prop:classForPageName">
+                        <t:any element="li">
                             <t:EventLink event="reset">Reset Session</t:EventLink>
                         </t:any>
                     </ul>
