@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static org.assertj.core.api.Assertions.*;
-public class GoogleChartsDataManagerTest {
+public class ChartsDataManagerTest {
 
     @Test
     public void testGetPairesWithCommonTarget() {
@@ -78,7 +78,7 @@ public class GoogleChartsDataManagerTest {
         for (int i = 0; i < 10; i++)
             events.add(e6);
 
-        final GoogleChartsDataManager manager = new GoogleChartsDataManager();
+        final ChartsDataManager manager = new ChartsDataManager();
         final JSONArray pairs = manager.getPairsWithCommonTarget(events);
         System.out.println(pairs);
         // These asserts base on first printing the pairs array above, checking that it is correct

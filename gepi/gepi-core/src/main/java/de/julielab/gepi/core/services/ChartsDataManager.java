@@ -17,13 +17,9 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
 import de.julielab.gepi.core.retrieval.data.Event;
 
-public class GoogleChartsDataManager implements IGoogleChartsDataManager {
+public class ChartsDataManager implements IGoogleChartsDataManager {
 
-    private static final Logger log = LoggerFactory.getLogger(GoogleChartsDataManager.class);
-    private Map<Argument, Integer> singleArgCount;
-    private Map<Pair<Argument, Argument>, Integer> pairedArgCount;
-    private JSONArray singleArgCountJson;
-    private JSONArray pairedArgCountJson;
+    private static final Logger log = LoggerFactory.getLogger(ChartsDataManager.class);
 
     /**
      * sets json formated input list for google charts that accept one entry
@@ -44,7 +40,7 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
         });
 
         // get the counts of how often event arguments appear
-        singleArgCount = CollectionUtils.getCardinalityMap(arguments);
+        Map<Argument, Integer> singleArgCount = CollectionUtils.getCardinalityMap(arguments);
 
         // sort entries
         singleArgCount = singleArgCount.entrySet().stream()
@@ -52,9 +48,9 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
         // put to json format
-        singleArgCountJson = new JSONArray();
+        JSONArray singleArgCountJson = new JSONArray();
 
-        this.singleArgCount.forEach((k, v) -> {
+        singleArgCount.forEach((k, v) -> {
             JSONArray tmp = new JSONArray();
             tmp.put(k.getPreferredName());
             tmp.put(v);
@@ -84,7 +80,7 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
         });
 
         // get the count for how often pairs appear
-        pairedArgCount = CollectionUtils.getCardinalityMap(atids);
+        Map<Pair<Argument, Argument>, Integer> pairedArgCount = CollectionUtils.getCardinalityMap(atids);
 
         // sort the entries
         pairedArgCount = pairedArgCount.entrySet().stream()
@@ -101,8 +97,8 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
         }
 
         // put to json
-        pairedArgCountJson = new JSONArray();
-        this.pairedArgCount.forEach((k, v) -> {
+        JSONArray pairedArgCountJson = new JSONArray();
+        pairedArgCount.forEach((k, v) -> {
             JSONObject o = new JSONObject();
             o.put("source", k.getLeft().getPreferredName());
             o.put("target", k.getRight().getPreferredName());
@@ -134,7 +130,7 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
         Function<Map<Event,Integer>, Double> harmonicMean = eventCounts -> eventCounts.size() / (eventCounts.values().stream().map(c -> 1d/c).reduce(1d, (sum, c) -> sum + c));
         final LinkedHashMap<Argument, Map<Event, Integer>> orderedMap = target2EventCardinalities.entrySet().stream().sorted((e1,e2) -> (int)Math.signum(harmonicMean.apply(e2.getValue()) - harmonicMean.apply(e1.getValue()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (k, v) -> k, LinkedHashMap::new));
 
-        pairedArgCountJson = new JSONArray();
+        JSONArray pairedArgCountJson = new JSONArray();
         // At the moment, we cannot send all the data to the client, for much data it would just break the Sankey Diagram.
         // In the map below we memorize how often we already did output an edge from a source gene to a target gene.
         // Then we set a limit on the number of source gene occurrences: We will only show n many target genes for
@@ -156,6 +152,33 @@ public class GoogleChartsDataManager implements IGoogleChartsDataManager {
 
 
         return pairedArgCountJson;
+    }
+
+    @Override
+    public JSONArray convertToJson(List<Event> eventList) {
+        JSONArray array = new JSONArray();
+        for (Event event : eventList) {
+            final Argument firstArgument = event.getFirstArgument();
+            JSONObject source = new JSONObject();
+            source.put("homoid", firstArgument.getTopHomologyId());
+            source.put("geneid", firstArgument.getGeneId());
+            source.put("name", firstArgument.getPreferredName());
+
+            final Argument secondArgument = event.getSecondArgument();
+            JSONObject target = new JSONObject();
+            source.put("homoid", secondArgument.getTopHomologyId());
+            source.put("geneid", secondArgument.getGeneId());
+            source.put("name", secondArgument.getPreferredName());
+
+
+            JSONObject o = new JSONObject();
+            o.put("source", target);
+            o.put("target", target);
+            o.put("type", event.getMainEventType());
+
+            array.put(o);
+        }
+        return array;
     }
 
 }
