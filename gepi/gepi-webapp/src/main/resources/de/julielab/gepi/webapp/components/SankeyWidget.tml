@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
      widgettitle="Sankey Diagram: Most Frequent Interaction Partners" t:clientId="${elementId}-outer" class="${classes}"
-     sizeClass="widget-small" result="result">
+     sizeClass="widget-small" result="result" disableDefaultAjaxRefresh="true">
 
-    <div id="${elementId}-container">
+    <div id="${elementId}-container" class="hidden">
         <t:if test="largeView">
             <div class="settings">
                 <div class="sliders"></div>
@@ -15,5 +15,4 @@
             </p:else>
         </t:if>
     </div>
-    <t:trigger event="drawChart"/>
 </div>

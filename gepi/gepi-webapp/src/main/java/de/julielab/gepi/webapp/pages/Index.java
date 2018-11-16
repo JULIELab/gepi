@@ -1,7 +1,10 @@
 package de.julielab.gepi.webapp.pages;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import de.julielab.gepi.core.services.IChartsDataManager;
+import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.ActivationRequestParameter;
@@ -14,7 +17,9 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.HttpError;
+import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
@@ -83,13 +88,22 @@ public class Index {
         return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
     }
 
+    @Inject
+    ComponentResources resources;
+
+
     void afterRender() {
-        javaScriptSupport.require("gepi/pages/index").invoke("loadGoogleCharts");
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
+        javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI());
+        if (result != null) {
+            // If there already is data at loading the page, the input panel is already hidden (see #getShowInputClass)
+            // and we can display the widgets.
+            javaScriptSupport.require("gepi/pages/index").invoke("readyForWidgets");
+        }
     }
 
     /**
-     * @return The class "in", causing the outputcol to show immediately, or the empty string which will hide the outputcol initially.
+     * @return The class "into", causing the outputcol to show immediately, or the empty string which will hide the outputcol initially.
      */
     public String getShowOutputClass() {
         if (result != null && result.isDone())
@@ -122,5 +136,21 @@ public class Index {
 
     public String getWidgetOverlayShowClass() {
         return hasLargeWidget ? "into" : "";
+    }
+
+
+    @Inject
+    Request request;
+    @Inject
+    private IChartsDataManager chartMnger;
+    JSONObject onLoadDataToClient() {
+        String datatype = request.getParameter("datatype");
+        logger.debug("Sending data of type {} to the client ", datatype);
+        try {
+            return chartMnger.getPairedArgsCount(result.get().getEventList());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

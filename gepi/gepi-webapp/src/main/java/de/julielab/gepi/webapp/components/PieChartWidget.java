@@ -31,13 +31,7 @@ public class PieChartWidget extends GepiWidget {
 		
 	
 	void onDrawChart() {
-		try {
-			javaScriptSupport.require("gepi/gcharts/piechart").with( 
-					gChartMnger.getTargetArgCount(persistResult.get().getEventList() ) );
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 	}
 	
 	

@@ -1,5 +1,6 @@
 define([ "jquery", "t5/core/zone" ], function($, zoneManager, widgetSize) {
     var loadWidgetContent = function(url, zoneElementId) {
+        console.log("Issueing update of zone with ID " + zoneElementId)
         zoneManager.deferredZoneUpdate(zoneElementId, url);
     };
 
@@ -10,23 +11,17 @@ define([ "jquery", "t5/core/zone" ], function($, zoneManager, widgetSize) {
             var newMode;
             switch (currentMode) {
             case "large":
-//                widget.removeClass("fixed");
                 $("body").removeClass("noScroll");
                 $("#widgetOverlay").removeClass("in");
                 newMode = "overview";
                 break;
             case "overview":
-//                widget.addClass("fixed");
                 $("body").addClass("noScroll");
                 newMode = "large";
                 $("#widgetOverlay").addClass("in");
                 break;
             }
             var left = document.getElementById(widgetId).getBoundingClientRect().left;
-//            console.log(left)
-//            var difference = left - 15;
-//            console.log(difference)
-//            widget.css("transform", "translate(-"+difference+"px)");
             widget.addClass(newMode).removeClass(currentMode);
             zoneManager.deferredZoneUpdate(zoneElementId, url);
         });

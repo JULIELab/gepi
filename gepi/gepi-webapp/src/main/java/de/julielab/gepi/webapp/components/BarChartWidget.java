@@ -26,7 +26,7 @@ public class BarChartWidget extends GepiWidget {
 	
 	void onDrawChart() {
 		try {
-			javaScriptSupport.require("gepi/gcharts/barchart").with( 
+			javaScriptSupport.require("gepi/charts/barchart").with(
 					gChartMnger.getTargetArgCount(persistResult.get().getEventList() ) );
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block

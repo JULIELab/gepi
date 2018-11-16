@@ -1,17 +1,24 @@
-define([ "jquery", "gepi/gcharts/sankey/data" ], function($, data) {
+define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, index) {
 
-    return function drawSankeyChart(elementId, sankeyDat) {
-                let promise = $("#inputcol").data("animationtimer");
-                if (promise)
-                     promise.then(() =>
-                        draw(elementId, sankeyDat));
+    return function drawSankeyChart(elementId, sankeytype) {
+        console.log("Preparing to draw sankey chart for element ID " + elementId + " with data type " + sankeytype)
+        index.getReadySemaphor().done(() => {
+            console.log("Chart drawing has green light from the central index semaphor, requesting data")
+            data.awaitData("relationCounts").done(() => {
+                console.log("Loading data was successful. Checking if the input column also gives green light.")
+                let inputcolReadyPromise = $("#inputcol").data("animationtimer");
+                if (inputcolReadyPromise)
+                    inputcolReadyPromise.done(() =>
+                        draw(elementId));
                 else
-                   draw(elementId, sankeyDat);
+                    draw(elementId);
+            });
+        });
     };
 
-    function draw(elementId, sankeyDat) {
-        console.log("sankey-data:");
-        console.log(sankeyDat);
+    function draw(elementId) {
+        console.log("Drawing sankey chart")
+        let sankeyDat = data.getData("relationCounts");
 
         let preprocessed_data = data.preprocess_data(sankeyDat, "commonPartnersHarmonicMean");
 
@@ -42,22 +49,20 @@ define([ "jquery", "gepi/gcharts/sankey/data" ], function($, data) {
         };
 
         function create_svg() {
-            settings.width = chart_elem.clientWidth - 2 * settings.padding_x - 10;
-            /*settings.height = chart_elem.clientHeight - 2 * settings.padding_y - 10;
-            if (settings.height < settings.min_height) {
-                settings.height = settings.min_height;
-            }*/
-
             let chart = d3.select(chart_elem);
 
             chart.selectAll("svg").remove();
 
+            let chartContainer = $("#" + elementId + "-container");
+            //chartContainer.closest(".panel-body > .shine").addClass("hidden");
+            chartContainer.removeClass("hidden");
+            settings.width = chart_elem.clientWidth - 2 * settings.padding_x - 10;
             let svg = chart
                 .append("svg")
                 .attr("width", settings.width + 2 * settings.padding_x)
                 .attr("height", settings.height + 2 * settings.padding_y);
 
-            return svg.append("g").attr("transform", "translate("+settings.padding_x+","+settings.padding_y+")");
+            return svg.append("g").attr("transform", "translate(" + settings.padding_x + "," + settings.padding_y + ")");
         }
 
         let selected_by_node_id = {};
@@ -132,7 +137,7 @@ define([ "jquery", "gepi/gcharts/sankey/data" ], function($, data) {
                 .data(the_data.nodes)
                 .enter().append("g")
                 .attr("class", "node")
-                .attr("transform", (d) => "translate("+d.x0+","+d.y0+")");
+                .attr("transform", (d) => "translate(" + d.x0 + "," + d.y0 + ")");
 
             // nodes: rects
             nodes.append("rect")
@@ -172,7 +177,7 @@ define([ "jquery", "gepi/gcharts/sankey/data" ], function($, data) {
                 .text((d) => d.name)
                 .style("font-size", settings.label_font_size + "px")
                 .attr("y", (d) => (d.y1 - d.y0 + settings.label_font_size) / 2)
-                .attr("x", function (d) {
+                .attr("x", function(d) {
                     if (d.id.endsWith("_from")) {
                         return -this.getComputedTextLength() - settings.node_to_label_spacing;
                     } else {
@@ -186,7 +191,7 @@ define([ "jquery", "gepi/gcharts/sankey/data" ], function($, data) {
         }
 
         function add_slider(id, label_text, min, max, step, value, change_handler) {
-            let p = d3.select("#"+elementId +"-container .settings").select(".sliders").append("p");
+            let p = d3.select("#" + elementId + "-container .settings").select(".sliders").append("p");
 
             p.append("label")
                 .attr("for", id)
@@ -199,7 +204,7 @@ define([ "jquery", "gepi/gcharts/sankey/data" ], function($, data) {
                 .attr("max", max)
                 .attr("step", step)
                 .attr("value", value)
-                .on("input", function () {
+                .on("input", function() {
                     let value = this.value;
                     change_handler(value);
                     redraw();
@@ -243,27 +248,27 @@ define([ "jquery", "gepi/gcharts/sankey/data" ], function($, data) {
             let path =
                 "M " +
                 x_left + ", " +
-                (d.y0 - width/2) +
+                (d.y0 - width / 2) +
                 " L " +
                 x_left + ", " +
-                (d.y0 + width/2) +
+                (d.y0 + width / 2) +
                 " C " +
                 x_center + ", " +
-                (d.y0 + width/2) + ", " +
+                (d.y0 + width / 2) + ", " +
                 x_center + ", " +
-                (d.y1 + width/2) + ", " +
+                (d.y1 + width / 2) + ", " +
                 x_right + ", " +
-                (d.y1 + width/2) +
+                (d.y1 + width / 2) +
                 " L " +
                 x_right + ", " +
-                (d.y1 - width/2) +
+                (d.y1 - width / 2) +
                 " C " +
                 x_center + ", " +
-                (d.y1 - width/2) + ", " +
+                (d.y1 - width / 2) + ", " +
                 x_center + ", " +
-                (d.y0 - width/2) + ", " +
+                (d.y0 - width / 2) + ", " +
                 x_left + ", " +
-                (d.y0 - width/2);
+                (d.y0 - width / 2);
 
             return path;
         }

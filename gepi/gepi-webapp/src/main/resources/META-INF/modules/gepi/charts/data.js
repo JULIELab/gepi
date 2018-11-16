@@ -1,4 +1,50 @@
-define(["gepi/gcharts/sankey/weightfunctions"], function(functions) {
+define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], function($, t5ajax, functions) {
+    // This map holds the original data downloaded from the web application
+    // as well as transformed versions for caching
+    let data = new Map();
+    // For synchonization: Deferrer objects created on data requests
+    // which are resolved when a
+    // specific dataset has actually been set
+    let requestedData = new Map();
+    let dataUrl = null;
+
+    function setDataUrl(url) {
+        dataUrl = url;
+        console.log("URL to request data has been set to " + dataUrl);
+    }
+
+    function getDataUrl() {
+        return dataUrl;
+    }
+
+    function loadData(name, type) {
+        console.log("Loading data from " + dataUrl);
+        $.get(dataUrl, "datatype="+type, data => setData(name, data));
+    }
+
+    function setData(name, dataset) {
+        data.set(name, dataset);
+        console.log("Data for key " + name + " was set, its promise is resolved.");
+        console.log(dataset);
+        awaitData(name).resolve();
+    }
+
+    function getData(name) {
+        return data.get(name);
+    }
+
+    function awaitData(name) {
+        console.log("Data with name " + name + " was requested");
+        let promise = requestedData.get(name);
+        if (!promise) {
+            console.log("Creating new promise for data " + name);
+            promise = $.Deferred();
+            requestedData.set(name, promise);
+            loadData(name, "relationCounts");
+        }
+        return promise;
+    }
+
     function color_edges(input_links) {
 
         for (let link of input_links) {
@@ -38,13 +84,6 @@ define(["gepi/gcharts/sankey/weightfunctions"], function(functions) {
             filtered_links,
             filtered_nodes
         } = cutoffLinksByWeight(nodesNLinks, 0);
-
-let thelink = [];
-        for(let link of nodesNLinks.links) {
-            if (link.target === "atid24231")
-                thelink.push(link);
-        }
-
 
         console.log("Calling weight function");
         let t0 = performance.now();
@@ -303,5 +342,10 @@ let thelink = [];
     return {
         preprocess_data,
         prepare_data,
+        setData,
+        getData,
+        awaitData,
+        setDataUrl,
+        getDataUrl
     };
 });
