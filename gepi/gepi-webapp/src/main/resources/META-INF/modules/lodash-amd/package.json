@@ -1,0 +1,72 @@
+{
+  "_from": "lodash-amd",
+  "_id": "lodash-amd@4.17.11",
+  "_inBundle": false,
+  "_integrity": "sha512-PObX+MAaYNSBOb49vIF2hrMYBapFhS2Hb7ZBsMbQMAnGK5wpL49wo8fBEtEKoYga3un2Pt6Qu2F/u28nZm2x8Q==",
+  "_location": "/lodash-amd",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "lodash-amd",
+    "name": "lodash-amd",
+    "escapedName": "lodash-amd",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/lodash-amd/-/lodash-amd-4.17.11.tgz",
+  "_shasum": "d848ee833b01ade1d874f68a4b681ac0cbcaf708",
+  "_spec": "lodash-amd",
+  "_where": "/Users/faessler/Downloads",
+  "author": {
+    "name": "John-David Dalton",
+    "email": "john.david.dalton@gmail.com",
+    "url": "http://allyoucanleet.com/"
+  },
+  "bugs": {
+    "url": "https://github.com/lodash/lodash-cli/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "John-David Dalton",
+      "email": "john.david.dalton@gmail.com",
+      "url": "http://allyoucanleet.com/"
+    },
+    {
+      "name": "Blaine Bublitz",
+      "email": "blaine.bublitz@gmail.com",
+      "url": "https://github.com/phated"
+    },
+    {
+      "name": "Mathias Bynens",
+      "email": "mathias@qiwi.be",
+      "url": "https://mathiasbynens.be/"
+    }
+  ],
+  "deprecated": false,
+  "description": "Lodash exported as AMD modules.",
+  "homepage": "https://lodash.com/custom-builds",
+  "keywords": [
+    "amd",
+    "modules",
+    "stdlib",
+    "util"
+  ],
+  "license": "MIT",
+  "main": "main.js",
+  "name": "lodash-amd",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lodash/lodash.git"
+  },
+  "scripts": {
+    "test": "echo \"See https://travis-ci.org/lodash-archive/lodash-cli for testing details.\""
+  },
+  "version": "4.17.11"
+}

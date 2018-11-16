@@ -1,4 +1,4 @@
-define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($, index, data) {
+define([ "jquery", "gepi/gcharts/sankey/data" ], function($, data) {
 
     return function drawSankeyChart(elementId, sankeyDat) {
                 let promise = $("#inputcol").data("animationtimer");
@@ -7,16 +7,14 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
                         draw(elementId, sankeyDat));
                 else
                    draw(elementId, sankeyDat);
-    }
+    };
 
     function draw(elementId, sankeyDat) {
         console.log("sankey-data:");
         console.log(sankeyDat);
 
-        let preprocessed_data = data.preprocess_data(sankeyDat);
-        console.log(preprocessed_data);
+        let preprocessed_data = data.preprocess_data(sankeyDat, "commonPartnersHarmonicMean");
 
-        console.log(index);
 
         let settings = {
             width: 500,
@@ -29,6 +27,7 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
             label_font_size: 12,
             node_width: 10,
             node_to_label_spacing: 5,
+            max_number_nodes: 3
         };
 
         let chart_elem = document.getElementById(elementId);
@@ -69,6 +68,7 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
             add_slider("padding-slider", "Padding: ", 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = value);
             add_slider("min-size-slider", "Minimum node size: ", 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
             add_slider("node-height-slider", "Chart height: ", 0, 10000, 2, settings.height, (value) => settings.height = value - 0);
+            add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, settings.max_number_nodes, (value) => settings.max_number_nodes = value);
 
             add_button("Clear selection", () => {
                 selected_by_node_id = {};
@@ -83,7 +83,9 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
 
             let svg = create_svg();
 
-            let the_data = data.prepare_data(preprocessed_data, settings.height, settings.min_node_height, settings.node_spacing);
+            console.log("Preparing sankey data");
+            let the_data = data.prepare_data(preprocessed_data, settings.height, settings.min_node_height, settings.node_spacing, settings.max_number_nodes);
+            console.log("Finished preparing data");
 
             let sankey = d3.sankey();
 
@@ -96,12 +98,15 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
                 .links(the_data.links)
                 .iterations(0);
 
+            console.log("Computing sankey layout...")
             sankey();
+            console.log("Done")
 
             //shift(the_data.nodes[4], 50, 20);
 
             sankey.update(the_data);
 
+            console.log("Creating sankey links")
             //links
             let links = svg.append("g")
                 .attr("fill", "none")
@@ -118,8 +123,9 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
             //.attr("stroke-width", (d) => d.width);
 
             links.append("title")
-                .text("link!");
+                .text(link => [link.source.id, link.target.id, link.color].join());
 
+            console.log("Creating sankey nodes")
             // nodes
             let nodes = svg.append("g")
                 .selectAll(".node")

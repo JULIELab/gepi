@@ -3,6 +3,7 @@ package de.julielab.gepi.core.services;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -79,32 +80,33 @@ public class ChartsDataManagerTest {
             events.add(e6);
 
         final ChartsDataManager manager = new ChartsDataManager();
-        final JSONArray pairs = manager.getPairsWithCommonTarget(events);
+        final JSONObject nodesNLinks = manager.getPairsWithCommonTarget(events);
+        final JSONArray pairs = nodesNLinks.getJSONArray("links");
         System.out.println(pairs);
         // These asserts base on first printing the pairs array above, checking that it is correct
         // and writing down what I saw then.
-        assertThat(pairs.getJSONObject(0).getString("source")).isEqualTo("arg7");
-        assertThat(pairs.getJSONObject(0).getString("target")).isEqualTo("arg8");
-        assertThat(pairs.getJSONObject(0).getInt("weight")).isEqualTo(10);
+        assertThat(pairs.getJSONObject(0).getString("source")).isEqualTo("h7");
+        assertThat(pairs.getJSONObject(0).getString("target")).isEqualTo("h8");
+        assertThat(pairs.getJSONObject(0).getInt("frequency")).isEqualTo(10);
 
-        assertThat(pairs.getJSONObject(1).getString("source")).isEqualTo("arg9");
-        assertThat(pairs.getJSONObject(1).getString("target")).isEqualTo("arg8");
-        assertThat(pairs.getJSONObject(1).getInt("weight")).isEqualTo(10);
+        assertThat(pairs.getJSONObject(1).getString("source")).isEqualTo("h9");
+        assertThat(pairs.getJSONObject(1).getString("target")).isEqualTo("h8");
+        assertThat(pairs.getJSONObject(1).getInt("frequency")).isEqualTo(10);
 
-        assertThat(pairs.getJSONObject(2).getString("source")).isEqualTo("arg1");
-        assertThat(pairs.getJSONObject(2).getString("target")).isEqualTo("arg2");
-        assertThat(pairs.getJSONObject(2).getInt("weight")).isEqualTo(2);
+        assertThat(pairs.getJSONObject(2).getString("source")).isEqualTo("h1");
+        assertThat(pairs.getJSONObject(2).getString("target")).isEqualTo("h2");
+        assertThat(pairs.getJSONObject(2).getInt("frequency")).isEqualTo(2);
 
-        assertThat(pairs.getJSONObject(3).getString("source")).isEqualTo("arg3");
-        assertThat(pairs.getJSONObject(3).getString("target")).isEqualTo("arg2");
-        assertThat(pairs.getJSONObject(3).getInt("weight")).isEqualTo(3);
+        assertThat(pairs.getJSONObject(3).getString("source")).isEqualTo("h3");
+        assertThat(pairs.getJSONObject(3).getString("target")).isEqualTo("h2");
+        assertThat(pairs.getJSONObject(3).getInt("frequency")).isEqualTo(3);
 
-        assertThat(pairs.getJSONObject(4).getString("source")).isEqualTo("arg4");
-        assertThat(pairs.getJSONObject(4).getString("target")).isEqualTo("arg5");
-        assertThat(pairs.getJSONObject(4).getInt("weight")).isEqualTo(10);
+        assertThat(pairs.getJSONObject(4).getString("source")).isEqualTo("h4");
+        assertThat(pairs.getJSONObject(4).getString("target")).isEqualTo("h5");
+        assertThat(pairs.getJSONObject(4).getInt("frequency")).isEqualTo(10);
 
-        assertThat(pairs.getJSONObject(5).getString("source")).isEqualTo("arg6");
-        assertThat(pairs.getJSONObject(5).getString("target")).isEqualTo("arg5");
-        assertThat(pairs.getJSONObject(5).getInt("weight")).isEqualTo(1);
+        assertThat(pairs.getJSONObject(5).getString("source")).isEqualTo("h6");
+        assertThat(pairs.getJSONObject(5).getString("target")).isEqualTo("h5");
+        assertThat(pairs.getJSONObject(5).getInt("frequency")).isEqualTo(1);
     }
 }

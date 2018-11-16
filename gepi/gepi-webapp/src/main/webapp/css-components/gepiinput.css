@@ -4,9 +4,27 @@
     width:150px;
 }
 
-#listacontainer > textarea, #listbcontainer > textarea {
-    height: 350px;
+/* Note media query below */
+#eventtypediv > div > div > .checkbox {
+    margin-top: 0;
 }
+
+/* Note media query below */
+#listacontainer > textarea, #listbcontainer > textarea {
+    height: 250px;
+}
+
+/* To fully display the input column, we need a viewport of approx. 830px. Below that we compress everything a little, see above. */
+@media screen and (min-height: 830px) {
+    #eventtypediv > div > div > .checkbox {
+        /* This is actually the default value we suppress for smaller heights */
+        margin-top: 10px;
+    }
+    #listacontainer > textarea, #listbcontainer > textarea {
+        height: 350px;
+    }
+}
+
 
 hr.nomargin {
     margin: 0;

@@ -6,8 +6,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
@@ -17,7 +15,7 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
 import de.julielab.gepi.core.retrieval.data.Event;
 
-public class ChartsDataManager implements IGoogleChartsDataManager {
+public class ChartsDataManager implements IChartsDataManager {
 
     private static final Logger log = LoggerFactory.getLogger(ChartsDataManager.class);
 
@@ -67,48 +65,39 @@ public class ChartsDataManager implements IGoogleChartsDataManager {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public JSONArray getPairedArgsCount(List<Event> evtList) {
-        List<Pair<Argument, Argument>> atids = new ArrayList<>();
+    public JSONObject getPairedArgsCount(List<Event> evtList) {
 
         log.trace("Number of events for pair counting: {}", evtList.size());
 
-        // get all atid atid pairs in one list
-        evtList.forEach(e -> {
-            if (e.getNumArguments() == 2) {
-                atids.add(new ImmutablePair<Argument, Argument>(e.getFirstArgument(), e.getSecondArgument()));
+
+        // get the count for how often pairs appear
+        Map<Event, Integer> pairedArgCount = CollectionUtils.getCardinalityMap(evtList);
+
+        // put to json
+        JSONArray nodes = new JSONArray();
+        JSONArray links = new JSONArray();
+        Set<String> nodeIdAlreadySeen = new HashSet<>();
+        pairedArgCount.forEach((k, v) -> {
+            JSONObject link = new JSONObject();
+            link.put("source", k.getFirstArgument().getTopHomologyId());
+            link.put("target", k.getSecondArgument().getTopHomologyId());
+            link.put("frequency", v);
+            link.put("type", k.getMainEventType());
+
+            links.put(link);
+
+            if (nodeIdAlreadySeen.add(k.getFirstArgument().getTopHomologyId())) {
+                nodes.put(getJsonObjectForArgument(k.getFirstArgument()));
+            }
+            if (nodeIdAlreadySeen.add(k.getSecondArgument().getTopHomologyId())) {
+                nodes.put(getJsonObjectForArgument(k.getSecondArgument()));
             }
         });
 
-        // get the count for how often pairs appear
-        Map<Pair<Argument, Argument>, Integer> pairedArgCount = CollectionUtils.getCardinalityMap(atids);
-
-        // sort the entries
-        pairedArgCount = pairedArgCount.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-        int i = 0;
-        for (Iterator<Entry<Pair<Argument, Argument>, Integer>> it = pairedArgCount.entrySet().iterator(); it
-                .hasNext();) {
-            @SuppressWarnings("unused")
-            Entry<Pair<Argument, Argument>, Integer> entry = it.next();
-            //if (i++ > 10)
-            //	it.remove();
-        }
-
-        // put to json
-        JSONArray pairedArgCountJson = new JSONArray();
-        pairedArgCount.forEach((k, v) -> {
-            JSONObject o = new JSONObject();
-            o.put("source", k.getLeft().getPreferredName());
-            o.put("target", k.getRight().getPreferredName());
-            o.put("weight", v);
-            o.put("color", "grey");
-
-            pairedArgCountJson.put(o);
-        });
-
-        return pairedArgCountJson;
+        JSONObject nodesNLinks = new JSONObject();
+        nodesNLinks.put("nodes", nodes);
+        nodesNLinks.put("links", links);
+        return nodesNLinks;
     }
 
     /**
@@ -119,7 +108,7 @@ public class ChartsDataManager implements IGoogleChartsDataManager {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public JSONArray getPairsWithCommonTarget(List<Event> evtList) {
+    public JSONObject getPairsWithCommonTarget(List<Event> evtList) {
         // First, we build a structure that counts how often each target gene (genes on the - possibly implicit - B list)
         // interacts how often with which source (A list) gene. We build a map whose keys are the targets and the values
         // are maps counting for each source gene the number of interactions with the target.
@@ -130,28 +119,31 @@ public class ChartsDataManager implements IGoogleChartsDataManager {
         Function<Map<Event,Integer>, Double> harmonicMean = eventCounts -> eventCounts.size() / (eventCounts.values().stream().map(c -> 1d/c).reduce(1d, (sum, c) -> sum + c));
         final LinkedHashMap<Argument, Map<Event, Integer>> orderedMap = target2EventCardinalities.entrySet().stream().sorted((e1,e2) -> (int)Math.signum(harmonicMean.apply(e2.getValue()) - harmonicMean.apply(e1.getValue()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (k, v) -> k, LinkedHashMap::new));
 
-        JSONArray pairedArgCountJson = new JSONArray();
-        // At the moment, we cannot send all the data to the client, for much data it would just break the Sankey Diagram.
-        // In the map below we memorize how often we already did output an edge from a source gene to a target gene.
-        // Then we set a limit on the number of source gene occurrences: We will only show n many target genes for
-        // each source gene. This will possibly exclude weaker connections to other source genes, but we can't help it right now.
-        Map<Argument, Integer> sourceOccurrenceCount = new HashMap<>();
+        // put to json
+        JSONArray nodes = new JSONArray();
+        JSONArray links = new JSONArray();
+        Set<String> nodeIdAlreadySeen = new HashSet<>();
         orderedMap.values().stream().forEachOrdered(map -> map.forEach((k, v) -> {
+            JSONObject link = new JSONObject();
+            link.put("source", k.getFirstArgument().getTopHomologyId());
+            link.put("target", k.getSecondArgument().getTopHomologyId());
+            link.put("frequency", v);
+            link.put("type", k.getMainEventType());
 
-            JSONObject o = new JSONObject();
-            o.put("source", k.getArgument(0).getPreferredName());
-            o.put("target", k.getArgument(1).getPreferredName());
-            o.put("weight", v);
-            o.put("color", "grey");
-            //o.put("type", k.getMainEventType());
+            links.put(link);
 
-            pairedArgCountJson.put(o);
+            if (nodeIdAlreadySeen.add(k.getFirstArgument().getTopHomologyId())) {
+                nodes.put(getJsonObjectForArgument(k.getFirstArgument()));
+            }
+            if (nodeIdAlreadySeen.add(k.getSecondArgument().getTopHomologyId())) {
+                nodes.put(getJsonObjectForArgument(k.getSecondArgument()));
+            }
         }));
 
-        // TODO assemble List of relevant nodes
-
-
-        return pairedArgCountJson;
+        JSONObject nodesNLinks = new JSONObject();
+        nodesNLinks.put("nodes", nodes);
+        nodesNLinks.put("links", links);
+        return nodesNLinks;
     }
 
     @Override
@@ -159,26 +151,27 @@ public class ChartsDataManager implements IGoogleChartsDataManager {
         JSONArray array = new JSONArray();
         for (Event event : eventList) {
             final Argument firstArgument = event.getFirstArgument();
-            JSONObject source = new JSONObject();
-            source.put("homoid", firstArgument.getTopHomologyId());
-            source.put("geneid", firstArgument.getGeneId());
-            source.put("name", firstArgument.getPreferredName());
+            JSONObject source = getJsonObjectForArgument(firstArgument);
 
             final Argument secondArgument = event.getSecondArgument();
-            JSONObject target = new JSONObject();
-            source.put("homoid", secondArgument.getTopHomologyId());
-            source.put("geneid", secondArgument.getGeneId());
-            source.put("name", secondArgument.getPreferredName());
+            JSONObject target = getJsonObjectForArgument(secondArgument);
 
 
             JSONObject o = new JSONObject();
-            o.put("source", target);
+            o.put("source", source);
             o.put("target", target);
             o.put("type", event.getMainEventType());
 
             array.put(o);
         }
         return array;
+    }
+
+    private JSONObject getJsonObjectForArgument(Argument argument) {
+        JSONObject source = new JSONObject();
+        source.put("id", argument.getTopHomologyId());
+        source.put("name", argument.getPreferredName());
+        return source;
     }
 
 }

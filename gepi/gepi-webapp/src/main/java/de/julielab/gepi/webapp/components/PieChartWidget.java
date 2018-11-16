@@ -8,7 +8,7 @@ import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.services.IGoogleChartsDataManager;
+import de.julielab.gepi.core.services.IChartsDataManager;
 
 public class PieChartWidget extends GepiWidget {
 	
@@ -19,7 +19,7 @@ public class PieChartWidget extends GepiWidget {
     private JavaScriptSupport javaScriptSupport;
 	
 	@Inject
-	private IGoogleChartsDataManager gChartMnger;
+	private IChartsDataManager gChartMnger;
 		
 	@Property
 	private JSONArray eventsJSON;

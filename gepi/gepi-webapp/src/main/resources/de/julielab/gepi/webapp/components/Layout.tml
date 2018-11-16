@@ -34,12 +34,14 @@
                     <!--<t:pagelink page="index" class="navbar-brand">Home</t:pagelink>-->
                 </div>
                 <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        <!--<t:loop source="pageNames" value="pageName">-->
-                            <!--<t:any element="li" class="prop:classForPageName">-->
-                                <!--<t:pagelink page="prop:pageName">${pageName}</t:pagelink>-->
-                            <!--</t:any>-->
-                        <!--</t:loop>-->
+                    <ul id="navitems" class="nav navbar-nav">
+                        <t:loop source="pageNames" value="pageName">
+                            <t:any element="li" class="prop:classForPageName">
+                                <t:pagelink page="prop:pageName">${pageName}</t:pagelink>
+                            </t:any>
+                        </t:loop>
+                    </ul>
+                    <ul id="filteroptions" class="nav navbar-nav hidden">
                         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Results Filter <span class="caret"/></a>
                             <ul class="dropdown-menu">
                                 <li><a href="#">Filter all widgets for selected genes</a></li>

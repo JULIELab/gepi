@@ -18,6 +18,6 @@ public class GepiCoreModule {
 		binder.bind(IEventResponseProcessingService.class, EventResponseProcessingService.class);
 		binder.bind(IEventPostProcessingService.class, EventPostProcessingService.class);
 		binder.bind(IGeneIdService.class, GeneIdService.class);
-		binder.bind(IGoogleChartsDataManager.class, ChartsDataManager.class);
+		binder.bind(IChartsDataManager.class, ChartsDataManager.class);
 	}
 }

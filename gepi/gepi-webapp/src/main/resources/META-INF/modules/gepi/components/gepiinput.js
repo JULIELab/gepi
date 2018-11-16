@@ -13,6 +13,7 @@ define(["jquery", "bootstrap/tooltip"], function($) {
         setuplistfileselectors();
         setupclearbuttons();
         setupShowInputPanel();
+        observekeypress();
 
         /*
          * On changes of list B, checks if the list is empty. If not, some
@@ -133,6 +134,20 @@ define(["jquery", "bootstrap/tooltip"], function($) {
             } else {
                 $("#inputToggleButton").addClass("disabled");
             }
+        }
+
+        function observekeypress() {
+        function KeyPress(e) {
+              let evt = window.event || e;
+
+              if ((evt.metaKey || evt.ctrlKey) && evt.keyCode == 83){
+                inputCol.find("form").submit();
+                // prevents the default action (opening a saving dialog)
+                return false;
+                }
+        }
+
+        inputCol.on("keydown", KeyPress);
         }
     };
 
