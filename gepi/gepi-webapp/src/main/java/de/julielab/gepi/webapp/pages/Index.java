@@ -144,8 +144,10 @@ public class Index {
     @Inject
     private IChartsDataManager chartMnger;
     JSONObject onLoadDataToClient() {
-        String datatype = request.getParameter("datatype");
-        logger.debug("Sending data of type {} to the client ", datatype);
+        String datasource = request.getParameter("datasource");
+        if (!datasource.equals("relationCounts"))
+            throw new IllegalArgumentException("Unknown data source " + datasource);
+        logger.debug("Sending data of type {} to the client ", datasource);
         try {
             return chartMnger.getPairedArgsCount(result.get().getEventList());
         } catch (InterruptedException | ExecutionException e) {

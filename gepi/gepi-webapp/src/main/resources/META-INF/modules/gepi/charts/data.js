@@ -2,11 +2,27 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
     // This map holds the original data downloaded from the web application
     // as well as transformed versions for caching
     let data = new Map();
+    let sortedNodes = new Map();
     // For synchonization: Deferrer objects created on data requests
     // which are resolved when a
     // specific dataset has actually been set
     let requestedData = new Map();
     let dataUrl = null;
+
+    function getSortedNodes(nodesNLinks, orderFunction) {
+        let nodesObject = sortedNodes.get(orderFunction);
+        if (!nodesObject) {
+            console.log("Calling order function");
+            let t0 = performance.now();
+            nodesObject = functions[orderFunction](nodesNLinks);
+            nodesObject.leftnodes.sort((a, b) => b[orderFunction] - a[orderFunction]);
+            nodesObject.rightnodes.sort((a, b) => b[orderFunction] - a[orderFunction]);
+            let t1 = performance.now();
+            console.log("Call to the order function and sorting took " + (t1 - t0) + " milliseconds.");
+            sortedNodes.set(orderFunction, nodesObject);
+        }
+        return nodesObject;
+    }
 
     function setDataUrl(url) {
         dataUrl = url;
@@ -17,15 +33,14 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
         return dataUrl;
     }
 
-    function loadData(name, type) {
-        console.log("Loading data from " + dataUrl);
-        $.get(dataUrl, "datatype="+type, data => setData(name, data));
+    function loadData(source) {
+        console.log("Loading data with source " + source + " from " + dataUrl);
+        $.get(dataUrl, "datasource=" + source, data => setData(source, data));
     }
 
     function setData(name, dataset) {
         data.set(name, dataset);
         console.log("Data for key " + name + " was set, its promise is resolved.");
-        console.log(dataset);
         awaitData(name).resolve();
     }
 
@@ -33,14 +48,14 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
         return data.get(name);
     }
 
-    function awaitData(name) {
-        console.log("Data with name " + name + " was requested");
-        let promise = requestedData.get(name);
+    function awaitData(sourceName) {
+        console.log("Data with source name " + sourceName + " was requested");
+        let promise = requestedData.get(sourceName);
         if (!promise) {
-            console.log("Creating new promise for data " + name);
+            console.log("Creating new promise for data " + sourceName);
             promise = $.Deferred();
-            requestedData.set(name, promise);
-            loadData(name, "relationCounts");
+            requestedData.set(sourceName, promise);
+            loadData(sourceName);
         }
         return promise;
     }
@@ -77,7 +92,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
      *   - the descending weight-sorted right nodes
      *   - the sum of all link weights
      */
-    function preprocess_data(nodesNLinks, weightFunction) {
+    function preprocess_data(nodesNLinks, orderFunction) {
         color_edges(nodesNLinks.links);
 
         let {
@@ -85,16 +100,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             filtered_nodes
         } = cutoffLinksByWeight(nodesNLinks, 0);
 
-        console.log("Calling weight function");
-        let t0 = performance.now();
-        let {leftnodes, rightnodes} = functions[weightFunction](nodesNLinks);
-        let t1 = performance.now();
-        console.log("Call to the weightFunction took " + (t1 - t0) + " milliseconds.");
-        leftnodes.sort((a, b) => b[weightFunction] - a[weightFunction]);
-        rightnodes.sort((a, b) => b[weightFunction] - a[weightFunction]);
-
-        //let sorted_ids_and_weights_left = getSortedIdsAndWeights(filtered_links, "source", weightFunction);
-        //let sorted_ids_and_weights_right = getSortedIdsAndWeights(filtered_links, "target", weightFunction);
+        let sortedNodes = getSortedNodes(nodesNLinks, orderFunction);
 
         let total_weight = 0;
         for (let link of filtered_links) {
@@ -106,8 +112,8 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
                 links: filtered_links,
                 nodes: filtered_nodes
             },
-            sorted_ids_and_weights_left: leftnodes,
-            sorted_ids_and_weights_right: rightnodes,
+            sorted_ids_and_weights_left: sortedNodes.leftnodes,
+            sorted_ids_and_weights_right: sortedNodes.rightnodes,
             total_weight
         };
     }
@@ -134,25 +140,6 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             filtered_links,
             filtered_nodes
         };
-    }
-
-    function getSortedIdsAndWeights(input_links, link_field, weightFunction) {
-        let weightsById = getWeightsById(input_links, link_field, weightFunction);
-        let weightsAndIds = Object.entries(weightsById).map(([id, weight]) => ({
-            id,
-            weight
-        }));
-        weightsAndIds.sort((a, b) => (b.weightFunction - a.weightFunction));
-        return weightsAndIds;
-    }
-
-    function getWeightsById(input_links, link_field) {
-        let weightsById = {};
-        for (let link of input_links) {
-            let relevant_node_id = link[link_field];
-            weightsById[relevant_node_id] = (weightsById[relevant_node_id] || 0) + link.frequency;
-        }
-        return weightsById;
     }
 
     function prepare_data(pre_data, total_height, min_height, padding, max_number_nodes) {

@@ -17,7 +17,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
     };
 
     function draw(elementId) {
-        console.log("Drawing sankey chart")
+        console.log("Drawing sankey chart");
         let sankeyDat = data.getData("relationCounts");
 
         let preprocessed_data = data.preprocess_data(sankeyDat, "commonPartnersHarmonicMean");
