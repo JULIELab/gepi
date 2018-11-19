@@ -34,7 +34,7 @@ public class SankeyWidget extends GepiWidget {
 
     void afterRender() {
         if (commonPartners) {
-            javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "commonpartners");
+            javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "commonPartnersHarmonicMean");
         } else {
             javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "frequency");
         }

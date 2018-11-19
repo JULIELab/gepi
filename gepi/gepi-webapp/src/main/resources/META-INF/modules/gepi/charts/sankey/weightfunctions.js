@@ -45,16 +45,26 @@ define(["gepi/formulas", "lodash-amd/groupBy", "lodash-amd/orderBy", "lodash-amd
         return {leftnodes, rightnodes};
     }
 
-    function frequency(nodesNLinks) {
-    	 let weightsById = {};
+      function frequency(nodesNLinks) {
+         let weightsByIdLeft = {};
+         let weightsByIdRight = {};
         for (let link of nodesNLinks.links) {
-            let relevant_node_id = link[link_field];
-            weightsById[relevant_node_id] = (weightsById[relevant_node_id] || 0) + link.frequency;
+            let leftNodeId = link.source;
+            let rightNodeId = link.target;
+            weightsByIdLeft[leftNodeId] = (weightsByIdLeft[leftNodeId] || 0) + link.frequency;
+            weightsByIdRight[rightNodeId] = (weightsByIdRight[rightNodeId] || 0) + link.frequency;
         }
-        return weightsById;
+        let leftnodes = [];
+        let rightnodes = [];
+        for (let id in weightsByIdLeft)
+            leftnodes.push({id, "frequency": weightsByIdLeft[id]});
+        for (let id in weightsByIdRight)
+            rightnodes.push({id, "frequency": weightsByIdRight[id]});
+
+        return {leftnodes, rightnodes};
     }
 
     function noop() {}
 
-    return {commonPartnersHarmonicMean, noop};
+    return {commonPartnersHarmonicMean, frequency, noop};
 });

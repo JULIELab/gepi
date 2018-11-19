@@ -16,7 +16,7 @@
                     <div class="row">
                         <t:piechartwidget result="result" class="col-md-4" />
                         <t:sankeywidget result="result" class="col-md-4" elementId="sankeychart" commonPartners="false" />
-                        <!--<t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
+                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />
                     </div>
                     <div class="row">
                         <t:tableresultwidget result="result" class="col-md-12"/>

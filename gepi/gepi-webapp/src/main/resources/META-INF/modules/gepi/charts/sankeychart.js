@@ -1,7 +1,7 @@
 define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, index) {
 
-    return function drawSankeyChart(elementId, sankeytype) {
-        console.log("Preparing to draw sankey chart for element ID " + elementId + " with data type " + sankeytype)
+    return function drawSankeyChart(elementId, orderType) {
+        console.log("Preparing to draw sankey chart for element ID " + elementId + " with node ordering type " + orderType)
         index.getReadySemaphor().done(() => {
             console.log("Chart drawing has green light from the central index semaphor, requesting data")
             data.awaitData("relationCounts").done(() => {
@@ -9,18 +9,18 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
                 let inputcolReadyPromise = $("#inputcol").data("animationtimer");
                 if (inputcolReadyPromise)
                     inputcolReadyPromise.done(() =>
-                        draw(elementId));
+                        draw(elementId, orderType));
                 else
-                    draw(elementId);
+                    draw(elementId, orderType);
             });
         });
     };
 
-    function draw(elementId) {
+    function draw(elementId, orderType) {
         console.log("Drawing sankey chart");
         let sankeyDat = data.getData("relationCounts");
 
-        let preprocessed_data = data.preprocess_data(sankeyDat, "commonPartnersHarmonicMean");
+        let preprocessed_data = data.preprocess_data(sankeyDat, orderType);
 
 
         let settings = {
