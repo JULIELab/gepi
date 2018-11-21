@@ -4,10 +4,10 @@
     <primitive>false</primitive>
     <delegateAnalysisEngineSpecifiers>
         <delegateAnalysisEngine key="JCoRe Pipeline AAE">
-            <import location="aggregateAnalysisEngine.xml"/>
+            <import location="AggregateAnalysisEngine.xml"/>
         </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="JCoRe Consumer AAE">
-            <import location="AggregateConsumer.xml"/>
+        <delegateAnalysisEngine key="de.julielab.jcore.consumer.es.ElasticSearchConsumer">
+            <import location="de.julielab.jcore.consumer.es.ElasticSearchConsumer.xml"/>
         </delegateAnalysisEngine>
     </delegateAnalysisEngineSpecifiers>
     <analysisEngineMetaData>
@@ -17,7 +17,7 @@
         <flowConstraints>
             <fixedFlow>
                 <node>JCoRe Pipeline AAE</node>
-                <node>JCoRe Consumer AAE</node>
+                <node>de.julielab.jcore.consumer.es.ElasticSearchConsumer</node>
             </fixedFlow>
         </flowConstraints>
         <capabilities/>
