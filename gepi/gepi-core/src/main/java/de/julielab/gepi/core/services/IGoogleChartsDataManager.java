@@ -19,5 +19,5 @@ public interface IGoogleChartsDataManager {
 	 */	
 	JSONArray getPairedArgsCount(List<Event> e);
 
-	JSONArray getPairesWithCommonTarget(List<Event> evtList);
+	JSONArray getPairsWithCommonTarget(List<Event> evtList);
 }

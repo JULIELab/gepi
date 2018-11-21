@@ -2,6 +2,7 @@ package de.julielab.gepi.core.retrieval.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Event {
 	protected List<String> allEventTypes;
@@ -18,16 +19,50 @@ public class Event {
 	
 	protected String sentence;
 	
-	protected String documentId;
+	protected String eventId;
 	
 	protected String documentType;
 
-	public String getDocumentId() {
-		return documentId;
+	protected String pmid;
+
+	protected String pmcid;
+
+	public String getPmid() {
+		return pmid;
 	}
 
-	public void setDocumentId(String documentId) {
-		this.documentId = documentId;
+	public void setPmid(String pmid) {
+		this.pmid = pmid;
+	}
+
+	public String getPmcid() {
+		return pmcid;
+	}
+
+	public void setPmcid(String pmcid) {
+		this.pmcid = pmcid;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Event event = (Event) o;
+		return Objects.equals(arguments, event.arguments);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(arguments);
+	}
+
+	public String getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
 	}
 
 	public String getDocumentType() {

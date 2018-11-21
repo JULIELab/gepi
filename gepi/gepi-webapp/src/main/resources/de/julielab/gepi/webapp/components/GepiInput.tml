@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="text-center">
-                            <div class="form-group">
+                            <div id="listacontainer" class="form-group">
                                 <t:label for="lista">
                                     List A
                                     <span class="text-muted">required</span>
@@ -32,7 +32,7 @@
                     <div class="col-md-6 text-center">
                         <div id="listbdiv" data-toggle="tooltip"
                              title="List B becomes available as soon as some IDs have been added to List A. All one-list operations are performed using List A.">
-                            <div class="form-group">
+                            <div id="listbcontainer" class="form-group">
                                 <t:label for="listb">
                                     List B
                                     <span class="text-muted">optional</span>
@@ -53,8 +53,8 @@
                     </div>
                 </div>
                 <div class="row">
-                    <hr/>
-                    <div class="col-md-12">
+                    <hr class="thin bottom"/>
+                    <div id="eventtypediv" class="col-md-12">
                         <h5>Restrict event retrieval to the following event types. No selection means no restriction.
                         </h5>
                         <t:checklist t:id="eventtypes" selected="selectedeventtypes" encoder="eventtypeencoder"
@@ -62,14 +62,14 @@
                     </div>
                 </div>
                 <div class="row">
-                    <hr/>
+                    <hr class="nomargin"/>
                     <div class="col-md-12">
                         <h5>Enter words to filter the sentences on in which returned events occur.</h5>
                         <t:TextField t:id="sentencefilter" value="filterstring"/>
                     </div>
                 </div>
                 <div class="row">
-                    <hr/>
+                    <hr class="medium bottom top"/>
                     <div class="col-md-12 text-center">
                         <t:submit class="btn btn-primary btn-block" value="Go!"/>
                     </div>
@@ -77,6 +77,5 @@
                 <t:errors globalOnly="false"/>
             </form>
         </div>
-        <div id="handle"/>
     </div>
 </t:container>

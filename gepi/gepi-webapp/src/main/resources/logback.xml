@@ -36,6 +36,7 @@
 	<logger
 		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
 		level="TRACE" />
+	<logger name="de.julielab" level="DEBUG" />
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
