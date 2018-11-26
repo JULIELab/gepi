@@ -9,112 +9,44 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
         node_thickness: 10,
     };
 
-    function data() {
-        let nodes = ["A", "B", "C", "D", "E", "Long", "EvenLonger", "Lonely", "universal"];
-        let links = [
-            {
-                from: "A",
-                to: "B",
-                weight: 4,
-            },
-            {
-                from: "A",
-                to: "C",
-                weight: 2,
-            },
-            {
-                from: "C",
-                to: "D",
-                weight: 1,
-            },
-            {
-                from: "E",
-                to: "B",
-                weight: 3,
-            },
-            {
-                from: "Long",
-                to: "B",
-                weight: 2.2,
-            },
-            {
-                from: "universal",
-                to: "A",
-                weight: 1,
-            },
-            {
-                from: "universal",
-                to: "B",
-                weight: 1,
-            },
-            {
-                from: "universal",
-                to: "C",
-                weight: 1,
-            },
-            {
-                from: "universal",
-                to: "D",
-                weight: 3,
-            },
-            {
-                from: "universal",
-                to: "E",
-                weight: 1,
-            },
-            {
-                from: "universal",
-                to: "Long",
-                weight: 1,
-            },
-            {
-                from: "universal",
-                to: "EvenLonger",
-                weight: 1,
-            },
-        ];
-
-        return {
-            raw_nodes: nodes,
-            links,
-        }
-    }
-
     function prepare_data(links) {
         //let {raw_nodes, links} = data();
         let node_indices = {};
 
         let total_weight = 0;
-        let node_data = {};
+        let node_weights = {};
         let nodes = [];
         let raw_nodes = [];
-
-        for (let [index, id] of raw_nodes.entries()) {
-            node_indices[id] = index;
-        }
 
         for (let {source, target, weight} of links) {
             total_weight += weight;
             function add_to_node(node, w, other_index) {
-                if (!node_data[node]) {
-                    node_data[node] = {
-                        weight: 0,
-                        links: [],
-                    };
+                if (node_weights[node] === undefined) {
+                    node_weights[node] = 0;
                     let index = raw_nodes.length;
                     raw_nodes.push(node);
                     node_indices[node] = index;
                 }
-                node_data[node].weight += w;
-                node_data[node].links[other_index] = {
-                    weight: w,
-                };
+                node_weights[node] += w;
             }
             add_to_node(source, weight, node_indices[target]);
             add_to_node(target, weight, node_indices[source]);
         }
 
-        const node_distance = 360 / raw_nodes.length;
+        let sorted_nodes_and_weights = Array.from(Object.entries(node_weights)).sort(([n1, w1], [n2, w2]) => w2 - w1).slice(0, 100);
+        let included_nodes = {};
+
+        for ([n, w] of sorted_nodes_and_weights) {
+            included_nodes[n] = true;
+        }
+
+        console.log("Included nodes: ", included_nodes);
+
+        links = links.filter(({source, target}) => {
+            return included_nodes[source] && included_nodes[target];
+        });
+
+        const node_distance = 360 / 100;
 
         for (let link of links) {
             function compute_link_offset(at) {
@@ -126,15 +58,18 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
         }
 
         for (let [index, id] of raw_nodes.entries()) {
-            let data = node_data[id];
-            nodes[index] = {
-                id,
-                pos: index * node_distance,
-                weight: data.weight,
-            };
+            if (included_nodes[id]) {
+                let weight = node_weights[id];
+                let new_index = nodes.length;
+                nodes.push({
+                    id,
+                    pos: new_index * node_distance,
+                    weight,
+                });
+            }
         }
 
-        console.log(node_data);
+        console.log(node_weights);
         console.log(links);
 
         return {
@@ -163,13 +98,17 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
     function draw(elementId, data) {
         let svg = get_svg(elementId);
 
+        console.log(data.nodes);
+
         let nodes = svg.append("g")
             .attr("class", "nodes")
             .selectAll("g.node")
             .data(data.nodes)
             .enter().append("g")
             .attr("class", "node")
-            .attr("transform", d => "rotate("+(d.pos - 90)+")");
+            .attr("transform", function(d) {
+                return "rotate("+(d.pos - 90)+")";
+            });
 
         let node_texts = nodes.append("text")
             .attr("class", "nodeText")
@@ -185,6 +124,11 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
 
         console.log(data.nodes);
 
+        // hack: global
+        if (window.opacity_base === undefined) {
+            window.opacity_base = 0.97;
+        }
+
         let links = svg.append("g")
             .attr("class", "links")
             .selectAll("path.link")
@@ -192,10 +136,12 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
             .enter().append("path")
             .attr("class", "link")
             .attr("fill", "none")
-            .attr("opacity", d => (1 - Math.pow(0.9, d.weight)))
+            .attr("opacity", d => (1 - Math.pow(window.opacity_base, d.weight)))
             .attr("stroke", "#000055")
             .attr("d", compute_link_path)
-            .attr("stroke-width", 10);
+            .attr("stroke-width", 5);
+
+        opacity_redraw = () => draw(elementId, data);
     }
 
     function deg_to_coord(deg) {
