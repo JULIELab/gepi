@@ -31,6 +31,7 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SupportsInformalParameters;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Response;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -93,9 +94,18 @@ final public class GepiWidgetLayout {
     }
 
     void afterRender() {
-        Link eventLink = resources.createEventLink("toggleViewMode");
-        javaScriptSupport.require("gepi/components/gepiwidgetlayout").invoke("setupViewModeHandle")
-                .with(getResizeHandleId(), clientId, eventLink.toAbsoluteURI(), widgetZone.getClientId());
+        Link toggleViewModeEventLink = resources.createEventLink("toggleViewMode");
+        Link refreshContentEventLink = resources.createEventLink("refreshContent");
+        JSONObject widgetSettings = new JSONObject();
+        widgetSettings.put("handleId", getResizeHandleId());
+        widgetSettings.put("widgetId", clientId);
+        widgetSettings.put("toggleViewModeUrl", toggleViewModeEventLink.toAbsoluteURI());
+        widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI());
+        widgetSettings.put("zoneElementId", widgetZone.getClientId());
+        widgetSettings.put("disableDefaultAjaxRefresh", disableDefaultAjaxRefresh);
+        javaScriptSupport.require("gepi/components/widgetManager").invoke("addWidget")
+                .with(clientId, widgetSettings);
+        System.out.println("SENDING!!" + widgetSettings);
     }
 
     public boolean isDownload() {
@@ -136,11 +146,9 @@ final public class GepiWidgetLayout {
     }
 
     void onLoad() {
-        System.out.println("Disable : " + disableDefaultAjaxRefresh + ", " + widgettitle);
         if (!disableDefaultAjaxRefresh) {
-            Link eventLink = resources.createEventLink("refreshContent");
-            javaScriptSupport.require("gepi/components/gepiwidgetlayout").invoke("loadWidgetContent")
-                    .with(eventLink.toAbsoluteURI(), widgetZone.getClientId());
+            javaScriptSupport.require("gepi/components/widgetManager").invoke("refreshWidget")
+                    .with(clientId);
         }
     }
 
