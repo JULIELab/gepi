@@ -31,7 +31,6 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
                     node_weights[node] = 0;
                     let index = raw_nodes.length;
                     raw_nodes.push(node);
-                    node_indices[node] = index;
                 }
                 node_weights[node] += w;
             }
@@ -40,7 +39,6 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         }
         // jetzt haben wir node_weights der form nodeId -> frequencySum
         // raw_nodes: [nodeId]
-        // node_indices = nodeId -> index in raw_nodes
 
         let sorted_nodes_and_weights = Array.from(Object.entries(node_weights)).sort(([n1, w1], [n2, w2]) => w2 - w1).slice(0, 100);
         let included_nodes = {};
@@ -64,6 +62,34 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         // distribute the 100 nodes evenly across a circle
         const node_distance = 360 / 100;
 
+        // raw_nodes: [nodeId] (i.e. index below is just the array index)
+        // node_weights: nodeId -> frequencySum
+        // nodes is empty until now
+        let psi = (Math.sqrt(5) - 1) / 2;
+        let next_index = 0;
+        let offset = Math.round(psi * 100);
+        for (let [id, weight] of sorted_nodes_and_weights) {
+                next_index = (next_index + offset) % 100;
+                while (nodes[next_index % 100]) {
+                    next_index += 1;
+                    if (next_index > 200) {
+                        console.log("Critical error!");
+                        break;
+                    }
+                }
+                next_index %= 100;
+
+                nodes[next_index] = {
+                    id,
+                    pos: next_index * node_distance,
+                    weight,
+                };
+                node_indices[id] = next_index;
+        }
+        // now we have
+        // nodes: [{nodeId, pos, weight}]
+        // node_indices = nodeId -> index in nodes
+
         let compute_link_offset = at => node_indices[at] * node_distance;
         for (let link of links) {
             link.start_pos = compute_link_offset(link.source);
@@ -71,23 +97,6 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         }
         // the links now have (sourceId, targetId, frequency, start_pos, end_pos)
         // thus, everything required to draw them
-
-        // raw_nodes: [nodeId] (i.e. index below is just the array index)
-        // node_weights: nodeId -> frequencySum
-        // nodes is empty until now
-        for (let [index, id] of raw_nodes.entries()) {
-            if (included_nodes[id]) {
-                let weight = node_weights[id];
-                let new_index = nodes.length;
-                nodes.push({
-                    id,
-                    pos: new_index * node_distance,
-                    weight,
-                });
-            }
-        }
-        // now we have
-        // nodes: [{nodeId, pos, weight}]
 
         console.log(node_weights);
         console.log(links);
