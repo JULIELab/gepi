@@ -4,16 +4,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import de.julielab.gepi.core.services.IChartsDataManager;
+import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.annotations.ActivationRequestParameter;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.InjectPage;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
@@ -91,9 +86,9 @@ public class Index {
     @Inject
     ComponentResources resources;
 
-
     void afterRender() {
-        javaScriptSupport.require("gepi/base").invoke("setuptooltips");
+        javaScriptSupport.addModuleConfigurationCallback(conf -> conf.put("test", "testval"));
+        javaScriptSupport.require("gepi/base").invoke("setuptooltips").invoke("setupgridstack");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI());
         if (result != null) {
             // If there already is data at loading the page, the input panel is already hidden (see #getShowInputClass)

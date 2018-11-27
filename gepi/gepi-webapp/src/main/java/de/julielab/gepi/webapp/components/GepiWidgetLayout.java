@@ -105,7 +105,6 @@ final public class GepiWidgetLayout {
         widgetSettings.put("disableDefaultAjaxRefresh", disableDefaultAjaxRefresh);
         javaScriptSupport.require("gepi/components/widgetManager").invoke("addWidget")
                 .with(clientId, widgetSettings);
-        System.out.println("SENDING!!" + widgetSettings);
     }
 
     public boolean isDownload() {

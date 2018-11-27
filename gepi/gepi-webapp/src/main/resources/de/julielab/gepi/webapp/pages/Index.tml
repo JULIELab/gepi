@@ -12,17 +12,30 @@
         <div class="row">
             <div id="outputcol" class="col-md-12 fade ${showOutputclass}">
                 <t:zone t:id="outputzone" id="outputzone">
-                    <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
-                    <div class="row">
-                        <t:piechartwidget result="result" class="col-md-4" />
-                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychart" commonPartners="false" />
-                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />
-                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />
-                    </div>
-                    <div class="row">
-                        <t:tableresultwidget result="result" class="col-md-12"/>
-                    </div>
+                    <!--<div class="grid-stack">
+                        <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
+                        <t:piechartwidget result="result" class="grid-stack-item" data-gs-x="0" data-gs-y="0"/>
+                        <t:sankeywidget result="result" class="grid-stack-item" data-gs-x="1" data-gs-y="0"
+                                        elementId="sankeychart" commonPartners="false"/>
+                        <t:sankeywidget result="result" class="grid-stack-item" data-gs-x="2" data-gs-y="0"
+                                        elementId="sankeychartcommonpartners" commonPartners="true"/>
+                        <t:circlewidget result="result" class="grid-stack-item" data-gs-x="0" data-gs-y="1"
+                                        elementId="circlechart"/>
+                            <t:tableresultwidget result="result"  class="grid-stack-item" data-gs-x="1" data-gs-y="0"/>
+                        </div>-->
                 </t:zone>
+                <div class="grid-stack">
+                    <div class="grid-stack-item"
+                         data-gs-x="0" data-gs-y="0"
+                         data-gs-width="4" data-gs-height="2">
+                        <div class="grid-stack-item-content">huhu</div>
+                    </div>
+                    <div class="grid-stack-item"
+                         data-gs-x="4" data-gs-y="0"
+                         data-gs-width="4" data-gs-height="4">
+                        <div class="grid-stack-item-content">haha</div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>

@@ -3,6 +3,7 @@ package de.julielab.gepi.webapp.services;
 import java.io.IOException;
 
 import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.internal.services.ContextResource;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
@@ -12,10 +13,8 @@ import org.apache.tapestry5.ioc.annotations.ImportModule;
 import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.ioc.services.ApplicationDefaults;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
-import org.apache.tapestry5.services.Request;
-import org.apache.tapestry5.services.RequestFilter;
-import org.apache.tapestry5.services.RequestHandler;
-import org.apache.tapestry5.services.Response;
+import org.apache.tapestry5.services.*;
+import org.apache.tapestry5.services.javascript.JavaScriptModuleConfiguration;
 import org.slf4j.Logger;
 
 import de.julielab.gepi.core.services.ConfigurationSymbolProvider;
@@ -41,6 +40,10 @@ public class AppModule
         // Use service builder methods (example below) when the implementation
         // is provided inline, or requires more initialization than simply
         // invoking the constructor.
+    }
+
+    public static void contributeModuleManager(MappedConfiguration<String, JavaScriptModuleConfiguration> configuration, Context context) {
+	    configuration.add("gridstack", new JavaScriptModuleConfiguration(new ContextResource(context, "gridstack/gridstack.min.js")));
     }
 
     public static void contributeFactoryDefaults(
