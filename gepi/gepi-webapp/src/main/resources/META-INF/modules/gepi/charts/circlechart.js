@@ -1,4 +1,4 @@
-define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($, index, data) {
+define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, data) {
 
     //return function drawSankeyChart(elementId, sankeyDat) {
 
@@ -10,6 +10,7 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
     };
 
     function prepare_data(links) {
+        // input: links der form (sourceId, targetId, frequency)
         //let {raw_nodes, links} = data();
         let node_indices = {};
 
@@ -18,9 +19,14 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
         let nodes = [];
         let raw_nodes = [];
 
-        for (let {source, target, weight} of links) {
-            total_weight += weight;
-            function add_to_node(node, w, other_index) {
+        for (let {
+                source,
+                target,
+                frequency
+            } of links) {
+            total_weight += frequency;
+
+            function add_to_node(node, w) {
                 if (node_weights[node] === undefined) {
                     node_weights[node] = 0;
                     let index = raw_nodes.length;
@@ -29,9 +35,12 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
                 }
                 node_weights[node] += w;
             }
-            add_to_node(source, weight, node_indices[target]);
-            add_to_node(target, weight, node_indices[source]);
+            add_to_node(source, frequency);
+            add_to_node(target, frequency);
         }
+        // jetzt haben wir node_weights der form nodeId -> frequencySum
+        // raw_nodes: [nodeId]
+        // node_indices = nodeId -> index in raw_nodes
 
         let sorted_nodes_and_weights = Array.from(Object.entries(node_weights)).sort(([n1, w1], [n2, w2]) => w2 - w1).slice(0, 100);
         let included_nodes = {};
@@ -39,24 +48,33 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
         for ([n, w] of sorted_nodes_and_weights) {
             included_nodes[n] = true;
         }
+        // now we have included_nodes: nodeId -> true
+        // of 100 most frequent nodes
 
         console.log("Included nodes: ", included_nodes);
 
-        links = links.filter(({source, target}) => {
+        links = links.filter(({
+            source,
+            target
+        }) => {
             return included_nodes[source] && included_nodes[target];
         });
+        // die links sind jetzt nur noch diejenigen zwischen den included nodes
 
+        // distribute the 100 nodes evenly across a circle
         const node_distance = 360 / 100;
 
+        let compute_link_offset = at => node_indices[at] * node_distance;
         for (let link of links) {
-            function compute_link_offset(at) {
-                return node_indices[at] * node_distance;
-            }
-
             link.start_pos = compute_link_offset(link.source);
             link.end_pos = compute_link_offset(link.target);
         }
+        // the links now have (sourceId, targetId, frequency, start_pos, end_pos)
+        // thus, everything required to draw them
 
+        // raw_nodes: [nodeId] (i.e. index below is just the array index)
+        // node_weights: nodeId -> frequencySum
+        // nodes is empty until now
         for (let [index, id] of raw_nodes.entries()) {
             if (included_nodes[id]) {
                 let weight = node_weights[id];
@@ -68,15 +86,20 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
                 });
             }
         }
+        // now we have
+        // nodes: [{nodeId, pos, weight}]
 
         console.log(node_weights);
         console.log(links);
 
+        // links: [(sourceId, targetId, frequency, start_pos, end_pos)]
+        // raw_nodes: [nodeId]
+        // nodes: [{nodeId, pos, weight}]
         return {
             links,
             raw_nodes,
             nodes,
-        }
+        };
     }
 
     function get_svg(elementId) {
@@ -91,23 +114,34 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
 
         let offset = settings.padding + settings.radius;
 
-        return svg.append("g").attr("transform", "translate("+offset+","+offset+")");
+        return svg.append("g").attr("transform", "translate(" + offset + "," + offset + ")");
 
     }
 
-    function draw(elementId, data) {
+    function draw(elementId) {
         let svg = get_svg(elementId);
 
-        console.log(data.nodes);
+        //let data = prepare_data(raw_data);
+
+        let chartData = data.getData("relationCounts");
+        let nodesById = new Map();
+        chartData.nodes.forEach(n => nodesById.set(n.id, n));
+        console.log("Relation counts for circle chart:");
+        console.log(chartData);
+        chartData = prepare_data(chartData.links);
+
+        console.log("Circle chart preprocessed data:");
+        console.log(chartData);
+
 
         let nodes = svg.append("g")
             .attr("class", "nodes")
             .selectAll("g.node")
-            .data(data.nodes)
+            .data(chartData.nodes)
             .enter().append("g")
             .attr("class", "node")
             .attr("transform", function(d) {
-                return "rotate("+(d.pos - 90)+")";
+                return "rotate(" + (d.pos - 90) + ")";
             });
 
         let node_texts = nodes.append("text")
@@ -115,14 +149,13 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
             .attr("opacity", "1")
             .attr("x", settings.radius + 10)
             .attr("y", 4)
-            .text(d => d.id);
+            .text(d => nodesById.get(d.id).name);
 
         node_texts.filter(d => ((d.pos % 360) + 360) % 360 > 180)
             .attr("transform", "rotate(180)")
             .attr("x", -settings.radius - 10)
             .attr("text-anchor", "end");
 
-        console.log(data.nodes);
 
         // hack: global
         if (window.opacity_base === undefined) {
@@ -132,16 +165,16 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
         let links = svg.append("g")
             .attr("class", "links")
             .selectAll("path.link")
-            .data(data.links)
+            .data(chartData.links)
             .enter().append("path")
             .attr("class", "link")
             .attr("fill", "none")
-            .attr("opacity", d => (1 - Math.pow(window.opacity_base, d.weight)))
+            .attr("opacity", d => (1 - Math.pow(window.opacity_base, d.frequency)))
             .attr("stroke", "#000055")
             .attr("d", compute_link_path)
             .attr("stroke-width", 5);
 
-        opacity_redraw = () => draw(elementId, data);
+        opacity_redraw = () => draw(elementId);
     }
 
     function deg_to_coord(deg) {
@@ -151,16 +184,30 @@ define([ "jquery", "gepi/pages/index", "gepi/gcharts/sankey/data" ], function($,
     }
 
     function compute_link_path(link) {
-        let {start_pos, end_pos} = link;
-        let path = "M " + deg_to_coord(start_pos)
-            + " Q 0 0 " + deg_to_coord(end_pos);
+        let {
+            start_pos,
+            end_pos
+        } = link;
+        let path = "M " + deg_to_coord(start_pos) +
+            " Q 0 0 " + deg_to_coord(end_pos);
 
         return path;
     }
 
-    function main(elementId, raw_data) {
-        let data = prepare_data(raw_data);
-        draw(elementId, data);
+    function main(elementId) {
+        console.log("Preparing to draw circle chart for element ID " + elementId);
+        index.getReadySemaphor().done(() => {
+            console.log("Chart drawing has green light from the central index semaphor, requesting data");
+            data.awaitData("relationCounts").done(() => {
+                console.log("Loading data was successful. Checking if the input column also gives green light.");
+                let inputcolReadyPromise = $("#inputcol").data("animationtimer");
+                if (inputcolReadyPromise)
+                    inputcolReadyPromise.done(() =>
+                        draw(elementId));
+                else
+                    draw(elementId);
+            });
+        });
     }
 
     return main;

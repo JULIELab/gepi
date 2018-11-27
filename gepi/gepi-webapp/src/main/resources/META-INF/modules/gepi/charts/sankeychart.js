@@ -111,7 +111,6 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
 
             sankey.update(the_data);
 
-            console.log("Creating sankey links")
             //links
             let links = svg.append("g")
                 .attr("fill", "none")
@@ -130,7 +129,6 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
             links.append("title")
                 .text(link => [link.source.id, link.target.id, link.color].join());
 
-            console.log("Creating sankey nodes")
             // nodes
             let nodes = svg.append("g")
                 .selectAll(".node")
