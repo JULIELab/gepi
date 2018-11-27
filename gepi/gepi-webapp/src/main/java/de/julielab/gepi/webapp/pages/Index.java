@@ -24,45 +24,41 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 /**
  * Start page of application gepi-webapp.
  */
-@Import(stylesheet = {"context:css-pages/index.less"}, library = {"context:mybootstrap/js/dropdown.js"})
+@Import(stylesheet = {"context:css-pages/index.less", "context:css-gridstack/gridstack.min.css"}, library = {"context:mybootstrap/js/dropdown.js"})
 public class Index {
     @Inject
+    ComponentResources resources;
+    @Inject
+    Request request;
+    @Inject
     private Logger logger;
-
     @Environmental
     private JavaScriptSupport javaScriptSupport;
-
     @Property
     @Inject
     @Symbol(SymbolConstants.TAPESTRY_VERSION)
     private String tapestryVersion;
-
     @InjectPage
     private About about;
-
     @InjectComponent
     private Zone outputZone;
-
     @InjectComponent
     private Zone inputZone;
-
     @Property
     @Persist
     private CompletableFuture<EventRetrievalResult> result;
-
     @Property
     private Event eventItem;
-
     @Persist
     private boolean hasLargeWidget;
-
     private boolean resultNonNullOnLoad;
-
     /**
      * This is an emergency exit against being locked in an error during development.
      */
     @ActivationRequestParameter
     private boolean reset;
+    @Inject
+    private IChartsDataManager chartMnger;
 
     public Zone getOutputZone() {
         return outputZone;
@@ -83,11 +79,22 @@ public class Index {
         return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
     }
 
-    @Inject
-    ComponentResources resources;
-
     void afterRender() {
-        javaScriptSupport.addModuleConfigurationCallback(conf -> conf.put("test", "testval"));
+        // Here we can configure requireJS. The addModuleConfigurationCallback gives us a JSONObject which is
+        // exactly the configuration. This is set to the JS variable "require" which is looked up by requireJS on
+        // load: https://requirejs.org/docs/api.html#config
+        // The final JSONObject is built in the Tapestry ModuleManager(Impl).
+        javaScriptSupport.addModuleConfigurationCallback(conf -> {
+            if(!conf.has("paths"))
+                conf.put("paths", new JSONObject());
+            final JSONObject paths = conf.getJSONObject("paths");
+            // We need gridstack to be available exactly as "gridstack" or the gridstack.jQueryUI module won't find it
+            paths.append("gridstack", "http://cdnjs.cloudflare.com/ajax/libs/gridstack.js/0.4.0/gridstack.min");
+            paths.append("gridstack", "gridstack/gridstack.min");
+            paths.append("gridstack-jqueryui", "http://cdnjs.cloudflare.com/ajax/libs/gridstack.js/0.4.0/gridstack.jQueryUI.min");
+            paths.append("gridstack-jqueryui", "gridstack/gridstack.jQueryUI.min");
+            return conf;
+        });
         javaScriptSupport.require("gepi/base").invoke("setuptooltips").invoke("setupgridstack");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI());
         if (result != null) {
@@ -133,11 +140,6 @@ public class Index {
         return hasLargeWidget ? "into" : "";
     }
 
-
-    @Inject
-    Request request;
-    @Inject
-    private IChartsDataManager chartMnger;
     JSONObject onLoadDataToClient() {
         String datasource = request.getParameter("datasource");
         if (!datasource.equals("relationCounts"))

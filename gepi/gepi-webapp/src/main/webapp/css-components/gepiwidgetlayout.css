@@ -43,7 +43,8 @@
 }
 
 .widget-small.panel-body {
-    height: 230px;
+    /*height: 230px;*/
+
 }
 
 .widget-large.panel-body {
@@ -94,4 +95,8 @@
     {
         color: #9d9d9d;
     }
+}
+
+.grid-stack-item-content {
+    overflow: hidden !important;
 }

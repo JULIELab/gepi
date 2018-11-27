@@ -12,30 +12,36 @@
         <div class="row">
             <div id="outputcol" class="col-md-12 fade ${showOutputclass}">
                 <t:zone t:id="outputzone" id="outputzone">
-                    <!--<div class="grid-stack">
+                    <div class="grid-stack data-gs-animate">
                         <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
-                        <t:piechartwidget result="result" class="grid-stack-item" data-gs-x="0" data-gs-y="0"/>
-                        <t:sankeywidget result="result" class="grid-stack-item" data-gs-x="1" data-gs-y="0"
-                                        elementId="sankeychart" commonPartners="false"/>
-                        <t:sankeywidget result="result" class="grid-stack-item" data-gs-x="2" data-gs-y="0"
-                                        elementId="sankeychartcommonpartners" commonPartners="true"/>
-                        <t:circlewidget result="result" class="grid-stack-item" data-gs-x="0" data-gs-y="1"
-                                        elementId="circlechart"/>
-                            <t:tableresultwidget result="result"  class="grid-stack-item" data-gs-x="1" data-gs-y="0"/>
-                        </div>-->
+                        <div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="3" data-gs-height="4">
+                            <div class="grid-stack-item-content">
+                                <t:piechartwidget result="result"/>
+                            </div>
+                        </div>
+                        <div class="grid-stack-item" data-gs-x="3" data-gs-y="0" data-gs-width="3" data-gs-height="4">
+                            <div class="grid-stack-item-content">
+                                <t:sankeywidget result="result" elementId="sankeychart" commonPartners="false"/>
+                            </div>
+                        </div>
+                        <div class="grid-stack-item" data-gs-x="6" data-gs-y="0" data-gs-width="3" data-gs-height="4">
+                            <div class="grid-stack-item-content">
+                                <t:sankeywidget result="result" elementId="sankeychartcommonpartners"
+                                                commonPartners="true"/>
+                            </div>
+                        </div>
+                        <div class="grid-stack-item" data-gs-x="9" data-gs-y="0" data-gs-width="3" data-gs-height="4">
+                            <div class="grid-stack-item-content">
+                                <t:circlewidget result="result" elementId="circlechart"/>
+                            </div>
+                        </div>
+                        <div class="grid-stack-item" data-gs-x="0" data-gs-y="5" data-gs-width="12" data-gs-height="6">
+                            <div class="grid-stack-item-content">
+                                <t:tableresultwidget result="result"/>
+                            </div>
+                        </div>
+                    </div>
                 </t:zone>
-                <div class="grid-stack">
-                    <div class="grid-stack-item"
-                         data-gs-x="0" data-gs-y="0"
-                         data-gs-width="4" data-gs-height="2">
-                        <div class="grid-stack-item-content">huhu</div>
-                    </div>
-                    <div class="grid-stack-item"
-                         data-gs-x="4" data-gs-y="0"
-                         data-gs-width="4" data-gs-height="4">
-                        <div class="grid-stack-item-content">haha</div>
-                    </div>
-                </div>
             </div>
         </div>
     </body>

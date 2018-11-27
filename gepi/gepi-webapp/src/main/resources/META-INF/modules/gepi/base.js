@@ -1,5 +1,6 @@
-define(["jquery", "bootstrap/tooltip", "gridstack/gridstack.min",
-"jquery-ui/core", "jquery-ui/widget", "jquery-ui/widgets/mouse", "jquery-ui/widgets/draggable", "jquery-ui/widgets/resizable"], function($) {
+// The gridstack names are configured as the "path" property in the requireJS configuration. This is
+// done in Index.java#afterRender().
+define(["jquery", "bootstrap/tooltip", "gridstack", "gridstack-jqueryui"], function($) {
 	let setuptooltips = function() {
 		$('[data-toggle="tooltip"]').tooltip();
 	};
