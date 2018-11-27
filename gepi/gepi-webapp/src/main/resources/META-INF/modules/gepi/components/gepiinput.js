@@ -1,10 +1,11 @@
-define(["jquery", "bootstrap/tooltip"], function($) {
+define(["jquery", "gepi/pages/index", "bootstrap/tooltip"], function($, index) {
 
-    var initialize = function(resultExists) {
-        var listaId = "lista";
-        var listbId = "listb";
-        var lista = '#' + listaId;
-        var listb = '#' + listbId;
+    let initialize = function(resultExists) {
+        console.log("Initializing the input panel");
+        let listaId = "lista";
+        let listbId = "listb";
+        let lista = '#' + listaId;
+        let listb = '#' + listbId;
         inputCol = $("#inputcol");
 
         observelistbchange();
@@ -13,6 +14,7 @@ define(["jquery", "bootstrap/tooltip"], function($) {
         setuplistfileselectors();
         setupclearbuttons();
         setupShowInputPanel();
+        observekeypress();
 
         /*
          * On changes of list B, checks if the list is empty. If not, some
@@ -39,7 +41,7 @@ define(["jquery", "bootstrap/tooltip"], function($) {
          * contents of the selected files into the correct text area.
          */
         function setuplistfileselectors() {
-            var fileainput = $("#fileainput");
+            let fileainput = $("#fileainput");
             fileainput.on("change", function() {
                 loadfile(fileainput[0], listaId, function() {
                     togglelistb();
@@ -47,9 +49,9 @@ define(["jquery", "bootstrap/tooltip"], function($) {
                     // after the file has been loaded; otherwise you couldn't
                     // load a file, clear the field and load the file again
                     fileainput.val("");
-                })
+                });
             });
-            var filebinput = $("#filebinput");
+            let filebinput = $("#filebinput");
             filebinput.on("change", function() {
                 loadfile(filebinput[0], listbId, function() {
                     togglelistaoptions();
@@ -77,12 +79,12 @@ define(["jquery", "bootstrap/tooltip"], function($) {
          * pastes its contents into the respective text area.
          */
         function loadfile(input, textarea, callback) {
-            var reader = new FileReader();
+            let reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById(textarea).value = e.target.result;
                 if ($.isFunction(callback))
                     callback();
-            }
+            };
             reader.readAsText(input.files[0]);
         }
 
@@ -91,8 +93,8 @@ define(["jquery", "bootstrap/tooltip"], function($) {
          * empty.
          */
         function togglelistaoptions() {
-            var islistbempty = $(listb).val().length == 0;
-            var listaoptions = $("#listaoptions input")
+            let islistbempty = $(listb).val().length == 0;
+            let listaoptions = $("#listaoptions input");
             if (islistbempty) {
                 listaoptions.attr("disabled", false);
             } else {
@@ -105,9 +107,9 @@ define(["jquery", "bootstrap/tooltip"], function($) {
          * is no value in list A yet.
          */
         function togglelistb() {
-            var islistaempty = $(lista).val().length == 0;
-            var listbelements = $("#listbdiv textarea, #listbdiv label, #listbdiv button")
-            var listbdiv = $("#listbdiv");
+            let islistaempty = $(lista).val().length == 0;
+            let listbelements = $("#listbdiv textarea, #listbdiv label, #listbdiv button")
+            let listbdiv = $("#listbdiv");
             if (islistaempty) {
                 listbelements.attr("disabled", true);
                 listbdiv.tooltip("enable");
@@ -129,44 +131,58 @@ define(["jquery", "bootstrap/tooltip"], function($) {
                 $("#inputToggleButton,#disableplane").off("click");
                 $("#inputToggleButton,#disableplane").on("click", function() {
                  toggleShowInputPanel();
-                })
+                });
             } else {
                 $("#inputToggleButton").addClass("disabled");
             }
         }
+
+        function observekeypress() {
+        function KeyPress(e) {
+              let evt = window.event || e;
+
+              if ((evt.metaKey || evt.ctrlKey) && evt.keyCode == 83){
+                inputCol.find("form").submit();
+                // prevents the default action (opening a saving dialog)
+                return false;
+                }
+        }
+
+        inputCol.on("keydown", KeyPress);
+        }
     };
 
     function toggleShowInputPanel() {
-        let shown = inputCol.hasClass("into")
-        console.log("Input shown: " + shown)
+        let shown = inputCol.hasClass("into");
 
         if (!shown || shown === 0) {
-            console.log("Showing input")
+            console.log("Showing input");
             showInput();
         } else {
-            console.log("Hiding input")
+            console.log("Hiding input");
             showOutput();
         }
     }
 
-    var showOutput = function() {
+    let showOutput = function() {
+        console.log("Showing output widgets");
         inputCol.removeClass("into");
         $("#disableplane").removeClass("into");
         $("#outputcol").addClass("in");
-        var semaphor = $.Deferred();
+        let semaphor = $.Deferred();
         inputCol.data("animationtimer", semaphor);
         setTimeout(() => semaphor.resolve(), 300);
         semaphor.then(() => inputCol.addClass("hidden"));
+        console.log("Marking as being ready for widgets");
+        index.readyForWidgets();
+    };
 
-    }
-
-    var showInput = function() {
-        console.log("Fetching the input panel back into view")
-      //  $("#outputcol").removeClass("show").addClass("fade");
+    let showInput = function() {
+        console.log("Showing input panel");
         inputCol.removeClass("hidden");
         inputCol.addClass("into");
         $("#disableplane").addClass("into");
-    }
+    };
 
     return {
         "initialize": initialize,

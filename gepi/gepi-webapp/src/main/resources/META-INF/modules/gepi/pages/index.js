@@ -1,8 +1,14 @@
-define(function(){
-    var loadGoogleCharts = function() {
-        //google.charts.load('45', {'packages':['corechart', 'sankey']});
+define(["jquery"], function($){
+    let readyIndicator = $.Deferred();
+
+    let readyForWidgets = function () {
+        readyIndicator.resolve();
     };
-   
-    return {"loadGoogleCharts":loadGoogleCharts};
+
+    let getReadySemaphor = function () {
+        return readyIndicator;
+    }
+
+    return {readyForWidgets, getReadySemaphor};
     
 });

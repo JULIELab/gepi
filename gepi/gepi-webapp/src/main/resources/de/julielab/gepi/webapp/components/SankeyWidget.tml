@@ -1,19 +1,14 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
      widgettitle="Sankey Diagram: Most Frequent Interaction Partners" t:clientId="${elementId}-outer" class="${classes}"
-     sizeClass="widget-small" result="result">
+     sizeClass="widget-small" result="result" disableDefaultAjaxRefresh="true">
 
-    <div id="${elementId}-container">
-        <t:if test="largeView">
-            <div class="settings">
-                <div class="sliders"></div>
-                <div class="buttons"></div>
-            </div>
-            <div id="${elementId}" style="width: 100%; height: 100%;"/>
-            <p:else>
-                <div id="${elementId}" style="width: 100%; height: 100%;"/>
-            </p:else>
-        </t:if>
+    <!-- Sankey widgets manage themselves in JavaScript, thus we always render all elements independently from the view mode -->
+    <div id="${elementId}-container" class="hidden">
+        <div class="settings">
+            <div class="sliders"></div>
+            <div class="buttons"></div>
+        </div>
+        <div id="${elementId}" style="width: 100%; height: 100%;"/>
     </div>
-    <t:trigger event="drawChart"/>
 </div>

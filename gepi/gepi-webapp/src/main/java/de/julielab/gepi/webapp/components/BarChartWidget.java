@@ -7,7 +7,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
-import de.julielab.gepi.core.services.IGoogleChartsDataManager;
+import de.julielab.gepi.core.services.IChartsDataManager;
 
 public class BarChartWidget extends GepiWidget {
 	
@@ -15,7 +15,7 @@ public class BarChartWidget extends GepiWidget {
     private JavaScriptSupport javaScriptSupport;
 
 	@Inject
-	private IGoogleChartsDataManager gChartMnger;
+	private IChartsDataManager gChartMnger;
 	
 	@Property
 	private JSONArray eventsJSON;
@@ -26,7 +26,7 @@ public class BarChartWidget extends GepiWidget {
 	
 	void onDrawChart() {
 		try {
-			javaScriptSupport.require("gepi/gcharts/barchart").with( 
+			javaScriptSupport.require("gepi/charts/barchart").with(
 					gChartMnger.getTargetArgCount(persistResult.get().getEventList() ) );
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block

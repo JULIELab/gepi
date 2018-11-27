@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
-    <div class="panel panel-default">
+    <div class="panel panel-default" tabindex="0">
         <div class="panel-heading text-center">
             Input Specification
             <span class="glyphicon glyphicon-pencil"></span>
         </div>
         <div class="panel-body">
-            <form role="form" t:type="form" async="true" t:id="inputform">
+            <form role="form" t:type="form" async="true" t:id="inputform" id="inputform">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="text-center">

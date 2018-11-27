@@ -13,7 +13,7 @@
 			</div>
 			<t:zone t:id="widgetZone" id="prop:${zoneid}">
 				<div class="panel-body ${sizeclass}">
-					<t:if test="resultready">
+					<t:if test="renderbody">
 						<t:body />
 					</t:if>
 					<t:if test="resultloading">

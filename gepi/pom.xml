@@ -18,7 +18,7 @@
 		<module>gepi-concept-database</module>
 	</modules>
 	<properties>
-		<tapestry-release-version>5.4.1</tapestry-release-version>
+		<tapestry-release-version>5.4.2</tapestry-release-version>
 		<jcore-version>2.3.0</jcore-version>
 	</properties>
 </project>

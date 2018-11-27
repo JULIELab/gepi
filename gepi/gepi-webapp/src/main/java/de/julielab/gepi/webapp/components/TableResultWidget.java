@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import de.julielab.gepi.webapp.pages.Index;
+import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.beaneditor.BeanModel;
@@ -13,8 +15,12 @@ import org.apache.tapestry5.services.BeanModelSource;
 
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
+import org.slf4j.Logger;
 
 public class TableResultWidget extends GepiWidget {
+
+	@Inject
+	private Logger log;
 
     @Property
     private String viewMode;
@@ -31,6 +37,9 @@ public class TableResultWidget extends GepiWidget {
 
 	@Inject
 	private Messages messages;
+
+	@Inject
+    private ComponentResources resources;
 	
 	@Property
 	@Persist
@@ -56,6 +65,7 @@ public class TableResultWidget extends GepiWidget {
 			beanEvents = persistResult.get().getEventList().stream()
 					.map(e -> new BeanModelEvent(e))
 					.collect(Collectors.toList());
+
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}

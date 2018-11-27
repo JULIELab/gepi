@@ -14,7 +14,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 /**
  * Layout component for pages of application test-project.
  */
-@Import(module = "bootstrap/collapse")
+@Import(library = "context:mybootstrap/js/collapse.js", stylesheet = "context:css-components/layout.css")
 public class Layout {
 	@Inject
 	private ComponentResources resources;
