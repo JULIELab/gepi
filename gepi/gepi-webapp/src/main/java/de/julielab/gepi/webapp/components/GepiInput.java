@@ -1,16 +1,22 @@
 package de.julielab.gepi.webapp.components;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.annotations.Environmental;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.PersistenceConstants;
+import org.apache.tapestry5.SelectModel;
+import org.apache.tapestry5.ValueEncoder;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.TextArea;
+import org.apache.tapestry5.internal.services.FlashPersistentFieldStrategy;
+import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.services.TypeCoercer;
+import org.apache.tapestry5.services.PersistentFieldStrategy;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -19,8 +25,15 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.pages.Index;
+import org.apache.tapestry5.util.EnumSelectModel;
+import org.apache.tapestry5.util.EnumValueEncoder;
+import org.slf4j.Logger;
 
+@Import(stylesheet = { "context:css-components/gepiinput.css" })
 public class GepiInput {
+
+    @Inject
+    private Logger log;
 
 	@Inject
 	private AjaxResponseRenderer ajaxResponseRenderer;
@@ -41,9 +54,11 @@ public class GepiInput {
 	private TextArea listb;
 
 	@Property
+    @Persist
 	private String listATextAreaValue;
 
 	@Property
+    @Persist
 	private String listBTextAreaValue;
 
 	@Inject
@@ -58,9 +73,33 @@ public class GepiInput {
 	@Parameter
 	private CompletableFuture<EventRetrievalResult> result;
 
+	@Inject
+	private TypeCoercer typeCoercer;
+
+	@Inject
+	private Messages messages;
+
+	@Property
+	private List<EventTypes> selectedEventTypes;
+
+	@Property
+    private String filterString;
+
+	@Persist(PersistenceConstants.FLASH)
+	private boolean newSearch;
+
+	private enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
+
+	public ValueEncoder getEventTypeEncoder() {
+		return new EnumValueEncoder(typeCoercer, EventTypes.class);
+	}
+
+	public SelectModel getEventTypeModel() {
+		return new EnumSelectModel(EventTypes.class, messages);
+	}
+
 	void setupRender() {
-		// listATextAreaValue = "5327";
-		listATextAreaValue = "2475\n196";
+		//listATextAreaValue = "2475\n196";
 	}
 
 	void onValidateFromInputForm() {
@@ -74,13 +113,21 @@ public class GepiInput {
 	}
 
 	void onSuccessFromInputForm() {
+	    newSearch = true;
+        System.out.println("Setting newsearch to true");
+        final List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
 		if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
 				&& listBTextAreaValue.trim().length() > 0)
 			result = eventRetrievalService.getBipartiteEvents(
-					Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)),
-					Stream.of(geneIdService.convertInput2Atid(listBTextAreaValue)));
-		else if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0)
-			result = eventRetrievalService.getOutsideEvents(Stream.of(geneIdService.convertInput2Atid(listATextAreaValue)));
+					geneIdService.convertInput2Atid(listATextAreaValue),
+					geneIdService.convertInput2Atid(listBTextAreaValue), selectedEventTypeNames, filterString);
+		else if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0) {
+			log.debug("Calling EventRetrievalService for outside events");
+			result = eventRetrievalService.getOutsideEvents(geneIdService.convertInput2Atid(listATextAreaValue), selectedEventTypeNames, filterString);
+            if (result != null)
+			log.debug("Retrieved the response future. It is " + (result.isDone() ? "" : "not ") + "finished.");
+            else log.debug("After retrieving the result");
+		}
 
 		Index indexPage = (Index) resources.getContainer();
 		ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
@@ -94,16 +141,16 @@ public class GepiInput {
 	}
 
 	void afterRender() {
-		javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize");
-		javaScriptSupport.require("gepi/base").invoke("setuptooltips");
-		// The following JavaScript call always causes the inputcol so disappear
+		javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize").with(result !=  null);
+		// The following JavaScript call always causes the inputcol to disappear
 		// behind the left border of the viewport. This also happens when the
-		// page is reloaded with a nun-null result. But then, the index page is
+		// page is reloaded with a non-null result. But then, the index page is
 		// hiding the inputcol by default, thus noone sees the shift.
 		// Also, the outputcol is shown immediately by means of the index page
 		// if the result already exists and is finished loading.
-		if (result != null)
-			javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");
+        if (result != null && newSearch) {
+            javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");
+        }
 	}
 
 }

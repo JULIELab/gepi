@@ -1,5 +1,0 @@
-elasticquery.clustername=julielab-es
-elasticquery.url=localhost
-elasticquery.port=9300
-
-gepi.documents.index.name=gepi

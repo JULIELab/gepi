@@ -1,6 +1,7 @@
 define([ "jquery", "gepi/pages/index" ], function($) {
 
     return function drawPieChart(barDat) {
+		/*
         google.charts.setOnLoadCallback(function() {
         	var maxVal = barDat[0][1]; 
         	var data = new google.visualization.DataTable();
@@ -40,5 +41,6 @@ define([ "jquery", "gepi/pages/index" ], function($) {
             chart.draw(data, options);
             
         })
+        */
     }
 })

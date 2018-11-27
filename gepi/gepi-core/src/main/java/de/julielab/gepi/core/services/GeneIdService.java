@@ -1,28 +1,39 @@
 package de.julielab.gepi.core.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
+import de.julielab.gepi.core.GepiCoreSymbolConstants;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.v1.*;
+import org.slf4j.Logger;
+
 import static org.neo4j.driver.v1.Values.parameters;
 
 public class GeneIdService implements IGeneIdService {
 
-	private String BASE_URL;
 
-	public GeneIdService() {
-		this.BASE_URL = "bolt://dawkins:7687";
-	}
+	private Logger log;
+	private String boltUrl;
+
+    public GeneIdService(Logger log, @Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
+		this.log = log;
+
+		this.boltUrl = boltUrl;
+    }
 
 	@Override
-	public Stream<String> convertUniprot2Gene(Stream<String> uniprotIds) {
+	public Future<Stream<String>> convertUniprot2Gene(Stream<String> uniprotIds) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Stream<String> convertGene2Gepi(Stream<String> geneIds) {
+	public Future<Stream<String>> convertGene2Gepi(Stream<String> geneIds) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -34,28 +45,24 @@ public class GeneIdService implements IGeneIdService {
 	}
 
 	@Override
-	public Stream<String> convert2Gepi(Stream<String> idStream) {
+	public Future<Stream<String>> convert2Gepi(Stream<String> idStream) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
-	public String[] convertInput2Atid(String input) {
-		
-		Config neo4jconf = Config.build().withoutEncryption().toConfig();
-		Driver driver = GraphDatabase.driver(this.BASE_URL, AuthTokens.basic("neo4j", "julielab"), neo4jconf);
+	public Future<Stream<String>> convertInput2Atid(String input) {
+		return CompletableFuture.supplyAsync(() -> {
+			Config neo4jconf = Config.build().withoutEncryption().toConfig();
+			Driver driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"), neo4jconf);
 
-		try (Session session = driver.session()) {
+			try (Session session = driver.session()) {
 
-			return session.readTransaction(new TransactionWork<String[]>() {
-				@Override
-				public String[] execute(Transaction tx) {
-					return queryNeo4j(tx, input);
-				}
-			});
+				return Stream.of(session.readTransaction(tx -> queryNeo4j(tx, input)));
 
-		}
+			}
+		});
 	}
 
 	// TODO: What if gene name is given and top_homology is ambiguous? Has to be
@@ -65,7 +72,6 @@ public class GeneIdService implements IGeneIdService {
 		List<String> topAtids = new ArrayList<String>();
 		
 		String[] searchInput = input.split("\n");
-		
 		StatementResult result = tx.run(
 				"MATCH (n:ID_MAP_NCBI_GENES) WHERE n.originalId IN {originalIds} "
 				+ "OPTIONAL MATCH (n)<-[:HAS_ELEMENT*2]-(a:AGGREGATE_TOP_HOMOLOGY) "

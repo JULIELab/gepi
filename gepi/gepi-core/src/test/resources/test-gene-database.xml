@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<conceptdatabase xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns="http://www.julielab.de/conceptdb"
+                 xsi:schemaLocation="http://www.julielab.de/conceptdb http://www.julielab.de/conceptdb/conceptdb-1.0.0.xsd
+                 http://www.julielab.de/conceptdb/concepts/ncbigene http://www.julielab.de/conceptdb/concepts/ncbigene-1.0.0.xsd
+                 http://www.julielab.de/conceptdb/exporters/serverplugin http://www.julielab.de/conceptdb/exporters/serverplugin-1.0.0.xsd
+                 http://www.julielab.de/conceptdb/exporters/cypher http://www.julielab.de/conceptdb/exporters/cypher-1.0.0.xsd
+                 http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacetcreator-1.0.0.xsd">
+    <versioning>
+        <version>0.2</version>
+    </versioning>
+    <connection>
+        <uri>http://dawkins:7778</uri>
+        <user>neo4j</user>
+        <password>julielab</password>
+    </connection>
+    <imports>
+        <import>
+            <serverplugininserter>
+                <pluginname>ConceptManager</pluginname>
+                <pluginendpoint>insert_concepts</pluginendpoint>
+            </serverplugininserter>
+            <concepts>
+                <creator xmlns="http://www.julielab.de/conceptdb/concepts/ncbigene">
+                    <name>de.julielab.concepts.db.creators.NCBIGeneConceptCreator</name>
+                    <configuration>
+                        <basepath>src/test/resources/geneconcepts/</basepath>
+                        <gene_info>genes/gene_info_test</gene_info>
+                        <genedescriptions>genes/gene2summary_test</genedescriptions>
+                        <organismlist>organisms/taxIdsForTests.lst</organismlist>
+                        <organismnames>organisms/names_test.dmp</organismnames>
+                        <homologene>genes/homologene_test.data</homologene>
+                        <gene_group>genes/gene_group_test</gene_group>
+                    </configuration>
+                </creator>
+            </concepts>
+            <facet>
+                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
+                    <name>DefaultFacetCreator</name>
+                    <configuration>
+                        <name>Genes</name>
+                        <sourcetype>hierarchical</sourcetype>
+                        <facetgroup>
+                            <name>Genes</name>
+                        </facetgroup>
+                    </configuration>
+                </creator>
+            </facet>
+        </import>
+    </imports>
+    <exports>
+        <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
+            <exporter>ServerPluginExporter</exporter>
+            <pluginname>
+                Export
+            </pluginname>
+            <pluginendpoint>
+                term_id_mapping
+            </pluginendpoint>
+            <configuration>
+                <outputfile>
+                    ../gepi-indexing-pipeline/resources/egid2tid.map
+                </outputfile>
+                <decoding>
+                    <json2bytearray>true</json2bytearray>
+                    <base64>false</base64>
+                    <gzip>true</gzip>
+                </decoding>
+                <parameters>
+                    <parameter parametername="id_property">
+                        originalId
+                    </parameter>
+                    <parameter parametername="labels" tojson="true">
+                        <label>ID_MAP_NCBI_GENES</label>
+                    </parameter>
+                </parameters>
+            </configuration>
+        </export>
+        <export name="allgeneaggregates" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
+            <exporter>CypherExporter</exporter>
+            <configuration>
+                <cypherquery>MATCH (th)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE (th:AGGREGATE_TOP_HOMOLOGY OR th:AGGREGATE_HOMOLOGENE OR th:AGGREGATE_GENEGROUP) AND NOT c:AGGREGATE RETURN DISTINCT c.id,th.id</cypherquery>
+                <outputfile>../gepi-indexing-pipeline/resources/tid2atid.map</outputfile>
+            </configuration>
+        </export>
+        <export name="tophomologyids" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
+            <exporter>CypherExporter</exporter>
+            <configuration>
+                <cypherquery>MATCH (th:AGGREGATE_TOP_HOMOLOGY)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE NOT c:AGGREGATE RETURN DISTINCT c.id,th.id</cypherquery>
+                <outputfile>../gepi-indexing-pipeline/resources/tid2tophomo.map</outputfile>
+            </configuration>
+        </export>
+        <export name="preferredNames" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
+            <exporter>CypherExporter</exporter>
+            <configuration>
+                <cypherquery>MATCH (gene:ID_MAP_NCBI_GENES) return gene.id,gene.preferredName</cypherquery>
+                <outputfile>../gepi-indexing-pipeline/resources/tid2prefName.map</outputfile>
+            </configuration>
+        </export>
+    </exports>
+</conceptdatabase>

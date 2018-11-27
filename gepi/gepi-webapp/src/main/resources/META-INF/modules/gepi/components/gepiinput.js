@@ -1,20 +1,18 @@
-define([ "jquery", "bootstrap/tooltip" ], function($) {
+define(["jquery", "bootstrap/tooltip"], function($) {
 
-    var initialize = function() {
+    var initialize = function(resultExists) {
         var listaId = "lista";
         var listbId = "listb";
         var lista = '#' + listaId;
         var listb = '#' + listbId;
+        inputCol = $("#inputcol");
 
         observelistbchange();
         togglelistb();
         observelistachange();
         setuplistfileselectors();
         setupclearbuttons();
-
-        $('#inputform').on("t5.form.validate", function() {
-            console.log("validate!!")
-        })
+        setupShowInputPanel();
 
         /*
          * On changes of list B, checks if the list is empty. If not, some
@@ -118,33 +116,61 @@ define([ "jquery", "bootstrap/tooltip" ], function($) {
                 listbdiv.tooltip("disable");
             }
         }
+
+        function setupShowInputPanel() {
+            let button = $("#inputToggleButton");
+            if (resultExists) {
+                if (button.hasClass("disabled")) {
+                    button.addClass("navbar-highlight");
+                    setTimeout(() => button.removeClass("navbar-highlight"), 3000);
+                }
+                $("#inputToggleButton").removeClass("disabled");
+                inputCol.addClass("hidden");
+                $("#inputToggleButton,#disableplane").off("click");
+                $("#inputToggleButton,#disableplane").on("click", function() {
+                 toggleShowInputPanel();
+                })
+            } else {
+                $("#inputToggleButton").addClass("disabled");
+            }
+        }
     };
 
-    var showOutput = function() {
-        // The inputcol's width is one third. However, when we push it out of
-        // the screen for one third, the body container's padding won't be
-        // accounted for and the inputcol would still be visible for this exact
-        // amount. Thus, we also have to add the padding when computing the
-        // negative left margin.
-        // However, when we would just set the negative left margin for this
-        // exact number of pixels, resizing the viewport will lead to the
-        // inputcol to grow since its width is defined in percent. As the margin
-        // would be defined absolute, the inputcol would be visible again at the
-        // left border of the screen. Thus, we need to compute the percentage
-        // the margin needs to have so that it also adjusts automatically.
-        var availableWidth = $("#body-container").innerWidth();
-        var bodyPadding = parseFloat($("#body-container").css("padding-left"));
-        var marginLeft = -(availableWidth / 3) - bodyPadding;
-        var marginLeftPercent = marginLeft / availableWidth * 100;
+    function toggleShowInputPanel() {
+        let shown = inputCol.hasClass("into")
+        console.log("Input shown: " + shown)
 
-        // Show the outputcol. The CSS defines all the timings, including a
-        // delay for the let the inputcol disappear first.
+        if (!shown || shown === 0) {
+            console.log("Showing input")
+            showInput();
+        } else {
+            console.log("Hiding input")
+            showOutput();
+        }
+    }
+
+    var showOutput = function() {
+        inputCol.removeClass("into");
+        $("#disableplane").removeClass("into");
         $("#outputcol").addClass("in");
-        $("#inputcol").removeClass("center").css("margin-left", marginLeftPercent + "%");
+        var semaphor = $.Deferred();
+        inputCol.data("animationtimer", semaphor);
+        setTimeout(() => semaphor.resolve(), 300);
+        semaphor.then(() => inputCol.addClass("hidden"));
+
+    }
+
+    var showInput = function() {
+        console.log("Fetching the input panel back into view")
+      //  $("#outputcol").removeClass("show").addClass("fade");
+        inputCol.removeClass("hidden");
+        inputCol.addClass("into");
+        $("#disableplane").addClass("into");
     }
 
     return {
-        "initialize" : initialize,
-        "showOutput" : showOutput
+        "initialize": initialize,
+        "showOutput": showOutput,
+        "showInput": showInput
     };
 })

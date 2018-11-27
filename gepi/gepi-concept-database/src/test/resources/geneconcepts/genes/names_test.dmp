@@ -1,0 +1,185 @@
+562	|	"Bacillus coli" Migula 1895	|		|	authority	|
+562	|	"Bacterium coli commune" Escherich 1885	|		|	authority	|
+562	|	"Bacterium coli" (Migula 1895) Lehmann and Neumann 1896	|		|	authority	|
+562	|	ATCC 11775	|		|	type material	|
+562	|	Bacillus coli	|		|	synonym	|
+562	|	Bacterium coli	|		|	synonym	|
+562	|	Bacterium coli commune	|		|	synonym	|
+562	|	CCUG 24	|		|	type material	|
+562	|	CCUG 29300	|		|	type material	|
+562	|	CIP 54.8	|		|	type material	|
+562	|	DSM 30083	|		|	type material	|
+562	|	Enterococcus coli	|		|	synonym	|
+562	|	Escherchia coli	|		|	misspelling	|
+562	|	Escherichia coli	|		|	scientific name	|
+562	|	Escherichia coli (Migula 1895) Castellani and Chalmers 1919	|		|	authority	|
+562	|	Escherichia/Shigella coli	|		|	equivalent name	|
+562	|	Eschericia coli	|		|	misspelling	|
+562	|	JCM 1649	|		|	type material	|
+562	|	LMG 2092	|		|	type material	|
+562	|	NBRC 102203	|		|	type material	|
+562	|	NCCB 54008	|		|	type material	|
+562	|	NCTC 9001	|		|	type material	|
+562	|	bacterium 10a	|		|	includes	|
+562	|	bacterium E3	|		|	includes	|
+6239	|	Caenorhabditis elegans	|		|	scientific name	|
+6239	|	Caenorhabditis elegans (Maupas, 1900)	|		|	authority	|
+6239	|	Rhabditis elegans	|		|	synonym	|
+6239	|	Rhabditis elegans Maupas, 1900	|		|	authority	|
+6239	|	roundworm	|	roundworm <Caenorhabditis elegans>	|	common name	|
+7227	|	Drosophila melangaster	|		|	misspelling	|
+7227	|	Drosophila melanogaster	|		|	scientific name	|
+7227	|	Drosophila melanogaster Meigen, 1830	|		|	authority	|
+7227	|	fruit fly	|	fruit fly <Drosophila melanogaster>	|	genbank common name	|
+7955	|	Brachidanio rerio	|		|	misspelling	|
+7955	|	Brachydanio rerio	|		|	synonym	|
+7955	|	Brachydanio rerio frankei	|		|	synonym	|
+7955	|	Cyprinus rerio	|		|	synonym	|
+7955	|	Cyprinus rerio Hamilton, 1822	|		|	synonym	|
+7955	|	Danio frankei	|		|	synonym	|
+7955	|	Danio rerio	|		|	scientific name	|
+7955	|	Danio rerio (Hamilton, 1822)	|		|	synonym	|
+7955	|	Danio rerio frankei	|		|	synonym	|
+7955	|	leopard danio	|		|	common name	|
+7955	|	zebra danio	|		|	common name	|
+7955	|	zebra fish	|	zebra fish <Danio rerio>	|	common name	|
+7955	|	zebrafish	|		|	genbank common name	|
+8364	|	Silurana (Xenopus) tropicalis	|		|	misspelling	|
+8364	|	Silurana tropicalis	|		|	synonym	|
+8364	|	Silurana tropicalis Gray, 1864	|		|	authority	|
+8364	|	Xenopus (Silurana) tropicalis	|		|	scientific name	|
+8364	|	Xenopus laevis tropicalis	|		|	synonym	|
+8364	|	Xenopus tropicalis	|		|	synonym	|
+8364	|	Xenopus tropicalis (Gray, 1864)	|		|	authority	|
+8364	|	western clawed frog	|		|	genbank common name	|
+9031	|	Gallus domesticus	|		|	misnomer	|
+9031	|	Gallus gallus	|		|	scientific name	|
+9031	|	Gallus gallus domesticus	|		|	misnomer	|
+9031	|	bantam	|		|	common name	|
+9031	|	chicken	|		|	genbank common name	|
+9031	|	chickens	|		|	common name	|
+9031	|	dwarf Leghorn chickens	|		|	includes	|
+9031	|	red junglefowl	|		|	includes	|
+9555	|	Anubis baboon	|		|	synonym	|
+9555	|	Doguera baboon	|		|	common name	|
+9555	|	Kenya baboon	|		|	common name	|
+9555	|	Papio anubis	|		|	scientific name	|
+9555	|	Papio anubis (Lesson, 1827)	|		|	authority	|
+9555	|	Papio cynocephalus anubis	|		|	synonym	|
+9555	|	Papio doguera	|		|	synonym	|
+9555	|	Papio hamadryas anubis	|		|	synonym	|
+9555	|	Papio hamadryas doguera	|		|	synonym	|
+9555	|	baboon	|	baboon <Olive baboon, Papio anubis>	|	common name	|
+9555	|	olive baboon	|		|	genbank common name	|
+9606	|	Homo sapiens	|		|	scientific name	|
+9606	|	Homo sapiens Linnaeus, 1758	|		|	authority	|
+9606	|	human	|		|	genbank common name	|
+9606	|	man	|		|	common name	|
+9615	|	Canis canis	|		|	synonym	|
+9615	|	Canis domesticus	|		|	synonym	|
+9615	|	Canis familiaris	|		|	synonym	|
+9615	|	Canis lupus familiaris	|		|	scientific name	|
+9615	|	beagle dog	|		|	includes	|
+9615	|	beagle dogs	|		|	includes	|
+9615	|	dog	|		|	genbank common name	|
+9615	|	dogs	|		|	common name	|
+9823	|	Sus scrofa	|		|	scientific name	|
+9823	|	Sus scrofa Linnaeus, 1758	|		|	authority	|
+9823	|	Sus scrofus	|		|	misspelling	|
+9823	|	pig	|		|	genbank common name	|
+9823	|	pigs	|	pigs <#2>	|	common name	|
+9823	|	swine	|		|	common name	|
+9823	|	wild boar	|		|	common name	|
+9913	|	Bos Tauurus	|		|	misspelling	|
+9913	|	Bos bovis	|		|	synonym	|
+9913	|	Bos primigenius taurus	|		|	synonym	|
+9913	|	Bos taurus	|		|	scientific name	|
+9913	|	Bos taurus Linnaeus, 1758	|		|	authority	|
+9913	|	Bovidae sp. Adi Nefas	|		|	includes	|
+9913	|	bovine	|		|	common name	|
+9913	|	cattle	|		|	genbank common name	|
+9913	|	cow	|		|	common name	|
+9913	|	domestic cattle	|		|	common name	|
+9913	|	domestic cow	|		|	common name	|
+9925	|	African dwarf goat	|		|	includes	|
+9925	|	African dwarf goats	|		|	includes	|
+9925	|	Capra aegagrus hircus	|		|	synonym	|
+9925	|	Capra hircus	|		|	scientific name	|
+9925	|	Carpa hircus	|		|	misspelling	|
+9925	|	Naine d'Afrique de l'Ouest	|		|	includes	|
+9925	|	South African angora goat	|		|	misspelling	|
+9925	|	domestic goat	|		|	common name	|
+9925	|	goat	|		|	genbank common name	|
+9925	|	goats	|		|	common name	|
+9940	|	Ovis ammon aries	|		|	synonym	|
+9940	|	Ovis aries	|		|	scientific name	|
+9940	|	Ovis aries Linnaeus, 1758	|		|	authority	|
+9940	|	Ovis orientalis aries	|		|	synonym	|
+9940	|	Ovis ovis	|		|	synonym	|
+9940	|	domestic sheep	|		|	common name	|
+9940	|	lambs	|		|	common name	|
+9940	|	sheep	|		|	genbank common name	|
+9940	|	wild sheep	|		|	common name	|
+9986	|	European rabbit	|		|	common name	|
+9986	|	Japanese white rabbit	|		|	common name	|
+9986	|	Lepus cuniculus	|		|	misnomer	|
+9986	|	New Zealand rabbit	|		|	includes	|
+9986	|	Oryctolagus cuniculus	|		|	scientific name	|
+9986	|	domestic rabbit	|		|	common name	|
+9986	|	rabbit	|		|	genbank common name	|
+9986	|	rabbits	|		|	common name	|
+10029	|	CHO cell lines	|		|	includes	|
+10029	|	Chinese hamster	|		|	genbank common name	|
+10029	|	Chinese hamsters	|		|	common name	|
+10029	|	Cricetulus aureus	|		|	equivalent name	|
+10029	|	Cricetulus barabensis griseus	|		|	synonym	|
+10029	|	Cricetulus griseus	|		|	scientific name	|
+10029	|	Cricetulus griseus (Milne-Edwards, 1867)	|		|	authority	|
+10029	|	Cricetus griseus	|		|	misnomer	|
+10090	|	LK3 transgenic mice	|		|	includes	|
+10090	|	Mus muscaris	|		|	misnomer	|
+10090	|	Mus musculus	|		|	scientific name	|
+10090	|	Mus musculus Linnaeus, 1758	|		|	authority	|
+10090	|	Mus sp. 129SV	|		|	includes	|
+10090	|	house mouse	|		|	genbank common name	|
+10090	|	mice C57BL/6xCBA/CaJ hybrid	|		|	misspelling	|
+10090	|	mouse	|	mouse <Mus musculus>	|	common name	|
+10090	|	nude mice	|		|	includes	|
+10090	|	transgenic mice	|		|	includes	|
+10116	|	Buffalo rat	|		|	includes	|
+10116	|	Gunn rats	|		|	misnomer	|
+10116	|	Norway rat	|		|	genbank common name	|
+10116	|	Rattus PC12 clone IS	|		|	includes	|
+10116	|	Rattus norvegicus	|		|	scientific name	|
+10116	|	Rattus norvegicus8	|		|	misspelling	|
+10116	|	Rattus norwegicus	|		|	misspelling	|
+10116	|	Rattus rattiscus	|		|	misnomer	|
+10116	|	Rattus sp. strain Wistar	|		|	equivalent name	|
+10116	|	Sprague-Dawley rat	|		|	includes	|
+10116	|	Wistar rats	|		|	includes	|
+10116	|	brown rat	|		|	common name	|
+10116	|	laboratory rat	|		|	includes	|
+10116	|	rat	|	rat <Rattus norvegicus>	|	common name	|
+10116	|	rats	|	rats <Rattus norvegicus>	|	common name	|
+10116	|	zitter rats	|		|	includes	|
+10376	|	EPV	|		|	acronym	|
+10376	|	Epstein Barr virus	|		|	common name	|
+10376	|	Epstein-Barr virus	|		|	genbank common name	|
+10376	|	Epstein-Barr virus EBV	|		|	synonym	|
+10376	|	Epstein-Barr-virus EBV	|		|	misnomer	|
+10376	|	HHV-4	|		|	acronym	|
+10376	|	Human herpesvirus 4	|		|	scientific name	|
+10376	|	Human herpesvirus type 4	|		|	synonym	|
+94827	|	Tinamus guttatus	|		|	scientific name	|
+94827	|	white-throated tinamou	|		|	genbank common name	|
+100784	|	Balearica pavonina gibbericeps	|		|	synonym	|
+100784	|	Balearica pavonina gibbericeps (Reichenow, 1892)	|		|	synonym	|
+100784	|	Balearica regulorum gibbericeps	|		|	scientific name	|
+100784	|	Balearica regulorum gibbericepse	|		|	synonym	|
+100784	|	East African grey crowned-crane	|		|	genbank common name	|
+885580	|	Coetomys damarensis	|		|	synonym	|
+885580	|	Cryptomys damarensis	|		|	synonym	|
+885580	|	Damara mole rat	|		|	common name	|
+885580	|	Damara mole-rat	|		|	genbank common name	|
+885580	|	Fukomys damarensis	|		|	scientific name	|
+885580	|	Fukomys damarensis (Ogilby, 1838)	|		|	authority	|

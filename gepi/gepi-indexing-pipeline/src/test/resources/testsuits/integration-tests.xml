@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="integration-tests">
+
+    <test name="order">
+        <classes>
+            <class name="de.julielab.gepi.indexing.ElasticITServer" />
+            <class name="de.julielab.gepi.indexing.RelationFieldValueGeneratorIT" />
+        </classes>
+    </test>
+
+</suite>

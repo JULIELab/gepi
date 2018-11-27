@@ -84,7 +84,7 @@ public class AppModule
         // option in 5.5.
 		configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
 		configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "context:mybootstrap");
-		configuration.add(SymbolConstants.MINIFICATION_ENABLED, true);
+		configuration.add(SymbolConstants.MINIFICATION_ENABLED, false);
 	}
 
 

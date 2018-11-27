@@ -7,10 +7,15 @@ import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.Link;
@@ -37,7 +42,7 @@ import de.julielab.gepi.webapp.pages.Index;
 
 @Import(stylesheet = { "context:css-components/gepiwidgetlayout.css" })
 @SupportsInformalParameters
-public class GepiWidgetLayout {
+final public class GepiWidgetLayout {
 	
 	public enum ViewMode {
 		/**
@@ -66,9 +71,17 @@ public class GepiWidgetLayout {
 	@Property
 	private String classes;
 
+	@Parameter(defaultPrefix = BindingConstants.LITERAL)
+	@Property
+	private String sizeClass;
+
 	@Parameter
 	@Property
 	protected CompletableFuture<EventRetrievalResult> result;
+
+	@Parameter(name="viewMode")
+    @Property
+    private String viewModeParam;
 
 	@InjectComponent
 	private Zone widgetZone;
@@ -119,7 +132,11 @@ public class GepiWidgetLayout {
 		persistResult.get();
 		ajaxResponseRenderer.addRender(widgetZone);
 	}
-	
+
+	public ViewMode viewMode() {
+        return ViewMode.valueOf(viewMode.toUpperCase());
+    }
+
 	@InjectPage
 	private Index index;
 	void onToggleViewMode() {
@@ -153,10 +170,6 @@ public class GepiWidgetLayout {
 		return clientId + "_resize";
 	}
 	
-	public String getSizeClass() {
-		return viewMode;
-	}
-	
 	@Log
 	public boolean isLarge() {
 		return viewMode.equals(ViewMode.LARGE.name().toLowerCase());
@@ -173,8 +186,15 @@ public class GepiWidgetLayout {
 		}
 		return new StreamResponse() 
 		{
+			private final String[] HEADER = new String[]{
+					"Gene1 Name", "Gene1 EntrezID", "Gene1 PreferredName",
+					"Gene2 Name", "Gene2 EntrezID", "Gene2 PreferredName",
+					"Medline ID", "PMC ID", "Event type", "Sentence"
+			}; 
 			private InputStream inputStream;
 			private String delim = "\t";
+			private String finame = "gepi_table";
+			private String ext = "xls";
 			
 			@Override public void prepareResponse(Response response)
 			{
@@ -186,20 +206,36 @@ public class GepiWidgetLayout {
 					e1.printStackTrace();
 				}
 				
-				String tableresultcsv = createCSV(eResult);
-				try
-				{ 
-					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-					String output = "";
-					output = tableresultcsv;
-					outputStream.write(output.getBytes());
-					inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				if (ext == "xls") {
+					Workbook tableresultxls = createXLS(eResult);
+					try {
+						tableresultxls.write(outputStream);
+						inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else {
+					String tableresultcsv = createCSV(eResult);
+					try
+					{ 
+						String output = "";
+						output = tableresultcsv;
+						outputStream.write(output.getBytes());
+						inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				try {
 					response.setHeader("Content-Length", "" + outputStream.size()); // output into file
 					response.setHeader("Content-Length", "" + inputStream.available());
-					response.setHeader("Content-disposition", "attachment; filename=gepi_table.csv");
-				} catch (IOException e)
-				{
-						e.printStackTrace();
+					response.setHeader("Content-disposition", "attachment; filename=" + finame + "." + ext);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			
@@ -210,7 +246,11 @@ public class GepiWidgetLayout {
 			
 			@Override public String getContentType()
 			{ 
-				return "text/csv";
+				if (ext == "xls") {
+					return "application/vnd.ms-excel";
+				} else {
+					return "text/csv";
+				}
 			}
 			
 			private String createLine(String[] argList) {
@@ -224,11 +264,7 @@ public class GepiWidgetLayout {
 			}
 			
 			private String createCSV(EventRetrievalResult eResult) {
-				String header = createLine(new String[]{
-						"Gene1 Name", "Gene1 EntrezID", "Gene1 PreferredName",
-						"Gene2 Name", "Gene2 EntrezID", "Gene2 PreferredName",
-						"Medline ID", "PMC ID", "Event type", "Sentence"
-				});
+				String header = createLine(HEADER);
 				StringBuilder sResult = new StringBuilder(header);
 				
 				for (Event e : eResult.getEventList()) {
@@ -241,8 +277,8 @@ public class GepiWidgetLayout {
 							secondArgument.getText() != null ? secondArgument.getText() : "" ,
 							secondArgument.getGeneId() != null ? secondArgument.getGeneId() : "",
 							secondArgument.getPreferredName() != null ? secondArgument.getPreferredName() : "",
-							e.getDocumentType().toLowerCase().equals("medline") ? e.getDocumentId(): "",
-							e.getDocumentType().toLowerCase().equals("pmc") ? e.getDocumentId(): "",
+							e.getDocumentType().toLowerCase().equals("medline") ? e.getEventId(): "",
+							e.getDocumentType().toLowerCase().equals("pmc") ? e.getEventId(): "",
 							e.getMainEventType() != null ? e.getMainEventType(): "",
 							e.getSentence() != null ? e.getSentence().replaceAll("\\R", " ") : "",
 					});
@@ -250,6 +286,43 @@ public class GepiWidgetLayout {
 				};
 				
 				return sResult.toString();
+			}
+			
+			private Workbook createXLS(EventRetrievalResult eResult) {
+				Workbook wb = new HSSFWorkbook();
+				Sheet sheet = wb.createSheet("results");
+				int rowNum = 0;
+				int cellNum = 0;
+				Row curRow = sheet.createRow(rowNum);
+				for (String h : HEADER) {
+					Cell cell = curRow.createCell(cellNum);
+					CellStyle cs = wb.createCellStyle();
+					Font f = wb.createFont();
+					
+					f.setBold(true);
+					cs.setFont(f);
+					cell.setCellStyle(cs);
+					cell.setCellValue(h);
+					cellNum++;
+				}
+				
+				for (Event e : eResult.getEventList()) {
+					rowNum++;
+					Argument firstArgument = e.getFirstArgument();
+					Argument secondArgument = e.getSecondArgument();
+					curRow = sheet.createRow(rowNum);
+					curRow.createCell(0).setCellValue(firstArgument.getText() != null ? firstArgument.getText(): "");
+					curRow.createCell(1).setCellValue(firstArgument.getGeneId() != null ? firstArgument.getGeneId() : "");
+					curRow.createCell(2).setCellValue(firstArgument.getPreferredName() != null ? firstArgument.getPreferredName() : "");
+					curRow.createCell(3).setCellValue(secondArgument.getText() != null ? secondArgument.getText() : "");
+					curRow.createCell(4).setCellValue(secondArgument.getGeneId() != null ? secondArgument.getGeneId() : "");
+					curRow.createCell(5).setCellValue(secondArgument.getPreferredName() != null ? secondArgument.getPreferredName() : "");
+					curRow.createCell(6).setCellValue(e.getDocumentType().toLowerCase().equals("medline") ? e.getEventId(): "");
+					curRow.createCell(7).setCellValue(e.getDocumentType().toLowerCase().equals("pmc") ? e.getEventId(): "");
+					curRow.createCell(8).setCellValue(e.getMainEventType() != null ? e.getMainEventType(): "");
+					curRow.createCell(9).setCellValue(e.getSentence() != null ? e.getSentence().replaceAll("\\R", " ") : "");
+				}
+				return wb;
 			}
 		};
 	}
