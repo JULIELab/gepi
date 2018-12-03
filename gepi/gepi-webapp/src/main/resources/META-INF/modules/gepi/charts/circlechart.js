@@ -16,6 +16,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
 
         let total_weight = 0;
         let node_weights = {};
+        let node_weight_target = {};
         let nodes = [];
         let raw_nodes = [];
 
@@ -31,11 +32,13 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
                     node_weights[node] = 0;
                     let index = raw_nodes.length;
                     raw_nodes.push(node);
+                    node_weight_target[node] = 0;
                 }
                 node_weights[node] += w;
             }
             add_to_node(source, frequency);
             add_to_node(target, frequency);
+            node_weight_target[target] += frequency;
         }
         // jetzt haben wir node_weights der form nodeId -> frequencySum
         // raw_nodes: [nodeId]
@@ -79,15 +82,19 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
                 }
                 next_index %= 100;
 
+                let weight_target = node_weight_target[id];
+                let weight_ratio = weight_target / weight;
+
                 nodes[next_index] = {
                     id,
                     pos: next_index * node_distance,
                     weight,
+                    weight_ratio,
                 };
                 node_indices[id] = next_index;
         }
         // now we have
-        // nodes: [{nodeId, pos, weight}]
+        // nodes: [{nodeId, pos, weight, weight_ratio}]
         // node_indices = nodeId -> index in nodes
 
         let compute_link_offset = at => node_indices[at] * node_distance;
@@ -103,7 +110,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
 
         // links: [(sourceId, targetId, frequency, start_pos, end_pos)]
         // raw_nodes: [nodeId]
-        // nodes: [{nodeId, pos, weight}]
+        // nodes: [{nodeId, pos, weight, weight_ratio}]
         return {
             links,
             raw_nodes,
