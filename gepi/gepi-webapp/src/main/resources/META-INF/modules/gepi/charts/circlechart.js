@@ -3,8 +3,9 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
     //return function drawSankeyChart(elementId, sankeyDat) {
 
     let settings = {
-        radius: 200,
-        padding: 100,
+        radius: 150,
+        node_count: 75,
+        padding: 90,
         node_spacing: 10,
         node_thickness: 10,
         default_grey: false,
@@ -25,6 +26,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         let node_weight_target = {};
         let nodes = [];
         let raw_nodes = [];
+        const node_count = settings.node_count;
 
         for (let {
                 source,
@@ -49,7 +51,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         // jetzt haben wir node_weights der form nodeId -> frequencySum
         // raw_nodes: [nodeId]
 
-        let sorted_nodes_and_weights = Array.from(Object.entries(node_weights)).sort(([n1, w1], [n2, w2]) => w2 - w1).slice(0, 100);
+        let sorted_nodes_and_weights = Array.from(Object.entries(node_weights)).sort(([n1, w1], [n2, w2]) => w2 - w1).slice(0, node_count);
         let included_nodes = {};
 
         for ([n, w] of sorted_nodes_and_weights) {
@@ -69,24 +71,24 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         // die links sind jetzt nur noch diejenigen zwischen den included nodes
 
         // distribute the 100 nodes evenly across a circle
-        const node_distance = 360 / 100;
+        const node_distance = 360 / node_count;
 
         // raw_nodes: [nodeId] (i.e. index below is just the array index)
         // node_weights: nodeId -> frequencySum
         // nodes is empty until now
         let psi = (Math.sqrt(5) - 1) / 2;
         let next_index = 0;
-        let offset = Math.round(psi * 100);
+        let offset = Math.round(psi * node_count);
         for (let [id, weight] of sorted_nodes_and_weights) {
-                next_index = (next_index + offset) % 100;
-                while (nodes[next_index % 100]) {
+                next_index = (next_index + offset) % node_count;
+                while (nodes[next_index % node_count]) {
                     next_index += 1;
-                    if (next_index > 200) {
+                    if (next_index > 2*node_count) {
                         console.log("Critical error!");
                         break;
                     }
                 }
-                next_index %= 100;
+                next_index %= node_count;
 
                 let weight_target = node_weight_target[id];
                 let weight_ratio = weight_target / weight;
@@ -303,6 +305,27 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         });
     }
 
+    function add_slider(elementId, id, label_text, min, max, step, value, change_handler) {
+        let p = d3.select("#" + elementId + "-container .settings .sliders").append("p");
+
+        p.append("label")
+            .attr("for", id)
+            .text(label_text);
+
+        p.append("input")
+            .attr("type", "range")
+            .attr("id", id)
+            .attr("min", min)
+            .attr("max", max)
+            .attr("step", step)
+            .attr("value", value)
+            .on("input", function() {
+                let value = this.value;
+                change_handler(value);
+                draw(elementId);
+            });
+    }
+
     function first_draw(elementId) {
         add_toggle(
             elementId,
@@ -319,6 +342,11 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
             settings.fine_node_highlights,
             (state) => settings.fine_node_highlights = state
         );
+
+        add_slider(elementId, "size_slider", "Size of the diagram: ", 50, 300, 5, settings.node_count, (count) => {
+            settings.node_count = count;
+            settings.radius = 2 * count;
+        });
 
         draw(elementId);
     }
