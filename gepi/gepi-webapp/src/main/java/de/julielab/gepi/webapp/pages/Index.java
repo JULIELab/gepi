@@ -95,7 +95,6 @@ public class Index {
             paths.append("gridstack-jqueryui", "gridstack/gridstack.jQueryUI.min");
             return conf;
         });
-        javaScriptSupport.require("gepi/base").invoke("setuptooltips").invoke("setupgridstack");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI());
         if (result != null) {
             // If there already is data at loading the page, the input panel is already hidden (see #getShowInputClass)

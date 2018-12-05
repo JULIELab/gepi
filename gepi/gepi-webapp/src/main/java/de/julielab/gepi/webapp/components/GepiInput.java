@@ -20,6 +20,7 @@ import org.apache.tapestry5.ioc.services.TypeCoercer;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
+import org.apache.tapestry5.services.ajax.JavaScriptCallback;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
@@ -118,7 +119,7 @@ public class GepiInput {
 
     void onSuccessFromInputForm() {
         newSearch = true;
-       log.debug("Setting newsearch to true");
+        log.debug("Setting newsearch to true");
         final List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
         if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
                 && listBTextAreaValue.trim().length() > 0)
@@ -135,7 +136,12 @@ public class GepiInput {
         persistResult = result;
 
         Index indexPage = (Index) resources.getContainer();
-        ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
+        // Perform ajax zone updates to display the results. The JS callback is required to setup the
+        // gridstack library on our widgets because they won't be displayed at all otherwise.
+        ajaxResponseRenderer.
+                addRender(indexPage.getInputZone()).
+                addRender(indexPage.getOutputZone()).
+                addCallback((JavaScriptCallback) javascriptSupport -> javaScriptSupport.require("gepi/base").invoke("setuptooltips").invoke("setupgridstack"));
         log.debug("Ajax rendering commands sent, entering the output display mode");
     }
 
