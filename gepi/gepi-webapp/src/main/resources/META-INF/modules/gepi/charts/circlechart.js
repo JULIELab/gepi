@@ -171,7 +171,13 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
             .attr("y", 4)
             .text(d => nodesById.get(d.id).name)
             .property("onmouseover", () => node_hover)
-            .property("onmouseout", () => node_unhover);
+            .property("onmouseout", () => node_unhover)
+            .attr("fill", (d) => {
+                let red = Math.round(d.weight_ratio * 100);
+                let green = Math.round((1 - d.weight_ratio) * 100);
+
+                return "rgb("+red+","+green+",0)";
+            });
 
         node_texts.filter(d => ((d.pos % 360) + 360) % 360 > 180)
             .attr("transform", "rotate(180)")
