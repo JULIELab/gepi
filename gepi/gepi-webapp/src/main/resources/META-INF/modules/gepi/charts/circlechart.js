@@ -16,6 +16,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
 
         let total_weight = 0;
         let node_weights = {};
+        let node_weight_target = {};
         let nodes = [];
         let raw_nodes = [];
 
@@ -31,11 +32,13 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
                     node_weights[node] = 0;
                     let index = raw_nodes.length;
                     raw_nodes.push(node);
+                    node_weight_target[node] = 0;
                 }
                 node_weights[node] += w;
             }
             add_to_node(source, frequency);
             add_to_node(target, frequency);
+            node_weight_target[target] += frequency;
         }
         // jetzt haben wir node_weights der form nodeId -> frequencySum
         // raw_nodes: [nodeId]
@@ -79,15 +82,19 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
                 }
                 next_index %= 100;
 
+                let weight_target = node_weight_target[id];
+                let weight_ratio = weight_target / weight;
+
                 nodes[next_index] = {
                     id,
                     pos: next_index * node_distance,
                     weight,
+                    weight_ratio,
                 };
                 node_indices[id] = next_index;
         }
         // now we have
-        // nodes: [{nodeId, pos, weight}]
+        // nodes: [{nodeId, pos, weight, weight_ratio}]
         // node_indices = nodeId -> index in nodes
 
         let compute_link_offset = at => node_indices[at] * node_distance;
@@ -103,7 +110,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
 
         // links: [(sourceId, targetId, frequency, start_pos, end_pos)]
         // raw_nodes: [nodeId]
-        // nodes: [{nodeId, pos, weight}]
+        // nodes: [{nodeId, pos, weight, weight_ratio}]
         return {
             links,
             raw_nodes,
@@ -127,6 +134,10 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
 
     }
 
+    let links;
+    let nodes;
+    let hovered_id = "";
+
     function draw(elementId) {
         let svg = get_svg(elementId);
 
@@ -143,7 +154,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         console.log(chartData);
 
 
-        let nodes = svg.append("g")
+        nodes = svg.append("g")
             .attr("class", "nodes")
             .selectAll("g.node")
             .data(chartData.nodes)
@@ -158,7 +169,15 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
             .attr("opacity", "1")
             .attr("x", settings.radius + 10)
             .attr("y", 4)
-            .text(d => nodesById.get(d.id).name);
+            .text(d => nodesById.get(d.id).name)
+            .property("onmouseover", () => node_hover)
+            .property("onmouseout", () => node_unhover)
+            .attr("fill", (d) => {
+                let red = Math.round(d.weight_ratio * 100);
+                let green = Math.round((1 - d.weight_ratio) * 100);
+
+                return "rgb("+red+","+green+",0)";
+            });
 
         node_texts.filter(d => ((d.pos % 360) + 360) % 360 > 180)
             .attr("transform", "rotate(180)")
@@ -168,10 +187,10 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
 
         // hack: global
         if (window.opacity_base === undefined) {
-            window.opacity_base = 0.97;
+            window.opacity_base = 0.99;
         }
 
-        let links = svg.append("g")
+        links = svg.append("g")
             .attr("class", "links")
             .selectAll("path.link")
             .data(chartData.links)
@@ -184,6 +203,44 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
             .attr("stroke-width", 5);
 
         opacity_redraw = () => draw(elementId);
+    }
+
+    function node_hover(event) {
+        hovered_id = event.target.__data__.id;
+
+        let connected_nodes = {};
+        connected_nodes[hovered_id] = 10000000;
+
+        links.attr("stroke", "#aaa");
+
+        links.filter(link => {
+            if (link.source === hovered_id) {
+                connected_nodes[link.target] = link.frequency;
+                return true;
+            } else if (link.target === hovered_id) {
+                connected_nodes[link.source] = link.frequency;
+                return true;
+            } else {
+                return false;
+            }
+        }).attr("stroke", "#000055").raise();
+
+        nodes/*.filter(node => {
+            return connected_nodes[node.id] || false;
+        })*/.attr("opacity", n => {
+            let v1 = 1 - Math.pow(0.97, connected_nodes[n.id] || 0);
+            return 0.85 * v1 + 0.15;
+        });
+    }
+
+    function node_unhover(event) {
+        let unhovered_id = event.target.__data__.id;
+
+        if (unhovered_id === hovered_id) {
+            hovered_id = "";
+            links.attr("stroke", "#000055");
+            nodes.attr("opacity", 1);
+        }
     }
 
     function deg_to_coord(deg) {
