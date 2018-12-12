@@ -3,10 +3,17 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
     //return function drawSankeyChart(elementId, sankeyDat) {
 
     let settings = {
-        radius: 200,
-        padding: 100,
+        radius: 150,
+        node_count: 75,
+        padding: 90,
         node_spacing: 10,
         node_thickness: 10,
+        default_grey: false,
+        fine_node_highlights: true,
+        active_link_color: "#000055",
+        inactive_link_color: "#aaa",
+        active_node_opacity: 1,
+        inactive_node_opacity: 0.15,
     };
 
     function prepare_data(links) {
@@ -19,6 +26,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         let node_weight_target = {};
         let nodes = [];
         let raw_nodes = [];
+        const node_count = settings.node_count;
 
         for (let {
                 source,
@@ -43,7 +51,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         // jetzt haben wir node_weights der form nodeId -> frequencySum
         // raw_nodes: [nodeId]
 
-        let sorted_nodes_and_weights = Array.from(Object.entries(node_weights)).sort(([n1, w1], [n2, w2]) => w2 - w1).slice(0, 100);
+        let sorted_nodes_and_weights = Array.from(Object.entries(node_weights)).sort(([n1, w1], [n2, w2]) => w2 - w1).slice(0, node_count);
         let included_nodes = {};
 
         for ([n, w] of sorted_nodes_and_weights) {
@@ -63,24 +71,24 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         // die links sind jetzt nur noch diejenigen zwischen den included nodes
 
         // distribute the 100 nodes evenly across a circle
-        const node_distance = 360 / 100;
+        const node_distance = 360 / node_count;
 
         // raw_nodes: [nodeId] (i.e. index below is just the array index)
         // node_weights: nodeId -> frequencySum
         // nodes is empty until now
         let psi = (Math.sqrt(5) - 1) / 2;
         let next_index = 0;
-        let offset = Math.round(psi * 100);
+        let offset = Math.round(psi * node_count);
         for (let [id, weight] of sorted_nodes_and_weights) {
-                next_index = (next_index + offset) % 100;
-                while (nodes[next_index % 100]) {
+                next_index = (next_index + offset) % node_count;
+                while (nodes[next_index % node_count]) {
                     next_index += 1;
-                    if (next_index > 200) {
+                    if (next_index > 2*node_count) {
                         console.log("Critical error!");
                         break;
                     }
                 }
-                next_index %= 100;
+                next_index %= node_count;
 
                 let weight_target = node_weight_target[id];
                 let weight_ratio = weight_target / weight;
@@ -160,13 +168,13 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
             .data(chartData.nodes)
             .enter().append("g")
             .attr("class", "node")
+            .attr("opacity", hoverless_node_opacity())
             .attr("transform", function(d) {
                 return "rotate(" + (d.pos - 90) + ")";
             });
 
         let node_texts = nodes.append("text")
             .attr("class", "nodeText")
-            .attr("opacity", "1")
             .attr("x", settings.radius + 10)
             .attr("y", 4)
             .text(d => nodesById.get(d.id).name)
@@ -198,7 +206,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
             .attr("class", "link")
             .attr("fill", "none")
             .attr("opacity", d => (1 - Math.pow(window.opacity_base, d.frequency)))
-            .attr("stroke", "#000055")
+            .attr("stroke", hoverless_link_color())
             .attr("d", compute_link_path)
             .attr("stroke-width", 5);
 
@@ -211,7 +219,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         let connected_nodes = {};
         connected_nodes[hovered_id] = 10000000;
 
-        links.attr("stroke", "#aaa");
+        links.attr("stroke", settings.inactive_link_color);
 
         links.filter(link => {
             if (link.source === hovered_id) {
@@ -223,13 +231,20 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
             } else {
                 return false;
             }
-        }).attr("stroke", "#000055").raise();
+        }).attr("stroke", settings.active_link_color).raise();
 
-        nodes/*.filter(node => {
-            return connected_nodes[node.id] || false;
-        })*/.attr("opacity", n => {
-            let v1 = 1 - Math.pow(0.97, connected_nodes[n.id] || 0);
-            return 0.85 * v1 + 0.15;
+        nodes.attr("opacity", n => {
+            if (settings.fine_node_highlights) {
+                let v1 = 1 - Math.pow(0.97, connected_nodes[n.id] || 0);
+                return (settings.active_node_opacity - settings.inactive_node_opacity) * v1
+                    + settings.inactive_node_opacity;
+            } else {
+                if (connected_nodes[n.id]) {
+                    return settings.active_node_opacity;
+                } else {
+                    return settings.inactive_node_opacity;
+                }
+            }
         });
     }
 
@@ -238,8 +253,24 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
 
         if (unhovered_id === hovered_id) {
             hovered_id = "";
-            links.attr("stroke", "#000055");
-            nodes.attr("opacity", 1);
+            links.attr("stroke", hoverless_link_color());
+            nodes.attr("opacity", hoverless_node_opacity());
+        }
+    }
+
+    function hoverless_link_color() {
+        if (settings.default_grey) {
+            return settings.inactive_link_color;
+        } else {
+            return settings.active_link_color;
+        }
+    }
+
+    function hoverless_node_opacity() {
+        if (settings.default_grey) {
+            return settings.inactive_node_opacity;
+        } else {
+            return settings.active_node_opacity;
         }
     }
 
@@ -260,6 +291,66 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
         return path;
     }
 
+    function add_toggle(elementId, id, text, initial_state, change_handler) {
+        let p = d3.select("#"+elementId+"-container .settings .checkboxes").append("p");
+        console.log(p.node());
+        let input = p.append("input").attr("type", "checkbox").attr("id", id);
+        if (initial_state) {
+            input.attr("checked", "checked");
+        }
+        p.append("label").attr("for", id).text(" "+text);
+        input.on("change", function () {
+            change_handler(this.checked);
+            draw(elementId);
+        });
+    }
+
+    function add_slider(elementId, id, label_text, min, max, step, value, change_handler) {
+        let p = d3.select("#" + elementId + "-container .settings .sliders").append("p");
+
+        p.append("label")
+            .attr("for", id)
+            .text(label_text);
+
+        p.append("input")
+            .attr("type", "range")
+            .attr("id", id)
+            .attr("min", min)
+            .attr("max", max)
+            .attr("step", step)
+            .attr("value", value)
+            .on("input", function() {
+                let value = this.value;
+                change_handler(value);
+                draw(elementId);
+            });
+    }
+
+    function first_draw(elementId) {
+        add_toggle(
+            elementId,
+            "default-gray-toggle",
+            "Grey out nodes and links by default",
+            settings.default_grey,
+            (state) => settings.default_grey = state
+        );
+
+        add_toggle(
+            elementId,
+            "fine-opacity-toggle",
+            "Highlight nodes based on edge weight",
+            settings.fine_node_highlights,
+            (state) => settings.fine_node_highlights = state
+        );
+
+        add_slider(elementId, "size_slider", "Size of the diagram: ", 50, 300, 5, settings.node_count, (count) => {
+            settings.node_count = count;
+            settings.radius = 2 * count;
+        });
+
+        draw(elementId);
+    }
+
     function main(elementId) {
         console.log("Preparing to draw circle chart for element ID " + elementId);
         index.getReadySemaphor().done(() => {
@@ -269,9 +360,9 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
                 let inputcolReadyPromise = $("#inputcol").data("animationtimer");
                 if (inputcolReadyPromise)
                     inputcolReadyPromise.done(() =>
-                        draw(elementId));
+                        first_draw(elementId));
                 else
-                    draw(elementId);
+                    first_draw(elementId);
             });
         });
     }
