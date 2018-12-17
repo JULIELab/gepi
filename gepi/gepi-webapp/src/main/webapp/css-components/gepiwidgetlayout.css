@@ -44,6 +44,7 @@
 
 .widget-small.panel-body {
     height: 230px;
+    overflow: hidden;
 }
 
 .widget-large.panel-body {
