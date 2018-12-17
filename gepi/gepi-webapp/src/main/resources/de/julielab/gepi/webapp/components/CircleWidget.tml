@@ -3,11 +3,17 @@
      widgettitle="Circle Widget" t:clientId="${elementId}-outer" class="${classes}"
      sizeClass="widget-small" result="result" disableDefaultAjaxRefresh="true">
 
-    <div id="${elementId}-container">
-        <div id="${elementId}" style="width: 100%; height: 100%;"/>
-        <div class="settings">
-            <div class="checkboxes"></div>
-            <div class="sliders"></div>
+    <div class="row">
+        <div class="col-md-10">
+            <div id="${elementId}" style="width: 100%; height: 100%;"/>
+        </div>
+        <div class="col-md-2">
+            <div id="${elementId}-container">
+                <div class="settings">
+                    <div class="checkboxes"></div>
+                    <div class="sliders"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

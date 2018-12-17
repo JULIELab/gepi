@@ -4,6 +4,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
 
     let settings = {
         radius: 150,
+        min_radius: 120,
         node_count: 75,
         padding: 90,
         node_spacing: 10,
@@ -127,7 +128,18 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
     }
 
     function get_svg(elementId) {
-        let chart = d3.select(document.getElementById(elementId));
+        let element = document.getElementById(elementId);
+        let parent = element.parentElement;
+        settings.radius = Math.min(
+            parent.clientWidth / 2,
+            parent.parentElement.parentElement.clientHeight / 2 - 30
+        ) - settings.padding;
+
+        settings.radius = Math.max(settings.radius, settings.min_radius);
+
+        settings.node_count = Math.floor(settings.radius / 2);
+
+        let chart = d3.select(element);
 
         chart.selectAll("svg").remove();
 
@@ -327,6 +339,15 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
     }
 
     function first_draw(elementId) {
+        let running = false;
+        window.onresize = () => {
+            if (!running) {
+                running = true;
+                draw(elementId);
+                running = false;
+            }
+        };
+
         add_toggle(
             elementId,
             "default-gray-toggle",
@@ -343,10 +364,10 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
             (state) => settings.fine_node_highlights = state
         );
 
-        add_slider(elementId, "size_slider", "Size of the diagram: ", 50, 300, 5, settings.node_count, (count) => {
-            settings.node_count = count;
-            settings.radius = 2 * count;
-        });
+        // add_slider(elementId, "size_slider", "Size of the diagram: ", 50, 300, 5, settings.node_count, (count) => {
+        //     settings.node_count = count;
+        //     settings.radius = 2 * count;
+        // });
 
         draw(elementId);
     }
