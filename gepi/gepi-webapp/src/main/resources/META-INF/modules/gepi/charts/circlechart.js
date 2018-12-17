@@ -1,4 +1,4 @@
-define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, data) {
+define(["jquery", "gepi/pages/index", "gepi/charts/data", "gepi/components/widgetManager"], function($, index, data, widgetManager) {
 
     //return function drawSankeyChart(elementId, sankeyDat) {
 
@@ -145,6 +145,8 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
 
         let svg = chart
             .append("svg")
+            .style("margin-left", "auto")
+            .style("margin-right", "auto")
             .attr("width", 2 * settings.radius + 2 * settings.padding)
             .attr("height", 2 * settings.radius + 2 * settings.padding);
 
@@ -347,6 +349,10 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data"], function($, index, da
                 running = false;
             }
         };
+
+        $("#" + widgetManager.getWidget("circlechart-outer").handleId).click(function() {
+            draw(elementId);
+        });
 
         add_toggle(
             elementId,
