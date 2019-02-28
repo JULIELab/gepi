@@ -142,7 +142,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
         };
     }
 
-    function prepare_data(pre_data, total_height, min_height, padding, max_number_nodes) {
+    function prepare_data(pre_data, total_height, min_height, padding, max_number_nodes, show_other) {
 
         let {
             nodesNLinks,
@@ -151,14 +151,14 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             total_weight,
         } = pre_data;
 
-        let included_ids_from = getIncludedIds(sorted_ids_and_weights_left, total_weight, total_height, min_height, padding, max_number_nodes);
-        let included_ids_to = getIncludedIds(sorted_ids_and_weights_right, total_weight, total_height, min_height, padding, max_number_nodes);
+        let included_ids_from = getIncludedIds(sorted_ids_and_weights_left, total_weight, total_height, min_height, padding, max_number_nodes, show_other);
+        let included_ids_to = getIncludedIds(sorted_ids_and_weights_right, total_weight, total_height, min_height, padding, max_number_nodes, show_other);
 
         let {
             filtered_links,
             misc_from,
             misc_to,
-        } = filter_and_suffix_links(nodesNLinks.links, included_ids_from, included_ids_to);
+        } = filter_and_suffix_links(nodesNLinks.links, included_ids_from, included_ids_to, show_other);
         let filtered_nodes = filter_and_suffix_nodes(nodesNLinks, included_ids_from, included_ids_to, misc_from, misc_to);
 
         return {
@@ -174,7 +174,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
      * taking into account the given 'total_height' of the diagram, the 'min_height' of each displayed
      * node and the 'padding' between the nodes.
      */
-    function getIncludedIds(sorted_ids_and_weights, total_weight, total_height, min_height, padding, max_number_nodes) {
+    function getIncludedIds(sorted_ids_and_weights, total_weight, total_height, min_height, padding, max_number_nodes, show_other) {
 
         let included_ids = {};
         let first_node = true;
@@ -207,7 +207,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
      * Filters 'input_links' according the the provided included nodes.
      * Computes the surrogate edges to and from the misc nodes (one left, one right).
      */
-    function filter_and_suffix_links(input_links, included_ids_from, included_ids_to) {
+    function filter_and_suffix_links(input_links, included_ids_from, included_ids_to, show_other) {
         let filtered_links = [];
         let from_misc_by_id_and_color = {};
         let to_misc_by_id_and_color = {};
@@ -247,39 +247,41 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
 
         // Add "fake links" connecting nodes to misc nodes
 
-        for (let [id, misc_to_id_by_color] of Object.entries(from_misc_by_id_and_color)) {
-            for (let [color, weight] of Object.entries(misc_to_id_by_color)) {
+        if (show_other) {
+            for (let [id, misc_to_id_by_color] of Object.entries(from_misc_by_id_and_color)) {
+                for (let [color, weight] of Object.entries(misc_to_id_by_color)) {
+                    filtered_links.push({
+                        source: "MISC_from",
+                        target: id,
+                        value: weight,
+                        color,
+                    });
+                }
+                misc_from = true;
+            }
+
+            for (let [id, id_to_misc_by_color] of Object.entries(to_misc_by_id_and_color)) {
+                for (let [color, weight] of Object.entries(id_to_misc_by_color)) {
+                    filtered_links.push({
+                        source: id,
+                        target: "MISC_to",
+                        value: weight,
+                        color,
+                    });
+                }
+                misc_to = true;
+            }
+
+            for (let [color, weight] of Object.entries(between_misc_by_color)) {
                 filtered_links.push({
                     source: "MISC_from",
-                    target: id,
-                    value: weight,
-                    color,
-                });
-            }
-            misc_from = true;
-        }
-
-        for (let [id, id_to_misc_by_color] of Object.entries(to_misc_by_id_and_color)) {
-            for (let [color, weight] of Object.entries(id_to_misc_by_color)) {
-                filtered_links.push({
-                    source: id,
                     target: "MISC_to",
                     value: weight,
                     color,
                 });
+                misc_from = true;
+                misc_to = true;
             }
-            misc_to = true;
-        }
-
-        for (let [color, weight] of Object.entries(between_misc_by_color)) {
-            filtered_links.push({
-                source: "MISC_from",
-                target: "MISC_to",
-                value: weight,
-                color,
-            });
-            misc_from = true;
-            misc_to = true;
         }
 
         return {

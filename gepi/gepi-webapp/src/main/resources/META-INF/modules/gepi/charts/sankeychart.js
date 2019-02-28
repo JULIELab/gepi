@@ -34,7 +34,8 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
             label_font_size: 12,
             node_width: 10,
             node_to_label_spacing: 5,
-            max_number_nodes: 3
+            max_number_nodes: 3,
+            show_other: false,
         };
 
         let chart_elem = document.getElementById(elementId);
@@ -72,8 +73,15 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
 
             add_slider("padding-slider", "Padding: ", 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = value);
             add_slider("min-size-slider", "Minimum node size: ", 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
-            add_slider("node-height-slider", "Chart height: ", 0, 10000, 2, settings.height, (value) => settings.height = value - 0);
+            add_slider("node-height-slider", "Chart height: ", 0, 1000, 2, settings.height, (value) => settings.height = value - 0);
             add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, settings.max_number_nodes, (value) => settings.max_number_nodes = value);
+
+            add_toggle(
+                "show-other-toggle",
+                "Show \"Other\" node",
+                settings.show_other,
+                (state) => settings.show_other = state
+            );
 
             add_button("Clear selection", () => {
                 selected_by_node_id = {};
@@ -89,7 +97,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
             let svg = create_svg();
 
             console.log("Preparing sankey data");
-            let the_data = data.prepare_data(preprocessed_data, settings.height, settings.min_node_height, settings.node_spacing, settings.max_number_nodes);
+            let the_data = data.prepare_data(preprocessed_data, settings.height, settings.min_node_height, settings.node_spacing, settings.max_number_nodes, settings.show_other);
             console.log("Finished preparing data");
 
             let sankey = d3.sankey();
@@ -186,6 +194,20 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
             nodes.append("title")
                 .text((d) => d.name);
 
+        }
+
+        function add_toggle(id, text, initial_state, change_handler) {
+            let p = d3.select("#"+elementId+"-container .settings .checkboxes").append("p");
+            console.log(p.node());
+            let input = p.append("input").attr("type", "checkbox").attr("id", id);
+            if (initial_state) {
+                input.attr("checked", "checked");
+            }
+            p.append("label").attr("for", id).text(" "+text);
+            input.on("change", function () {
+                change_handler(this.checked);
+                redraw();
+            });
         }
 
         function add_slider(id, label_text, min, max, step, value, change_handler) {

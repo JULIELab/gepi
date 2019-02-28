@@ -12,6 +12,7 @@
             <div id="${elementId}-container" class="hidden">
                 <div class="settings">
                     <div class="sliders"></div>
+                    <div class="checkboxes"></div>
                     <div class="buttons"></div>
                 </div>
             </div>
