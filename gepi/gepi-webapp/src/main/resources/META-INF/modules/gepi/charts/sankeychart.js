@@ -36,6 +36,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
             node_to_label_spacing: 5,
             max_number_nodes: 3,
             show_other: false,
+            max_other_height: 100,
         };
 
         let chart_elem = document.getElementById(elementId);
@@ -75,6 +76,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
             add_slider("min-size-slider", "Minimum node size: ", 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
             add_slider("node-height-slider", "Chart height: ", 0, 1000, 2, settings.height, (value) => settings.height = value - 0);
             add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, settings.max_number_nodes, (value) => settings.max_number_nodes = value);
+            add_slider("max-other-slider", "Maximum size of other nodes:", 0, 300, 2, settings.max_other_height, (value) => settings.max_other_height = value);
 
             add_toggle(
                 "show-other-toggle",
@@ -118,6 +120,8 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
             //shift(the_data.nodes[4], 50, 20);
 
             sankey.update(the_data);
+
+            adapt_node_widths(the_data, Number(settings.max_other_height));
 
             //links
             let links = svg.append("g")
@@ -249,7 +253,8 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
             let x_left = d.source.x1;
             let x_right = d.target.x0;
             let x_center = (x_left + x_right) / 2;
-            let width = d.width;
+            let left_width = d.left_width;
+            let right_width = d.right_width;
 
             /* Thick, stroked path
             let path =
@@ -268,29 +273,68 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
             let path =
                 "M " +
                 x_left + ", " +
-                (d.y0 - width / 2) +
+                (d.y0 - left_width / 2) +
                 " L " +
                 x_left + ", " +
-                (d.y0 + width / 2) +
+                (d.y0 + left_width / 2) +
                 " C " +
                 x_center + ", " +
-                (d.y0 + width / 2) + ", " +
+                (d.y0 + left_width / 2) + ", " +
                 x_center + ", " +
-                (d.y1 + width / 2) + ", " +
+                (d.y1 + right_width / 2) + ", " +
                 x_right + ", " +
-                (d.y1 + width / 2) +
+                (d.y1 + right_width / 2) +
                 " L " +
                 x_right + ", " +
-                (d.y1 - width / 2) +
+                (d.y1 - right_width / 2) +
                 " C " +
                 x_center + ", " +
-                (d.y1 - width / 2) + ", " +
+                (d.y1 - right_width / 2) + ", " +
                 x_center + ", " +
-                (d.y0 - width / 2) + ", " +
+                (d.y0 - left_width / 2) + ", " +
                 x_left + ", " +
-                (d.y0 - width / 2);
+                (d.y0 - left_width / 2);
 
             return path;
+        }
+
+        function adapt_node_widths(data, max_other_height) {
+            let left_other_y0 = 0;
+            let left_scale = 1;
+            let right_other_y0 = 0;
+            let right_scale = 1;
+
+            for (let node of data.nodes) {
+                if (node.id === "MISC_from") {
+                    left_other_y0 = node.y0;
+                    if (node.y1 - node.y0 > max_other_height) {
+                        left_scale = max_other_height / (node.y1 - node.y0);
+                        node.y1 = node.y0 + max_other_height;
+                    }
+                }
+                if (node.id === "MISC_to") {
+                    right_other_y0 = node.y0;
+                    if (node.y1 - node.y0 > max_other_height) {
+                        right_scale = max_other_height / (node.y1 - node.y0);
+                        node.y1 = node.y0 + max_other_height;
+                    }
+                }
+            }
+
+            for (let link of data.links) {
+                if (link.source.id === "MISC_from") {
+                    link.left_width = left_scale * link.width;
+                    link.y0 = left_other_y0 + left_scale*(link.y0 - left_other_y0);
+                } else {
+                    link.left_width = link.width;
+                }
+                if (link.target.id === "MISC_to") {
+                    link.right_width = right_scale * link.width;
+                    link.y1 = right_other_y0 + right_scale*(link.y1 - right_other_y0);
+                } else {
+                    link.right_width = link.width;
+                }
+            }
         }
     };
 });
