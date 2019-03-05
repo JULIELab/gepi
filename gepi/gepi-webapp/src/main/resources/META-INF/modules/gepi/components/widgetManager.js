@@ -15,6 +15,7 @@ define(["jquery", "t5/core/zone"], function($, zoneManager) {
     };
     Widget.prototype.setupViewModeHandle = function() {
         let widget = this;
+        // This sets the view mode class to the widget DIV, causing it to be larger or smaller
         $("#" + this.handleId).click(function() {
             let currentMode = widget.getViewMode();
             let newMode;
@@ -48,6 +49,7 @@ define(["jquery", "t5/core/zone"], function($, zoneManager) {
 
     let widgets = new Map();
 
+    // This is called from GepiWidgetLayout#afterRender
     let addWidget = function(name, configuration) {
         widget = new Widget(configuration);
         widgets.set(name, widget);
