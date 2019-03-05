@@ -56,6 +56,8 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             promise = $.Deferred();
             requestedData.set(sourceName, promise);
             loadData(sourceName);
+        } else {
+            console.log("Data with source name " + sourceName + " was already requested and is not loaded again.");
         }
         return promise;
     }

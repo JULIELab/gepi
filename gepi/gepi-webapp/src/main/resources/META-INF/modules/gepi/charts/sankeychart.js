@@ -58,7 +58,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
 
             let chartContainer = $("#" + elementId + "-container");
             //chartContainer.closest(".panel-body > .shine").addClass("hidden");
-            chartContainer.removeClass("hidden");
+            //chartContainer.removeClass("hidden");
             settings.width = chart_elem.clientWidth - 2 * settings.padding_x - 10;
             let svg = chart
                 .append("svg")
@@ -73,6 +73,9 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
         function main() {
             console.log("Call to main")
             if (!$("#"+elementId).data("mainWasCalled")) {
+                // Hide the Loading... banner
+                $("#"+elementId+"-outer .panel-body .shine").addClass("hidden");
+
                 redraw();
 
                 add_slider("padding-slider", "Padding: ", 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = value);
