@@ -1,9 +1,7 @@
-define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, index) {
+define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widgetManager"], function($, data, index, widgetManager) {
 
     return function drawSankeyChart(elementId, orderType) {
         console.log("Preparing to draw sankey chart for element ID " + elementId + " with node ordering type " + orderType);
-
-        index.getReadySemaphor().done(() => {console.log("READY SEMAPHOR DONE")})
 
         index.getReadySemaphor().done(() => {
             console.log("Chart drawing has green light from the central index semaphor, requesting data");
@@ -74,25 +72,30 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index"], function($, data, ind
 
         function main() {
             console.log("Call to main")
-            redraw();
-
-            add_slider("padding-slider", "Padding: ", 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = value);
-            add_slider("min-size-slider", "Minimum node size: ", 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
-            add_slider("node-height-slider", "Chart height: ", 0, 1000, 2, settings.height, (value) => settings.height = value - 0);
-            add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, settings.max_number_nodes, (value) => settings.max_number_nodes = value);
-            add_slider("max-other-slider", "Maximum size of other nodes:", 0, 300, 2, settings.max_other_height, (value) => settings.max_other_height = value);
-
-            add_toggle(
-                "show-other-toggle",
-                "Show \"Other\" node",
-                settings.show_other,
-                (state) => settings.show_other = state
-            );
-
-            add_button("Clear selection", () => {
-                selected_by_node_id = {};
+            if (!$("#"+elementId).data("mainWasCalled")) {
                 redraw();
-            });
+
+                add_slider("padding-slider", "Padding: ", 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = value);
+                add_slider("min-size-slider", "Minimum node size: ", 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
+                add_slider("node-height-slider", "Chart height: ", 0, 1000, 2, settings.height, (value) => settings.height = value - 0);
+                add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, settings.max_number_nodes, (value) => settings.max_number_nodes = value);
+                add_slider("max-other-slider", "Maximum size of other nodes:", 0, 300, 2, settings.max_other_height, (value) => settings.max_other_height = value);
+
+                add_toggle(
+                    "show-other-toggle",
+                    "Show \"Other\" node",
+                    settings.show_other,
+                    (state) => settings.show_other = state
+                );
+
+                add_button("Clear selection", () => {
+                    selected_by_node_id = {};
+                    redraw();
+                });
+                $("#"+elementId).data("mainWasCalled", true);
+            } else {
+                console.log("Not executing sankeychart#main() again because it had already been called");
+            }
         }
 
         main();

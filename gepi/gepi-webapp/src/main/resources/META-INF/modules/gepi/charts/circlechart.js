@@ -1,7 +1,5 @@
 define(["jquery", "gepi/pages/index", "gepi/charts/data", "gepi/components/widgetManager"], function($, index, data, widgetManager) {
 
-    //return function drawSankeyChart(elementId, sankeyDat) {
-
     let settings = {
         radius: 150,
         min_radius: 120,
@@ -341,41 +339,46 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "gepi/components/widge
     }
 
     function first_draw(elementId) {
-        let running = false;
-        window.onresize = () => {
-            if (!running) {
-                running = true;
+        if (!$("#"+elementId).data("firstDrawn")) {
+            let running = false;
+            window.onresize = () => {
+                if (!running) {
+                    running = true;
+                    draw(elementId);
+                    running = false;
+                }
+            };
+
+            $("#" + widgetManager.getWidget("circlechart-outer").handleId).click(function() {
                 draw(elementId);
-                running = false;
-            }
-        };
+            });
 
-        $("#" + widgetManager.getWidget("circlechart-outer").handleId).click(function() {
+            add_toggle(
+                elementId,
+                "default-gray-toggle",
+                "Grey out nodes and links by default",
+                settings.default_grey,
+                (state) => settings.default_grey = state
+            );
+
+            add_toggle(
+                elementId,
+                "fine-opacity-toggle",
+                "Highlight nodes based on edge weight",
+                settings.fine_node_highlights,
+                (state) => settings.fine_node_highlights = state
+            );
+
+            // add_slider(elementId, "size_slider", "Size of the diagram: ", 50, 300, 5, settings.node_count, (count) => {
+            //     settings.node_count = count;
+            //     settings.radius = 2 * count;
+            // });
+
             draw(elementId);
-        });
-
-        add_toggle(
-            elementId,
-            "default-gray-toggle",
-            "Grey out nodes and links by default",
-            settings.default_grey,
-            (state) => settings.default_grey = state
-        );
-
-        add_toggle(
-            elementId,
-            "fine-opacity-toggle",
-            "Highlight nodes based on edge weight",
-            settings.fine_node_highlights,
-            (state) => settings.fine_node_highlights = state
-        );
-
-        // add_slider(elementId, "size_slider", "Size of the diagram: ", 50, 300, 5, settings.node_count, (count) => {
-        //     settings.node_count = count;
-        //     settings.radius = 2 * count;
-        // });
-
-        draw(elementId);
+            $("#"+elementId).data("firstDrawn", true)
+        } else {
+            console.log("Not executing circleshart#first_draw() because it has already been run.");
+        }
     }
 
     function main(elementId) {
