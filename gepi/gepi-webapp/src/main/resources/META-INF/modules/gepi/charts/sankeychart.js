@@ -58,7 +58,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
 
             let chartContainer = $("#" + elementId + "-container");
             //chartContainer.closest(".panel-body > .shine").addClass("hidden");
-            //chartContainer.removeClass("hidden");
+            chartContainer.removeClass("hidden");
             settings.width = chart_elem.clientWidth - 2 * settings.padding_x - 10;
             let svg = chart
                 .append("svg")
