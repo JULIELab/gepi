@@ -180,26 +180,25 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
 
         let included_ids = {};
         let first_node = true;
-        let num = 0;
+
+        let frequency_so_far = 0;
+        let height_so_far = 0;
 
         for (let node of sorted_ids_and_weights) {
-            if (num < max_number_nodes)
-                included_ids[node.id] = true;
-            ++num;
-            /*
+
             if (!first_node) {
                 total_height -= padding;
             }
             first_node = false;
 
-            total_weight += node.weight;
-            let min_weight = node.weight;
+            total_weight += node.frequency;
+            let min_weight = node.frequency;
 
             if (total_height / total_weight < min_height / min_weight) {
                 break;
             }
 
-            included_ids[node.id] = true;*/
+            included_ids[node.id] = true;
         }
 
         return included_ids;
