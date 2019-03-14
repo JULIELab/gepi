@@ -35,8 +35,9 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
             label_font_size: 12,
             node_width: 10,
             node_to_label_spacing: 5,
-            max_number_nodes: 3,
+            //max_number_nodes: 3,
             show_other: false,
+            restrict_other_height: true,
             max_other_height: 100,
         };
 
@@ -81,8 +82,15 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
                 add_slider("padding-slider", "Padding: ", 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = value);
                 add_slider("min-size-slider", "Minimum node size: ", 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
                 add_slider("node-height-slider", "Chart height: ", 0, 1000, 2, settings.height, (value) => settings.height = value - 0);
-                add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, settings.max_number_nodes, (value) => settings.max_number_nodes = value);
-                add_slider("max-other-slider", "Maximum size of other nodes:", 0, 300, 2, settings.max_other_height, (value) => settings.max_other_height = value);
+                //add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, settings.max_number_nodes, (value) => settings.max_number_nodes = value);
+                add_slider("max-other-slider", "Maximum size of \"Other\" node:", 0, 300, 2, settings.max_other_height, (value) => settings.max_other_height = value);
+
+                add_toggle(
+                    "restrict-other-toggle",
+                    "Restrict size of \"Other\" node",
+                    settings.restrict_other_height,
+                    (state) => settings.restrict_other_height = state
+                );
 
                 add_toggle(
                     "show-other-toggle",
@@ -109,7 +117,13 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
             let svg = create_svg();
 
             console.log("Preparing sankey data");
-            let the_data = data.prepare_data(preprocessed_data, settings.height, settings.min_node_height, settings.node_spacing, settings.max_number_nodes, settings.show_other, settings.max_other_height);
+            let max_other_height;
+            if (settings.restrict_other_height) {
+                max_other_height = Number(settings.max_other_height);
+            } else {
+                max_other_height = Infinity;
+            }
+            let the_data = data.prepare_data(preprocessed_data, settings.height, settings.min_node_height, settings.node_spacing, settings.show_other, max_other_height);
             console.log("Finished preparing data");
 
             let sankey = d3.sankey();
@@ -131,7 +145,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
 
             sankey.update(the_data);
 
-            adapt_node_widths(the_data, Number(settings.max_other_height));
+            adapt_node_widths(the_data, max_other_height);
 
             //links
             let links = svg.append("g")

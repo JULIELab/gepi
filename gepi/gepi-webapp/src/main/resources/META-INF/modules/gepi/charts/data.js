@@ -158,7 +158,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
         };
     }
 
-    function prepare_data(pre_data, total_height, min_height, padding, max_number_nodes, show_other, max_other_size) {
+    function prepare_data(pre_data, total_height, min_height, padding, show_other, max_other_size) {
 
         let {
             nodesNLinks,
@@ -167,8 +167,8 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             total_frequency,
         } = pre_data;
 
-        let included_ids_from = getIncludedIds(sorted_ids_and_weights_left, total_frequency, total_height, min_height, padding, max_number_nodes, show_other, max_other_size);
-        let included_ids_to = getIncludedIds(sorted_ids_and_weights_right, total_frequency, total_height, min_height, padding, max_number_nodes, show_other, max_other_size);
+        let included_ids_from = getIncludedIds(sorted_ids_and_weights_left, total_frequency, total_height, min_height, padding, show_other, max_other_size);
+        let included_ids_to = getIncludedIds(sorted_ids_and_weights_right, total_frequency, total_height, min_height, padding, show_other, max_other_size);
 
         let {
             filtered_links,
@@ -190,7 +190,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
      * taking into account the given 'total_height' of the diagram, the 'min_height' of each displayed
      * node and the 'padding' between the nodes.
      */
-    function getIncludedIds(sorted_ids_and_weights, total_frequency, total_height, min_height, padding, max_number_nodes, show_other, max_other_size) {
+    function getIncludedIds(sorted_ids_and_weights, total_frequency, total_height, min_height, padding, show_other, max_other_size) {
 
         let included_ids = {};
 
