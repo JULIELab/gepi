@@ -102,11 +102,25 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             filtered_nodes
         } = cutoffLinksByWeight(nodesNLinks, 0);
 
-        let sortedNodes = getSortedNodes(nodesNLinks, orderFunction);
+        let sortedNodes = getSortedNodes({links: filtered_links, nodes: filtered_nodes}, orderFunction);
+
+
+        let left_nodes_by_id = {};
+        let right_nodes_by_id = {};
+        for (let node of sortedNodes.leftnodes) {
+            node.node_frequency = 0;
+            left_nodes_by_id[node.id] = node;
+        }
+        for (let node of sortedNodes.rightnodes) {
+            node.node_frequency = 0;
+            right_nodes_by_id[node.id] = node;
+        }
 
         let total_weight = 0;
         for (let link of filtered_links) {
             total_weight += link.frequency;
+            left_nodes_by_id[link.source].node_frequency += link.frequency;
+            right_nodes_by_id[link.target].node_frequency += link.frequency;
         }
 
         return {
@@ -191,8 +205,8 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             }
             first_node = false;
 
-            total_weight += node.frequency;
-            let min_weight = node.frequency;
+            total_weight += node.node_frequency;
+            let min_weight = node.node_frequency;
 
             if (total_height / total_weight < min_height / min_weight) {
                 break;
