@@ -109,7 +109,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
             let svg = create_svg();
 
             console.log("Preparing sankey data");
-            let the_data = data.prepare_data(preprocessed_data, settings.height, settings.min_node_height, settings.node_spacing, settings.max_number_nodes, settings.show_other);
+            let the_data = data.prepare_data(preprocessed_data, settings.height, settings.min_node_height, settings.node_spacing, settings.max_number_nodes, settings.show_other, settings.max_other_height);
             console.log("Finished preparing data");
 
             let sankey = d3.sankey();

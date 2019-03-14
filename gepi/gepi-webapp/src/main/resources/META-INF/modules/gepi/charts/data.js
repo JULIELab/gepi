@@ -116,9 +116,9 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             right_nodes_by_id[node.id] = node;
         }
 
-        let total_weight = 0;
+        let total_frequency = 0;
         for (let link of filtered_links) {
-            total_weight += link.frequency;
+            total_frequency += link.frequency;
             left_nodes_by_id[link.source].node_frequency += link.frequency;
             right_nodes_by_id[link.target].node_frequency += link.frequency;
         }
@@ -130,7 +130,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             },
             sorted_ids_and_weights_left: sortedNodes.leftnodes,
             sorted_ids_and_weights_right: sortedNodes.rightnodes,
-            total_weight
+            total_frequency,
         };
     }
 
@@ -158,17 +158,17 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
         };
     }
 
-    function prepare_data(pre_data, total_height, min_height, padding, max_number_nodes, show_other) {
+    function prepare_data(pre_data, total_height, min_height, padding, max_number_nodes, show_other, max_other_size) {
 
         let {
             nodesNLinks,
             sorted_ids_and_weights_left,
             sorted_ids_and_weights_right,
-            total_weight,
+            total_frequency,
         } = pre_data;
 
-        let included_ids_from = getIncludedIds(sorted_ids_and_weights_left, total_weight, total_height, min_height, padding, max_number_nodes, show_other);
-        let included_ids_to = getIncludedIds(sorted_ids_and_weights_right, total_weight, total_height, min_height, padding, max_number_nodes, show_other);
+        let included_ids_from = getIncludedIds(sorted_ids_and_weights_left, total_frequency, total_height, min_height, padding, max_number_nodes, show_other, max_other_size);
+        let included_ids_to = getIncludedIds(sorted_ids_and_weights_right, total_frequency, total_height, min_height, padding, max_number_nodes, show_other, max_other_size);
 
         let {
             filtered_links,
@@ -190,25 +190,29 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
      * taking into account the given 'total_height' of the diagram, the 'min_height' of each displayed
      * node and the 'padding' between the nodes.
      */
-    function getIncludedIds(sorted_ids_and_weights, total_weight, total_height, min_height, padding, max_number_nodes, show_other) {
+    function getIncludedIds(sorted_ids_and_weights, total_frequency, total_height, min_height, padding, max_number_nodes, show_other, max_other_size) {
 
         let included_ids = {};
-        let first_node = true;
 
         let frequency_so_far = 0;
-        let height_so_far = 0;
+        let padding_so_far = 0;
+        if (!show_other) padding_so_far = -padding;
+        let min_frequency = Infinity;
 
         for (let node of sorted_ids_and_weights) {
 
-            if (!first_node) {
-                total_height -= padding;
+            padding_so_far += padding;
+            frequency_so_far += node.node_frequency;
+            min_frequency = Math.min(node.node_frequency, min_frequency);
+
+            let min_scale = min_height / min_frequency;
+            let real_node_height = frequency_so_far * min_scale;
+            let other_node_height = 0;
+            if (show_other) {
+                other_node_height = Math.min(min_scale * (total_frequency-frequency_so_far), max_other_size);
             }
-            first_node = false;
 
-            total_weight += node.node_frequency;
-            let min_weight = node.node_frequency;
-
-            if (total_height / total_weight < min_height / min_weight) {
+            if (real_node_height + other_node_height + padding_so_far > total_height) {
                 break;
             }
 
