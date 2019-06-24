@@ -20,7 +20,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
     function draw(elementId, orderType) {
         console.log("Drawing sankey chart");
         let sankeyDat = data.getData("relationCounts");
-
+        console.log(sankeyDat);
         let preprocessed_data = data.preprocess_data(sankeyDat, orderType);
 
 

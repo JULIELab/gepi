@@ -77,7 +77,9 @@ public class ChartsDataManager implements IChartsDataManager {
         JSONArray nodes = new JSONArray();
         JSONArray links = new JSONArray();
         Set<String> nodeIdAlreadySeen = new HashSet<>();
-        pairedArgCount.forEach((k, v) -> {
+        pairedArgCount.entrySet().stream().limit(10).forEach(e -> {
+            final Event k = e.getKey();
+            final Integer v = e.getValue();
             JSONObject link = new JSONObject();
             link.put("source", k.getFirstArgument().getTopHomologyId());
             link.put("target", k.getSecondArgument().getTopHomologyId());

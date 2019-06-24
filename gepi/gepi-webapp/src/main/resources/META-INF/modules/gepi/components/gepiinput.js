@@ -1,4 +1,4 @@
-define(["jquery", "gepi/pages/index", "bootstrap/tooltip"], function($, index) {
+define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], function($, index, data) {
 
     let initialize = function(resultExists) {
         console.log("Initializing the input panel");
@@ -15,6 +15,7 @@ define(["jquery", "gepi/pages/index", "bootstrap/tooltip"], function($, index) {
         setupclearbuttons();
         setupShowInputPanel();
         observekeypress();
+        observeFormSubmit();
 
         /*
          * On changes of list B, checks if the list is empty. If not, some
@@ -149,6 +150,11 @@ define(["jquery", "gepi/pages/index", "bootstrap/tooltip"], function($, index) {
         }
 
         inputCol.on("keydown", KeyPress);
+        }
+
+        function observeFormSubmit() {
+            form = $("form[id^='input']");
+            form.on("submit", form => {console.log("Search form was submitted, clearing data chache."); data.clearData();});
         }
     };
 

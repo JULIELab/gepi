@@ -2,7 +2,6 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
     // This map holds the original data downloaded from the web application
     // as well as transformed versions for caching
     let data = new Map();
-    let sortedNodes = new Map();
     // For synchonization: Deferrer objects created on data requests
     // which are resolved when a
     // specific dataset has actually been set
@@ -10,17 +9,14 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
     let dataUrl = null;
 
     function getSortedNodes(nodesNLinks, orderFunction) {
-        let nodesObject = sortedNodes.get(orderFunction);
-        if (!nodesObject) {
-            console.log("Calling order function");
-            let t0 = performance.now();
-            nodesObject = functions[orderFunction](nodesNLinks);
-            nodesObject.leftnodes.sort((a, b) => b[orderFunction] - a[orderFunction]);
-            nodesObject.rightnodes.sort((a, b) => b[orderFunction] - a[orderFunction]);
-            let t1 = performance.now();
-            console.log("Call to the order function and sorting took " + (t1 - t0) + " milliseconds.");
-            sortedNodes.set(orderFunction, nodesObject);
-        }
+        console.log("Calling order function");
+        let t0 = performance.now();
+        nodesObject = functions[orderFunction](nodesNLinks);
+        nodesObject.leftnodes.sort((a, b) => b[orderFunction] - a[orderFunction]);
+        nodesObject.rightnodes.sort((a, b) => b[orderFunction] - a[orderFunction]);
+        let t1 = performance.now();
+        console.log("Call to the order function and sorting took " + (t1 - t0) + " milliseconds.");
+        
         return nodesObject;
     }
 
@@ -31,6 +27,12 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
 
     function getDataUrl() {
         return dataUrl;
+    }
+
+    function clearData() {
+        console.log("Clearing cached relation data")
+        data = new Map();
+        requestedData = new Map();
     }
 
     function loadData(source) {
@@ -118,6 +120,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
 
         let total_frequency = 0;
         for (let link of filtered_links) {
+            console.log(link);
             total_frequency += link.frequency;
             left_nodes_by_id[link.source].node_frequency += link.frequency;
             right_nodes_by_id[link.target].node_frequency += link.frequency;
@@ -354,6 +357,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
         getData,
         awaitData,
         setDataUrl,
-        getDataUrl
+        getDataUrl,
+        clearData
     };
 });
