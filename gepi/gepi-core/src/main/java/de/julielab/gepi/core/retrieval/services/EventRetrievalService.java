@@ -143,7 +143,6 @@ public class EventRetrievalService implements IEventRetrievalService {
                 SearchServerRequest serverCmd = new SearchServerRequest();
                 serverCmd.query = eventQuery;
                 serverCmd.index = documentIndex;
-                serverCmd.indexTypes = Arrays.asList("relations");
                 serverCmd.rows = SCROLL_SIZE;
                 serverCmd.fieldsToReturn = Collections.emptyList();
                 serverCmd.fieldsToReturn = Arrays.asList(
@@ -308,7 +307,6 @@ public class EventRetrievalService implements IEventRetrievalService {
                 SearchServerRequest serverCmd = new SearchServerRequest();
                 serverCmd.query = eventQuery;
                 serverCmd.index = documentIndex;
-                serverCmd.indexTypes = Arrays.asList("relations");
                 serverCmd.rows = SCROLL_SIZE;
                 serverCmd.fieldsToReturn = Arrays.asList(
                         FIELD_PMID,

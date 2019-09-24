@@ -25,7 +25,8 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "gepi/components/widge
         let node_weight_target = {};
         let nodes = [];
         let raw_nodes = [];
-        const node_count = settings.node_count;
+        // node_count is defined below because we need to know
+        // how many nodes there are before setting the count
 
         for (let {
                 source,
@@ -50,6 +51,8 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "gepi/components/widge
         // jetzt haben wir node_weights der form nodeId -> frequencySum
         // raw_nodes: [nodeId]
 
+        const node_count = Math.min(settings.node_count, node_weight_target.length);
+
         let sorted_nodes_and_weights = Array.from(Object.entries(node_weights)).sort(([n1, w1], [n2, w2]) => w2 - w1).slice(0, node_count);
         let included_nodes = {};
 
@@ -69,12 +72,17 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "gepi/components/widge
         });
         // die links sind jetzt nur noch diejenigen zwischen den included nodes
 
-        // distribute the 100 nodes evenly across a circle
+        // distribute the nodes evenly across a circle
         const node_distance = 360 / node_count;
 
         // raw_nodes: [nodeId] (i.e. index below is just the array index)
         // node_weights: nodeId -> frequencySum
         // nodes is empty until now
+        // psi: Fibonacci-Konstante; sorgt für eine gleichmaessige
+        // Verteilung der Knoten auf dem Kreis, wobei die grossen
+        // (eben die ersten) Knoten ungefaehr ihre urspruengliche
+        // Position behalten und die letzteres Knoten dazwischen
+        // verteilt werden.
         let psi = (Math.sqrt(5) - 1) / 2;
         let next_index = 0;
         let offset = Math.round(psi * node_count);

@@ -66,7 +66,6 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
 			Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE);
 			String eventId = eventDocument.getId();
-			String documentType = eventDocument.getIndexType();
 
 			Map<String, List<String>> highlights = eventDocument.getHighlights();
 
@@ -99,7 +98,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			pmid.ifPresent(event::setPmid);
 			pmcid.ifPresent(event::setPmcid);
 			event.setEventId(eventId);
-			event.setDocumentType(documentType);
+			//event.setDocumentType(documentType);
 			event.setArguments(arguments);
 			if (likelihood.isPresent())
 				event.setLikelihood(likelihood.get());

@@ -34,6 +34,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertTrue;
 import static org.assertj.core.api.Assertions.*;
 
@@ -45,10 +46,10 @@ public class EventRetrievalServiceIntegrationTest {
     public static GenericContainer es = new GenericContainer(
             new ImageFromDockerfile("gepicoreestest", true)
                     .withFileFromClasspath("Dockerfile", "dockercontext/Dockerfile")
-                    .withFileFromClasspath("elasticsearch-mapper-preanalyzed-5.4.0.zip", "dockercontext/elasticsearch-mapper-preanalyzed-5.4.0.zip"))
-            .withExposedPorts(9200, 9300)
-            .withStartupTimeout(Duration.ofMinutes(2))
-            .withEnv("cluster.name", TEST_CLUSTER);
+                    .withFileFromClasspath("elasticsearch-mapper-preanalyzed-7.0.1-SNAPSHOT.zip", "dockercontext/elasticsearch-mapper-preanalyzed-7.0.1-SNAPSHOT.zip"))
+            .withExposedPorts(9200)
+            .withEnv("cluster.name", TEST_CLUSTER)
+            .withEnv("discovery.type", "single-node");
     private static Registry registry;
 
     @BeforeClass
@@ -66,18 +67,18 @@ public class EventRetrievalServiceIntegrationTest {
         {
             // Create the test index
             URL url = new URL("http://localhost:" + es.getMappedPort(9200) + "/" + TEST_INDEX);
-            String mapping = IOUtils.toString(new File("../gepi-indexing-pipeline/src/main/resources/elasticSearchMapping.json").toURI());
+            String mapping = IOUtils.toString(new File("../gepi-indexing-pipeline/src/main/resources/elasticSearchMapping.json").toURI(), UTF_8);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("PUT");
             urlConnection.setRequestProperty("Content-Type", "application/json");
             //  String auth = Base64.getEncoder().encodeToString(("elastic:changeme").getBytes());
             // urlConnection.setRequestProperty("Authorization", "Basic " +  auth);
             urlConnection.setDoOutput(true);
-            IOUtils.write(mapping, urlConnection.getOutputStream(), StandardCharsets.UTF_8);
+            IOUtils.write(mapping, urlConnection.getOutputStream(), UTF_8);
             log.info("Response for index creation: {}", urlConnection.getResponseMessage());
 
             if (urlConnection.getErrorStream() != null) {
-                String error = IOUtils.toString(urlConnection.getErrorStream());
+                String error = IOUtils.toString(urlConnection.getErrorStream(), UTF_8);
                 log.error("Error when creating index: {}", error);
             }
 
@@ -93,10 +94,9 @@ public class EventRetrievalServiceIntegrationTest {
             List<String> bulkCommandLines = new ArrayList<>(relationDocuments.length);
             ObjectMapper om = new ObjectMapper();
             for (File doc : relationDocuments) {
-                String jsonContents = IOUtils.toString(FileUtilities.getInputStreamFromFile(doc), StandardCharsets.UTF_8);
+                String jsonContents = IOUtils.toString(FileUtilities.getInputStreamFromFile(doc), UTF_8);
                 Map<String, Object> indexMap = new HashMap<>();
                 indexMap.put("_index", TEST_INDEX);
-                indexMap.put("_type", "relations");
                 indexMap.put("_id", doc.getName().replace(".json.gz", ""));
                 Map<String, Object> map = new HashMap<>();
                 map.put("index", indexMap);
@@ -119,7 +119,7 @@ public class EventRetrievalServiceIntegrationTest {
         {
             URL url = new URL("http://localhost:" + es.getMappedPort(9200) + "/" + TEST_INDEX + "/_count");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            String countResponse = IOUtils.toString(urlConnection.getInputStream(), StandardCharsets.UTF_8);
+            String countResponse = IOUtils.toString(urlConnection.getInputStream(), UTF_8);
             log.debug("Response for the count of documents: {}", countResponse);
             assertTrue(countResponse.contains("count\":378"));
         }
@@ -127,7 +127,7 @@ public class EventRetrievalServiceIntegrationTest {
         Properties testconfig = new Properties();
         String configPath = "src/test/resources/testconfiguration.properties";
         testconfig.load(new FileInputStream(configPath));
-        testconfig.setProperty(ElasticQuerySymbolConstants.ES_PORT, String.valueOf(es.getMappedPort(9300)));
+        testconfig.setProperty(ElasticQuerySymbolConstants.ES_PORT, String.valueOf(es.getMappedPort(9200)));
         testconfig.setProperty(ElasticQuerySymbolConstants.ES_CLUSTER_NAME, TEST_CLUSTER);
         testconfig.store(new FileOutputStream(configPath), "The port number is automatically set in " + EventRetrievalServiceIntegrationTest.class.getCanonicalName());
     }

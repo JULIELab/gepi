@@ -22,7 +22,6 @@
     }
   },
   "mappings": {
-    "relations": {
       "_source": {
         "enabled": false
       },
@@ -90,9 +89,7 @@
               "analyzer": "postprocessing_for_preanalyzed_tokens",
               "store": true,
               "term_vector": "with_positions_offsets",
-              "norms": {
-                "enabled": false
-              }
+              "norms": false
             },
             "id": {
               "type": "keyword",
@@ -106,5 +103,4 @@
         }
       }
     }
-  }
 }
