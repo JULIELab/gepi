@@ -1,2 +1,0 @@
-tid42	homoprefname42
-tid43	homoprefname43
