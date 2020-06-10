@@ -1,18 +1,17 @@
 package de.julielab.gepi.core.services;
 
+import de.julielab.gepi.core.GepiCoreSymbolConstants;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.neo4j.driver.*;
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
-import de.julielab.gepi.core.GepiCoreSymbolConstants;
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.neo4j.driver.v1.*;
-import org.slf4j.Logger;
-
-import static org.neo4j.driver.v1.Values.parameters;
+import static org.neo4j.driver.Values.parameters;
 
 public class GeneIdService implements IGeneIdService {
 
@@ -54,8 +53,7 @@ public class GeneIdService implements IGeneIdService {
 	@Override
 	public Future<Stream<String>> convertInput2Atid(String input) {
 		return CompletableFuture.supplyAsync(() -> {
-			Config neo4jconf = Config.build().withoutEncryption().toConfig();
-			Driver driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"), neo4jconf);
+			Driver driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
 
 			try (Session session = driver.session()) {
 
@@ -72,7 +70,7 @@ public class GeneIdService implements IGeneIdService {
 		List<String> topAtids = new ArrayList<String>();
 		
 		String[] searchInput = input.split("\n");
-		StatementResult result = tx.run(
+		Result result = tx.run(
 				"MATCH (n:ID_MAP_NCBI_GENES) WHERE n.originalId IN {originalIds} "
 				+ "OPTIONAL MATCH (n)<-[:HAS_ELEMENT*2]-(a:AGGREGATE_TOP_HOMOLOGY) "
 				+ "RETURN DISTINCT( COALESCE(a.id,n.id) ) AS SEARCH_ID",

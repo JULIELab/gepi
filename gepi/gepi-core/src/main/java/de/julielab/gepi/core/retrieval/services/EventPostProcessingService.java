@@ -1,7 +1,12 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import static java.util.stream.Collectors.toSet;
-import static org.neo4j.driver.v1.Values.parameters;
+import com.google.common.collect.Sets;
+import de.julielab.gepi.core.GepiCoreSymbolConstants;
+import de.julielab.gepi.core.retrieval.data.Argument;
+import de.julielab.gepi.core.retrieval.data.Event;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.neo4j.driver.*;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,25 +14,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import de.julielab.gepi.core.GepiCoreSymbolConstants;
-import org.apache.tapestry5.annotations.Log;
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.neo4j.driver.v1.AuthTokens;
-import org.neo4j.driver.v1.Config;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.GraphDatabase;
-import org.neo4j.driver.v1.Record;
-import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.StatementResult;
-import org.neo4j.driver.v1.Transaction;
-import org.neo4j.driver.v1.TransactionWork;
-import org.neo4j.driver.v1.Value;
-import org.slf4j.Logger;
-
-import com.google.common.collect.Sets;
-
-import de.julielab.gepi.core.retrieval.data.Argument;
-import de.julielab.gepi.core.retrieval.data.Event;
+import static java.util.stream.Collectors.toSet;
+import static org.neo4j.driver.Values.parameters;
 
 public class EventPostProcessingService implements IEventPostProcessingService {
 
@@ -37,8 +25,7 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 
 	public EventPostProcessingService(Logger log, @Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
 		this.log = log;
-		Config neo4jconf = Config.build().withoutEncryption().toConfig();
-		driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"), neo4jconf);
+		driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
 
 	}
 
@@ -86,7 +73,7 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 				Value parameters = parameters("conceptIds", conceptIds);
 				log.trace("Cypher query to obtain preferred names: {} with parameters {}", statementTemplate,
 						parameters);
-				StatementResult result = tx.run(statementTemplate, parameters);
+				Result result = tx.run(statementTemplate, parameters);
 				while (result.hasNext()) {
 					Record record = result.next();
 					String conceptId = record.get("CONCEPT_ID").asString().replaceAll("\"", "");
@@ -130,7 +117,7 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 					Value parameters = parameters("entrezIds", conceptIds);
 					log.trace("Cypher query to obtain preferred names: {} with parameters {}", statementTemplate,
 							parameters);
-					StatementResult result = tx.run(statementTemplate, parameters);
+					Result result = tx.run(statementTemplate, parameters);
 					int numReceived = 0;
 					while (result.hasNext()) {
 						record = result.next();
