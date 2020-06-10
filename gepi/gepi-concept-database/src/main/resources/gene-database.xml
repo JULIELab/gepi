@@ -1,36 +1,53 @@
 <?xml version="1.0"?>
-<conceptdatabase xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xmlns="http://www.julielab.de/conceptdb"
-                 xsi:schemaLocation="http://www.julielab.de/conceptdb http://www.julielab.de/conceptdb/conceptdb-1.0.0.xsd
-                 http://www.julielab.de/conceptdb/concepts/ncbigene http://www.julielab.de/conceptdb/concepts/ncbigene-1.0.0.xsd
-                 http://www.julielab.de/conceptdb/exporters/serverplugin http://www.julielab.de/conceptdb/exporters/serverplugin-1.0.0.xsd
-                 http://www.julielab.de/conceptdb/exporters/cypher http://www.julielab.de/conceptdb/exporters/cypher-1.0.0.xsd
-                 http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacetcreator-1.0.0.xsd">
+<conceptdatabase xmlns="http://www.julielab.de/conceptdb"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.julielab.de/conceptdb http://www.julielab.de/conceptdb/conceptdb-1.1.0.xsd http://www.julielab.de/conceptdb/concepts/ncbigene
+                 http://www.julielab.de/conceptdb/concepts/ncbigeneconcepts-1.1.0.xsd
+                 http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd">
     <versioning>
-        <version>0.2</version>
+        <version>0.2.0-SNAPSHOT</version>
     </versioning>
     <connection>
-        <uri>http://dawkins:7778</uri>
+        <uri>http://darwin.coling.uni-jena.de:7575</uri>
         <user>neo4j</user>
         <password>julielab</password>
     </connection>
+    <preparations>
+        <operation>
+            <request>
+                <rest>
+                    <restendpoint>/concepts/indexes/create_indexes</restendpoint>
+                    <httpmethod>PUT</httpmethod>
+                </rest>
+                <parameters>
+                    <parameter>neo4j</parameter>
+                </parameters>
+            </request>
+        </operation>
+    </preparations>
     <imports>
         <import>
-            <serverplugininserter>
-                <pluginname>ConceptManager</pluginname>
-                <pluginendpoint>insert_concepts</pluginendpoint>
-            </serverplugininserter>
+            <rest>
+                <restendpoint>/concepts/concept_manager/insert_concepts</restendpoint>
+                <httpmethod>POST</httpmethod>
+            </rest>
             <concepts>
                 <creator xmlns="http://www.julielab.de/conceptdb/concepts/ncbigene">
-                    <name>de.julielab.concepts.db.creators.NCBIGeneConceptCreator</name>
+                    <name>NCBIGeneConceptCreator</name>
                     <configuration>
-                        <basepath>src/test/resources/geneconcepts/</basepath>
-                        <gene_info>genes/gene_info_test</gene_info>
-                        <genedescriptions>genes/gene2summary_test</genedescriptions>
-                        <organismlist>organisms/taxIdsForTests.lst</organismlist>
-                        <organismnames>organisms/names_test.dmp</organismnames>
-                        <homologene>genes/homologene_test.data</homologene>
-                        <gene_group>genes/gene_group_test</gene_group>
+                        <basepath>/home/faessler/tmp/genores/build</basepath>
+                        <gene_info>
+                            resources/gene_info_organism_filtered.gz
+                        </gene_info>
+                        <genedescriptions>
+                            resources/eg2summary
+                        </genedescriptions>
+                        <organismlist>
+                            makeResourcesAndIndicesTemp/all-species.taxid
+                        </organismlist>
+                        <organismnames>/data/data_resources/biology/ncbi_tax/names.dmp</organismnames>
+                        <homologene>deprecated</homologene>
+                        <gene_group>/var/data/data_resources/biology/entrez/gene/gene_orthologs.gz</gene_group>
                     </configuration>
                 </creator>
             </concepts>
@@ -38,71 +55,24 @@
                 <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
                     <name>DefaultFacetCreator</name>
                     <configuration>
-                        <name>Genes</name>
+                        <name>NCBI Gene</name>
                         <sourcetype>hierarchical</sourcetype>
                         <facetgroup>
-                            <name>Genes</name>
+                            <name>BioMed</name>
                         </facetgroup>
                     </configuration>
                 </creator>
             </facet>
         </import>
     </imports>
-    <exports>
-        <export xmlns="http://www.julielab.de/conceptdb/exporters/serverplugin">
-            <exporter>ServerPluginExporter</exporter>
-            <pluginname>
-                Export
-            </pluginname>
-            <pluginendpoint>
-                term_id_mapping
-            </pluginendpoint>
-            <configuration>
-                <outputfile>
-                    ../gepi-indexing-pipeline/resources/egid2tid.map
-                </outputfile>
-                <decoding>
-                    <json2bytearray>true</json2bytearray>
-                    <base64>false</base64>
-                    <gzip>true</gzip>
-                </decoding>
-                <parameters>
-                    <parameter parametername="id_property">
-                        originalId
-                    </parameter>
-                    <parameter parametername="labels" tojson="true">
-                        <label>ID_MAP_NCBI_GENES</label>
-                    </parameter>
-                </parameters>
-            </configuration>
-        </export>
-        <export name="allgeneaggregates" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
-            <exporter>CypherExporter</exporter>
-            <configuration>
-                <cypherquery>MATCH (th)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE (th:AGGREGATE_TOP_HOMOLOGY OR th:AGGREGATE_HOMOLOGENE OR th:AGGREGATE_GENEGROUP) AND NOT c:AGGREGATE with c.id as cid,COLLECT(DISTINCT th.id) AS atids RETURN cid, REDUCE(acc=HEAD(atids), atid in TAIL(atids) | acc + "|" + atid)</cypherquery>
-                <outputfile>../gepi-indexing-pipeline/resources/tid2atid.map</outputfile>
-            </configuration>
-        </export>
-        <export name="tophomologyids" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
-            <exporter>CypherExporter</exporter>
-            <configuration>
-                <cypherquery>MATCH (th:AGGREGATE_TOP_HOMOLOGY)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE NOT c:AGGREGATE RETURN DISTINCT c.id,th.id</cypherquery>
-                <outputfile>../gepi-indexing-pipeline/resources/tid2tophomo.map</outputfile>
-            </configuration>
-        </export>
-        <export name="preferredNames" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
-            <exporter>CypherExporter</exporter>
-            <configuration>
-                <cypherquery>MATCH (gene:ID_MAP_NCBI_GENES) return gene.id,gene.preferredName</cypherquery>
-                <outputfile>../gepi-indexing-pipeline/resources/tid2prefName.map</outputfile>
-            </configuration>
-        </export>
-        <export name="preferredTophomologyNames" xmlns="http://www.julielab.de/conceptdb/exporters/cypher">
-            <exporter>CypherExporter</exporter>
-            <configuration>
-                <cypherquery>MATCH (t:ID_MAP_NCBI_GENES) WITH t OPTIONAL MATCH (t)-[:HAS_ELEMENT*2]-(n:AGGREGATE_TOP_HOMOLOGY) RETURN DISTINCT t.id, COALESCE(n.preferredName, t.preferredName)</cypherquery>
-                <outputfile>../gepi-indexing-pipeline/resources/tid2topHomologyPrefName.map</outputfile>
-            </configuration>
-        </export>
-    </exports>
+    <operations>
+        <operation name="copy_aggregate_properties">
+            <request>
+                <rest>
+                    <restendpoint>/concepts/concept_aggregate_manager/copy_aggregate_properties</restendpoint>
+                    <httpmethod>PUT</httpmethod>
+                </rest>
+            </request>
+        </operation>
+    </operations>
 </conceptdatabase>
