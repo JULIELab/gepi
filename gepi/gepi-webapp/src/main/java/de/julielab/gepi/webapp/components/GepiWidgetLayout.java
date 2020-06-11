@@ -93,6 +93,7 @@ final public class GepiWidgetLayout {
 
     void setupRender() {
         persistEsResult = esResult;
+        persistNeo4jResult = neo4jResult;
         if (esResult == null)
             viewMode = null;
         if (viewMode == null)
@@ -135,7 +136,11 @@ final public class GepiWidgetLayout {
     }
 
     void onRefreshContent() throws InterruptedException, ExecutionException {
-        persistEsResult.get();
+        // If there is data from Neo4j, use that.
+        if (persistEsResult != null && persistNeo4jResult == null)
+            persistEsResult.get();
+        else if (persistNeo4jResult != null)
+            persistNeo4jResult.get();
         ajaxResponseRenderer.addRender(widgetZone);
     }
 

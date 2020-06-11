@@ -31,7 +31,6 @@ define(["jquery", "t5/core/zone"], function($, zoneManager) {
                     $("#widgetOverlay").addClass("into");
                     break;
             }
-            //let left = document.getElementById(widget.widgetId).getBoundingClientRect().left;
 
             widget.widget.addClass(newMode).removeClass(currentMode);
             if (!widget.disableDefaultAjaxRefresh) {
