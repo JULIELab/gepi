@@ -52,6 +52,99 @@ public class AggregatedEventsRetrievalTest {
         }
     }
 
+    @Test
+    public void retrieveCompleteA() {
+        // This should result in the same as retrieveCompleteAB because in both cases we retrieve the whole test graph
+        AggregatedEventsRetrieval retrieval = new AggregatedEventsRetrieval(LoggerFactory.getLogger(AggregatedEventsRetrieval.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c11", "c12", "c3", "c4")), List.of("Binding", "Regulation"));
+        assertThat(events.size()).isEqualTo(3);
+        while (events.increment()) {
+            if (events.getArg1Id().equals("a1") && events.getArg2Id().equals("a2"))
+                assertThat(events.getCount()).isEqualTo(11);
+            else if (events.getArg1Id().equals("c3") && events.getArg2Id().equals("a2"))
+                assertThat(events.getCount()).isEqualTo(2);
+            else if (events.getArg1Id().equals("c4") && events.getArg2Id().equals("c5"))
+                assertThat(events.getCount()).isEqualTo(8);
+            else
+                Assertions.fail("An unexpected relation occurred between " + events.getArg1Id() + " and " + events.getArg2Id());
+        }
+    }
+
+    @Test
+    public void retrieveCompleteARegulation() {
+        // Query all nodes but restrict to regulation
+        AggregatedEventsRetrieval retrieval = new AggregatedEventsRetrieval(LoggerFactory.getLogger(AggregatedEventsRetrieval.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c11", "c12", "c3", "c4")), List.of("Regulation"));
+        assertThat(events.size()).isEqualTo(2);
+        while (events.increment()) {
+            if (events.getArg1Id().equals("a1") && events.getArg2Id().equals("a2"))
+                assertThat(events.getCount()).isEqualTo(6);
+            else if (events.getArg1Id().equals("c4") && events.getArg2Id().equals("c5"))
+                assertThat(events.getCount()).isEqualTo(3);
+            else
+                Assertions.fail("An unexpected relation occurred between " + events.getArg1Id() + " and " + events.getArg2Id());
+        }
+    }
+
+    @Test
+    public void retrieveCompleteABRegulation() {
+        // Query all nodes but restrict to regulation; again the same result as with the A-search variant
+        AggregatedEventsRetrieval retrieval = new AggregatedEventsRetrieval(LoggerFactory.getLogger(AggregatedEventsRetrieval.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c11", "c12", "c3", "c4")),constantFuture(Stream.of("c21", "c22", "c5")), List.of("Regulation"));
+        assertThat(events.size()).isEqualTo(2);
+        while (events.increment()) {
+            if (events.getArg1Id().equals("a1") && events.getArg2Id().equals("a2"))
+                assertThat(events.getCount()).isEqualTo(6);
+            else if (events.getArg1Id().equals("c4") && events.getArg2Id().equals("c5"))
+                assertThat(events.getCount()).isEqualTo(3);
+            else
+                Assertions.fail("An unexpected relation occurred between " + events.getArg1Id() + " and " + events.getArg2Id());
+        }
+    }
+
+    @Test
+    public void doASearch1() {
+        AggregatedEventsRetrieval retrieval = new AggregatedEventsRetrieval(LoggerFactory.getLogger(AggregatedEventsRetrieval.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c12")),  List.of("Binding", "Regulation"));
+        // The result should actually exactly be the same as in retrieveWithAggregateResolution
+        assertThat(events.size()).isEqualTo(1);
+        events.seek(0);
+        assertThat(events.getArg1Id()).isEqualTo("a1");
+        assertThat(events.getArg2Id()).isEqualTo("a2");
+        assertThat(events.getArg2Name()).isEqualTo("Aggregate2");
+        assertThat(events.getArg1Name()).isEqualTo("Aggregate1");
+        assertThat(events.getCount()).isEqualTo(11);
+    }
+
+    @Test
+    public void doASearch2() {
+        AggregatedEventsRetrieval retrieval = new AggregatedEventsRetrieval(LoggerFactory.getLogger(AggregatedEventsRetrieval.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c12" ,"c3")),  List.of("Binding", "Regulation"));
+        assertThat(events.size()).isEqualTo(2);
+        while (events.increment()) {
+            if (events.getArg1Id().equals("a1") && events.getArg2Id().equals("a2"))
+                assertThat(events.getCount()).isEqualTo(11);
+            else if (events.getArg1Id().equals("c3") && events.getArg2Id().equals("a2"))
+                assertThat(events.getCount()).isEqualTo(2);
+            else
+                Assertions.fail("An unexpected relation occurred between " + events.getArg1Id() + " and " + events.getArg2Id());
+        }
+    }
+
+    @Test
+    public void doASearch3() {
+        AggregatedEventsRetrieval retrieval = new AggregatedEventsRetrieval(LoggerFactory.getLogger(AggregatedEventsRetrieval.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c4")),  List.of("Binding", "Regulation"));
+        // The result should actually exactly be the same as in retrieveWithAggregateResolution
+        assertThat(events.size()).isEqualTo(1);
+        events.seek(0);
+        assertThat(events.getArg1Id()).isEqualTo("c4");
+        assertThat(events.getArg2Id()).isEqualTo("c5");
+        assertThat(events.getArg1Name()).isEqualTo("Concept4");
+        assertThat(events.getArg2Name()).isEqualTo("Concept5");
+        assertThat(events.getCount()).isEqualTo(8);
+    }
+
     /**
      * Creates the test graph
      * @param graphDb

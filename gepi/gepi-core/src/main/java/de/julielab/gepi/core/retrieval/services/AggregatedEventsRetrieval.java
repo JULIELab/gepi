@@ -22,12 +22,49 @@ public class AggregatedEventsRetrieval implements IAggregatedEventsRetrieval {
 
     @Override
     public AggregatedEventsRetrievalResult getEvents(Future<Stream<String>> idStream1, List<String> eventTypes) {
+        String eventTypeList = String.join("|", eventTypes);
+        String queryTemplate = String.format("MATCH (a:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c:CONCEPT) WHERE c.sourceIds0 IN $aList \n" +
+                "WITH DISTINCT a\n" +
+                "MATCH p=(a)-[:HAS_ELEMENT]->(:CONCEPT)-[r:%s]-(c:CONCEPT) WHERE NOT (c)<-[:HAS_ELEMENT]-()\n" +
+                "RETURN a.preferredName AS arg1Name,c.preferredName AS arg2Name,a.sourceIds0 AS arg1Id,c.sourceIds0 AS arg2Id,sum(r.totalCount) AS count\n" +
+                "\n" +
+                "UNION ALL\n" +
+                "MATCH (a:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c) WHERE c.sourceIds0 IN $aList \n" +
+                "WITH DISTINCT a\n" +
+                "MATCH p=(a)-[:HAS_ELEMENT]->(:CONCEPT)-[r:%s]-(:CONCEPT)<-[:HAS_ELEMENT]-(a2:AGGREGATE_GENEGROUP)\n" +
+                "RETURN a.preferredName AS arg1Name,a2.preferredName AS arg2Name,a.sourceIds0 AS arg1Id,a2.sourceIds0 AS arg2Id,sum(r.totalCount) AS count\n" +
+                "\n" +
+                "UNION ALL\n" +
+                "MATCH (c:CONCEPT)-[r:%s]-(c2:CONCEPT) WHERE c.sourceIds0 IN $aList AND NOT (:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c) AND NOT (c2)<-[:HAS_ELEMENT]-()\n" +
+                "RETURN c.preferredName AS arg1Name,c2.preferredName AS arg2Name,c.sourceIds0 AS arg1Id,c2.sourceIds0 AS arg2Id,sum(r.totalCount) AS count\n" +
+                "\n" +
+                "UNION ALL\n" +
+                "MATCH (c:CONCEPT)-[r:%s]-(:CONCEPT)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) WHERE c.sourceIds0 IN $aList AND NOT (:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c)\n" +
+                "RETURN c.preferredName AS arg1Name,a.preferredName AS arg2Name,c.sourceIds0 AS arg1Id,a.sourceIds0 AS arg2Id,sum(r.totalCount) AS count", eventTypeList, eventTypeList, eventTypeList, eventTypeList);
+        try (Session s = driver.session(); Transaction tx = s.beginTransaction()) {
+            try {
+                Result cypherResult = tx.run(queryTemplate, Map.of("aList", idStream1.get()));
+                AggregatedEventsRetrievalResult retrievalResult = new AggregatedEventsRetrievalResult();
+                while (cypherResult.hasNext()) {
+                    Record record = cypherResult.next();
+                    retrievalResult.add(
+                            record.get("arg1Name").asString(),
+                            record.get("arg2Name").asString(),
+                            record.get("arg1Id").asString(),
+                            record.get("arg2Id").asString(),
+                            record.get("count").asInt());
+                }
+                return retrievalResult;
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
     @Override
     public AggregatedEventsRetrievalResult getEvents(Future<Stream<String>> idStream1, Future<Stream<String>> idStream2, List<String> eventTypes) {
-        String queryTemplate = "MATCH (c:CONCEPT) WHERE c.sourceIds0 IN $aList \n" +
+        String queryTemplate = String.format("MATCH (c:CONCEPT) WHERE c.sourceIds0 IN $aList \n" +
                 "OPTIONAL MATCH (a:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c) WITH\n" +
                 "CASE a IS NULL\n" +
                 "WHEN true THEN c\n" +
@@ -45,10 +82,10 @@ public class AggregatedEventsRetrieval implements IAggregatedEventsRetrieval {
                 "WHEN c1:AGGREGATE_GENEGROUP AND c2:AGGREGATE_GENEGROUP THEN 3\n" +
                 "ELSE 1\n" +
                 "END as l\n" +
-                "MATCH p=allShortestPaths((c1)-[:HAS_ELEMENT|Regulation|Binding|Positive_regulation*..3]-(c2))\n" +
+                "MATCH p=allShortestPaths((c1)-[r:HAS_ELEMENT|%s*..3]-(c2))\n" +
                 "WITH c1,c2,p,l,REDUCE(tc = 0, c IN [r in relationships(p) where EXISTS(r.totalCount) | r.totalCount] | tc + c) AS counts\n" +
                 "WHERE LENGTH(p) = l\n" +
-                "return c1.preferredName as arg1Name,c2.preferredName as arg2Name, c1.sourceIds0 as arg1Id,c2.sourceIds0 as arg2Id,sum(counts) AS count";
+                "return c1.preferredName as arg1Name,c2.preferredName as arg2Name, c1.sourceIds0 as arg1Id,c2.sourceIds0 as arg2Id,sum(counts) AS count",String.join("|", eventTypes));
         try (Session s = driver.session(); Transaction tx = s.beginTransaction()) {
             try {
                 Result cypherResult = tx.run(queryTemplate, Map.of("aList", idStream1.get(), "bList", idStream2.get()));
