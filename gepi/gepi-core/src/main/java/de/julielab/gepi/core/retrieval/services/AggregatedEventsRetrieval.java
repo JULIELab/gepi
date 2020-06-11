@@ -39,7 +39,7 @@ public class AggregatedEventsRetrieval implements IAggregatedEventsRetrieval {
                 "WHEN true THEN c\n" +
                 "ELSE a\n" +
                 "END as c2\n" +
-                "WITH c1,c2,\n" +
+                "WITH DISTINCT c1,c2,\n" +
                 "CASE\n" +
                 "WHEN c1:AGGREGATE_GENEGROUP XOR c2:AGGREGATE_GENEGROUP THEN 2\n" +
                 "WHEN c1:AGGREGATE_GENEGROUP AND c2:AGGREGATE_GENEGROUP THEN 3\n" +

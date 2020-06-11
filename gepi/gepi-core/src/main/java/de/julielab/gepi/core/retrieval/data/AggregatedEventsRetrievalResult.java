@@ -3,7 +3,7 @@ package de.julielab.gepi.core.retrieval.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AggregatedEventsRetrievalResult  {
+public class AggregatedEventsRetrievalResult {
     private List<String> arg1Names = new ArrayList<>();
     private List<String> arg2Names = new ArrayList<>();
     private List<String> arg1Ids = new ArrayList<>();
@@ -42,6 +42,11 @@ public class AggregatedEventsRetrievalResult  {
 
     public int getCount() {
         return counts.get(pos);
+    }
+
+    public boolean increment() {
+        ++pos;
+        return pos < arg1Names.size();
     }
 
     public void seek(int i) {
