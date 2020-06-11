@@ -4,7 +4,7 @@
         <div class="row">
             <div id="inputcol" class="col-md-4 col-md-offset-4 fade ${showInputClass}">
                 <t:zone t:id="inputzone" id="inputzone">
-                    <t:gepiinput result="result"/>
+                    <t:gepiinput esResult="esResult" neo4jResult="neo4jResult"/>
                 </t:zone>
             </div>
         </div>
@@ -14,13 +14,17 @@
                 <t:zone t:id="outputzone" id="outputzone">
                     <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
                     <div class="row">
-                        <t:piechartwidget result="result" class="col-md-4" />
-                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychart" commonPartners="false" />
-                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />
-                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />
+<!--                        <t:piechartwidget result="result" class="col-md-4" />-->
+                        <t:sankeywidget class="col-md-4" elementId="sankeychart" esResult="esResult" neo4jResult="neo4jResult" commonPartners="false" />
+<!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
+<!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
+<!--                        <t:piechartwidget result="result" class="col-md-4" />-->
+<!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychart" commonPartners="false" />-->
+<!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
+<!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
                     </div>
                     <div class="row">
-                        <t:tableresultwidget result="result" class="col-md-12"/>
+<!--                        <t:tableresultwidget result="result" class="col-md-12"/>-->
                     </div>
                 </t:zone>
             </div>

@@ -2,11 +2,11 @@ package de.julielab.gepi.webapp.components;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.julielab.gepi.core.services.IChartsDataManager;
+import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
+import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalService;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.SelectModel;
@@ -17,10 +17,8 @@ import org.apache.tapestry5.corelib.components.TextArea;
 import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.services.TypeCoercer;
-import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
-import org.apache.tapestry5.services.ajax.JavaScriptCallback;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
@@ -70,14 +68,24 @@ public class GepiInput {
     private IEventRetrievalService eventRetrievalService;
 
     @Inject
+    private IAggregatedEventsRetrievalService aggregatedEventsRetrievalService;
+
+    @Inject
     private IGeneIdService geneIdService;
 
     @Parameter
-    private CompletableFuture<EventRetrievalResult> result;
+    private CompletableFuture<EventRetrievalResult> esResult;
 
     @Property
     @Persist
-    private CompletableFuture<EventRetrievalResult> persistResult;
+    private CompletableFuture<EventRetrievalResult> persistEsResult;
+
+    @Parameter
+    private CompletableFuture<AggregatedEventsRetrievalResult> neo4jResult;
+
+    @Property
+    @Persist
+    private CompletableFuture<AggregatedEventsRetrievalResult> persistNeo4jResult;
 
     @Inject
     private TypeCoercer typeCoercer;
@@ -119,21 +127,35 @@ public class GepiInput {
 
     void onSuccessFromInputForm() {
         newSearch = true;
-       log.debug("Setting newsearch to true");
+        log.debug("Setting newsearch to true");
         final List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
-        if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
-                && listBTextAreaValue.trim().length() > 0)
-            result = eventRetrievalService.getBipartiteEvents(
-                    geneIdService.convertInput2Atid(listATextAreaValue),
-                    geneIdService.convertInput2Atid(listBTextAreaValue), selectedEventTypeNames, filterString);
-        else if (listATextAreaValue != null && listATextAreaValue.trim().length() > 0) {
-            log.debug("Calling EventRetrievalService for outside events");
-            result = eventRetrievalService.getOutsideEvents(geneIdService.convertInput2Atid(listATextAreaValue), selectedEventTypeNames, filterString);
-            if (result != null)
-                log.debug("Retrieved the response future. It is " + (result.isDone() ? "" : "not ") + "finished.");
-            else log.debug("After retrieving the result");
+        boolean isAListPresent = listATextAreaValue != null && listATextAreaValue.trim().length() > 0;
+        boolean isABSearchRequest = listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
+                && listBTextAreaValue.trim().length() > 0;
+        if (filterString != null && !filterString.isBlank()) {
+            if (isABSearchRequest)
+                esResult = eventRetrievalService.getBipartiteEvents(
+                        geneIdService.convertInput2Atid(listATextAreaValue),
+                        geneIdService.convertInput2Atid(listBTextAreaValue), selectedEventTypeNames, filterString);
+            else {
+                if (isAListPresent) {
+                    log.debug("Calling EventRetrievalService for outside events");
+                    esResult = eventRetrievalService.getOutsideEvents(geneIdService.convertInput2Atid(listATextAreaValue), selectedEventTypeNames, filterString);
+                    if (resultPresent())
+                        log.debug("Retrieved the response future. It is " + (esResult.isDone() ? "" : "not ") + "(ES)" + (neo4jResult.isDone() ? "" : "not ") + "(Neo4j) finished.");
+                    else log.debug("After retrieving the result");
+                }
+            }
+            persistEsResult = esResult;
+        } else {
+            CompletableFuture<Stream<String>> aListIds = CompletableFuture.completedFuture(Stream.of(listATextAreaValue.split("\n")));
+            if (isABSearchRequest) {
+                neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, CompletableFuture.completedFuture(Stream.of(listBTextAreaValue.split("\n"))), selectedEventTypeNames);
+            } else if (isAListPresent) {
+                neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, selectedEventTypeNames);
+            }
+            persistNeo4jResult = neo4jResult;
         }
-        persistResult = result;
 
         Index indexPage = (Index) resources.getContainer();
         ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
@@ -148,11 +170,15 @@ public class GepiInput {
     }
 
     void afterRender() {
-        javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize").with(result != null);
-        if (result != null && newSearch) {
+        javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize").with(resultPresent());
+        if (resultPresent() && newSearch) {
             log.debug("Sending JS call to show the output widgets.");
             javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");
         }
+    }
+
+    private boolean resultPresent() {
+        return esResult != null || neo4jResult != null;
     }
 
     private enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}

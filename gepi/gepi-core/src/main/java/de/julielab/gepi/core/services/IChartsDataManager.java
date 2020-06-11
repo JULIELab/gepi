@@ -2,6 +2,7 @@ package de.julielab.gepi.core.services;
 
 import java.util.List;
 
+import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import org.apache.tapestry5.json.JSONArray;
 
 import de.julielab.gepi.core.retrieval.data.Event;
@@ -19,6 +20,8 @@ public interface IChartsDataManager {
 	 * @return JSONArray - array of triplets ([<from, <to>, count])
 	 */	
 	JSONObject getPairedArgsCount(List<Event> e);
+
+	JSONObject getPairedArgsCount(AggregatedEventsRetrievalResult aggregatedEvents);
 
     JSONObject getPairsWithCommonTarget(List<Event> evtList);
 

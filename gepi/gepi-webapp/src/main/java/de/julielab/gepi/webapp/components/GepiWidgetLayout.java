@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 import java.util.Optional;
 
+import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -47,7 +48,10 @@ final public class GepiWidgetLayout {
 
     @Parameter
     @Property
-    protected CompletableFuture<EventRetrievalResult> result;
+    protected CompletableFuture<EventRetrievalResult> esResult;
+    @Parameter
+    @Property
+    protected CompletableFuture<AggregatedEventsRetrievalResult> neo4jResult;
     @Parameter(defaultPrefix = BindingConstants.LITERAL)
     @Property
     private String widgettitle;
@@ -78,7 +82,9 @@ final public class GepiWidgetLayout {
     @Environmental
     private JavaScriptSupport javaScriptSupport;
     @Persist
-    private CompletableFuture<EventRetrievalResult> persistResult;
+    private CompletableFuture<EventRetrievalResult> persistEsResult;
+    @Persist
+    private CompletableFuture<AggregatedEventsRetrievalResult> persistNeo4jResult;
     @Persist
     @Property
     private String viewMode;
@@ -86,8 +92,8 @@ final public class GepiWidgetLayout {
     private Index index;
 
     void setupRender() {
-        persistResult = result;
-        if (result == null)
+        persistEsResult = esResult;
+        if (esResult == null)
             viewMode = null;
         if (viewMode == null)
             viewMode = ViewMode.OVERVIEW.name().toLowerCase();
@@ -112,15 +118,24 @@ final public class GepiWidgetLayout {
     }
 
     public boolean isRenderBody() {
-        return disableDefaultAjaxRefresh || (persistResult != null && persistResult.isDone());
+        return disableDefaultAjaxRefresh || isResultAvailable();
     }
 
     public boolean isResultLoading() {
-        return persistResult != null && !persistResult.isDone();
+        if (neo4jResult != null && !neo4jResult.isDone()) {
+            return true;
+        }
+        return persistEsResult != null && !persistEsResult.isDone();
+    }
+
+    public boolean isResultAvailable() {
+        if (neo4jResult != null && neo4jResult.isDone())
+            return true;
+        return persistEsResult != null && persistEsResult.isDone();
     }
 
     void onRefreshContent() throws InterruptedException, ExecutionException {
-        persistResult.get();
+        persistEsResult.get();
         ajaxResponseRenderer.addRender(widgetZone);
     }
 
@@ -170,7 +185,7 @@ final public class GepiWidgetLayout {
      */
     @Log
     StreamResponse onActionFromDownload() {
-        if (!persistResult.isDone()) {
+        if (!persistEsResult.isDone()) {
             //TODO: how to handle case when download button is clicked, but the request is not yet fully done
 
         }
@@ -189,7 +204,7 @@ final public class GepiWidgetLayout {
             public void prepareResponse(Response response) {
                 EventRetrievalResult eResult = null;
                 try {
-                    eResult = persistResult.get();
+                    eResult = persistEsResult.get();
                 } catch (InterruptedException | ExecutionException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();

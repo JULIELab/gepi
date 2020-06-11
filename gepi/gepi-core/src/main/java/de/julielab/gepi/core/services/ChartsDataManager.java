@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
@@ -102,6 +103,31 @@ public class ChartsDataManager implements IChartsDataManager {
         return nodesNLinks;
     }
 
+    @Override
+    public JSONObject getPairedArgsCount(AggregatedEventsRetrievalResult aggregatedEvents) {
+        JSONArray nodes = new JSONArray();
+        JSONArray links = new JSONArray();
+
+        log.debug("Converting aggregated event retrieveal result of size {} to JSON nodes and links.", aggregatedEvents.size());
+        aggregatedEvents.rewind();
+        Set<String> nodeIdAlreadySeen = new HashSet<>();
+        while (aggregatedEvents.increment()) {
+            JSONObject arg1 = new JSONObject("id", aggregatedEvents.getArg1Id(), "name", aggregatedEvents.getArg1Name());
+            JSONObject arg2 = new JSONObject("id", aggregatedEvents.getArg2Id(), "name", aggregatedEvents.getArg2Name());
+            JSONObject link = new JSONObject("source", aggregatedEvents.getArg1Id(), "target", aggregatedEvents.getArg2Id(), "frequency", aggregatedEvents.getCount(), "type", "interaction");
+            if (nodeIdAlreadySeen.add(aggregatedEvents.getArg1Id()))
+                nodes.put(arg1);
+            if (nodeIdAlreadySeen.add(aggregatedEvents.getArg2Id()))
+                nodes.put(arg2);
+            links.put(link);
+        }
+
+        JSONObject nodesNLinks = new JSONObject();
+        nodesNLinks.put("nodes", nodes);
+        nodesNLinks.put("links", links);
+        return nodesNLinks;
+    }
+
     /**
      * sets json formated input list for google charts that accepts an entry
      * pair + number (here gene pair (from + to) + count of occurrences)
@@ -118,8 +144,8 @@ public class ChartsDataManager implements IChartsDataManager {
                 Collectors.collectingAndThen(Collectors.toList(), CollectionUtils::getCardinalityMap)));
         System.out.println(target2EventCardinalities);
         // The general harmonic mean formula for x1,...,xn: n / ( 1/x1 + ... + 1/xn)
-        Function<Map<Event,Integer>, Double> harmonicMean = eventCounts -> eventCounts.size() / (eventCounts.values().stream().map(c -> 1d/c).reduce(1d, (sum, c) -> sum + c));
-        final LinkedHashMap<Argument, Map<Event, Integer>> orderedMap = target2EventCardinalities.entrySet().stream().sorted((e1,e2) -> (int)Math.signum(harmonicMean.apply(e2.getValue()) - harmonicMean.apply(e1.getValue()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (k, v) -> k, LinkedHashMap::new));
+        Function<Map<Event, Integer>, Double> harmonicMean = eventCounts -> eventCounts.size() / (eventCounts.values().stream().map(c -> 1d / c).reduce(1d, (sum, c) -> sum + c));
+        final LinkedHashMap<Argument, Map<Event, Integer>> orderedMap = target2EventCardinalities.entrySet().stream().sorted((e1, e2) -> (int) Math.signum(harmonicMean.apply(e2.getValue()) - harmonicMean.apply(e1.getValue()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (k, v) -> k, LinkedHashMap::new));
 
         // put to json
         JSONArray nodes = new JSONArray();

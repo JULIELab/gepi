@@ -49,6 +49,14 @@ public class AggregatedEventsRetrievalResult {
         return pos < arg1Names.size();
     }
 
+    /**
+     * Sets the position to -1 and thus makes it ready for another iteration using {@link #increment()};
+     *
+     */
+    public void rewind() {
+        pos = -1;
+    }
+
     public void seek(int i) {
         if (i < 0)
             throw new IllegalArgumentException("Position is supposed to be set to " + i + " but must be >= 0.");

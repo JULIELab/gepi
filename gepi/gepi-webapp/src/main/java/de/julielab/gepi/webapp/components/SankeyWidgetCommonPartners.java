@@ -27,7 +27,7 @@ public class SankeyWidgetCommonPartners extends GepiWidget {
 	void onDrawChart() {
 		try {
 			javaScriptSupport.require("gepi/charts/sankeychart").with( "sankeychartcommonpartners",
-					gChartMnger.getPairsWithCommonTarget(persistResult.get().getEventList()) );
+					gChartMnger.getPairsWithCommonTarget(persistEsResult.get().getEventList()) );
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}

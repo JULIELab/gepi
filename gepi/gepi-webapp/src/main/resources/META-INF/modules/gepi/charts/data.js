@@ -120,7 +120,6 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
 
         let total_frequency = 0;
         for (let link of filtered_links) {
-            console.log(link);
             total_frequency += link.frequency;
             left_nodes_by_id[link.source].node_frequency += link.frequency;
             right_nodes_by_id[link.target].node_frequency += link.frequency;
@@ -220,6 +219,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             }
 
             included_ids[node.id] = true;
+
         }
 
         return included_ids;

@@ -148,6 +148,6 @@ public class AppModule
         // set constraints to precisely control the invocation order of the contributed filter
         // within the pipeline.
 
-        configuration.add("Timing", filter);
+//        configuration.add("Timing", filter);
     }
 }
