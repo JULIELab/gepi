@@ -1,137 +1,159 @@
 define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widgetManager"], function($, data, index, widgetManager) {
 
-    return function drawSankeyChart(elementId, orderType) {
-        console.log("Preparing to draw sankey chart for element ID " + elementId + " with node ordering type " + orderType);
+    class SankeyWidget {
+        elementId
+        orderType
 
-        index.getReadySemaphor().done(() => {
-            console.log("Chart drawing has green light from the central index semaphor, requesting data");
-            data.awaitData("relationCounts").done(() => {
-                console.log("Loading data was successful. Checking if the input column also gives green light.");
-                let inputcolReadyPromise = $("#inputcol").data("animationtimer");
-                if (inputcolReadyPromise)
-                    inputcolReadyPromise.done(() =>
-                        draw(elementId, orderType));
-                else
-                    draw(elementId, orderType);
-            });
-        });
-    };
+        constructor(elementId, orderType, widgetsettings) {
+            this.elementId = elementId;
+            this.orderType = orderType;
+            // hier eigentlich gar nicht gebraucht, vermutlich zu entfernen
+            this.widgetsettings = widgetsettings;
 
-    function draw(elementId, orderType) {
-        console.log("Drawing sankey chart");
-        let sankeyDat = data.getData("relationCounts");
-        console.log(sankeyDat);
-        let preprocessed_data = data.preprocess_data(sankeyDat, orderType);
-
-
-        let settings = {
-            width: 500,
-            height: 300,
-            min_height: 200,
-            padding_x: 100,
-            padding_y: 10,
-            node_spacing: 7,
-            min_node_height: 5,
-            label_font_size: 12,
-            node_width: 10,
-            node_to_label_spacing: 5,
-            //max_number_nodes: 3,
-            show_other: false,
-            restrict_other_height: true,
-            max_other_height: 100,
-        };
-
-        let chart_elem = document.getElementById(elementId);
-
-        let running = false;
-        window.onresize = () => {
-            if (!running) {
-                running = true;
-                redraw();
-                running = false;
-            }
-        };
-
-        function create_svg() {
-            let chart = d3.select(chart_elem);
-
-            chart.selectAll("svg").remove();
-
-            let chartContainer = $("#" + elementId + "-container");
-            //chartContainer.closest(".panel-body > .shine").addClass("hidden");
-            chartContainer.removeClass("hidden");
-            settings.width = chart_elem.clientWidth - 2 * settings.padding_x - 10;
-            let svg = chart
-                .append("svg")
-                .attr("width", settings.width + 2 * settings.padding_x)
-                .attr("height", settings.height + 2 * settings.padding_y);
-
-            return svg.append("g").attr("transform", "translate(" + settings.padding_x + "," + settings.padding_y + ")");
+            this.setup();
         }
 
-        let selected_by_node_id = {};
+        setup() {
+            console.log("Preparing to draw sankey chart for element ID " + this.elementId + " with node ordering type " + this.orderType);
 
-        function main() {
+            index.getReadySemaphor().done(() => {
+                console.log("Chart drawing has green light from the central index semaphor, requesting data");
+                data.awaitData("relationCounts").done(() => {
+                    console.log("Loading data was successful. Checking if the input column also gives green light.");
+                    let inputcolReadyPromise = $("#inputcol").data("animationtimer");
+                    if (inputcolReadyPromise)
+                        inputcolReadyPromise.done(() =>
+                            this.init(this.elementId, this.orderType));
+                    else
+                        this.init(this.elementId, this.orderType);
+                });
+            });
+        }
+
+        init() {
+            console.log("Initializing sankey chart");
+            let sankeyDat = data.getData("relationCounts");
+            console.log(sankeyDat);
+            this.preprocessed_data = data.preprocess_data(sankeyDat, this.orderType);
+
+            this.settings = {
+                width: 500,
+                height: 300,
+                min_height: 200,
+                padding_x: 100,
+                padding_y: 10,
+                node_spacing: 7,
+                min_node_height: 5,
+                label_font_size: 12,
+                node_width: 10,
+                node_to_label_spacing: 5,
+                //max_number_nodes: 3,
+                show_other: false,
+                restrict_other_height: true,
+                max_other_height: 100,
+            };
+
+
+            let running = false;
+            window.onresize = () => {
+                if (!running) {
+                    running = true;
+                    this.redraw();
+                    running = false;
+                }
+            };
+
+
+            this.selected_by_node_id = {};
+
+
+
+            this.main();
+
+
+        }
+
+        main() {
             console.log("Call to main")
-            if (!$("#"+elementId).data("mainWasCalled")) {
+            if (!$("#" + this.elementId).data("mainWasCalled")) {
+                let settings = this.settings;
                 // Hide the Loading... banner
-                $("#"+elementId+"-outer .panel-body .shine").addClass("hidden");
+                $("#" + this.elementId + "-outer .panel-body .shine").addClass("hidden");
 
-                redraw();
+                this.redraw();
 
-                add_slider("padding-slider", "Padding: ", 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
-                add_slider("min-size-slider", "Minimum node size: ", 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
-                add_slider("node-height-slider", "Chart height: ", 0, 1000, 2, settings.height, (value) => settings.height = value - 0);
-                //add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, settings.max_number_nodes, (value) => settings.max_number_nodes = value);
-                add_slider("max-other-slider", "Maximum size of \"Other\" node:", 0, 300, 2, settings.max_other_height, (value) => settings.max_other_height = value);
+                this.add_slider("padding-slider", "Padding: ", 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
+                this.add_slider("min-size-slider", "Minimum node size: ", 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
+                this.add_slider("node-height-slider", "Chart height: ", 0, 1000, 2, settings.height, (value) => settings.height = value - 0);
+                //add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, this.settings.max_number_nodes, (value) => this.settings.max_number_nodes = value);
+                this.add_slider("max-other-slider", "Maximum size of \"Other\" node:", 0, 300, 2, settings.max_other_height, (value) => settings.max_other_height = value);
 
-                add_toggle(
+                this.add_toggle(
                     "restrict-other-toggle",
                     "Restrict size of \"Other\" node",
                     settings.restrict_other_height,
                     (state) => settings.restrict_other_height = state
                 );
 
-                add_toggle(
+                this.add_toggle(
                     "show-other-toggle",
                     "Show \"Other\" node",
                     settings.show_other,
                     (state) => settings.show_other = state
                 );
 
-                add_button("Clear selection", () => {
-                    selected_by_node_id = {};
-                    redraw();
+                this.add_button("Clear selection", () => {
+                    this.selected_by_node_id = {};
+                    this.redraw();
                 });
-                $("#"+elementId).data("mainWasCalled", true);
+                $("#" + this.elementId).data("mainWasCalled", true);
+                console.log("Finished main.")
             } else {
                 console.log("Not executing sankeychart#main() again because it had already been called");
             }
         }
 
-        main();
+        create_svg() {
+            let chart_elem = document.getElementById(this.elementId);
+            let chart = d3.select(chart_elem);
 
-        function redraw() {
+            chart.selectAll("svg").remove();
+
+            let chartContainer = $("#" + this.elementId + "-container");
+            //chartContainer.closest(".panel-body > .shine").addClass("hidden");
+            chartContainer.removeClass("hidden");
+            this.settings.width = chart_elem.clientWidth - 2 * this.settings.padding_x - 10;
+            let svg = chart
+                .append("svg")
+                .attr("width", this.settings.width + 2 * this.settings.padding_x)
+                .attr("height", this.settings.height + 2 * this.settings.padding_y);
+
+            return svg.append("g").attr("transform", "translate(" + this.settings.padding_x + "," + this.settings.padding_y + ")");
+        }
+
+
+
+        redraw() {
             console.log("Redrawing sankey!");
 
-            let svg = create_svg();
+            let svg = this.create_svg();
 
             console.log("Preparing sankey data");
             let max_other_height;
-            if (settings.restrict_other_height) {
-                max_other_height = Number(settings.max_other_height);
+            if (this.settings.restrict_other_height) {
+                max_other_height = Number(this.settings.max_other_height);
             } else {
                 max_other_height = Infinity;
             }
-            let the_data = data.prepare_data(preprocessed_data, settings.height, settings.min_node_height, settings.node_spacing, settings.show_other, max_other_height);
+            let the_data = data.prepare_data(this.preprocessed_data, this.settings.height, this.settings.min_node_height, this.settings.node_spacing, this.settings.show_other, max_other_height);
             console.log("Finished preparing data");
 
             let sankey = d3.sankey();
 
             sankey
-                .size([settings.width, settings.height])
-                .nodeWidth(settings.node_width)
-                .nodePadding(settings.node_spacing)
+                .size([this.settings.width, this.settings.height])
+                .nodeWidth(this.settings.node_width)
+                .nodePadding(this.settings.node_spacing)
                 .nodeId((d) => d.id)
                 .nodes(the_data.nodes)
                 .links(the_data.links)
@@ -145,7 +167,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
 
             sankey.update(the_data);
 
-            adapt_node_widths(the_data, max_other_height);
+            this.adapt_node_widths(the_data, max_other_height);
 
             //links
             let links = svg.append("g")
@@ -158,7 +180,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
                 .attr("class", "link")
                 .attr("fill", (d) => d.color)
                 //.attr("stroke", (d) => d.color)
-                .attr("d", compute_path)
+                .attr("d", this.compute_path)
                 .attr("stroke-width", 0);
             //.attr("stroke-width", (d) => d.width);
 
@@ -194,7 +216,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
 
                      */
 
-                    if (selected_by_node_id[d.id]) {
+                    if (this.selected_by_node_id[d.id]) {
                         return "#0040a0";
                     } else {
                         return "#000000";
@@ -202,15 +224,16 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
                 });
 
             nodes.on("click", (d) => {
-                selected_by_node_id[d.id] = !selected_by_node_id[d.id];
-                redraw();
+                this.selected_by_node_id[d.id] = !this.selected_by_node_id[d.id];
+                this.redraw();
             });
 
+            let settings = this.settings
             // nodes: labels
             nodes.append("text")
                 .text((d) => d.name)
-                .style("font-size", settings.label_font_size + "px")
-                .attr("y", (d) => (d.y1 - d.y0 + settings.label_font_size) / 2)
+                .style("font-size", this.settings.label_font_size + "px")
+                .attr("y", (d) => (d.y1 - d.y0 + this.settings.label_font_size) / 2)
                 .attr("x", function(d) {
                     if (d.id.endsWith("_from")) {
                         return -this.getComputedTextLength() - settings.node_to_label_spacing;
@@ -224,22 +247,24 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
 
         }
 
-        function add_toggle(id, text, initial_state, change_handler) {
-            let p = d3.select("#"+elementId+"-container .settings .checkboxes").append("p");
-            console.log(p.node());
+        add_toggle(id, text, initial_state, change_handler) {
+            let p = d3.select("#" + this.elementId + "-container .settings .checkboxes").append("p");
+            console.log('[add_toggle] node: ' + p.node());
             let input = p.append("input").attr("type", "checkbox").attr("id", id);
             if (initial_state) {
                 input.attr("checked", "checked");
             }
-            p.append("label").attr("for", id).text(" "+text);
-            input.on("change", function () {
+            p.append("label").attr("for", id).text(" " + text);
+            input.on("change", function() {
                 change_handler(this.checked);
-                redraw();
+                this.redraw();
             });
         }
 
-        function add_slider(id, label_text, min, max, step, value, change_handler) {
-            let p = d3.select("#" + elementId + "-container .settings").select(".sliders").append("p");
+        add_slider(id, label_text, min, max, step, value, change_handler) {
+            let p = d3.select("#" + this.elementId + "-container .settings").select(".sliders").append("p");
+            let redraw = this.redraw.bind(this)
+
 
             p.append("label")
                 .attr("for", id)
@@ -259,21 +284,21 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
                 });
         }
 
-        function add_button(text, click_handler) {
-            d3.select(elementId).select(".buttons")
+        add_button(text, click_handler) {
+            d3.select(this.elementId).select(".buttons")
                 .append("button")
                 .text(text)
                 .on("click", click_handler);
         }
 
-        function shift(node, x, y) {
+        shift(node, x, y) {
             node.x0 += x;
             node.x1 += x;
             node.y0 += y;
             node.y1 += y;
         }
 
-        function compute_path(d) {
+        compute_path(d) {
             let x_left = d.source.x1;
             let x_right = d.target.x0;
             let x_center = (x_left + x_right) / 2;
@@ -322,7 +347,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
             return path;
         }
 
-        function adapt_node_widths(data, max_other_height) {
+        adapt_node_widths(data, max_other_height) {
             let left_other_y0 = 0;
             let left_scale = 1;
             let right_other_y0 = 0;
@@ -348,17 +373,24 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
             for (let link of data.links) {
                 if (link.source.id === "MISC_from") {
                     link.left_width = left_scale * link.width;
-                    link.y0 = left_other_y0 + left_scale*(link.y0 - left_other_y0);
+                    link.y0 = left_other_y0 + left_scale * (link.y0 - left_other_y0);
                 } else {
                     link.left_width = link.width;
                 }
                 if (link.target.id === "MISC_to") {
                     link.right_width = right_scale * link.width;
-                    link.y1 = right_other_y0 + right_scale*(link.y1 - right_other_y0);
+                    link.y1 = right_other_y0 + right_scale * (link.y1 - right_other_y0);
                 } else {
                     link.right_width = link.width;
                 }
             }
         }
+    }
+
+    return function newSankeyWidget(elementId, orderType, widgetsettings) {
+        widgetManager.addWidget(widgetsettings.widgetId, new SankeyWidget(elementId, orderType, widgetsettings));
     };
+
+
+
 });

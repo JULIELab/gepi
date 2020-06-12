@@ -115,7 +115,7 @@
                                 
                 <value>
                                         
-                    <boolean>false</boolean>
+                    <boolean>true</boolean>
                                     
                 </value>
                             
@@ -128,6 +128,18 @@
                 <value>
                                         
                     <string>config/genemapper.properties</string>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>ContextWindowSize</name>
+                                
+                <value>
+                                        
+                    <integer>100</integer>
                                     
                 </value>
                             

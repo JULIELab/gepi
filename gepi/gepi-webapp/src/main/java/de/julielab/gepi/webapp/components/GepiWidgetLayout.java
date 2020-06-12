@@ -101,6 +101,16 @@ final public class GepiWidgetLayout {
     }
 
     void afterRender() {
+//        JSONObject widgetSettings = getWidgetSettings();
+//        javaScriptSupport.require("gepi/components/widgetManager").invoke("addWidget")
+//                .with(clientId, widgetSettings);
+    }
+
+    /**
+     * To be used by concrete Widget classes.
+     * @return
+     */
+    public JSONObject getWidgetSettings() {
         Link toggleViewModeEventLink = resources.createEventLink("toggleViewMode");
         Link refreshContentEventLink = resources.createEventLink("refreshContent");
         JSONObject widgetSettings = new JSONObject();
@@ -110,8 +120,7 @@ final public class GepiWidgetLayout {
         widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI());
         widgetSettings.put("zoneElementId", widgetZone.getClientId());
         widgetSettings.put("disableDefaultAjaxRefresh", disableDefaultAjaxRefresh);
-        javaScriptSupport.require("gepi/components/widgetManager").invoke("addWidget")
-                .with(clientId, widgetSettings);
+        return widgetSettings;
     }
 
     public boolean isDownload() {
