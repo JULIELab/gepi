@@ -3,12 +3,12 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
     class SankeyWidget {
         elementId
         orderType
+        widgetSettings
 
-        constructor(elementId, orderType, widgetsettings) {
+        constructor(elementId, orderType, widgetSettings) {
             this.elementId = elementId;
             this.orderType = orderType;
-            // hier eigentlich gar nicht gebraucht, vermutlich zu entfernen
-            this.widgetsettings = widgetsettings;
+            this.widgetSettings = widgetSettings;
 
             this.setup();
         }
@@ -104,6 +104,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
 
                 this.add_button("Clear selection", () => {
                     this.selected_by_node_id = {};
+                    console.log("who am I: " + this)
                     this.redraw();
                 });
                 $("#" + this.elementId).data("mainWasCalled", true);
@@ -225,6 +226,7 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
 
             nodes.on("click", (d) => {
                 this.selected_by_node_id[d.id] = !this.selected_by_node_id[d.id];
+                console.log("nodes.on click")
                 this.redraw();
             });
 
@@ -255,9 +257,10 @@ define(["jquery", "gepi/charts/data", "gepi/pages/index", "gepi/components/widge
                 input.attr("checked", "checked");
             }
             p.append("label").attr("for", id).text(" " + text);
+            let redraw = this.redraw.bind(this);
             input.on("change", function() {
                 change_handler(this.checked);
-                this.redraw();
+                redraw();
             });
         }
 
