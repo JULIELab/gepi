@@ -1,5 +1,6 @@
 package de.julielab.gepi.indexing;
 
+import de.julielab.jcore.consumer.es.ArrayFieldValue;
 import de.julielab.jcore.consumer.es.FieldGenerationException;
 import de.julielab.jcore.consumer.es.FieldValueGenerator;
 import de.julielab.jcore.consumer.es.FilterRegistry;
@@ -9,8 +10,10 @@ import de.julielab.jcore.types.LikelihoodIndicator;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.utility.JCoReTools;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSArray;
 
 /**
  * "_parent": {
@@ -75,30 +78,36 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
      */
     @Override
     public IFieldValue generateFieldValue(FeatureStructure fs) throws FieldGenerationException {
-        Document document = new Document();
+        ArrayFieldValue relDocs = new ArrayFieldValue();
         FlattenedRelation rel = (FlattenedRelation) fs;
-        try {
-            JCas jCas = rel.getCAS().getJCas();
-            String docId = JCoReTools.getDocId(jCas);
-            FieldCreationUtils.addDocumentId(document, rel);
-            LikelihoodIndicator likelihood = rel.getRootRelation().getLikelihood();
-            if (likelihood != null)
-                document.addField("likelihood", FieldCreationUtils.likelihoodValues.get(likelihood.getLikelihood()));
-            document.setId(docId + "_" + rel.getId());
-            document.addField("id", docId + "_" + rel.getId());
-            document.addField("numargs", rel.getArguments().size());
-            document.addField("allarguments", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
-            document.addField("allargumentgeneids", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId"));
-            document.addField("allargumentconceptids", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.eg2tidReplaceFilter));
-            document.addField("allargumenttophomoids", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.eg2tophomoFilter));
-            document.addField("allargumentcoveredtext", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/:coveredText()"));
-            document.addField("allargumentprefnames", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
-            document.addField("allargumenthomoprefnames", createRawFieldValueForAnnotations(rel.getArguments().toArray(), "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
-            document.addField("alleventtypes", createRawFieldValueForAnnotations(rel.getRelations().toArray(), "/specificType"));
-            document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
-        } catch (CASException e) {
-            throw new FieldGenerationException(e);
+        FSArray allArguments = rel.getArguments();
+        LikelihoodIndicator likelihood = rel.getRootRelation().getLikelihood();
+        for (int i = 0; i < allArguments.size() - 1; ++i) {
+            for (int j = i + 1; j < allArguments.size(); ++j) {
+                Document document = new Document();
+                FeatureStructure[] argPair = new FeatureStructure[]{allArguments.get(i), allArguments.get(j)};
+                try {
+                    JCas jCas = rel.getCAS().getJCas();
+                    String docId = JCoReTools.getDocId(jCas);
+                    FieldCreationUtils.addDocumentId(document, rel);
+                    if (likelihood != null)
+                        document.addField("likelihood", FieldCreationUtils.likelihoodValues.get(likelihood.getLikelihood()));
+                    String id = docId + "_" + rel.getId() + "_" + i + "_" + j;
+                    document.setId(id);
+                    document.addField("id", id);
+                    document.addField("arguments", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
+                    document.addField("argumentgeneids", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId"));
+                    document.addField("argumentconceptids", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.eg2tidReplaceFilter));
+                    document.addField("argumenttophomoids", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.eg2tophomoFilter));
+                    document.addField("argumentcoveredtext", createRawFieldValueForAnnotations(argPair, "/:coveredText()"));
+                    document.addField("argumentprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
+                    document.addField("argumenthomoprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
+                    document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
+                } catch (CASException e) {
+                    throw new FieldGenerationException(e);
+                }
+            }
         }
-        return document;
+        return relDocs;
     }
 }
