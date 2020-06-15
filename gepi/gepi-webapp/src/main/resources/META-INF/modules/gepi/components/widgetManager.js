@@ -1,5 +1,6 @@
 define(['jquery', 't5/core/zone'], function($, zoneManager) {
   function Widget(w) {
+    this.widgetObject = w;
     this.handleId = w.widgetSettings.handleId;
     this.widgetId = w.widgetSettings.widgetId;
     this.toggleViewModeUrl = w.widgetSettings.toggleViewModeUrl;
@@ -35,6 +36,8 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
       widget.widget.addClass(newMode).removeClass(currentMode);
       if (!widget.disableDefaultAjaxRefresh) {
         zoneManager.deferredZoneUpdate(widget.zoneElementId, widget.toggleViewModeUrl);
+      } else {
+        widget.widgetObject.redraw();
       }
     });
   };
