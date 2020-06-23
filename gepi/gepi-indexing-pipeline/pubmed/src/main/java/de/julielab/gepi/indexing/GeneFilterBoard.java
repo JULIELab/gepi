@@ -16,7 +16,7 @@ public class GeneFilterBoard extends FilterBoard {
     Map<String, String[]> tid2atid;
     @ExternalResource(key = "tid2prefName")
     Map<String, String> tid2prefName;
-    @ExternalResource(key = "tid2homoPrefName")
+    @ExternalResource(key = "tid2topHomologyPrefName")
     Map<String, String> tid2homoPrefName;
     @ExternalResource(key = "tid2tophomo")
     Map<String, String> tid2tophomo;
