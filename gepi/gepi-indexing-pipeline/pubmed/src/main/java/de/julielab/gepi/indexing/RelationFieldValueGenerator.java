@@ -85,6 +85,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
         for (int i = 0; i < allArguments.size() - 1; ++i) {
             for (int j = i + 1; j < allArguments.size(); ++j) {
                 Document document = new Document();
+
                 FeatureStructure[] argPair = new FeatureStructure[]{allArguments.get(i), allArguments.get(j)};
                 try {
                     JCas jCas = rel.getCAS().getJCas();
@@ -103,6 +104,9 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     document.addField("argumentprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
                     document.addField("argumenthomoprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
                     document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
+                    document.addField("ARGUMENT_FS", argPair);
+
+                    relDocs.add(document);
                 } catch (CASException e) {
                     throw new FieldGenerationException(e);
                 }

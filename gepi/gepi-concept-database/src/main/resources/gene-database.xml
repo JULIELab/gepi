@@ -75,4 +75,54 @@
             </request>
         </operation>
     </operations>
+    <exports>
+        <export name="conceptids">
+            <request>
+                <rest>
+                    <restendpoint>/concepts/export/concept_id_mapping</restendpoint>
+                    <httpmethod>GET</httpmethod>
+                </rest>
+                <parameters>
+                    <parameter name="source_id_property">originalId</parameter>
+                    <parameter name="target_id_property">id</parameter>
+                    <parameter name="labels" toescapedjson="false">
+                        <arrayitem>ID_MAP_NCBI_GENES</arrayitem>
+                    </parameter>
+                </parameters>
+            </request>
+            <outputfile>es-consumer-resources/egid2tid.map</outputfile>
+        </export>
+        <export name="allgeneaggregates">
+            <request>
+                <cypherquery>MATCH (th)-[:HAS_ELEMENT*]->(c:CONCEPT) WHERE (th:AGGREGATE_TOP_HOMOLOGY OR
+                    th:AGGREGATE_GENEGROUP) AND NOT c:AGGREGATE with c.id as cid,COLLECT(DISTINCT th.id) AS atids RETURN
+                    cid, REDUCE(acc=HEAD(atids), atid in TAIL(atids) | acc + "|" + atid)
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/tid2atid.map</outputfile>
+        </export>
+        <export name="tophomologyids">
+            <request>
+                <cypherquery>MATCH (th:AGGREGATE_TOP_HOMOLOGY)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE NOT c:AGGREGATE
+                    RETURN DISTINCT c.id,th.id
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/tid2tophomo.map</outputfile>
+        </export>
+        <export name="preferredNames">
+            <request>
+                <cypherquery>MATCH (gene:ID_MAP_NCBI_GENES) return gene.id,gene.preferredName</cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/tid2prefName.map</outputfile>
+        </export>
+        <export name="preferredTophomologyNames">
+            <request>
+                <cypherquery>MATCH (t:ID_MAP_NCBI_GENES) WITH t OPTIONAL MATCH
+                    (t)-[:HAS_ELEMENT*2]-(n:AGGREGATE_TOP_HOMOLOGY) RETURN DISTINCT t.id, COALESCE(n.preferredName,
+                    t.preferredName)
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/tid2topHomologyPrefName.map</outputfile>
+        </export>
+    </exports>
 </conceptdatabase>
