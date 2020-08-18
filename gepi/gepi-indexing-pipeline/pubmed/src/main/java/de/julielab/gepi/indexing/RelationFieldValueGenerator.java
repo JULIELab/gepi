@@ -6,6 +6,8 @@ import de.julielab.jcore.consumer.es.FieldValueGenerator;
 import de.julielab.jcore.consumer.es.FilterRegistry;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
+import de.julielab.jcore.types.ArgumentMention;
+import de.julielab.jcore.types.ConceptMention;
 import de.julielab.jcore.types.LikelihoodIndicator;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.utility.JCoReTools;
@@ -14,6 +16,8 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+
+import java.util.stream.Stream;
 
 /**
  * "_parent": {
@@ -72,6 +76,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
     }
 
     /**
+     * To be called from {@link RelationFieldValueGenerator}. Creates the argument pair documents from a passed {@link FlattenedRelation} instance.
+     *
      * @param fs The {@link de.julielab.jcore.types.ext.FlattenedRelation} to create an index document for.
      * @return
      * @throws FieldGenerationException
@@ -103,6 +109,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     document.addField("argumentcoveredtext", createRawFieldValueForAnnotations(argPair, "/:coveredText()"));
                     document.addField("argumentprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
                     document.addField("argumenthomoprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
+                    document.addField("argumentmatchtypes", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                     document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
                     document.addField("ARGUMENT_FS", argPair);
 

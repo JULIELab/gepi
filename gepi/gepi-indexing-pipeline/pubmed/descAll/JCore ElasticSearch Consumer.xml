@@ -190,6 +190,24 @@
                 </value>
                             
             </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>FilterBoards</name>
+                                
+                <value>
+                                        
+                    <array>
+                                                
+                        <string>de.julielab.gepi.indexing.TextFilterBoard</string>
+                                                
+                        <string>de.julielab.gepi.indexing.GeneFilterBoard</string>
+                                            
+                    </array>
+                                    
+                </value>
+                            
+            </nameValuePair>
                     
         </configurationParameterSettings>
                 
@@ -272,12 +290,50 @@
             <optional>false</optional>
                     
         </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>stopwords</key>
+                        
+            <description>stopwords</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IListProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
             
     </externalResourceDependencies>
         
     <resourceManagerConfiguration>
                 
         <externalResources>
+                        
+            <externalResource>
+                                
+                <name>stopword_file</name>
+                                
+                <description>stopwords</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:resources/galago_inquery.txt</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.ListProvider</implementationName>
+                            
+            </externalResource>
                         
             <externalResource>
                                 
@@ -450,6 +506,14 @@
                 <key>tid2prefName</key>
                                 
                 <resourceName>tid2prefName</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>stopwords</key>
+                                
+                <resourceName>stopword_file</resourceName>
                             
             </externalResourceBinding>
                     

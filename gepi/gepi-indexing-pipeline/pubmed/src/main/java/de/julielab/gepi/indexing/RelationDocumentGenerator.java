@@ -23,6 +23,9 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.*;
 
+/**
+ * Main class to create index documents for events, i.e. {@link FlattenedRelation} objects.
+ */
 public class RelationDocumentGenerator extends DocumentGenerator {
 
     private final RelationFieldValueGenerator relationFieldValueGenerator;
@@ -54,7 +57,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                         ArrayFieldValue relationPairDocuments = (ArrayFieldValue) relationFieldValueGenerator.generateFieldValue(rel);
                         for (IFieldValue fv : relationPairDocuments) {
                             Document relDoc = (Document) fv;
-                            FeatureStructure[] argPair = (FeatureStructure[]) ((RawToken)relDoc.get("ARGUMENT_FS")).token;
+                            FeatureStructure[] argPair = ((ArrayFieldValue) relDoc.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
                             relDoc.remove("ARGUMENT_FS");
                             // We create the sentence as a document of its own. In the mapping we then could add it as
                             // an object or as a nested document. There is no need to make it a nested document so we will
