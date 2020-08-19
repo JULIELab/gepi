@@ -34,31 +34,35 @@
           "type": "keyword",
           "store": true
         },
-        "allarguments": {
+        "arguments": {
           "type": "keyword",
           "store": true
         },
-        "allargumentgeneids": {
+        "argumentgeneids": {
           "type": "keyword",
           "store": true
         },
-        "allargumentcoveredtext": {
+        "argumentcoveredtext": {
           "type": "text",
           "store": true
         },
-        "allargumentprefnames": {
+        "argumentprefnames": {
           "type": "text",
           "store": true
         },
-        "allargumenthomoprefnames": {
+        "argumenthomoprefnames": {
           "type": "text",
           "store": true
         },
-        "allargumentconceptids": {
+        "argumentconceptids": {
           "type": "keyword",
           "store": true
         },
-        "allargumenttophomoids": {
+        "argumenttophomoids": {
+          "type": "keyword",
+          "store": true
+        },
+        "argumentmatchtypes": {
           "type": "keyword",
           "store": true
         },
@@ -75,10 +79,6 @@
           "store": true
         },
         "likelihood": {
-          "type": "integer",
-          "store": true
-        },
-        "numargs": {
           "type": "integer",
           "store": true
         },
