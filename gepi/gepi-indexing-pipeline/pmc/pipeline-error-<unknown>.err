@@ -1,4 +1,4 @@
-Error happened on: Thu Jun 11 19:06:15 CEST 2020-------------- Failed Components -------------- 
+Error happened on: Mon Jun 15 08:57:15 CEST 2020-------------- Failed Components -------------- 
 1. Process
 -------------- Stack Traces -------------- 
 org.apache.uima.analysis_engine.AnalysisEngineProcessException: Annotator processing failed.    
