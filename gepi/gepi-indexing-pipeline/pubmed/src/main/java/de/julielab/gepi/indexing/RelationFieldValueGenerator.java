@@ -93,6 +93,25 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                 Document document = new Document();
 
                 FeatureStructure[] argPair = new FeatureStructure[]{allArguments.get(i), allArguments.get(j)};
+                boolean argumentWithoutId = false;
+                for (FeatureStructure arg : argPair) {
+                    ArgumentMention am = (ArgumentMention) arg;
+                    if (am.getRef() == null) {
+                        argumentWithoutId = true;
+                        break;
+                    }
+                    ConceptMention cm = (ConceptMention) am.getRef();
+                    if (cm.getResourceEntryList() == null) {
+                        argumentWithoutId = true;
+                        break;
+                    }
+                    if (cm.getResourceEntryList().size() == 0 || cm.getResourceEntryList().get(0) == null) {
+                        argumentWithoutId = true;
+                        break;
+                    }
+                }
+                if (argumentWithoutId)
+                    continue;
                 try {
                     JCas jCas = rel.getCAS().getJCas();
                     String docId = JCoReTools.getDocId(jCas);

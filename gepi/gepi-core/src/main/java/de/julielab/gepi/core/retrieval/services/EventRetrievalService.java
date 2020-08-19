@@ -39,19 +39,21 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_MAINEVENTTYPE = "maineventtype";
 
-    public static final String FIELD_EVENT_ARGUMENTSEARCH = "allarguments";
+    public static final String FIELD_EVENT_ARGUMENTSEARCH = "arguments";
 
-    public static final String FIELD_EVENT_ARG_GENE_IDS = "allargumentgeneids";
+    public static final String FIELD_EVENT_ARG_GENE_IDS = "argumentgeneids";
 
-    public static final String FIELD_EVENT_ARG_CONCEPT_IDS = "allargumentconceptids";
+    public static final String FIELD_EVENT_ARG_CONCEPT_IDS = "argumentconceptids";
 
-    public static final String FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS = "allargumenttophomoids";
+    public static final String FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS = "argumenttophomoids";
 
-    public static final String FIELD_EVENT_ARG_TEXT = "allargumentcoveredtext";
+    public static final String FIELD_EVENT_ARG_MATCH_TYPES = "argumentmatchtypes";
 
-    public static final String FIELD_EVENT_ARG_PREFERRED_NAME = "allargumentprefnames";
+    public static final String FIELD_EVENT_ARG_TEXT = "argumentcoveredtext";
 
-    public static final String FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME = "allargumenthomoprefnames";
+    public static final String FIELD_EVENT_ARG_PREFERRED_NAME = "argumentprefnames";
+
+    public static final String FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME = "argumenthomoprefnames";
 
     public static final String FIELD_EVENT_SENTENCE = "sentence.text";
 
@@ -266,22 +268,14 @@ public class EventRetrievalService implements IEventRetrievalService {
                 log.debug("Retrieving outside events for {} A IDs", idList.size());
                 log.trace("The A IDs are: {}", idList);
                 TermsQuery termsQuery = new TermsQuery(idList);
-                termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
-
-                TermQuery filterQuery = new TermQuery();
-                filterQuery.term = 2;
-                filterQuery.field = FIELD_EVENT_NUMARGUMENTS;
+                termsQuery.field = FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS;
 
                 BoolClause termsClause = new BoolClause();
                 termsClause.addQuery(termsQuery);
                 termsClause.occur = Occur.MUST;
-                BoolClause filterClause = new BoolClause();
-                filterClause.addQuery(filterQuery);
-                filterClause.occur = FILTER;
 
                 BoolQuery eventQuery = new BoolQuery();
                 eventQuery.addClause(termsClause);
-                eventQuery.addClause(filterClause);
 
                 if (!eventTypes.isEmpty()) {
                     TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
@@ -317,6 +311,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                         FIELD_EVENT_ARG_GENE_IDS,
                         FIELD_EVENT_ARG_CONCEPT_IDS,
                         FIELD_EVENT_ARG_PREFERRED_NAME,
+                        FIELD_EVENT_ARG_MATCH_TYPES,
                         FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
                         FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
                         FIELD_EVENT_ARG_TEXT,

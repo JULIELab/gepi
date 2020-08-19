@@ -63,17 +63,17 @@ public class GeneIdService implements IGeneIdService {
 		});
 	}
 
-	// TODO: What if gene name is given and top_homology is ambiguous? Has to be
-	// handled via, e.g. majority vote
 	private String[] queryNeo4j(Transaction tx, String input) {
 		Record record;
 		List<String> topAtids = new ArrayList<String>();
 		
 		String[] searchInput = input.split("\n");
 		Result result = tx.run(
-				"MATCH (n:ID_MAP_NCBI_GENES) WHERE n.originalId IN {originalIds} "
-				+ "OPTIONAL MATCH (n)<-[:HAS_ELEMENT*2]-(a:AGGREGATE_TOP_HOMOLOGY) "
-				+ "RETURN DISTINCT( COALESCE(a.id,n.id) ) AS SEARCH_ID",
+				"MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.originalId IN $originalIds " +
+						"OPTIONAL MATCH (n)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) " +
+						"WITH a " +
+						"OPTIONAL MATCH (a)<-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) " +
+						"RETURN DISTINCT COALESCE(top.id,a.id) AS SEARCH_ID",
 				parameters("originalIds", searchInput));
 		
 		while (result.hasNext()) {

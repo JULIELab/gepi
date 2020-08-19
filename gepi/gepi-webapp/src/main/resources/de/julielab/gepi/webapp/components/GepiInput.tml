@@ -69,6 +69,14 @@
                     </div>
                 </div>
                 <div class="row">
+                    <hr class="nomargin"/>
+                    <h3>Development settings</h3>
+                    <div class="col-md-12">
+                        <t:checklist t:id="devsettings" selected="selecteddevsettings" encoder="devsettingsencoder"
+                                     model="devsettingsmodel"/>
+                    </div>
+                </div>
+                <div class="row">
                     <hr class="medium bottom top"/>
                     <div class="col-md-12 text-center">
                         <t:submit class="btn btn-primary btn-block" value="Go!"/>

@@ -69,7 +69,9 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 
 			Map<String, List<String>> highlights = eventDocument.getHighlights();
 
-			int numArguments = (int) eventDocument.get(FIELD_EVENT_NUMARGUMENTS).get();
+			// In the past we could have multiple arguments per event. This has been broken down on the index
+			// side and is always 2.
+			int numArguments = 2;
 			List<Argument> arguments = new ArrayList<>();
 			for (int i = 0; i < numArguments; ++i) {
 				String conceptId = i < conceptIds.size() ? (String) conceptIds.get(i) : null;

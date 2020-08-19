@@ -1,5 +1,7 @@
 package de.julielab.gepi.webapp.components;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -14,6 +16,9 @@ import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.TextArea;
+import org.apache.tapestry5.internal.OptionModelImpl;
+import org.apache.tapestry5.internal.SelectModelImpl;
+import org.apache.tapestry5.internal.services.StringValueEncoder;
 import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.services.TypeCoercer;
@@ -94,7 +99,10 @@ public class GepiInput {
     private Messages messages;
 
     @Property
-    private List<EventTypes> selectedEventTypes;
+    private List<EventTypes> selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
+
+    @Property
+    private List<String> selectedDevSettings;
 
     @Property
     private String filterString;
@@ -109,6 +117,14 @@ public class GepiInput {
 
     public SelectModel getEventTypeModel() {
         return new EnumSelectModel(EventTypes.class, messages);
+    }
+
+    public ValueEncoder getDevSettingsEncoder() {
+        return new StringValueEncoder();
+    }
+
+    public SelectModel getDevSettingsModel() {
+        return new SelectModelImpl(new OptionModelImpl("Always use ES"));
     }
 
     void setupRender() {
@@ -128,11 +144,14 @@ public class GepiInput {
     void onSuccessFromInputForm() {
         newSearch = true;
         log.debug("Setting newsearch to true");
-        final List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
+        List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
+        if (selectedEventTypeNames.isEmpty())
+            selectedEventTypeNames = EnumSet.allOf(EventTypes.class).stream().map(Enum::name).distinct().collect(Collectors.toList());
         boolean isAListPresent = listATextAreaValue != null && listATextAreaValue.trim().length() > 0;
         boolean isABSearchRequest = listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
                 && listBTextAreaValue.trim().length() > 0;
-        if (filterString != null && !filterString.isBlank()) {
+        System.out.println("dev settings: " + selectedDevSettings);
+        if ((filterString != null && !filterString.isBlank()) || selectedDevSettings.contains("Always use ES")) {
             if (isABSearchRequest)
                 esResult = eventRetrievalService.getBipartiteEvents(
                         geneIdService.convertInput2Atid(listATextAreaValue),
@@ -142,7 +161,7 @@ public class GepiInput {
                     log.debug("Calling EventRetrievalService for outside events");
                     esResult = eventRetrievalService.getOutsideEvents(geneIdService.convertInput2Atid(listATextAreaValue), selectedEventTypeNames, filterString);
                     if (resultPresent())
-                        log.debug("Retrieved the response future. It is " + (esResult.isDone() ? "" : "not ") + "(ES)" + (neo4jResult.isDone() ? "" : "not ") + "(Neo4j) finished.");
+                        log.debug("Retrieved the response future. It is " + (esResult.isDone() ? "" : "not ") + "(ES)" + (neo4jResult != null && neo4jResult.isDone() ? "" : "not ") + "(Neo4j) finished.");
                     else log.debug("After retrieving the result");
                 }
             }
