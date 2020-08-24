@@ -2,7 +2,7 @@ package de.julielab.gepi.core.services;
 
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
@@ -44,7 +44,7 @@ public interface IGeneIdService {
 
 	Future<Stream<String>> convertGene2Gepi(Stream<String> geneIds);
 
-	CompletableFuture<List<String>> convertGeneNames2AggregateIds(Stream<String> geneNames);
+	CompletableFuture<Map<String, String>> convertGeneNames2AggregateIds(Stream<String> geneNames);
 	/**
 	 * Tries to figure out which IDs are given.
 	 *
@@ -62,7 +62,7 @@ public interface IGeneIdService {
 	 * @param input
 	 * @return
 	 */
-	Future<List<String>> convertGene2AggregateIds(Stream<String> input);
+	CompletableFuture<Map<String, String>> convertGene2AggregateIds(Stream<String> input);
 
 
 }

@@ -8,12 +8,8 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.*;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +35,7 @@ public class GeneIdService implements IGeneIdService {
         if (to != IdType.GEPI_AGGREGATE)
             throw new IllegalArgumentException("To-ID type '" + to + "' is currently not supported.");
         List<String> sourceIds = stream.collect(Collectors.toList());
-        Future<List<String>> convertedIds;
+        CompletableFuture<Map<String, String>> convertedIds;
         if (from == IdType.GENE_NAME) {
             convertedIds = convertGeneNames2AggregateIds(sourceIds.stream());
         } else if (from == IdType.GENE) {
@@ -47,11 +43,12 @@ public class GeneIdService implements IGeneIdService {
         } else {
             throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
         }
-        Future<List<String>> finalConvertedIds = convertedIds;
+        Future<Map<String, String>> finalConvertedIds = convertedIds;
         return CompletableFuture.supplyAsync(() ->{
             try {
-                List<String> targetIds = finalConvertedIds.get();
-                IdConversionResult idConversionResult = new IdConversionResult(sourceIds, targetIds, from, to);
+                Map<String, String> idMapping = finalConvertedIds.get();
+                idMapping.forEach((k,v) ->log.debug("{} -> {}", k, v));
+                IdConversionResult idConversionResult = new IdConversionResult(sourceIds, idMapping, from, to);
                 return idConversionResult;
             } catch (Exception e) {
                 log.error("Could not create an IdConversionResult instance", e);
@@ -73,7 +70,7 @@ public class GeneIdService implements IGeneIdService {
     }
 
     @Override
-    public CompletableFuture<List<String>> convertGeneNames2AggregateIds(Stream<String> geneNames) {
+    public CompletableFuture<Map<String, String>> convertGeneNames2AggregateIds(Stream<String> geneNames) {
         return CompletableFuture.supplyAsync(() -> {
             Driver driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
 
@@ -81,20 +78,21 @@ public class GeneIdService implements IGeneIdService {
 
                 return session.readTransaction(tx -> {
                     Record record;
-                    List<String> topAtids = new ArrayList<String>();
+                    Map<String, String> topAtids = new HashMap<>();
 
                     String[] searchInput = geneNames.toArray(String[]::new);
+                    log.debug("Running query to map gene names to aggregate IDs.");
                     Result result = tx.run(
-                            "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND toLower(n.preferredName) IN $geneNames " +
+                            "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.preferredName_lc IN $geneNames " +
                                     "OPTIONAL MATCH (n)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) " +
                                     "WITH n,a " +
                                     "OPTIONAL MATCH (a)<-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) " +
-                                    "RETURN DISTINCT n.originalId AS SOURCE_ID,COALESCE(top.id,a.id) AS SEARCH_ID",
+                                    "RETURN DISTINCT n.preferredName_lc AS SOURCE_ID,COALESCE(top.id,a.id) AS SEARCH_ID",
                             parameters("geneNames", searchInput));
 
                     while (result.hasNext()) {
                         record = result.next();
-                        topAtids.add(record.get("SEARCH_ID").asString());
+                        topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
                     }
                     return topAtids;
                 });
@@ -143,7 +141,7 @@ public class GeneIdService implements IGeneIdService {
 
 
     @Override
-    public Future<List<String>> convertGene2AggregateIds(Stream<String> input) {
+    public CompletableFuture<Map<String, String>> convertGene2AggregateIds(Stream<String> input) {
         return CompletableFuture.supplyAsync(() -> {
             Driver driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
 
@@ -151,20 +149,21 @@ public class GeneIdService implements IGeneIdService {
 
                 return session.readTransaction(tx -> {
                     Record record;
-                    List<String> topAtids = new ArrayList<String>();
+                    Map<String, String> topAtids = new HashMap<>();
 
                     String[] searchInput = input.toArray(String[]::new);
+                    log.debug("Running query to map gene IDs to aggregate IDs.");
                     Result result = tx.run(
                             "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.originalId IN $originalIds " +
                                     "OPTIONAL MATCH (n)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) " +
                                     "WITH a " +
                                     "OPTIONAL MATCH (a)<-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) " +
-                                    "RETURN DISTINCT COALESCE(top.id,a.id) AS SEARCH_ID",
+                                    "RETURN DISTINCT n.originalId AS SOURCE_ID, COALESCE(top.id,a.id) AS SEARCH_ID",
                             parameters("originalIds", searchInput));
 
                     while (result.hasNext()) {
                         record = result.next();
-                        topAtids.add(record.get("SEARCH_ID").asString());
+                        topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
                     }
                     return topAtids;
                 });

@@ -154,7 +154,7 @@ public class GepiInput {
                 && listBTextAreaValue.trim().length() > 0;
         System.out.println("dev settings: " + selectedDevSettings);
         Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
-        Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listATextAreaValue, "listB");
+        Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, "listB");
         if ((filterString != null && !filterString.isBlank()) || selectedDevSettings.contains("Always use ES")) {
             if (isABSearchRequest) {
                 esResult = eventRetrievalService.getBipartiteEvents(
@@ -202,10 +202,13 @@ public class GepiInput {
     }
 
     private Future<IdConversionResult> convertToAggregateIds(String input, String listName) {
-        List<String> inputList = Stream.of(input.split("\n")).map(String::trim).collect(Collectors.toList());
-        IGeneIdService.IdType idType = geneIdService.determineIdType(inputList.stream());
-        log.debug("Identified input IDs of {} as: ", listName, idType);
-        return geneIdService.convert(inputList.stream(), idType, IGeneIdService.IdType.GEPI_AGGREGATE);
+        if (input != null) {
+            List<String> inputList = Stream.of(input.split("\n")).map(String::trim).collect(Collectors.toList());
+            IGeneIdService.IdType idType = geneIdService.determineIdType(inputList.stream());
+            log.debug("Identified input IDs of {} as: {}", listName, idType);
+            return geneIdService.convert(inputList.stream(), idType, IGeneIdService.IdType.GEPI_AGGREGATE);
+        }
+        return null;
     }
 
     private boolean resultPresent() {
