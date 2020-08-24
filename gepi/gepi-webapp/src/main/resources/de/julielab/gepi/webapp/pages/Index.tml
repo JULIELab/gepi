@@ -24,7 +24,7 @@
 <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
                     </div>
                     <div class="row">
-<!--                        <t:tableresultwidget result="result" class="col-md-12"/>-->
+                        <t:tableresultwidget  esResult="esResult" class="col-md-12"/>
                     </div>
                 </t:zone>
             </div>

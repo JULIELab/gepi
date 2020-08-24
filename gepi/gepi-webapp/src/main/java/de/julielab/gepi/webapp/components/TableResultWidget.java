@@ -66,7 +66,10 @@ public class TableResultWidget extends GepiWidget {
 					.collect(Collectors.toList());
 
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+			log.error("Exception occurred when trying to access ES event results.", e);
+		} catch (NullPointerException e) {
+			log.error("NPE occurred when trying to access ES event results. The persistentEsResult is: {}", persistEsResult);
+			throw e;
 		}
 	}
 	

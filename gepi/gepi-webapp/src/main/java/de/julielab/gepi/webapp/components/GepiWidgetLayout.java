@@ -41,17 +41,22 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.webapp.pages.Index;
+import org.slf4j.Logger;
 
 @Import(stylesheet = {"context:css-components/gepiwidgetlayout.css"})
 @SupportsInformalParameters
 final public class GepiWidgetLayout {
-
     @Parameter
     @Property
     protected CompletableFuture<EventRetrievalResult> esResult;
+
     @Parameter
     @Property
     protected CompletableFuture<AggregatedEventsRetrievalResult> neo4jResult;
+
+    @Inject
+    private Logger log;
+
     @Parameter(defaultPrefix = BindingConstants.LITERAL)
     @Property
     private String widgettitle;
@@ -72,7 +77,7 @@ final public class GepiWidgetLayout {
     private String viewModeParam;
     @Parameter(value = "false")
     @Property
-    private boolean disableDefaultAjaxRefresh;
+    private boolean useTapestryZoneUpdates;
     @InjectComponent
     private Zone widgetZone;
     @Inject
@@ -101,13 +106,16 @@ final public class GepiWidgetLayout {
     }
 
     void afterRender() {
-//        JSONObject widgetSettings = getWidgetSettings();
-//        javaScriptSupport.require("gepi/components/widgetManager").invoke("addWidget")
-//                .with(clientId, widgetSettings);
+        if (useTapestryZoneUpdates) {
+            JSONObject widgetSettings = getWidgetSettings();
+            javaScriptSupport.require("gepi/components/widgetManager").invoke("addWidget")
+                    .with(clientId, widgetSettings);
+        }
     }
 
     /**
      * To be used by concrete Widget classes.
+     *
      * @return
      */
     public JSONObject getWidgetSettings() {
@@ -119,7 +127,7 @@ final public class GepiWidgetLayout {
         widgetSettings.put("toggleViewModeUrl", toggleViewModeEventLink.toAbsoluteURI());
         widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI());
         widgetSettings.put("zoneElementId", widgetZone.getClientId());
-        widgetSettings.put("disableDefaultAjaxRefresh", disableDefaultAjaxRefresh);
+        widgetSettings.put("useTapestryZoneUpdates", useTapestryZoneUpdates);
         return widgetSettings;
     }
 
@@ -128,7 +136,10 @@ final public class GepiWidgetLayout {
     }
 
     public boolean isRenderBody() {
-        return disableDefaultAjaxRefresh || isResultAvailable();
+        // For widgets completely managed from JavaScript (sankey, pie), just render their basics because
+        // the rest will be done in JS.
+        // For Tapestry components
+        return !useTapestryZoneUpdates || isResultAvailable();
     }
 
     public boolean isResultLoading() {
@@ -174,7 +185,7 @@ final public class GepiWidgetLayout {
     }
 
     void onLoad() {
-        if (!disableDefaultAjaxRefresh) {
+        if (useTapestryZoneUpdates) {
             javaScriptSupport.require("gepi/components/widgetManager").invoke("refreshWidget")
                     .with(clientId);
         }

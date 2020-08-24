@@ -7,7 +7,7 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
     this.refreshContentsUrl = w.widgetSettings.refreshContentsUrl;
     this.zoneElementId = w.widgetSettings.zoneElementId;
     this.widget = $('#' + this.widgetId);
-    this.disableDefaultAjaxRefresh = w.widgetSettings.disableDefaultAjaxRefresh;
+    this.useTapestryZoneUpdates = w.widgetSettings.useTapestryZoneUpdates;
     this.setupViewModeHandle();
   }
   Widget.prototype.getViewMode = function() {
@@ -34,7 +34,7 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
       }
 
       widget.widget.addClass(newMode).removeClass(currentMode);
-      if (!widget.disableDefaultAjaxRefresh) {
+      if (widget.useTapestryZoneUpdates) {
         zoneManager.deferredZoneUpdate(widget.zoneElementId, widget.toggleViewModeUrl);
       } else {
         widget.widgetObject.redraw();
@@ -50,9 +50,11 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
 
   const widgets = new Map();
 
+  // FOR ZONE UPDATES (Table widget)
   // This is called from GepiWidgetLayout#afterRender
-  const addWidget = function(name, widgetObject) {
-    widgetWrapper = new Widget(widgetObject);
+  // for widgets to be updated via the Tapestry Zone update mechanism.
+  const addWidget = function(name, widgetSettings) {
+    widgetWrapper = new Widget({widgetSettings: widgetSettings});
     widgets.set(name, widgetWrapper);
 
     return widgetWrapper;
@@ -63,6 +65,7 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
   };
 
   const refreshWidget = function(name) {
+    console.log("Refresh for widget " + name + " requested.")
     getWidget(name).ajaxRefresh();
   };
 

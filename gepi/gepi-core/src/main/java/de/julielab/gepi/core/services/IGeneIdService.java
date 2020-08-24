@@ -1,8 +1,8 @@
 package de.julielab.gepi.core.services;
 
+import com.google.common.collect.Multimap;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
@@ -44,7 +44,7 @@ public interface IGeneIdService {
 
 	Future<Stream<String>> convertGene2Gepi(Stream<String> geneIds);
 
-	CompletableFuture<Map<String, String>> convertGeneNames2AggregateIds(Stream<String> geneNames);
+	CompletableFuture<Multimap<String, String>> convertGeneNames2AggregateIds(Stream<String> geneNames);
 	/**
 	 * Tries to figure out which IDs are given.
 	 *
@@ -62,7 +62,7 @@ public interface IGeneIdService {
 	 * @param input
 	 * @return
 	 */
-	CompletableFuture<Map<String, String>> convertGene2AggregateIds(Stream<String> input);
+	CompletableFuture<Multimap<String, String>> convertGene2AggregateIds(Stream<String> input);
 
 
 }

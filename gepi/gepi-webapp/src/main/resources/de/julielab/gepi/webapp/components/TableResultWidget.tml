@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
-     widgettitle="Table View" t:clientId="tableresult_widget" class="${classes}" sizeClass="widget-large" result="result"
-     viewMode="viewMode"
+     widgettitle="Table View" t:clientId="tableresult_widget" class="${classes}" sizeClass="widget-large" esResult="esResult"
+     viewMode="viewMode" useTapestryZoneUpdates="true"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
     <t:trigger event="updateTableData"/>
     <div>${viewmode}</div>

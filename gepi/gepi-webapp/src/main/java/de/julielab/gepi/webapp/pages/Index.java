@@ -83,15 +83,17 @@ public class Index {
 
     // Handle call with an unwanted context
     Object onActivate(EventContext eventContext) {
-        if (reset)
+        if (reset) {
             esResult = null;
+            neo4jResult = null;
+        }
         return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
     }
 
     void afterRender() {
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI());
-        if (esResult != null || neo4jResult != null) {
+        if (isResultPresent()) {
             // If there already is data at loading the page, the input panel is already hidden (see #getShowInputClass)
             // and we can display the widgets.
             logger.debug("Sending the ready signal for the widgets");
@@ -139,6 +141,10 @@ public class Index {
         return hasLargeWidget ? "into" : "";
     }
 
+    /**
+     * Called from the client to retrieve the data for chart display.
+     * @return Aggregated data representation, i.e. counts of argument ID pairs.
+     */
     JSONObject onLoadDataToClient() {
         String datasource = request.getParameter("datasource");
         if (!datasource.equals("relationCounts"))

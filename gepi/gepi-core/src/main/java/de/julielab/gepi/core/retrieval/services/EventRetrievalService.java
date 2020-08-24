@@ -169,6 +169,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
                         .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
+                log.debug("Retrieved {} bipartite events", eventResult.getEventList().size());
                 eventResult.setResultType(EventResultType.BIPARTITE);
                 reorderBipartiteEventResultArguments(idSetA, idSetB, eventResult);
                 return eventResult;
@@ -324,6 +325,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
                         .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
+                log.debug("Retrieved {} outside events", eventResult.getEventList().size());
                 eventResult.setResultType(EventResultType.OUTSIDE);
                 reorderOutsideEventResultsArguments(idSet, eventResult);
                 return eventResult;
