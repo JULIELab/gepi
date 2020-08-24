@@ -266,7 +266,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 log.debug("Retrieving outside events for {} A IDs", idSet.size());
                 log.trace("The A IDs are: {}", idSet);
                 TermsQuery termsQuery = new TermsQuery(Collections.unmodifiableCollection(idSet));
-                termsQuery.field = FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS;
+                termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
                 BoolClause termsClause = new BoolClause();
                 termsClause.addQuery(termsQuery);
