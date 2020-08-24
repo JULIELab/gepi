@@ -49,6 +49,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         Collection<Sentence> sentences = JCasUtil.select(jCas, Sentence.class);
         String docId = JCoReTools.getDocId(jCas);
         try {
+            int i = 0;
             for (Sentence sentence : sentences) {
                 FSIterator<Annotation> subiterator = jCas.getAnnotationIndex(FlattenedRelation.type).subiterator(sentence);
                 while (subiterator.hasNext()) {
@@ -76,7 +77,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                             Collections.sort(tokens, Comparator.<PreanalyzedToken>comparingInt(t -> t.start).thenComparing(t -> t.positionIncrement, Comparator.reverseOrder()));
 
                             sentenceDocument.addField("text", relationFieldValueGenerator.createPreanalyzedFieldValue(sentence.getCoveredText(), tokens));
-                            sentenceDocument.addField("id", docId + "_" + sentence.getId());
+                            sentenceDocument.addField("id", docId + "_" + (sentence.getId() != null ? sentence.getId() : i));
                             sentenceDocument.addField("likelihood", FieldCreationUtils.getMeanLikelihood(sentence));
 
                             relDoc.addField("sentence", sentenceDocument);
@@ -84,6 +85,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                         }
                     }
                 }
+                ++i;
             }
         } catch (CASException e) {
             throw new FieldGenerationException(e);

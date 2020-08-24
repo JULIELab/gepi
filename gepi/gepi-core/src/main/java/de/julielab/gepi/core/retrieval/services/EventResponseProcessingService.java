@@ -90,7 +90,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 					arguments.add(new Argument(geneId, conceptId, topHomologyId, text));
 				} else {
 					log.warn(
-							"Came over event document where the concept Id of an argument missing. Document is skipped. This must be fixed in the index. The document was {}",
+							"Came over event document where the concept Id of an argument missing. Document is skipped. This must be fixed in the index. The document has ID {}. Full document:\n{}", eventDocument.getId(),
 							eventDocument);
 					return null;
 				}

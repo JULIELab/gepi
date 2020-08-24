@@ -9,6 +9,7 @@ import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
 import de.julielab.jcore.types.ArgumentMention;
 import de.julielab.jcore.types.ConceptMention;
 import de.julielab.jcore.types.LikelihoodIndicator;
+import de.julielab.jcore.types.ResourceEntry;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.utility.JCoReTools;
 import org.apache.uima.cas.CASException;
@@ -93,6 +94,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                 Document document = new Document();
 
                 FeatureStructure[] argPair = new FeatureStructure[]{allArguments.get(i), allArguments.get(j)};
+                // Check if all arguments have been successfully mapped and if not, reject the argument pair
                 boolean argumentWithoutId = false;
                 for (FeatureStructure arg : argPair) {
                     ArgumentMention am = (ArgumentMention) arg;
@@ -106,6 +108,10 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                         break;
                     }
                     if (cm.getResourceEntryList().size() == 0 || cm.getResourceEntryList().get(0) == null) {
+                        argumentWithoutId = true;
+                        break;
+                    }
+                    if (((ResourceEntry) cm.getResourceEntryList().get(0)).getEntryId().isBlank()) {
                         argumentWithoutId = true;
                         break;
                     }

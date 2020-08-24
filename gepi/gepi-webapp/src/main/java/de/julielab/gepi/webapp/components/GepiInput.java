@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalService;
+import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.SelectModel;
@@ -142,8 +144,8 @@ public class GepiInput {
     }
 
     void onSuccessFromInputForm() {
-        newSearch = true;
         log.debug("Setting newsearch to true");
+        newSearch = true;
         List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
         if (selectedEventTypeNames.isEmpty())
             selectedEventTypeNames = EnumSet.allOf(EventTypes.class).stream().map(Enum::name).distinct().collect(Collectors.toList());
@@ -151,15 +153,18 @@ public class GepiInput {
         boolean isABSearchRequest = listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
                 && listBTextAreaValue.trim().length() > 0;
         System.out.println("dev settings: " + selectedDevSettings);
+        Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
+        Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listATextAreaValue, "listB");
         if ((filterString != null && !filterString.isBlank()) || selectedDevSettings.contains("Always use ES")) {
-            if (isABSearchRequest)
+            if (isABSearchRequest) {
                 esResult = eventRetrievalService.getBipartiteEvents(
-                        geneIdService.convertInput2Atid(listATextAreaValue),
-                        geneIdService.convertInput2Atid(listBTextAreaValue), selectedEventTypeNames, filterString);
+                        listAGePiIds,
+                        listBGePiIds, selectedEventTypeNames, filterString);
+            }
             else {
                 if (isAListPresent) {
                     log.debug("Calling EventRetrievalService for outside events");
-                    esResult = eventRetrievalService.getOutsideEvents(geneIdService.convertInput2Atid(listATextAreaValue), selectedEventTypeNames, filterString);
+                    esResult = eventRetrievalService.getOutsideEvents(listAGePiIds, selectedEventTypeNames, filterString);
                     if (resultPresent())
                         log.debug("Retrieved the response future. It is " + (esResult.isDone() ? "" : "not ") + "(ES)" + (neo4jResult != null && neo4jResult.isDone() ? "" : "not ") + "(Neo4j) finished.");
                     else log.debug("After retrieving the result");
@@ -194,6 +199,13 @@ public class GepiInput {
             log.debug("Sending JS call to show the output widgets.");
             javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");
         }
+    }
+
+    private Future<IdConversionResult> convertToAggregateIds(String input, String listName) {
+        List<String> inputList = Stream.of(input.split("\n")).map(String::trim).collect(Collectors.toList());
+        IGeneIdService.IdType idType = geneIdService.determineIdType(inputList.stream());
+        log.debug("Identified input IDs of {} as: ", listName, idType);
+        return geneIdService.convert(inputList.stream(), idType, IGeneIdService.IdType.GEPI_AGGREGATE);
     }
 
     private boolean resultPresent() {

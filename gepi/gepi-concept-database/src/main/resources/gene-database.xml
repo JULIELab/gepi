@@ -24,6 +24,11 @@
                 </parameters>
             </request>
         </operation>
+        <operation>
+            <request>
+                <cypherquery>CREATE INDEX ON :CONCEPT(preferredName_lc)</cypherquery>
+            </request>
+        </operation>
     </preparations>
     <imports>
         <import>
@@ -74,6 +79,12 @@
                 </rest>
             </request>
         </operation>
+        <operation name="copy_preferred_names_lowercase">
+            <request>
+                <!-- This requires the APOC core library to be installed -->
+                <cypherquery>CALL apoc.periodic.iterate("MATCH (c:CONCEPT) WHERE c.preferredName IS NOT null RETURN c", "SET c.preferredName_lc = toLower(c.preferredName)",{batchSize:1000,iterateList:true,parallel:true,concurrency:50,retries:0}) YIELD batches, total</cypherquery>
+            </request>
+        </operation>
     </operations>
     <exports>
         <export name="conceptids">
@@ -94,8 +105,8 @@
         </export>
         <export name="allgeneaggregates">
             <request>
-                <cypherquery>MATCH (th)-[:HAS_ELEMENT*]->(c:CONCEPT) WHERE (th:AGGREGATE_TOP_HOMOLOGY OR
-                    th:AGGREGATE_GENEGROUP) AND NOT c:AGGREGATE with c.id as cid,COLLECT(DISTINCT th.id) AS atids RETURN
+                <cypherquery>MATCH (th)-[:HAS_ELEMENT*]->(c:CONCEPT) WHERE (th:AGGREGATE_GENEGROUP OR
+                    th:AGGREGATE_TOP_ORTHOLOGY) AND NOT c:AGGREGATE with c.id as cid,COLLECT(DISTINCT th.id) AS atids RETURN
                     cid, REDUCE(acc=HEAD(atids), atid in TAIL(atids) | acc + "|" + atid)
                 </cypherquery>
             </request>
@@ -103,7 +114,7 @@
         </export>
         <export name="tophomologyids">
             <request>
-                <cypherquery>MATCH (th:AGGREGATE_TOP_HOMOLOGY)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE NOT c:AGGREGATE
+                <cypherquery>MATCH (th:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE NOT c:AGGREGATE
                     RETURN DISTINCT c.id,th.id
                 </cypherquery>
             </request>
@@ -118,7 +129,7 @@
         <export name="preferredTophomologyNames">
             <request>
                 <cypherquery>MATCH (t:ID_MAP_NCBI_GENES) WITH t OPTIONAL MATCH
-                    (t)-[:HAS_ELEMENT*2]-(n:AGGREGATE_TOP_HOMOLOGY) RETURN DISTINCT t.id, COALESCE(n.preferredName,
+                    (t)-[:HAS_ELEMENT*2]-(n:AGGREGATE_GENEGROUP) RETURN DISTINCT t.id, COALESCE(n.preferredName,
                     t.preferredName)
                 </cypherquery>
             </request>
