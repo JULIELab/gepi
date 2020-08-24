@@ -19,7 +19,7 @@ public interface IEventRetrievalService {
 	 * @return Events between the two streams of IDs.
 	 */
 	CompletableFuture<EventRetrievalResult> getBipartiteEvents(Future<IdConversionResult> listAIds, Future<IdConversionResult> listBIds, List<String> eventTypes, String sentenceFilter);
-	CompletableFuture<EventRetrievalResult> getBipartiteEvents(Stream<String> idStream1, Stream<String> idStream2, List<String> eventTypes, String sentenceFilter);
+	CompletableFuture<EventRetrievalResult> getBipartiteEvents(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter);
 
 	/**
 	 * Retrieves events between the input genes and any genes not on the list.
@@ -32,5 +32,5 @@ public interface IEventRetrievalService {
 	 */
 	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> listAIds, List<String> eventTypes, String sentenceFilter);
 
-	CompletableFuture<EventRetrievalResult> getOutsideEvents(Stream<String> idStream, List<String> eventTypes, String sentenceFilter);
+	CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter);
 }

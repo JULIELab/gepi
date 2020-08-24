@@ -12,6 +12,7 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
+import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
@@ -83,22 +84,20 @@ public class EventRetrievalService implements IEventRetrievalService {
      * @return
      */
     @Override
-    public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Future<Stream<String>> idStreamA,
-                                                                      Future<Stream<String>> idStreamB, List<String> eventTypes, String sentenceFilter) {
+    public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Future<IdConversionResult> idStreamA,
+                                                                      Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                List<Object> idListA = idStreamA.get().collect(Collectors.toList());
-                Set<String> idSetA = idListA.stream().map(String.class::cast).collect(Collectors.toSet());
+                Set<String> idSetA = idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet());
 
-                List<Object> idListB = idStreamB.get().collect(Collectors.toList());
-                Set<String> idSetB = idListB.stream().map(String.class::cast).collect(Collectors.toSet());
+                Set<String> idSetB = idStreamB.get().getConvertedItems().values().stream().collect(Collectors.toSet());
 
-                log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idListA.size(), idListB.size());
+                log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idSetA.size(), idSetB.size());
 
-                TermsQuery listAQuery = new TermsQuery(idListA);
+                TermsQuery listAQuery = new TermsQuery(Collections.unmodifiableCollection(idSetA));
                 listAQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
-                TermsQuery listBQuery = new TermsQuery(idListB);
+                TermsQuery listBQuery = new TermsQuery(Collections.unmodifiableCollection(idSetB));
                 listBQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
                 TermQuery filterQuery = new TermQuery();
@@ -181,7 +180,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Stream<String> idStream1, Stream<String> idStream2, List<String> eventTypes, String sentenceFilter) {
+    public CompletableFuture<EventRetrievalResult> getBipartiteEvents(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter) {
         return getBipartiteEvents(CompletableFuture.completedFuture(idStream1), CompletableFuture.completedFuture(idStream2), eventTypes, sentenceFilter);
     }
 
@@ -258,16 +257,15 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<Stream<String>> idStream, List<String> eventTypes, String sentenceFilter) {
+    public CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStream, List<String> eventTypes, String sentenceFilter) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
             try {
-                List<Object> idList = idStream.get().collect(Collectors.toList());
-                Set<String> idSet = idList.stream().map(String.class::cast).collect(Collectors.toSet());
+                Set<String> idSet = idStream.get().getConvertedItems().values().stream().collect(Collectors.toSet());
 
-                log.debug("Retrieving outside events for {} A IDs", idList.size());
-                log.trace("The A IDs are: {}", idList);
-                TermsQuery termsQuery = new TermsQuery(idList);
+                log.debug("Retrieving outside events for {} A IDs", idSet.size());
+                log.trace("The A IDs are: {}", idSet);
+                TermsQuery termsQuery = new TermsQuery(Collections.unmodifiableCollection(idSet));
                 termsQuery.field = FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS;
 
                 BoolClause termsClause = new BoolClause();
@@ -337,7 +335,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(Stream<String> idStream, List<String> eventTypes, String sentenceFilter) {
+    public CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter) {
         return getOutsideEvents(CompletableFuture.completedFuture(idStream), eventTypes, sentenceFilter);
     }
 
