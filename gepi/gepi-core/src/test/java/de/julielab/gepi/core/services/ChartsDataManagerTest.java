@@ -9,7 +9,9 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
+
 public class ChartsDataManagerTest {
 
     @Test
@@ -40,8 +42,8 @@ public class ChartsDataManagerTest {
         e2 = new Event();
         e2.setArguments(Arrays.asList(a3, a2));
         events.add(e2);
-        
-        
+
+
         // Now we will create another connected event pair with a more skewed distribution.
         Event e3 = new Event();
         Argument a4 = new Argument("g4", "c4", "h4", "arg4");
@@ -51,7 +53,7 @@ public class ChartsDataManagerTest {
         e3.setArguments(Arrays.asList(a4, a5));
         // Add this event quite a few times, it is very frequent.
         for (int i = 0; i < 10; i++)
-        events.add(e3);
+            events.add(e3);
 
         Event e4 = new Event();
         Argument a6 = new Argument("g6", "c6", "h6", "arg6");

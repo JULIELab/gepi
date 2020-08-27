@@ -6,10 +6,7 @@ import de.julielab.jcore.consumer.es.FieldValueGenerator;
 import de.julielab.jcore.consumer.es.FilterRegistry;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
-import de.julielab.jcore.types.ArgumentMention;
-import de.julielab.jcore.types.ConceptMention;
-import de.julielab.jcore.types.LikelihoodIndicator;
-import de.julielab.jcore.types.ResourceEntry;
+import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.utility.JCoReTools;
 import org.apache.uima.cas.CASException;
@@ -18,6 +15,7 @@ import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -134,8 +132,9 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     document.addField("argumentcoveredtext", createRawFieldValueForAnnotations(argPair, "/:coveredText()"));
                     document.addField("argumentprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
                     document.addField("argumenthomoprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
-                    document.addField("argumentmatchtypes", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
+                    document.addField("argumentmatchtypes", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                     document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
+                    document.addField("alleventtypes", Stream.of(rel.getRelations().toArray()).map(EventMention.class::cast).map(EventMention::getSpecificType).collect(Collectors.toSet()).toArray());
                     document.addField("ARGUMENT_FS", argPair);
 
                     relDocs.add(document);

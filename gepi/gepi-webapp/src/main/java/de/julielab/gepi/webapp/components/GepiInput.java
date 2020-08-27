@@ -155,35 +155,42 @@ public class GepiInput {
         System.out.println("dev settings: " + selectedDevSettings);
         Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
         Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, "listB");
-        if ((filterString != null && !filterString.isBlank()) || selectedDevSettings.contains("Always use ES")) {
-            if (isABSearchRequest) {
-                esResult = eventRetrievalService.getBipartiteEvents(
-                        listAGePiIds,
-                        listBGePiIds, selectedEventTypeNames, filterString);
-            }
-            else {
-                if (isAListPresent) {
-                    log.debug("Calling EventRetrievalService for outside events");
-                    esResult = eventRetrievalService.getOutsideEvents(listAGePiIds, selectedEventTypeNames, filterString);
-                    if (resultPresent())
-                        log.debug("Retrieved the response future. It is " + (esResult.isDone() ? "" : "not ") + "(ES)" + (neo4jResult != null && neo4jResult.isDone() ? "" : "not ") + "(Neo4j) finished.");
-                    else log.debug("After retrieving the result");
-                }
-            }
-            persistEsResult = esResult;
-        } else {
-            CompletableFuture<Stream<String>> aListIds = CompletableFuture.completedFuture(Stream.of(listATextAreaValue.split("\n")));
-            if (isABSearchRequest) {
-                neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, CompletableFuture.completedFuture(Stream.of(listBTextAreaValue.split("\n"))), selectedEventTypeNames);
-            } else if (isAListPresent) {
-                neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, selectedEventTypeNames);
-            }
-            persistNeo4jResult = neo4jResult;
-        }
+//        if ((filterString != null && !filterString.isBlank()) || selectedDevSettings.contains("Always use ES")) {
+        fetchEventsFromElasticSearch(selectedEventTypeNames, isAListPresent, isABSearchRequest, listAGePiIds, listBGePiIds);
+//        } else {
+        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
+//        }
 
         Index indexPage = (Index) resources.getContainer();
         ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
         log.debug("Ajax rendering commands sent, entering the output display mode");
+    }
+
+    private void fetchEventsFromNeo4j(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest) {
+        CompletableFuture<Stream<String>> aListIds = CompletableFuture.completedFuture(Stream.of(listATextAreaValue.split("\n")));
+        if (isABSearchRequest) {
+            neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, CompletableFuture.completedFuture(Stream.of(listBTextAreaValue.split("\n"))), selectedEventTypeNames);
+        } else if (isAListPresent) {
+            neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, selectedEventTypeNames);
+        }
+        persistNeo4jResult = neo4jResult;
+    }
+
+    private void fetchEventsFromElasticSearch(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds) {
+        if (isABSearchRequest) {
+            esResult = eventRetrievalService.getBipartiteEvents(
+                    listAGePiIds,
+                    listBGePiIds, selectedEventTypeNames, filterString);
+        } else {
+            if (isAListPresent) {
+                log.debug("Calling EventRetrievalService for outside events");
+                esResult = eventRetrievalService.getOutsideEvents(listAGePiIds, selectedEventTypeNames, filterString);
+                if (resultPresent())
+                    log.debug("Retrieved the response future. It is " + (esResult.isDone() ? "" : "not ") + "(ES)" + (neo4jResult != null && neo4jResult.isDone() ? "" : "not ") + "(Neo4j) finished.");
+                else log.debug("After retrieving the result");
+            }
+        }
+        persistEsResult = esResult;
     }
 
     void onFailure() {

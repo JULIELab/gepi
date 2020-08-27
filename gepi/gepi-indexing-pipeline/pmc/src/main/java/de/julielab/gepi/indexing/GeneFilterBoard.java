@@ -2,7 +2,10 @@ package de.julielab.gepi.indexing;
 
 import de.julielab.jcore.consumer.es.ExternalResource;
 import de.julielab.jcore.consumer.es.FilterBoard;
-import de.julielab.jcore.consumer.es.filter.*;
+import de.julielab.jcore.consumer.es.filter.AddonTermsFilter;
+import de.julielab.jcore.consumer.es.filter.Filter;
+import de.julielab.jcore.consumer.es.filter.FilterChain;
+import de.julielab.jcore.consumer.es.filter.ReplaceFilter;
 
 import java.util.Map;
 
@@ -16,7 +19,7 @@ public class GeneFilterBoard extends FilterBoard {
     Map<String, String[]> tid2atid;
     @ExternalResource(key = "tid2prefName")
     Map<String, String> tid2prefName;
-    @ExternalResource(key = "tid2homoPrefName")
+    @ExternalResource(key = "tid2topHomologyPrefName")
     Map<String, String> tid2homoPrefName;
     @ExternalResource(key = "tid2tophomo")
     Map<String, String> tid2tophomo;

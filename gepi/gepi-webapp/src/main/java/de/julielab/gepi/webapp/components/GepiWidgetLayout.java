@@ -157,10 +157,15 @@ final public class GepiWidgetLayout {
 
     void onRefreshContent() throws InterruptedException, ExecutionException {
         // If there is data from Neo4j, use that.
-        if (persistEsResult != null && persistNeo4jResult == null)
+        if (persistEsResult != null && persistNeo4jResult == null) {
+            log.debug("Waiting for ElasticSearch to return its results.");
             persistEsResult.get();
-        else if (persistNeo4jResult != null)
+            log.debug("ES result finished.");
+        }
+        else if (persistNeo4jResult != null) {
+            log.debug("Waiting for Neo4j to return its results.");
             persistNeo4jResult.get();
+        }
         ajaxResponseRenderer.addRender(widgetZone);
     }
 

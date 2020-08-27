@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -34,19 +35,31 @@ public class GeneIdService implements IGeneIdService {
 
     @Override
     public Future<IdConversionResult> convert(Stream<String> stream, IdType from, IdType to) {
-        if (to != IdType.GEPI_AGGREGATE)
-            throw new IllegalArgumentException("To-ID type '" + to + "' is currently not supported.");
         List<String> sourceIds = stream.collect(Collectors.toList());
         CompletableFuture<Multimap<String, String>> convertedIds;
-        if (from == IdType.GENE_NAME) {
-            convertedIds = convertGeneNames2AggregateIds(sourceIds.stream());
-        } else if (from == IdType.GENE) {
-            convertedIds = convertGene2AggregateIds(sourceIds.stream());
+        if (to == IdType.GEPI_AGGREGATE) {
+            if (from == IdType.GENE_NAME) {
+                convertedIds = convertGeneNames2AggregateIds(sourceIds.stream());
+            } else if (from == IdType.GENE) {
+                convertedIds = convertGene2AggregateIds(sourceIds.stream());
+            } else {
+                throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
+            }
+        } else if (to == IdType.GENE) {
+            if (from == IdType.GENE_NAME) {
+                convertedIds = convertGeneNames2GeneIds(sourceIds.stream());
+            } else if (from == IdType.GENE) {
+                HashMultimap<String, String> map = HashMultimap.create();
+                sourceIds.forEach(id -> map.put(id, id));
+                convertedIds = CompletableFuture.completedFuture(map);
+            } else {
+                throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
+            }
         } else {
-            throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
+            throw new IllegalArgumentException("To-ID type '" + to + "' is currently not supported.");
         }
         Future<Multimap<String, String>> finalConvertedIds = convertedIds;
-        return CompletableFuture.supplyAsync(() ->{
+        return CompletableFuture.supplyAsync(() -> {
             try {
                 Multimap<String, String> idMapping = finalConvertedIds.get();
 //                idMapping.forEach((k,v) ->log.debug("{} -> {}", k, v));
@@ -55,6 +68,34 @@ public class GeneIdService implements IGeneIdService {
             } catch (Exception e) {
                 log.error("Could not create an IdConversionResult instance", e);
                 throw new IllegalStateException(e);
+            }
+        });
+    }
+
+    private CompletableFuture<Multimap<String, String>> convertGeneNames2GeneIds(Stream<String> geneNames) {
+        return CompletableFuture.supplyAsync(() -> {
+            Driver driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
+
+            try (Session session = driver.session()) {
+
+                return session.readTransaction(tx -> {
+                    Record record;
+                    Multimap<String, String> topAtids = HashMultimap.create();
+
+                    String[] searchInput = geneNames.map(String::toLowerCase).toArray(String[]::new);
+                    log.debug("Running query to map gene names to NCBI gene IDs.");
+                    String cypher = "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.preferredName_lc IN $geneNames " +
+                            "RETURN DISTINCT n.preferredName_lc AS SOURCE_ID,n.originalId AS SEARCH_ID";
+                    Result result = tx.run(
+                            cypher,
+                            parameters("geneNames", searchInput));
+
+                    while (result.hasNext()) {
+                        record = result.next();
+                        topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
+                    }
+                    return topAtids;
+                });
             }
         });
     }
@@ -159,7 +200,7 @@ public class GeneIdService implements IGeneIdService {
                     Result result = tx.run(
                             "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.originalId IN $originalIds " +
                                     "OPTIONAL MATCH (n)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) " +
-                                    "WITH a " +
+                                    "WITH n,a " +
                                     "OPTIONAL MATCH (a)<-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) " +
                                     "RETURN DISTINCT n.originalId AS SOURCE_ID, COALESCE(top.id,a.id) AS SEARCH_ID",
                             parameters("originalIds", searchInput));

@@ -18,119 +18,163 @@ import org.slf4j.Logger;
 
 public class TableResultWidget extends GepiWidget {
 
-	@Inject
-	private Logger log;
+    @Inject
+    private Logger log;
 
     @Property
     private String viewMode;
 
-	@Property
-	private BeanModelEvent eventRow;
+    @Property
+    private BeanModelEvent eventRow;
 
-	@Property
-	@Persist
-	private List<BeanModelEvent> beanEvents;
+    @Property
+    @Persist
+    private List<BeanModelEvent> beanEvents;
 
-	@Inject
-	private BeanModelSource beanModelSource;
+    @Inject
+    private BeanModelSource beanModelSource;
 
-	@Inject
-	private Messages messages;
+    @Inject
+    private Messages messages;
 
-	@Inject
+    @Inject
     private ComponentResources resources;
-	
-	@Property
-	@Persist
-	private BeanModel<BeanModelEvent> tableModel;
 
-	void setupRender() {
-		super.setupRender();
-		tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
-		tableModel.include("firstArgumentText", "firstArgumentPreferredName",
-				"secondArgumentText", "secondArgumentPreferredName",
-				"medlineId", "pmcId", "mainEventType", "sentence");
-		tableModel.get("firstArgumentText").label("gene A text");
-		tableModel.get("firstArgumentPreferredName").label("gene A symbol");
-		tableModel.get("secondArgumentText").label("gene B text");
-		tableModel.get("secondArgumentPreferredName").label("gene B symbol");
-		tableModel.get("medlineId").label("medline id");
-		tableModel.get("pmcId").label("pmc id");
-		tableModel.get("mainEventType").label("event type");
-	}
+    @Property
+    @Persist
+    private BeanModel<BeanModelEvent> tableModel;
 
-	void onUpdateTableData() {
-		try {
-			beanEvents = persistEsResult.get().getEventList().stream()
-					.map(e -> new BeanModelEvent(e))
-					.collect(Collectors.toList());
+    void setupRender() {
+        super.setupRender();
+        tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
+        tableModel.include(
+                "firstArgumentPreferredName",
+                "secondArgumentPreferredName",
+                "firstArgumentText",
+                "secondArgumentText",
+                "firstArgumentGeneId",
+                "secondArgumentGeneId",
+                "firstArgumentMatchType",
+                "secondArgumentMatchType",
+                "allEventTypes",
+                "docId",
+                "sentence");
+        tableModel.get("firstArgumentPreferredName").label("gene A symbol");
+        tableModel.get("secondArgumentPreferredName").label("gene B symbol");
+        tableModel.get("firstArgumentText").label("gene A text");
+        tableModel.get("secondArgumentText").label("gene B text");
+        tableModel.get("firstArgumentGeneId").label("gene A gene ID");
+        tableModel.get("secondArgumentGeneId").label("gene B gene ID");
+        tableModel.get("firstArgumentMatchType").label("gene A match type");
+        tableModel.get("secondArgumentMatchType").label("gene B match type");
+        tableModel.get("allEventTypes").label("relation types");
+        tableModel.get("docId").label("document id");
+    }
 
-		} catch (InterruptedException | ExecutionException e) {
-			log.error("Exception occurred when trying to access ES event results.", e);
-		} catch (NullPointerException e) {
-			log.error("NPE occurred when trying to access ES event results. The persistentEsResult is: {}", persistEsResult);
-			throw e;
-		}
-	}
-	
-	public static class BeanModelEvent {
+    void onUpdateTableData() {
+        try {
+            log.debug("Waiting for table data.");
+            beanEvents = persistEsResult.get().getEventList().stream()
+                    .map(e -> new BeanModelEvent(e))
+                    .collect(Collectors.toList());
+            log.debug("Table data was loaded.");
 
-		private Event event;
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("Exception occurred when trying to access ES event results.", e);
+        } catch (NullPointerException e) {
+            log.error("NPE occurred when trying to access ES event results. The persistentEsResult is: {}", persistEsResult);
+            throw e;
+        }
+    }
 
-		public BeanModelEvent(Event event) {
-			this.event = event;
-		}
-		
-		public String getMedlineId() {
-			return event.getPmid() != null ?  event.getPmid() : "";
-		}
-		
-		public String getPmcId() {
-			return event.getPmcid() != null ? event.getPmcid() : "";
-		}
-		
-		public String getFirstArgumentText() {
-			return event.getFirstArgument().getText();
-		}
+    public int getRowsPerPage() {
+        return 10;
+    }
 
-		public String getFirstArgumentGeneId() { return event.getFirstArgument().getGeneId(); }
+    public String getDocumentUrl() {
+        String docId = eventRow.getDocId();
+        if (docId.startsWith("PMC"))
+            return "https://www.ncbi.nlm.nih.gov/pmc/articles/" + docId;
+        else
+            return "https://www.ncbi.nlm.nih.gov/pubmed/" + docId;
+    }
 
-		public String getSecondArgumentText() {
-			return event.getSecondArgument().getText();
-		}
+    public String getArticleReferenceTitle() {
+        if (eventRow.getDocId().contains("PMC"))
+            return "Open in PubmedCentral";
+        return "Open in Pubmed";
+    }
 
-        public String getSecondArgumentGeneId() { return event.getSecondArgument().getGeneId(); }
-		
-		public String getFirstArgumentPreferredName() {
-			return event.getFirstArgument().getPreferredName();
-		}
-		
-		public String getSecondArgumentPreferredName() {
-			return event.getSecondArgument().getPreferredName();
-		}
 
-		public String getMainEventType() {
-			return event.getMainEventType();
-		}
-		
-		public String getFirstArgumentTextWithPreferredName() {
-			Argument argument = event.getFirstArgument();
-			return argument.getText() + " (" + argument.getPreferredName() + ")";
-		}
-				
-		public String getSentence() {
-			return event.getSentence();
-		}
+    public static class BeanModelEvent {
 
-		public String getSecondArgumentTextWithPreferredName() {
-			Argument argument = event.getSecondArgument();
-			if (null != argument)
-				return argument.getText() + " (" + argument.getPreferredName() + ")";
-			return "";
-		}
-	}
+        private Event event;
 
-	public int getRowsPerPage() {
-		return 5;
-	}
+        public BeanModelEvent(Event event) {
+            this.event = event;
+        }
+
+        public String getDocId() {
+            if (event.getEventId().startsWith("pmc")) return "PMC" + event.getPmcid();
+            else if (event.getPmid() != null) return event.getPmid();
+            throw new IllegalStateException("No document ID for event " + event);
+        }
+
+        public String getFirstArgumentText() {
+            return event.getFirstArgument().getText();
+        }
+
+        public String getFirstArgumentGeneId() {
+            return event.getFirstArgument().getGeneId();
+        }
+
+        public String getSecondArgumentText() {
+            return event.getSecondArgument().getText();
+        }
+
+        public String getSecondArgumentGeneId() {
+            return event.getSecondArgument().getGeneId();
+        }
+
+        public String getFirstArgumentPreferredName() {
+            return event.getFirstArgument().getPreferredName();
+        }
+
+        public String getSecondArgumentPreferredName() {
+            return event.getSecondArgument().getPreferredName();
+        }
+
+        public String getMainEventType() {
+            return event.getMainEventType();
+        }
+
+        public String getFirstArgumentMatchType() {
+            return event.getFirstArgument().getMatchType();
+        }
+
+        public String getSecondArgumentMatchType() {
+            return event.getSecondArgument().getMatchType();
+        }
+
+        public String getFirstArgumentTextWithPreferredName() {
+            Argument argument = event.getFirstArgument();
+            return argument.getText() + " (" + argument.getPreferredName() + ")";
+        }
+
+        public String getAllEventTypes() {
+            return String.join(", ", event.getAllEventTypes());
+        }
+
+        public String getSentence() {
+            return event.getSentence();
+        }
+
+        public String getSecondArgumentTextWithPreferredName() {
+            Argument argument = event.getSecondArgument();
+            if (null != argument)
+                return argument.getText() + " (" + argument.getPreferredName() + ")";
+            return "";
+        }
+
+    }
 }

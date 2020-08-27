@@ -33,6 +33,7 @@
 		name="de.julielab.gepi.core.services.GepiCoreModule.IEventPostProcessingService"
 		level="INFO" />
 -->
+	<logger name="de.julielab.elastic.query.components.data.ElasticServerResponse" level="INFO"/>
 	<logger
 		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
 		level="TRACE" />

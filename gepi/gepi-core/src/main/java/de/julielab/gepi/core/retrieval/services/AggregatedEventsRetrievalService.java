@@ -2,23 +2,30 @@ package de.julielab.gepi.core.retrieval.services;
 
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
+import de.julielab.gepi.core.services.GeneIdService;
+import de.julielab.gepi.core.services.IGeneIdService;
+import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AggregatedEventsRetrievalService implements IAggregatedEventsRetrievalService {
     private final static Logger log = LoggerFactory.getLogger(AggregatedEventsRetrievalService.class);
     private final Driver driver;
+    private IGeneIdService geneIdService;
 
-    public AggregatedEventsRetrievalService(Logger log, @Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
+    public AggregatedEventsRetrievalService(Logger log, @Inject IGeneIdService geneIdService, @Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
+        this.geneIdService = geneIdService;
         driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
     }
 
@@ -26,46 +33,57 @@ public class AggregatedEventsRetrievalService implements IAggregatedEventsRetrie
     public CompletableFuture<AggregatedEventsRetrievalResult> getEvents(Future<Stream<String>> idStream1, List<String> eventTypes) {
         return CompletableFuture.supplyAsync(() -> {
             long time = System.currentTimeMillis();
-            String eventTypeList = String.join("|", eventTypes);
-            String queryTemplate = String.format("MATCH (a:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c:CONCEPT) WHERE c.sourceIds0 IN $aList \n" +
-                    "WITH DISTINCT a\n" +
-                    "MATCH p=(a)-[:HAS_ELEMENT]->(:CONCEPT)-[r:%s]-(c:CONCEPT) WHERE NOT (c)<-[:HAS_ELEMENT]-()\n" +
-                    "RETURN a.preferredName AS arg1Name,c.preferredName AS arg2Name,a.sourceIds0 AS arg1Id,c.sourceIds0 AS arg2Id,sum(r.totalCount) AS count\n" +
-                    "\n" +
-                    "UNION ALL\n" +
-                    "MATCH (a:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c) WHERE c.sourceIds0 IN $aList \n" +
-                    "WITH DISTINCT a\n" +
-                    "MATCH p=(a)-[:HAS_ELEMENT]->(:CONCEPT)-[r:%s]-(:CONCEPT)<-[:HAS_ELEMENT]-(a2:AGGREGATE_GENEGROUP)\n" +
-                    "RETURN a.preferredName AS arg1Name,a2.preferredName AS arg2Name,a.sourceIds0 AS arg1Id,a2.sourceIds0 AS arg2Id,sum(r.totalCount) AS count\n" +
-                    "\n" +
-                    "UNION ALL\n" +
-                    "MATCH (c:CONCEPT)-[r:%s]-(c2:CONCEPT) WHERE c.sourceIds0 IN $aList AND NOT (:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c) AND NOT (c2)<-[:HAS_ELEMENT]-()\n" +
-                    "RETURN c.preferredName AS arg1Name,c2.preferredName AS arg2Name,c.sourceIds0 AS arg1Id,c2.sourceIds0 AS arg2Id,sum(r.totalCount) AS count\n" +
-                    "\n" +
-                    "UNION ALL\n" +
-                    "MATCH (c:CONCEPT)-[r:%s]-(:CONCEPT)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) WHERE c.sourceIds0 IN $aList AND NOT (:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c)\n" +
-                    "RETURN c.preferredName AS arg1Name,a.preferredName AS arg2Name,c.sourceIds0 AS arg1Id,a.sourceIds0 AS arg2Id,sum(r.totalCount) AS count", eventTypeList, eventTypeList, eventTypeList, eventTypeList);
-            try (Session s = driver.session(); Transaction tx = s.beginTransaction()) {
-                try {
-                    Result cypherResult = tx.run(queryTemplate, Map.of("aList", idStream1.get()));
-                    AggregatedEventsRetrievalResult retrievalResult = new AggregatedEventsRetrievalResult();
-                    while (cypherResult.hasNext()) {
-                        Record record = cypherResult.next();
-                        retrievalResult.add(
-                                record.get("arg1Name").asString(),
-                                record.get("arg2Name").asString(),
-                                record.get("arg1Id").asString(),
-                                record.get("arg2Id").asString(),
-                                record.get("count").asInt());
-                    }
-                    time = System.currentTimeMillis() - time;
-                    log.debug("Retrieving A-Search results from Neo4j of size {} took {}ms", retrievalResult.size(), time);
-                    return retrievalResult;
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
+            String idProperty = "sourceIds0";
+            List<String> inputIds = Collections.emptyList();
+            try {
+                inputIds = idStream1.get().collect(Collectors.toList());
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("Could not retrieve the input IDs", e);
+            }
+            if (geneIdService != null) {
+                IGeneIdService.IdType idType = geneIdService.determineIdType(inputIds.stream());
+                log.debug("Identified input IDs as {}", idType);
+                if (idType == IGeneIdService.IdType.GENE_NAME) {
+                    idProperty = "preferredName_lc";
+                    inputIds = inputIds.stream().map(String::toLowerCase).collect(Collectors.toList());
                 }
             }
-            return null;
+            String eventTypeList = String.join("|", eventTypes);
+            String queryTemplate = String.format("MATCH (a:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c:CONCEPT) WHERE c.$PROP$ IN $aList \n" +
+                    "WITH DISTINCT a\n" +
+                    "MATCH p=(a)-[:HAS_ELEMENT]->(:CONCEPT)-[r:%s]-(c:CONCEPT) WHERE NOT (c)<-[:HAS_ELEMENT]-()\n" +
+                    "RETURN a.preferredName AS arg1Name,c.preferredName AS arg2Name,a.$PROP$ AS arg1Id,c.$PROP$ AS arg2Id,sum(r.totalCount) AS count\n" +
+                    "\n" +
+                    "UNION ALL\n" +
+                    "MATCH (a:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c) WHERE c.$PROP$ IN $aList \n" +
+                    "WITH DISTINCT a\n" +
+                    "MATCH p=(a)-[:HAS_ELEMENT]->(:CONCEPT)-[r:%s]-(:CONCEPT)<-[:HAS_ELEMENT]-(a2:AGGREGATE_GENEGROUP)\n" +
+                    "RETURN a.preferredName AS arg1Name,a2.preferredName AS arg2Name,a.$PROP$ AS arg1Id,a2.$PROP$ AS arg2Id,sum(r.totalCount) AS count\n" +
+                    "\n" +
+                    "UNION ALL\n" +
+                    "MATCH (c:CONCEPT)-[r:%s]-(c2:CONCEPT) WHERE c.$PROP$ IN $aList AND NOT (:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c) AND NOT (c2)<-[:HAS_ELEMENT]-()\n" +
+                    "RETURN c.preferredName AS arg1Name,c2.preferredName AS arg2Name,c.$PROP$ AS arg1Id,c2.$PROP$ AS arg2Id,sum(r.totalCount) AS count\n" +
+                    "\n" +
+                    "UNION ALL\n" +
+                    "MATCH (c:CONCEPT)-[r:%s]-(:CONCEPT)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) WHERE c.$PROP$ IN $aList AND NOT (:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c)\n" +
+                    "RETURN c.preferredName AS arg1Name,a.preferredName AS arg2Name,c.$PROP$ AS arg1Id,a.$PROP$ AS arg2Id,sum(r.totalCount) AS count", eventTypeList, eventTypeList, eventTypeList, eventTypeList);
+            queryTemplate = queryTemplate.replaceAll("\\$PROP\\$", idProperty);
+            try (Session s = driver.session(); Transaction tx = s.beginTransaction()) {
+                Result cypherResult = tx.run(queryTemplate, Map.of("aList", inputIds));
+                AggregatedEventsRetrievalResult retrievalResult = new AggregatedEventsRetrievalResult();
+                while (cypherResult.hasNext()) {
+                    Record record = cypherResult.next();
+                    retrievalResult.add(
+                            record.get("arg1Name").asString(),
+                            record.get("arg2Name").asString(),
+                            record.get("arg1Id").asString(),
+                            record.get("arg2Id").asString(),
+                            record.get("count").asInt());
+                }
+                time = System.currentTimeMillis() - time;
+                log.debug("Retrieval of A-Search results from Neo4j of size {} took {}ms", retrievalResult.size(), time);
+                return retrievalResult;
+            }
         });
     }
 

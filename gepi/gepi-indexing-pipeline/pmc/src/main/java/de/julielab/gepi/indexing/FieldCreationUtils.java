@@ -95,6 +95,7 @@ public class FieldCreationUtils {
 
     /**
      * Adds pmid and pmcid fields.
+     *
      * @param document
      * @param annotation
      * @throws CASException
@@ -102,30 +103,15 @@ public class FieldCreationUtils {
     public static void addDocumentId(Document document, AnnotationFS annotation) throws CASException {
         JCas jCas = annotation.getCAS().getJCas();
         String docId = JCoReTools.getDocId(jCas);
-        if (docId.startsWith("PMC")) {
-            document.addField("pmcid", docId);
-            Header header = JCasUtil.selectSingle(jCas, Header.class);
-            if (header.getOtherIDs() != null) {
-                for (int i = 0; i < header.getOtherIDs().size(); i++) {
-                    OtherID otherID = header.getOtherIDs(i);
-                    if (otherID.getSource().equalsIgnoreCase("pubmed")) {
-                        document.addField("pmid", otherID.getId());
-                    }
+        // We currently only expect PMC or no prefix, no prefix meaning PubMed
+        document.addField("pmcid", docId);
+        Header header = JCasUtil.selectSingle(jCas, Header.class);
+        if (header.getOtherIDs() != null) {
+            for (int i = 0; i < header.getOtherIDs().size(); i++) {
+                OtherID otherID = header.getOtherIDs(i);
+                if (otherID.getSource().equalsIgnoreCase("pubmed") || otherID.getSource().equalsIgnoreCase("pmid")) {
+                    document.addField("pmid", otherID.getId());
                 }
-
-            }
-        } else {
-            // We currently only expect PMC or no prefix, no prefix meaning PubMed
-            document.addField("pmid", docId);
-            Header header = JCasUtil.selectSingle(jCas, Header.class);
-            if (header.getOtherIDs() != null) {
-                for (int i = 0; i < header.getOtherIDs().size(); i++) {
-                    OtherID otherID = header.getOtherIDs(i);
-                    if (otherID.getSource().equalsIgnoreCase("pmc") || otherID.getSource().equalsIgnoreCase("pmcid")) {
-                        document.addField("pmcid", otherID.getId());
-                    }
-                }
-
             }
         }
     }

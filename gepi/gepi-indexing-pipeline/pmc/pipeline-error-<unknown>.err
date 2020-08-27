@@ -1,4 +1,4 @@
-Error happened on: Mon Jun 15 08:57:15 CEST 2020-------------- Failed Components -------------- 
+Error happened on: Wed Aug 26 14:54:28 CEST 2020-------------- Failed Components -------------- 
 1. Process
 -------------- Stack Traces -------------- 
 org.apache.uima.analysis_engine.AnalysisEngineProcessException: Annotator processing failed.    
@@ -14,7 +14,7 @@ org.apache.uima.analysis_engine.AnalysisEngineProcessException: Annotator proces
 	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344)
 	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:271)
 	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269)
-	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:895)
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:902)
 	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575)
 Caused by: com.google.common.util.concurrent.UncheckedExecutionException: org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024
 	at com.google.common.cache.LocalCache$Segment.get(LocalCache.java:2051)

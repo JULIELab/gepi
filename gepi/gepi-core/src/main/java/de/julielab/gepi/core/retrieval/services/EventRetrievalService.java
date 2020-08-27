@@ -40,6 +40,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_MAINEVENTTYPE = "maineventtype";
 
+    public static final String FIELD_EVENT_ALL_EVENTTYPES = "alleventtypes";
+
     public static final String FIELD_EVENT_ARGUMENTSEARCH = "arguments";
 
     public static final String FIELD_EVENT_ARG_GENE_IDS = "argumentgeneids";
@@ -61,7 +63,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     public static final String FIELD_EVENT_LIKELIHOOD = "likelihood";
 
     public static final String FIELD_EVENT_NUMARGUMENTS = "numargs";
-    private static final int SCROLL_SIZE = 100;
+    private static final int SCROLL_SIZE = 2000;
     private Logger log;
     private ISearchServerComponent searchServerComponent;
     private String documentIndex;
@@ -152,9 +154,11 @@ public class EventRetrievalService implements IEventRetrievalService {
                         FIELD_EVENT_LIKELIHOOD,
                         FIELD_EVENT_SENTENCE,
                         FIELD_EVENT_MAINEVENTTYPE,
+                        FIELD_EVENT_ALL_EVENTTYPES,
                         FIELD_EVENT_ARG_GENE_IDS,
                         FIELD_EVENT_ARG_CONCEPT_IDS,
                         FIELD_EVENT_ARG_PREFERRED_NAME,
+                        FIELD_EVENT_ARG_MATCH_TYPES,
                         FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
                         FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
                         FIELD_EVENT_ARG_TEXT,
@@ -307,6 +311,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                         FIELD_EVENT_LIKELIHOOD,
                         FIELD_EVENT_SENTENCE,
                         FIELD_EVENT_MAINEVENTTYPE,
+                        FIELD_EVENT_ALL_EVENTTYPES,
                         FIELD_EVENT_ARG_GENE_IDS,
                         FIELD_EVENT_ARG_CONCEPT_IDS,
                         FIELD_EVENT_ARG_PREFERRED_NAME,
@@ -320,12 +325,14 @@ public class EventRetrievalService implements IEventRetrievalService {
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
                 carrier.addSearchServerRequest(serverCmd);
+                long time = System.currentTimeMillis();
                 searchServerComponent.process(carrier);
 
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
                         .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
-                log.debug("Retrieved {} outside events", eventResult.getEventList().size());
+                time = System.currentTimeMillis() - time;
+                log.debug("Retrieved {} outside events in {} seconds", eventResult.getEventList().size(), time / 1000);
                 eventResult.setResultType(EventResultType.OUTSIDE);
                 reorderOutsideEventResultsArguments(idSet, eventResult);
                 return eventResult;

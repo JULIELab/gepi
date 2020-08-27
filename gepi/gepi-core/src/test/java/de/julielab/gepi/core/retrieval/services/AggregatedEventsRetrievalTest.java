@@ -24,7 +24,7 @@ public class AggregatedEventsRetrievalTest {
 
     @Test
     public void retrieveWithAggregateResolution() throws Exception {
-        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), null, neo4j.boltURI().toString());
         AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c11")), constantFuture(Stream.of("c22")), List.of("Binding", "Regulation")).get();
         assertThat(events.size()).isEqualTo(1);
         assertThatCode(() -> events.seek(0)).doesNotThrowAnyException();
@@ -38,7 +38,7 @@ public class AggregatedEventsRetrievalTest {
     @Test
     public void retrieveCompleteAB() throws Exception {
         // "complete" here just refers to the fact that we search for all "left" genes to all "right" genes according to the set graph (check the sketch in setup DB)
-        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), null, neo4j.boltURI().toString());
         AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c11", "c12", "c3", "c4")), constantFuture(Stream.of("c21", "c22", "c5")), List.of("Binding", "Regulation")).get();
         assertThat(events.size()).isEqualTo(3);
         while (events.increment()) {
@@ -56,7 +56,7 @@ public class AggregatedEventsRetrievalTest {
     @Test
     public void retrieveCompleteA() throws Exception {
         // This should result in the same as retrieveCompleteAB because in both cases we retrieve the whole test graph
-        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), null, neo4j.boltURI().toString());
         AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c11", "c12", "c3", "c4")), List.of("Binding", "Regulation")).get();
         assertThat(events.size()).isEqualTo(3);
         while (events.increment()) {
@@ -74,7 +74,7 @@ public class AggregatedEventsRetrievalTest {
     @Test
     public void retrieveCompleteARegulation() throws Exception {
         // Query all nodes but restrict to regulation
-        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), null, neo4j.boltURI().toString());
         AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c11", "c12", "c3", "c4")), List.of("Regulation")).get();
         assertThat(events.size()).isEqualTo(2);
         while (events.increment()) {
@@ -90,7 +90,7 @@ public class AggregatedEventsRetrievalTest {
     @Test
     public void retrieveCompleteABRegulation() throws Exception {
         // Query all nodes but restrict to regulation; again the same result as with the A-search variant
-        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), null, neo4j.boltURI().toString());
         AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c11", "c12", "c3", "c4")), constantFuture(Stream.of("c21", "c22", "c5")), List.of("Regulation")).get();
         assertThat(events.size()).isEqualTo(2);
         while (events.increment()) {
@@ -105,7 +105,7 @@ public class AggregatedEventsRetrievalTest {
 
     @Test
     public void doASearch1() throws Exception {
-        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), null, neo4j.boltURI().toString());
         AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c12")), List.of("Binding", "Regulation")).get();
         // The result should actually exactly be the same as in retrieveWithAggregateResolution
         assertThat(events.size()).isEqualTo(1);
@@ -119,7 +119,7 @@ public class AggregatedEventsRetrievalTest {
 
     @Test
     public void doASearch2() throws Exception {
-        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), null, neo4j.boltURI().toString());
         AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c12", "c3")), List.of("Binding", "Regulation")).get();
         assertThat(events.size()).isEqualTo(2);
         while (events.increment()) {
@@ -134,7 +134,7 @@ public class AggregatedEventsRetrievalTest {
 
     @Test
     public void doASearch3() throws Exception {
-        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), neo4j.boltURI().toString());
+        AggregatedEventsRetrievalService retrieval = new AggregatedEventsRetrievalService(LoggerFactory.getLogger(AggregatedEventsRetrievalService.class), null, neo4j.boltURI().toString());
         AggregatedEventsRetrievalResult events = retrieval.getEvents(constantFuture(Stream.of("c4")), List.of("Binding", "Regulation")).get();
         // The result should actually exactly be the same as in retrieveWithAggregateResolution
         assertThat(events.size()).isEqualTo(1);

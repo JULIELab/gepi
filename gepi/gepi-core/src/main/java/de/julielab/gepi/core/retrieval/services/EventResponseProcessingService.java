@@ -10,6 +10,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.*;
@@ -61,7 +62,10 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                     .orElse(Collections.emptyList());
             List<Object> argHomologyPrefNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME)
                     .orElse(Collections.emptyList());
+			List<Object> allEventTypes = eventDocument.getFieldValues(FIELD_EVENT_ALL_EVENTTYPES)
+					.orElse(Collections.emptyList());
 			List<Object> texts = eventDocument.getFieldValues(FIELD_EVENT_ARG_TEXT).orElse(Collections.emptyList());
+			List<Object> matchTypes = eventDocument.getFieldValues(FIELD_EVENT_ARG_MATCH_TYPES).orElse(Collections.emptyList());
 			Optional<String> mainEventType = eventDocument.get(FIELD_EVENT_MAINEVENTTYPE);
 			Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
 			Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE);
@@ -100,11 +104,11 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			pmid.ifPresent(event::setPmid);
 			pmcid.ifPresent(event::setPmcid);
 			event.setEventId(eventId);
-			//event.setDocumentType(documentType);
 			event.setArguments(arguments);
 			if (likelihood.isPresent())
 				event.setLikelihood(likelihood.get());
 			event.setMainEventType(mainEventType.get());
+			event.setAllEventTypes(allEventTypes.stream().map(String.class::cast).collect(Collectors.toList()));
 			event.setHighlightedSentence(highlights.getOrDefault(FIELD_EVENT_SENTENCE, Collections.emptyList()).stream()
 					.findFirst().orElse(null));
 			if (sentence.isPresent())
@@ -112,6 +116,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			for (int i = 0; i < event.getNumArguments(); i++) {
                 event.getArgument(i).setPreferredName((String) argPrefNames.get(i));
                 event.getArgument(i).setTopHomologyPreferredName((String) argHomologyPrefNames.get(i));
+				event.getArgument(i).setMatchType((String) matchTypes.get(i));
             }
 
 			return event;

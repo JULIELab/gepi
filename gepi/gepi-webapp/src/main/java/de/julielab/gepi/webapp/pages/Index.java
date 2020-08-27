@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import org.slf4j.LoggerFactory;
 
 /**
  * Start page of application gepi-webapp.
@@ -76,9 +77,13 @@ public class Index {
     public Zone getInputZone() {
         return inputZone;
     }
-
+    @Persist
+    private CompletableFuture<AggregatedEventsRetrievalResult> myNeo4jResult;
+    private CompletableFuture<AggregatedEventsRetrievalResult> notPersistentField;
+    @Persist
+    private CompletableFuture<AggregatedEventsRetrievalResult> persistentField;
     void setupRender() {
-        resultNonNullOnLoad = esResult != null;
+        resultNonNullOnLoad = esResult != null || neo4jResult != null;
     }
 
     // Handle call with an unwanted context
@@ -122,6 +127,7 @@ public class Index {
 
     public Object onReset() {
         esResult = null;
+        neo4jResult = null;
         return this;
     }
 
@@ -143,13 +149,27 @@ public class Index {
 
     /**
      * Called from the client to retrieve the data for chart display.
+     *
      * @return Aggregated data representation, i.e. counts of argument ID pairs.
      */
     JSONObject onLoadDataToClient() {
         String datasource = request.getParameter("datasource");
+        logger.debug("Received data request for '{}' from the client.", datasource);
         if (!datasource.equals("relationCounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
+        logger.debug("Checked datasource name");
+//        if (esResult == null && neo4jResult == null)
+//            throw new IllegalStateException("The ES result and the Neo4j result are both null.");
+        logger.debug("Checked if results are null.");
         try {
+            logger.debug("Not Accessing Neo4j");
+            logger.debug("Still Not Accessing Neo4j");
+            logger.debug("No no");
+            System.out.println("Persistent field: " + persistentField);
+            System.out.println("Not persistent field: " + notPersistentField);
+            System.out.println("Persistent field: " + myNeo4jResult);
+            System.out.println(neo4jResult);
+            logger.debug("Neo4jResult is {}", neo4jResult);
             JSONObject jsonObject = neo4jResult != null ? chartMnger.getPairedArgsCount(neo4jResult.get()) : chartMnger.getPairedArgsCount(esResult.get().getEventList());
             logger.debug("Sending data of type {} with {} nodes and {} links to the client ", datasource, jsonObject.getJSONArray("nodes").length(), jsonObject.getJSONArray("links").length());
             return jsonObject;

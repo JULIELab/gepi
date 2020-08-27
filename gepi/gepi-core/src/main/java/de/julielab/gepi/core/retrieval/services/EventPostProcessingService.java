@@ -53,6 +53,11 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 		return ev;
 	}
 
+	/**
+	 * @deprecated stored in the index
+	 * @param events
+	 */
+	@Deprecated
 	@Override
 	public void setArgumentGeneIds(List<Event> events) {
 		Map<String, String> concept2gene = getGeneIds(
@@ -65,6 +70,11 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 		});
 	}
 
+	/**
+	 * @deprecated stored in the index
+	 * @param conceptIds
+	 */
+	@Deprecated
 	private Map<String, String> getGeneIds(Set<String> conceptIds) {
 		Map<String, String> concept2gene = new HashMap<>();
 		try (Session session = driver.session()) {
@@ -93,12 +103,10 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 	}
 
 	/**
-	 * query neo4j for mapping of gene id to top homology preferred name if
-	 * available if not available take preferred name of species identified by its
-	 * current ncbi entrez gene id
-	 * 
+	 * @deprecated stored in the index
 	 * @param conceptIds
 	 */
+	@Deprecated
 	private Map<String, String> getGeneIdPrefNameMap(Set<String> conceptIds) {
 
 		Map<String, String> geneIdPrefNameMap = new HashMap<>();

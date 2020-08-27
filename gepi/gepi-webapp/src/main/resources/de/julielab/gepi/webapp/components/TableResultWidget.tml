@@ -12,8 +12,8 @@
         <p:secondArgumentPreferredNameCell>
             <a href="https://www.ncbi.nlm.nih.gov/gene/2475/${eventrow.secondargumentgeneid}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open in NCBI Gene">${eventrow.secondArgumentPreferredName}</a>
         </p:secondArgumentPreferredNameCell>
-        <p:medlineIdCell>
-            <a href="https://www.ncbi.nlm.nih.gov/pubmed/${eventrow.medlineId}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open in PubMed">${eventrow.medlineId}</a>
-        </p:medlineIdCell>
+        <p:docIdCell>
+            <a href="${documentUrl}" target="_blank" data-toggle="tooltip" data-placement="top" title="${articleReferenceTitle}">${eventrow.docId}</a>
+        </p:docIdCell>
     </t:grid>
 </div>
