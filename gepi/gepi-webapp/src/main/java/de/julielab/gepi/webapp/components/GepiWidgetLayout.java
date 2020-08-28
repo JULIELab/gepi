@@ -46,14 +46,7 @@ import org.slf4j.Logger;
 @Import(stylesheet = {"context:css-components/gepiwidgetlayout.css"})
 @SupportsInformalParameters
 final public class GepiWidgetLayout {
-    @Parameter
-    @Property
-    protected CompletableFuture<EventRetrievalResult> esResult;
-
-    @Parameter
-    @Property
-    protected CompletableFuture<AggregatedEventsRetrievalResult> neo4jResult;
-
+ 
     @Inject
     private Logger log;
 
@@ -86,10 +79,7 @@ final public class GepiWidgetLayout {
     private ComponentResources resources;
     @Environmental
     private JavaScriptSupport javaScriptSupport;
-    @Persist
-    private CompletableFuture<EventRetrievalResult> persistEsResult;
-    @Persist
-    private CompletableFuture<AggregatedEventsRetrievalResult> persistNeo4jResult;
+  
     @Persist
     @Property
     private String viewMode;
@@ -97,9 +87,7 @@ final public class GepiWidgetLayout {
     private Index index;
 
     void setupRender() {
-        persistEsResult = esResult;
-        persistNeo4jResult = neo4jResult;
-        if (esResult == null)
+        if (getEsResult() == null)
             viewMode = null;
         if (viewMode == null)
             viewMode = ViewMode.OVERVIEW.name().toLowerCase();
@@ -111,6 +99,14 @@ final public class GepiWidgetLayout {
             javaScriptSupport.require("gepi/components/widgetManager").invoke("addWidget")
                     .with(clientId, widgetSettings);
         }
+    }
+
+    public CompletableFuture<EventRetrievalResult> getEsResult() {
+        return index.getEsResult();
+    }
+
+    public CompletableFuture<AggregatedEventsRetrievalResult> getNeo4jResult() {
+        return index.getNeo4jResult();
     }
 
     /**
@@ -143,28 +139,28 @@ final public class GepiWidgetLayout {
     }
 
     public boolean isResultLoading() {
-        if (neo4jResult != null && !neo4jResult.isDone()) {
+        if (getEsResult() != null && !getEsResult().isDone()) {
             return true;
         }
-        return persistEsResult != null && !persistEsResult.isDone();
+        return getEsResult() != null && !getEsResult().isDone();
     }
 
     public boolean isResultAvailable() {
-        if (neo4jResult != null && neo4jResult.isDone())
+        if (getEsResult() != null && getNeo4jResult().isDone())
             return true;
-        return persistEsResult != null && persistEsResult.isDone();
+        return getEsResult() != null && getEsResult().isDone();
     }
 
     void onRefreshContent() throws InterruptedException, ExecutionException {
         // If there is data from Neo4j, use that.
-        if (persistEsResult != null && persistNeo4jResult == null) {
+        if (getEsResult() != null && getNeo4jResult() == null) {
             log.debug("Waiting for ElasticSearch to return its results.");
-            persistEsResult.get();
+            getEsResult().get();
             log.debug("ES result finished.");
         }
-        else if (persistNeo4jResult != null) {
+        else if (getNeo4jResult() != null) {
             log.debug("Waiting for Neo4j to return its results.");
-            persistNeo4jResult.get();
+            getNeo4jResult().get();
         }
         ajaxResponseRenderer.addRender(widgetZone);
     }
@@ -215,7 +211,7 @@ final public class GepiWidgetLayout {
      */
     @Log
     StreamResponse onActionFromDownload() {
-        if (!persistEsResult.isDone()) {
+        if (!getEsResult().isDone()) {
             //TODO: how to handle case when download button is clicked, but the request is not yet fully done
 
         }
@@ -234,7 +230,7 @@ final public class GepiWidgetLayout {
             public void prepareResponse(Response response) {
                 EventRetrievalResult eResult = null;
                 try {
-                    eResult = persistEsResult.get();
+                    eResult = getEsResult().get();
                 } catch (InterruptedException | ExecutionException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();

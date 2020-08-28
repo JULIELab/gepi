@@ -20,14 +20,11 @@ public class SankeyWidgetCommonPartners extends GepiWidget {
 	@Property
 	private JSONArray eventsJSON;
 	
-	void setupRender() {
-		super.setupRender();
-	}
-	
+
 	void onDrawChart() {
 		try {
 			javaScriptSupport.require("gepi/charts/sankeychart").with( "sankeychartcommonpartners",
-					gChartMnger.getPairsWithCommonTarget(persistEsResult.get().getEventList()) );
+					gChartMnger.getPairsWithCommonTarget(getEsResult().get().getEventList()) );
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}

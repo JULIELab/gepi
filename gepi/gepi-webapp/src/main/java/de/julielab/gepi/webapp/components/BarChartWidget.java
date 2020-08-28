@@ -20,14 +20,11 @@ public class BarChartWidget extends GepiWidget {
 	@Property
 	private JSONArray eventsJSON;
 	
-	void setupRender() {
-		super.setupRender();
-	}
-	
+
 	void onDrawChart() {
 		try {
 			javaScriptSupport.require("gepi/charts/barchart").with(
-					gChartMnger.getTargetArgCount(persistEsResult.get().getEventList() ) );
+					gChartMnger.getTargetArgCount(getEsResult().get().getEventList() ) );
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

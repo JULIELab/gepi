@@ -34,10 +34,6 @@ public class SankeyWidget extends GepiWidget {
     @InjectComponent("gepiwidgetlayout")
     private GepiWidgetLayout component;
 
-    void setupRender() {
-        super.setupRender();
-    }
-
     void afterRender() {
         if (commonPartners) {
             javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "commonPartnersHarmonicMean", component.getWidgetSettings());

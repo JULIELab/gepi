@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import org.slf4j.LoggerFactory;
 
 /**
  * Start page of application gepi-webapp.
@@ -38,7 +37,7 @@ public class Index {
     @Inject
     Request request;
     @Inject
-    private Logger logger;
+    private Logger log;
     @Environmental
     private JavaScriptSupport javaScriptSupport;
     @Property
@@ -51,10 +50,8 @@ public class Index {
     private Zone outputZone;
     @InjectComponent
     private Zone inputZone;
-    @Property
     @Persist
     private CompletableFuture<EventRetrievalResult> esResult;
-    @Property
     @Persist
     private CompletableFuture<AggregatedEventsRetrievalResult> neo4jResult;
     @Property
@@ -70,6 +67,43 @@ public class Index {
     @Inject
     private IChartsDataManager chartMnger;
 
+    public CompletableFuture<EventRetrievalResult> getEsResult() {
+        try {
+            log.debug("Trying to access ES result.");
+            return esResult;
+        } finally {
+            log.debug("Retrieved ES result");
+        }
+    }
+
+    public CompletableFuture<AggregatedEventsRetrievalResult> getNeo4jResult() {
+
+        try {
+            log.debug("Trying to access index for Neo4j result.");
+            return neo4jResult;
+        } finally {
+            log.debug("Retrieved Neo4j result.");
+        }
+    }
+
+    public void setEsResult(CompletableFuture<EventRetrievalResult> esResult) {
+        try {
+            log.debug("Trying to access index to set ES result.");
+            this.esResult = esResult;
+        } finally {
+            log.debug("Set ES result.");
+        }
+    }
+
+    public void setNeo4jResult(CompletableFuture<AggregatedEventsRetrievalResult> neo4jResult) {
+        try {
+            log.debug("Trying to access index to set Neo4j result.");
+            this.neo4jResult = neo4jResult;
+        } finally {
+            log.debug("Set Neo4j result.");
+        }
+    }
+
     public Zone getOutputZone() {
         return outputZone;
     }
@@ -77,11 +111,7 @@ public class Index {
     public Zone getInputZone() {
         return inputZone;
     }
-    @Persist
-    private CompletableFuture<AggregatedEventsRetrievalResult> myNeo4jResult;
-    private CompletableFuture<AggregatedEventsRetrievalResult> notPersistentField;
-    @Persist
-    private CompletableFuture<AggregatedEventsRetrievalResult> persistentField;
+
     void setupRender() {
         resultNonNullOnLoad = esResult != null || neo4jResult != null;
     }
@@ -101,7 +131,7 @@ public class Index {
         if (isResultPresent()) {
             // If there already is data at loading the page, the input panel is already hidden (see #getShowInputClass)
             // and we can display the widgets.
-            logger.debug("Sending the ready signal for the widgets");
+            log.debug("Sending the ready signal for the widgets");
             javaScriptSupport.require("gepi/pages/index").invoke("readyForWidgets");
         }
     }
@@ -154,28 +184,22 @@ public class Index {
      */
     JSONObject onLoadDataToClient() {
         String datasource = request.getParameter("datasource");
-        logger.debug("Received data request for '{}' from the client.", datasource);
+        log.debug("Received data request for '{}' from the client.", datasource);
         if (!datasource.equals("relationCounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
-        logger.debug("Checked datasource name");
-//        if (esResult == null && neo4jResult == null)
-//            throw new IllegalStateException("The ES result and the Neo4j result are both null.");
-        logger.debug("Checked if results are null.");
+        log.debug("Checked datasource name");
+        if (getEsResult() == null && getNeo4jResult() == null)
+            throw new IllegalStateException("The ES result and the Neo4j result are both null.");
+        log.debug("Checked if results are null.");
         try {
-            logger.debug("Not Accessing Neo4j");
-            logger.debug("Still Not Accessing Neo4j");
-            logger.debug("No no");
-            System.out.println("Persistent field: " + persistentField);
-            System.out.println("Not persistent field: " + notPersistentField);
-            System.out.println("Persistent field: " + myNeo4jResult);
-            System.out.println(neo4jResult);
-            logger.debug("Neo4jResult is {}", neo4jResult);
+            log.debug("Creating JSON object from results.'");
             JSONObject jsonObject = neo4jResult != null ? chartMnger.getPairedArgsCount(neo4jResult.get()) : chartMnger.getPairedArgsCount(esResult.get().getEventList());
-            logger.debug("Sending data of type {} with {} nodes and {} links to the client ", datasource, jsonObject.getJSONArray("nodes").length(), jsonObject.getJSONArray("links").length());
+            log.debug("Sending data of type {} with {} nodes and {} links to the client ", datasource, jsonObject.getJSONArray("nodes").length(), jsonObject.getJSONArray("links").length());
             return jsonObject;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return null;
     }
+
 }

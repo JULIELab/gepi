@@ -45,7 +45,6 @@ public class TableResultWidget extends GepiWidget {
     private BeanModel<BeanModelEvent> tableModel;
 
     void setupRender() {
-        super.setupRender();
         tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
         tableModel.include(
                 "firstArgumentPreferredName",
@@ -74,7 +73,7 @@ public class TableResultWidget extends GepiWidget {
     void onUpdateTableData() {
         try {
             log.debug("Waiting for table data.");
-            beanEvents = persistEsResult.get().getEventList().stream()
+            beanEvents = getEsResult().get().getEventList().stream()
                     .map(e -> new BeanModelEvent(e))
                     .collect(Collectors.toList());
             log.debug("Table data was loaded.");
@@ -82,7 +81,7 @@ public class TableResultWidget extends GepiWidget {
         } catch (InterruptedException | ExecutionException e) {
             log.error("Exception occurred when trying to access ES event results.", e);
         } catch (NullPointerException e) {
-            log.error("NPE occurred when trying to access ES event results. The persistentEsResult is: {}", persistEsResult);
+            log.error("NPE occurred when trying to access ES event results. The persistentEsResult is: {}", getEsResult());
             throw e;
         }
     }

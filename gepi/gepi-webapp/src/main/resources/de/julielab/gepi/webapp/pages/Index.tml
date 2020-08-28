@@ -15,7 +15,7 @@
                     <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
                     <div class="row">
 <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
-                        <t:sankeywidget class="col-md-4" elementId="sankeychart" esResult="esResult" neo4jResult="neo4jResult" commonPartners="false" />
+                        <t:sankeywidget class="col-md-4" elementId="sankeychart" commonPartners="false" />
 <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
 <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
 <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
@@ -24,7 +24,7 @@
 <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
                     </div>
                     <div class="row">
-                        <t:tableresultwidget  esResult="esResult" class="col-md-12"/>
+                        <t:tableresultwidget class="col-md-12"/>
                     </div>
                 </t:zone>
             </div>

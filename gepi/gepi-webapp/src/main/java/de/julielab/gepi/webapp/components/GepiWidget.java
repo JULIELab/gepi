@@ -1,60 +1,53 @@
 package de.julielab.gepi.webapp.components;
 
-import java.util.concurrent.CompletableFuture;
-
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.webapp.pages.Index;
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.annotations.InjectComponent;
+import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import java.util.concurrent.CompletableFuture;
 
 public class GepiWidget {
 
-	@Parameter(defaultPrefix = BindingConstants.LITERAL, name = "class")
-	@Property
-	private String classes;
+    @Inject
+    private Logger log;
 
-	/**
-	 * For loading state display
-	 */
-	@Parameter
-	@Property
-	private CompletableFuture<EventRetrievalResult> esResult;
+    @Parameter(defaultPrefix = BindingConstants.LITERAL, name = "class")
+    @Property
+    private String classes;
 
-	/**
-	 * For loading state display
-	 */
-	@Parameter
-	@Property
-	private CompletableFuture<AggregatedEventsRetrievalResult> neo4jResult;
+    @InjectComponent
+    private GepiWidgetLayout gepiWidgetLayout;
 
-	/**
-	 * For loading state display
-	 */
-	@Property
-	@Persist
-	protected CompletableFuture<EventRetrievalResult> persistEsResult;
+    @InjectPage
+    private Index index;
 
-	/**
-	 * For loading state display
-	 */
-	@Property
-	@Persist
-	protected CompletableFuture<AggregatedEventsRetrievalResult> persistNeo4jResult;
+    public CompletableFuture<EventRetrievalResult> getEsResult() {
+        try {
+            log.debug("Trying to access index for ES result.");
+            return index.getEsResult();
+        } finally {
+            log.debug("Retrieved ES result.");
+        }
+    }
 
-	@InjectComponent
-	private GepiWidgetLayout gepiWidgetLayout;
+    public CompletableFuture<AggregatedEventsRetrievalResult> getNeo4jResult() {
+        try {
+            log.debug("Trying to access index for Neo4j result.");
+            return index.getNeo4jResult();
+        } finally {
+            log.debug("Retrieved Neo4j result.");
+        }
+    }
 
-	void setupRender() {
-		persistEsResult = esResult;
-		persistNeo4jResult = neo4jResult;
-	}
-
-	public boolean isLargeView() {
-		final GepiWidgetLayout.ViewMode mode = gepiWidgetLayout.viewMode();
-		return mode == GepiWidgetLayout.ViewMode.LARGE || mode == GepiWidgetLayout.ViewMode.FULLSCREEN;
-	}
+    public boolean isLargeView() {
+        final GepiWidgetLayout.ViewMode mode = gepiWidgetLayout.viewMode();
+        return mode == GepiWidgetLayout.ViewMode.LARGE || mode == GepiWidgetLayout.ViewMode.FULLSCREEN;
+    }
 }

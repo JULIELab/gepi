@@ -25,11 +25,7 @@ public class PieChartWidget extends GepiWidget {
 	private JSONArray eventsJSON;
 	
 
-	void setupRender() {
-		super.setupRender();		
-	}
-		
-	
+
 	void onDrawChart() {
 
 	}

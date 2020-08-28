@@ -20,9 +20,6 @@ public class CircleWidget extends GepiWidget {
     private String elementId;
 
 
-    void setupRender() {
-        super.setupRender();
-    }
 
     void afterRender() {
         javaScriptSupport.require("gepi/charts/circlechart").with(elementId);
