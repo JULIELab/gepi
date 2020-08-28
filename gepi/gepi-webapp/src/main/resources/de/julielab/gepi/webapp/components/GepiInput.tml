@@ -7,6 +7,8 @@
         </div>
         <div class="panel-body">
             <form role="form" t:type="form" async="true" t:id="inputform" id="inputform">
+                <!-- Hidden field to store the data session ID to the client -->
+                <t:textfield t:id="dataSessionIdField" value="dataSessionId" class="hidden" title="Hidden field to store session information."/>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="text-center">
@@ -15,7 +17,7 @@
                                     List A
                                     <span class="text-muted">required</span>
                                 </t:label>
-                                <t:textarea class="form-control" rows="20" t:id="lista" t:clientId="lista"
+                                <t:textarea class="form-control" rows="20" t:id="lista" id="lista" t:clientId="lista"
                                             placeholder="Provide NCBI Gene IDs, one per line. You may also select a file with appropriate IDs using the button below."
                                             value="listatextareavalue">
                                 </t:textarea>
@@ -37,7 +39,7 @@
                                     List B
                                     <span class="text-muted">optional</span>
                                 </t:label>
-                                <t:textarea class="form-control" rows="20" t:id="listb"
+                                <t:textarea class="form-control" rows="20" t:id="listb" id="listb"
                                             placeholder="Becomes available when List A is not empty. Copy in your second list of IDs here or use the upload function."
                                             value="listbtextareavalue">
                                 </t:textarea>

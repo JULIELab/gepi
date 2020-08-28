@@ -5,7 +5,10 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.GePiData;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
@@ -16,9 +19,42 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
 import de.julielab.gepi.core.retrieval.data.Event;
 
-public class ChartsDataManager implements IChartsDataManager {
+public class GePiDataService implements IGePiDataService {
 
-    private static final Logger log = LoggerFactory.getLogger(ChartsDataManager.class);
+    private static final Logger log = LoggerFactory.getLogger(GePiDataService.class);
+
+    private Cache<Long, GePiData> dataCache;
+
+    public GePiDataService() {
+        // We use weak keys and values. So when a user session is evicted,
+        // its GePi data can also be removed as soon as possible.
+        dataCache = CacheBuilder.newBuilder().weakValues().build();
+    }
+
+
+    @Override
+    public void putData(long dataSessionId, GePiData data) {
+        data.setSessionId(dataSessionId);
+        dataCache.put(dataSessionId, data);
+    }
+
+    @Override
+    public long newSession() {
+        long id;
+        synchronized (dataCache) {
+            do {
+                id = System.currentTimeMillis();
+            } while (dataCache.getIfPresent(id) != null);
+        }
+        return id;
+    }
+
+    @Override
+    public GePiData getData(long sessionId) {
+        GePiData data = dataCache.getIfPresent(sessionId);
+        log.trace("Data for dataSessionId {} was {}.", sessionId, data != null ? "found" : "not found");
+        return data != null ? data : GePiData.EMPTY;
+    }
 
     /**
      * sets json formated input list for google charts that accept one entry

@@ -81,7 +81,7 @@ public class ChartsDataManagerTest {
         for (int i = 0; i < 10; i++)
             events.add(e6);
 
-        final ChartsDataManager manager = new ChartsDataManager();
+        final GePiDataService manager = new GePiDataService();
         final JSONObject nodesNLinks = manager.getPairsWithCommonTarget(events);
         final JSONArray pairs = nodesNLinks.getJSONArray("links");
         System.out.println(pairs);

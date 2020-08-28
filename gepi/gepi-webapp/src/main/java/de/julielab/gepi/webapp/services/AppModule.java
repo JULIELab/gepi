@@ -2,20 +2,17 @@ package de.julielab.gepi.webapp.services;
 
 import java.io.IOException;
 
+import de.julielab.gepi.webapp.pages.Index;
+import org.apache.tapestry5.Link;
 import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.annotations.Service;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.annotations.Autobuild;
-import org.apache.tapestry5.ioc.annotations.Contribute;
-import org.apache.tapestry5.ioc.annotations.ImportModule;
-import org.apache.tapestry5.ioc.annotations.Local;
+import org.apache.tapestry5.ioc.annotations.*;
 import org.apache.tapestry5.ioc.services.ApplicationDefaults;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
-import org.apache.tapestry5.services.Request;
-import org.apache.tapestry5.services.RequestFilter;
-import org.apache.tapestry5.services.RequestHandler;
-import org.apache.tapestry5.services.Response;
+import org.apache.tapestry5.services.*;
 import org.slf4j.Logger;
 
 import de.julielab.gepi.core.services.ConfigurationSymbolProvider;
@@ -26,15 +23,13 @@ import de.julielab.gepi.core.services.GepiCoreModule;
  * configure and extend Tapestry, or to place your own service definitions.
  */
 @ImportModule(GepiCoreModule.class)
-public class AppModule
-{
-	public static void contributeSymbolSource(@Autobuild ConfigurationSymbolProvider symbolProvider,
-			final OrderedConfiguration<SymbolProvider> configuration) {
-		configuration.add("GePiConfigurationSymbols", symbolProvider, "before:ApplicationDefaults");
-	}
-	
-    public static void bind(ServiceBinder binder)
-    {
+public class AppModule {
+    public static void contributeSymbolSource(@Autobuild ConfigurationSymbolProvider symbolProvider,
+                                              final OrderedConfiguration<SymbolProvider> configuration) {
+        configuration.add("GePiConfigurationSymbols", symbolProvider, "before:ApplicationDefaults");
+    }
+
+    public static void bind(ServiceBinder binder) {
         // binder.bind(MyServiceInterface.class, MyServiceImpl.class);
 
         // Make bind() calls on the binder object to define most IoC services.
@@ -44,8 +39,7 @@ public class AppModule
     }
 
     public static void contributeFactoryDefaults(
-        MappedConfiguration<String, Object> configuration)
-    {
+            MappedConfiguration<String, Object> configuration) {
         // The values defined here (as factory default overrides) are themselves
         // overridden with application defaults by DevelopmentModule and QaModule.
 
@@ -59,8 +53,7 @@ public class AppModule
     }
 
     public static void contributeApplicationDefaults(
-        MappedConfiguration<String, Object> configuration)
-    {
+            MappedConfiguration<String, Object> configuration) {
         // Contributions to ApplicationDefaults will override any contributions to
         // FactoryDefaults (with the same key). Here we're restricting the supported
         // locales to just "en" (English). As you add localised message catalogs and other assets,
@@ -68,24 +61,23 @@ public class AppModule
         // the first locale name is the default when there's no reasonable match).
         configuration.add(SymbolConstants.SUPPORTED_LOCALES, "en");
 
-              // You should change the passphrase immediately; the HMAC passphrase is used to secure
+        // You should change the passphrase immediately; the HMAC passphrase is used to secure
         // the hidden field data stored in forms to encrypt and digitally sign client-side data.
         configuration.add(SymbolConstants.HMAC_PASSPHRASE, "juliegepipassphrase");
     }
 
-	/**
-	 * Use annotation or method naming convention: <code>contributeApplicationDefaults</code>
-	 */
-	@Contribute(SymbolProvider.class)
-	@ApplicationDefaults
-	public static void setupEnvironment(MappedConfiguration<String, Object> configuration)
-	{
+    /**
+     * Use annotation or method naming convention: <code>contributeApplicationDefaults</code>
+     */
+    @Contribute(SymbolProvider.class)
+    @ApplicationDefaults
+    public static void setupEnvironment(MappedConfiguration<String, Object> configuration) {
         // Support for jQuery is new in Tapestry 5.4 and will become the only supported
         // option in 5.5.
-		configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
-		configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "context:mybootstrap");
-		configuration.add(SymbolConstants.MINIFICATION_ENABLED, false);
-	}
+        configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
+        configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "context:mybootstrap");
+        configuration.add(SymbolConstants.MINIFICATION_ENABLED, false);
+    }
 
 
     /**
@@ -94,41 +86,64 @@ public class AppModule
      * RequestHandler service configuration. Tapestry IoC is responsible for passing in an
      * appropriate Logger instance. Requests for static resources are handled at a higher level, so
      * this filter will only be invoked for Tapestry related requests.
-     *
-     *
+     * <p>
+     * <p>
      * Service builder methods are useful when the implementation is inline as an inner class
      * (as here) or require some other kind of special initialization. In most cases,
      * use the static bind() method instead.
-     *
-     *
+     * <p>
+     * <p>
      * If this method was named "build", then the service id would be taken from the
      * service interface and would be "RequestFilter".  Since Tapestry already defines
      * a service named "RequestFilter" we use an explicit service id that we can reference
      * inside the contribution method.
      */
-    public RequestFilter buildTimingFilter(final Logger log)
-    {
-        return new RequestFilter()
-        {
+    @ServiceId("timingFilter")
+    public RequestFilter buildTimingFilter(final Logger log) {
+        return new RequestFilter() {
             public boolean service(Request request, Response response, RequestHandler handler)
-            throws IOException
-            {
+                    throws IOException {
                 long startTime = System.currentTimeMillis();
 
-                try
-                {
+                try {
                     // The responsibility of a filter is to invoke the corresponding method
                     // in the handler. When you chain multiple filters together, each filter
                     // received a handler that is a bridge to the next filter.
 
                     return handler.service(request, response);
-                } finally
-                {
+                } finally {
                     long elapsed = System.currentTimeMillis() - startTime;
 
                     log.info("Request time: {} ms", elapsed);
                 }
             }
+        };
+    }
+
+    @ServiceId("sessionCheckFilter")
+    public RequestFilter buildSessionCheckFilter(final Logger log, PageRenderLinkSource pageRenderLinkSource) {
+        return (request, response, handler) -> {
+            Session session = request.getSession(false);
+//            log.debug("Session is {}", session);
+            if (session != null){
+                for (String name : session.getAttributeNames()) {
+                    log.debug("Session attribute {} has value {}", name, session.getAttribute(name));
+                }
+                log.debug("dataSessionId is {}", session.getAttribute("dataSessionId"));
+            }
+//            Link linkToRequestedPage = pageRenderLinkSource.createPageRenderLink(Index.class.getSimpleName());
+//            boolean targetsIndex = request.getPath().contains(Index.class.getSimpleName());
+//            if (!targetsIndex && session == null) {
+//                log.debug("Sending redirect to Index page because the session is null.");
+//                response.sendRedirect(linkToRequestedPage);
+//            } else if (!targetsIndex) {
+//                Object dataSessionId = session.getAttribute("dataSessionId");
+//                if (dataSessionId == null || ((long) dataSessionId) == 0) {
+//                    log.debug("Sending redirect to Index page because dataSessionId is 0.");
+//                    response.sendRedirect(linkToRequestedPage);
+//                }
+//            }
+            return handler.service(request, response);
         };
     }
 
@@ -141,13 +156,14 @@ public class AppModule
      */
     @Contribute(RequestHandler.class)
     public void addTimingFilter(OrderedConfiguration<RequestFilter> configuration,
-     @Local
-     RequestFilter filter)
-    {
+                                @InjectService("timingFilter")
+                                        RequestFilter filter,
+                                @InjectService("sessionCheckFilter") RequestFilter sessionCheckFilter) {
         // Each contribution to an ordered configuration has a name, When necessary, you may
         // set constraints to precisely control the invocation order of the contributed filter
         // within the pipeline.
 
 //        configuration.add("Timing", filter);
+//        configuration.add("SessionCheck", sessionCheckFilter);
     }
 }

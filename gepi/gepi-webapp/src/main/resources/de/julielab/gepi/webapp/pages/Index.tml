@@ -4,7 +4,7 @@
         <div class="row">
             <div id="inputcol" class="col-md-4 col-md-offset-4 fade ${showInputClass}">
                 <t:zone t:id="inputzone" id="inputzone">
-                    <t:gepiinput esResult="esResult" neo4jResult="neo4jResult"/>
+                    <t:gepiinput dataSessionId="dataSessionId"/>
                 </t:zone>
             </div>
         </div>
@@ -15,7 +15,7 @@
                     <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
                     <div class="row">
 <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
-                        <t:sankeywidget class="col-md-4" elementId="sankeychart" commonPartners="false" />
+                        <t:sankeywidget class="col-md-4" dataSessionId="dataSessionId" elementId="sankeychart" commonPartners="false" />
 <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
 <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
 <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
@@ -24,7 +24,7 @@
 <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
                     </div>
                     <div class="row">
-                        <t:tableresultwidget class="col-md-12"/>
+                        <t:tableresultwidget class="col-md-12" dataSessionId="dataSessionId" />
                     </div>
                 </t:zone>
             </div>

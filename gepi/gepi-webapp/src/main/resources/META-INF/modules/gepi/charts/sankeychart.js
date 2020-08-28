@@ -17,7 +17,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           index.getReadySemaphor().done(() => {
             console.log('Chart drawing has green light from the central index semaphor, requesting data');
-            data.awaitData('relationCounts').done(() => {
+            data.awaitData('relationCounts', this.widgetSettings.dataSessionId).done(() => {
               console.log('Loading data was successful. Checking if the input column also gives green light.');
               const inputcolReadyPromise = $('#inputcol').data('animationtimer');
               if (inputcolReadyPromise) {

@@ -6,10 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 import java.util.Optional;
 
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
+import de.julielab.gepi.core.services.GePiDataService;
+import de.julielab.gepi.core.services.IGePiDataService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -46,9 +49,12 @@ import org.slf4j.Logger;
 @Import(stylesheet = {"context:css-components/gepiwidgetlayout.css"})
 @SupportsInformalParameters
 final public class GepiWidgetLayout {
- 
+
     @Inject
     private Logger log;
+
+    @Inject
+    private IGePiDataService dataService;
 
     @Parameter(defaultPrefix = BindingConstants.LITERAL)
     @Property
@@ -71,6 +77,9 @@ final public class GepiWidgetLayout {
     @Parameter(value = "false")
     @Property
     private boolean useTapestryZoneUpdates;
+    @Parameter
+    private long dataSessionId;
+
     @InjectComponent
     private Zone widgetZone;
     @Inject
@@ -79,7 +88,7 @@ final public class GepiWidgetLayout {
     private ComponentResources resources;
     @Environmental
     private JavaScriptSupport javaScriptSupport;
-  
+
     @Persist
     @Property
     private String viewMode;
@@ -101,12 +110,12 @@ final public class GepiWidgetLayout {
         }
     }
 
-    public CompletableFuture<EventRetrievalResult> getEsResult() {
-        return index.getEsResult();
+    public Future<EventRetrievalResult> getEsResult() {
+        return dataService.getData(dataSessionId).getUnrolledResult();
     }
 
-    public CompletableFuture<AggregatedEventsRetrievalResult> getNeo4jResult() {
-        return index.getNeo4jResult();
+    public Future<AggregatedEventsRetrievalResult> getNeo4jResult() {
+        return dataService.getData(dataSessionId).getAggregatedResult();
     }
 
     /**
@@ -124,6 +133,7 @@ final public class GepiWidgetLayout {
         widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI());
         widgetSettings.put("zoneElementId", widgetZone.getClientId());
         widgetSettings.put("useTapestryZoneUpdates", useTapestryZoneUpdates);
+        widgetSettings.put("dataSessionId", dataSessionId);
         return widgetSettings;
     }
 
@@ -157,8 +167,7 @@ final public class GepiWidgetLayout {
             log.debug("Waiting for ElasticSearch to return its results.");
             getEsResult().get();
             log.debug("ES result finished.");
-        }
-        else if (getNeo4jResult() != null) {
+        } else if (getNeo4jResult() != null) {
             log.debug("Waiting for Neo4j to return its results.");
             getNeo4jResult().get();
         }

@@ -35,9 +35,10 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
         requestedData = new Map();
     }
 
-    function loadData(source) {
-        console.log("Loading data with source " + source + " from " + dataUrl);
-        $.get(dataUrl, "datasource=" + source, data => setData(source, data));
+    function loadData(source, dataSessionId) {
+        parameters = "datasource="+source+"&dataSessionId="+dataSessionId;
+        console.log("Loading data with parameters " + parameters + " from " + dataUrl);
+        $.get(dataUrl, parameters, data => setData(source, data));
     }
 
     function setData(name, dataset) {
@@ -50,14 +51,14 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
         return data.get(name);
     }
 
-    function awaitData(sourceName) {
-        console.log("Data with source name " + sourceName + " was requested");
+    function awaitData(sourceName, dataSessionId) {
+        console.log("Data with source name " + sourceName + " was requested for dataSessionId " + dataSessionId);
         let promise = requestedData.get(sourceName);
         if (!promise) {
             console.log("Creating new promise for data " + sourceName);
             promise = $.Deferred();
             requestedData.set(sourceName, promise);
-            loadData(sourceName);
+            loadData(sourceName, dataSessionId);
         } else {
             console.log("Data with source name " + sourceName + " was already requested and is not loaded again.");
         }

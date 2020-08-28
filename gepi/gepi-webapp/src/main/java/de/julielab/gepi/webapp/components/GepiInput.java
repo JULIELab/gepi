@@ -9,15 +9,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.GePiData;
 import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalService;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
-import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.PersistenceConstants;
-import org.apache.tapestry5.SelectModel;
-import org.apache.tapestry5.ValueEncoder;
+import de.julielab.gepi.core.services.IGePiDataService;
+import org.apache.tapestry5.*;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.TextArea;
+import org.apache.tapestry5.corelib.components.TextField;
 import org.apache.tapestry5.internal.OptionModelImpl;
 import org.apache.tapestry5.internal.SelectModelImpl;
 import org.apache.tapestry5.internal.services.StringValueEncoder;
@@ -60,6 +60,9 @@ public class GepiInput {
     @InjectComponent
     private TextArea listb;
 
+    @InjectComponent
+    private TextField dataSessionIdField;
+
     @Property
     @Persist
     private String listATextAreaValue;
@@ -79,6 +82,9 @@ public class GepiInput {
 
     @Inject
     private IGeneIdService geneIdService;
+
+    @Inject
+    private IGePiDataService dataService;
 
     @Parameter
     private CompletableFuture<EventRetrievalResult> esResult;
@@ -109,9 +115,32 @@ public class GepiInput {
     @Property
     private String filterString;
 
+    /**
+     * This is not an ID for the servlet session but to the current data state.
+     */
+    @Parameter
+    @Property
+    private long dataSessionId;
+
     @Persist(PersistenceConstants.FLASH)
     private boolean newSearch;
-
+    /**
+     * Do not access this field. It is only here to store the data in the session. Data access should happen through
+     * {@link de.julielab.gepi.core.services.GePiDataService}. There, the data is cached with weak keys and values.
+     * The idea is that the data is evicted when the session ends.
+     */
+    @Persist
+    private GePiData data;
+    /**
+     * This is an emergency exit against being locked in an error during development.
+     */
+    @ActivationRequestParameter
+    private boolean reset;
+    void onActivate(EventContext eventContext) {
+        if (reset) {
+            data = null;
+        }
+    }
 
     public ValueEncoder getEventTypeEncoder() {
         return new EnumValueEncoder(typeCoercer, EventTypes.class);
@@ -161,6 +190,9 @@ public class GepiInput {
         fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
 //        }
 
+        data = new GePiData(neo4jResult, esResult, listAGePiIds, listBGePiIds);
+        log.debug("Setting newly retrieved data for dataSessionId: {}", dataSessionId);
+        dataService.putData(dataSessionId, data);
         Index indexPage = (Index) resources.getContainer();
         ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
         log.debug("Ajax rendering commands sent, entering the output display mode");
