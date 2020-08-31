@@ -1,5 +1,7 @@
 package de.julielab.gepi.core.services;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
@@ -55,4 +57,15 @@ public interface IGePiDataService {
     JSONObject getPairsWithCommonTarget(List<Event> evtList);
 
     JSONArray convertToJson(List<Event> eventList);
+
+    /**
+     * <p>Creates the result format that was delivered to our partners in the past.</p>
+     * <p>This is an Excel workbook with multiple sheets for some explanation and statistics about source
+     * genes, target genes and events.</p>
+     * <p>To do this, the event data is written to a temporary file, a Python-Pandas script is applied and the
+     * resulting Excel file is then read back in the form of the InputStream.</p>
+     * @param events The events to create the result workbook for.
+     * @return An InputStream of the created Excel file.
+     */
+    File getOverviewExcel(List<Event> events, long dataSessionId) throws IOException;
 }

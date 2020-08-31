@@ -5,6 +5,7 @@ import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
@@ -112,7 +113,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 			event.setHighlightedSentence(highlights.getOrDefault(FIELD_EVENT_SENTENCE, Collections.emptyList()).stream()
 					.findFirst().orElse(null));
 			if (sentence.isPresent())
-				event.setSentence(sentence.get());
+				event.setSentence(StringUtils.normalizeSpace(sentence.get()));
 			for (int i = 0; i < event.getNumArguments(); i++) {
                 event.getArgument(i).setPreferredName((String) argPrefNames.get(i));
                 event.getArgument(i).setTopHomologyPreferredName((String) argHomologyPrefNames.get(i));

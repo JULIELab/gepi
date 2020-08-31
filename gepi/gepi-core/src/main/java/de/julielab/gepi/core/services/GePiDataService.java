@@ -1,5 +1,6 @@
 package de.julielab.gepi.core.services;
 
+import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -9,6 +10,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GePiData;
+import de.julielab.java.utilities.FileUtilities;
+import de.julielab.java.utilities.IOStreamUtilities;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
@@ -19,16 +22,23 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
 import de.julielab.gepi.core.retrieval.data.Event;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class GePiDataService implements IGePiDataService {
 
     private static final Logger log = LoggerFactory.getLogger(GePiDataService.class);
 
     private Cache<Long, GePiData> dataCache;
+    /**
+     * This string is the scripts itself, not a reference to a file.
+     */
+    private String excelResultCreationScript;
 
-    public GePiDataService() {
+    public GePiDataService() throws IOException {
         // We use weak keys and values. So when a user session is evicted,
         // its GePi data can also be removed as soon as possible.
         dataCache = CacheBuilder.newBuilder().weakValues().build();
+        excelResultCreationScript = IOStreamUtilities.getStringFromInputStream(GePiDataService.class.getResourceAsStream("/ExcelResultCreation.py"));
     }
 
 
@@ -229,6 +239,63 @@ public class GePiDataService implements IGePiDataService {
             array.put(o);
         }
         return array;
+    }
+
+    @Override
+    public File getOverviewExcel(List<Event> events, long dataSessionId) throws IOException {
+        File tsvFile = getTempTsvDataFile(dataSessionId);
+        File xlsFile = getTempXlsDataFile(dataSessionId);
+        writeOverviewTsvFile(events, tsvFile);
+        createExcelSummaryFile(tsvFile, xlsFile);
+        return xlsFile;
+    }
+
+    private void createExcelSummaryFile(File tsvFile, File xlsFile) throws IOException {
+        ProcessBuilder builder = new ProcessBuilder().command("python", "-c", excelResultCreationScript, tsvFile.getAbsolutePath(), xlsFile.getAbsolutePath());
+        Process process = builder.start();
+        InputStream processInput = process.getInputStream();
+        InputStream processErrors = process.getErrorStream();
+        log.debug("Event to Excel conversion script output: {}", IOStreamUtilities.getStringFromInputStream(processInput));
+        List<String> errorLines = IOStreamUtilities.getLinesFromInputStream(processErrors);
+        if (!errorLines.isEmpty()) {
+            log.error("Error occurred when trying to create Excel output: {}", String.join(System.getProperty("line.separator"), errorLines));
+            if (xlsFile.exists())
+                xlsFile.delete();
+        }
+        if (!xlsFile.exists())
+            throw new FileNotFoundException("The Excel file " + xlsFile.getAbsolutePath() + " does not exist.");
+    }
+
+    private void writeOverviewTsvFile(List<Event> events, File file) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, UTF_8))) {
+            List<String> row = new ArrayList<>();
+            for (Event e : events) {
+                row.add(e.getFirstArgument().getPreferredName());
+                row.add(e.getSecondArgument().getPreferredName());
+                row.add(e.getFirstArgument().getText());
+                row.add(e.getSecondArgument().getText());
+                row.add(e.getFirstArgument().getGeneId());
+                row.add(e.getSecondArgument().getGeneId());
+                row.add(e.getFirstArgument().getMatchType());
+                row.add(e.getSecondArgument().getMatchType());
+                row.add(String.join(",", e.getAllEventTypes()));
+                row.add(e.getDocId());
+                row.add(e.getSentence());
+
+                bw.write(String.join("\t", row));
+                bw.newLine();
+
+                row.clear();
+            }
+        }
+    }
+
+    private File getTempTsvDataFile(long dataSessionId) throws IOException {
+        return File.createTempFile("gepi-" + dataSessionId, ".tsv");
+    }
+
+    private File getTempXlsDataFile(long dataSessionId) throws IOException {
+        return File.createTempFile("gepi-" + dataSessionId, ".xls");
     }
 
     private JSONObject getJsonObjectForArgument(Argument argument) {

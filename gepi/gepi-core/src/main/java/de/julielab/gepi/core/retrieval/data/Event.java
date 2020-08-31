@@ -168,4 +168,9 @@ public class Event {
 		return e;
 	}
 
+	public String getDocId() {
+		if (getEventId().startsWith("pmc")) return "PMC" + getPmcid();
+		else if (getPmid() != null) return getPmid();
+		throw new IllegalStateException("No document ID for event " + this);
+	}
 }

@@ -114,9 +114,7 @@ public class TableResultWidget extends GepiWidget {
         }
 
         public String getDocId() {
-            if (event.getEventId().startsWith("pmc")) return "PMC" + event.getPmcid();
-            else if (event.getPmid() != null) return event.getPmid();
-            throw new IllegalStateException("No document ID for event " + event);
+            return event.getDocId();
         }
 
         public String getFirstArgumentText() {

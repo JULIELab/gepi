@@ -6,16 +6,78 @@ import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class ChartsDataManagerTest {
+public class GePiDataServiceTest {
 
     @Test
-    public void testGetPairesWithCommonTarget() {
+    public void writeExcelSummary() throws Exception {
+        List<Event> events = new ArrayList<>();
+
+        Event e = new Event();
+        e.setPmid("135");
+        e.setEventId("135_1");
+        e.setAllEventTypes(List.of("Binding"));
+        Argument a1 = new Argument("g1", "c1", "h1", "arg1");
+        a1.setPreferredName("arg1");
+        a1.setMatchType("fuzzy");
+        Argument a2 = new Argument("g2", "c2", "h2", "arg2");
+        a2.setPreferredName("arg2");
+        a2.setMatchType("fuzzy");
+        e.setArguments(Arrays.asList(a1, a2));
+        events.add(e);
+        // Let's have this event twice
+        events.add(e);
+
+        // This event shares the target of the first event
+        Event e2 = new Event();
+        e2.setPmcid("680");
+        e2.setEventId("pmc680_2");
+        e2.setAllEventTypes(List.of("Binding"));
+        Argument a3 = new Argument("g3", "c3", "h3", "arg3");
+        a3.setPreferredName("arg3");
+        a3.setMatchType("exact");
+        e2.setArguments(Arrays.asList(a3, a2));
+        // Lets have this one three times.
+        events.add(e2);
+        e2 = new Event();
+        e2.setPmcid("780");
+        e2.setEventId("pmc780_1");
+        e2.setAllEventTypes(List.of("Binding"));
+        e2.setArguments(Arrays.asList(a3, a2));
+        events.add(e2);
+        e2 = new Event();
+        e2.setPmcid("926");
+        e2.setEventId("pmc926_13");
+        e2.setAllEventTypes(List.of("Binding"));
+        e2.setArguments(Arrays.asList(a3, a2));
+        events.add(e2);
+
+        // And one single event
+        Event e4 = new Event();
+        e4.setPmid("246");
+        e4.setEventId("246_5");
+        e4.setAllEventTypes(List.of("Binding"));
+        Argument a6 = new Argument("g6", "c6", "h6", "arg6");
+        a6.setMatchType("fuzzy");
+        a6.setPreferredName("arg6");
+        e4.setArguments(Arrays.asList(a6, a3));
+        events.add(e4);
+
+
+        GePiDataService gePiDataService = new GePiDataService();
+        File outputFile = gePiDataService.getOverviewExcel(events, 1234);
+        assertThat(outputFile).exists();
+    }
+
+    @Test
+    public void testGetPairsWithCommonTarget() throws Exception {
         List<Event> events = new ArrayList<>();
 
         Event e = new Event();
