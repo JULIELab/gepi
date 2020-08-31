@@ -1,10 +1,20 @@
 package de.julielab.gepi.webapp.components;
 
+import java.io.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.java.utilities.FileUtilities;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.StreamResponse;
+import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.beaneditor.BeanModel;
@@ -14,6 +24,7 @@ import org.apache.tapestry5.services.BeanModelSource;
 
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
+import org.apache.tapestry5.services.Response;
 import org.slf4j.Logger;
 
 public class TableResultWidget extends GepiWidget {
@@ -36,6 +47,9 @@ public class TableResultWidget extends GepiWidget {
 
     @Inject
     private Messages messages;
+
+    @Inject
+    private IGePiDataService dataService;
 
     @Inject
     private ComponentResources resources;
@@ -104,6 +118,42 @@ public class TableResultWidget extends GepiWidget {
         return "Open in Pubmed";
     }
 
+    /**
+     * Pressing the Download Link/Button for the Table View
+     */
+    @Log
+    StreamResponse onDownload(long dataSessionId) {
+        if (!getEsResult().isDone()) {
+            //TODO: how to handle case when download button is clicked, but the request is not yet fully done
+        }
+        return new StreamResponse() {
+
+            private File statisticsFile;
+
+            @Override
+            public void prepareResponse(Response response) {
+                try {
+                    statisticsFile = dataService.getOverviewExcel(getEsResult().get().getEventList(), dataSessionId);
+
+                    response.setHeader("Content-Length", "" + statisticsFile.length()); // output into file
+                    response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getName());
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public InputStream getStream() throws IOException {
+                return FileUtilities.getInputStreamFromFile(statisticsFile);
+            }
+
+            @Override
+            public String getContentType() {
+                return "application/vnd.ms-excel";
+            }
+        };
+    }
 
     public static class BeanModelEvent {
 
@@ -172,6 +222,5 @@ public class TableResultWidget extends GepiWidget {
                 return argument.getText() + " (" + argument.getPreferredName() + ")";
             return "";
         }
-
     }
 }

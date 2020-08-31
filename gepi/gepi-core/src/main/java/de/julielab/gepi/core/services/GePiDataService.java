@@ -13,6 +13,7 @@ import de.julielab.gepi.core.retrieval.data.GePiData;
 import de.julielab.java.utilities.FileUtilities;
 import de.julielab.java.utilities.IOStreamUtilities;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ public class GePiDataService implements IGePiDataService {
         excelResultCreationScript = IOStreamUtilities.getStringFromInputStream(GePiDataService.class.getResourceAsStream("/ExcelResultCreation.py"));
     }
 
-
+    @Log
     @Override
     public void putData(long dataSessionId, GePiData data) {
         data.setSessionId(dataSessionId);
@@ -59,6 +60,7 @@ public class GePiDataService implements IGePiDataService {
         return id;
     }
 
+    @Log
     @Override
     public GePiData getData(long sessionId) {
         GePiData data = dataCache.getIfPresent(sessionId);
@@ -188,7 +190,6 @@ public class GePiDataService implements IGePiDataService {
         // are maps counting for each source gene the number of interactions with the target.
         final Map<Argument, Map<Event, Integer>> target2EventCardinalities = evtList.stream().collect(Collectors.groupingBy(e -> e.getArgument(1),
                 Collectors.collectingAndThen(Collectors.toList(), CollectionUtils::getCardinalityMap)));
-        System.out.println(target2EventCardinalities);
         // The general harmonic mean formula for x1,...,xn: n / ( 1/x1 + ... + 1/xn)
         Function<Map<Event, Integer>, Double> harmonicMean = eventCounts -> eventCounts.size() / (eventCounts.values().stream().map(c -> 1d / c).reduce(1d, (sum, c) -> sum + c));
         final LinkedHashMap<Argument, Map<Event, Integer>> orderedMap = target2EventCardinalities.entrySet().stream().sorted((e1, e2) -> (int) Math.signum(harmonicMean.apply(e2.getValue()) - harmonicMean.apply(e1.getValue()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (k, v) -> k, LinkedHashMap::new));
@@ -243,6 +244,7 @@ public class GePiDataService implements IGePiDataService {
 
     @Override
     public File getOverviewExcel(List<Event> events, long dataSessionId) throws IOException {
+        log.debug("Creating event statistics Excel file for dataSessionId {}", dataSessionId);
         File tsvFile = getTempTsvDataFile(dataSessionId);
         File xlsFile = getTempXlsDataFile(dataSessionId);
         writeOverviewTsvFile(events, tsvFile);
@@ -267,6 +269,7 @@ public class GePiDataService implements IGePiDataService {
     }
 
     private void writeOverviewTsvFile(List<Event> events, File file) throws IOException {
+        log.debug("Writing event statistics tsv file to {}", file);
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, UTF_8))) {
             List<String> row = new ArrayList<>();
             for (Event e : events) {
@@ -295,7 +298,7 @@ public class GePiDataService implements IGePiDataService {
     }
 
     private File getTempXlsDataFile(long dataSessionId) throws IOException {
-        return File.createTempFile("gepi-" + dataSessionId, ".xls");
+        return File.createTempFile("gepi-" + dataSessionId, ".xlsx");
     }
 
     private JSONObject getJsonObjectForArgument(Argument argument) {

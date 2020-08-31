@@ -1,7 +1,7 @@
 package de.julielab.gepi.webapp.pages;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -53,7 +53,7 @@ public class Index {
     @Persist
     private long dataSessionId;
     @Parameter
-    private long persistDataSessionId;
+    private long dataSessionIdParameter;
     @Persist
     private boolean hasLargeWidget;
     private boolean resultNonNullOnLoad;
@@ -98,12 +98,12 @@ public class Index {
     }
 
     private Future<EventRetrievalResult> getEsResult() {
-        System.out.println("persistent dataSessionId for getEsResult " + persistDataSessionId);
-        return dataService.getData(persistDataSessionId).getUnrolledResult();
+        System.out.println("persistent dataSessionId for getEsResult " + dataSessionId);
+        return dataService.getData(dataSessionId).getUnrolledResult();
     }
 
     private Future<AggregatedEventsRetrievalResult> getNeo4jResult() {
-        return dataService.getData(persistDataSessionId).getAggregatedResult();
+        return dataService.getData(dataSessionId).getAggregatedResult();
     }
 
     public boolean isResultPresent() {
@@ -128,8 +128,9 @@ public class Index {
     }
 
     public Object onReset() {
+        log.debug("Reset!");
         dataSessionId = 0;
-        persistDataSessionId = 0;
+//        dataSessionIdParameter = 0;
         return this;
     }
 
@@ -163,11 +164,21 @@ public class Index {
         log.debug("Checked datasource name");
         GePiData data = dataService.getData(dataSessionId);
         if (data.getUnrolledResult() == null && data.getAggregatedResult() == null)
-            throw new IllegalStateException("The ES result and the Neo4j result for dataSessionId "+dataSessionId+" are both null.");
+            throw new IllegalStateException("The ES result and the Neo4j result for dataSessionId " + dataSessionId + " are both null.");
         log.debug("Checked if results are null.");
         try {
-            log.debug("Creating JSON object from results.'");
-            JSONObject jsonObject = data.getAggregatedResult() != null ? dataService.getPairedArgsCount(data.getAggregatedResult().get()) : dataService.getPairedArgsCount(data.getUnrolledResult().get().getEventList());
+            log.debug("Creating JSON object from results.");
+            JSONObject jsonObject;
+            if (data.getAggregatedResult() != null) {
+                AggregatedEventsRetrievalResult aggregatedEvents = data.getAggregatedResult().get();
+                log.debug("Obtained aggregated events retrieval result with {} events.", aggregatedEvents.size());
+                jsonObject = dataService.getPairedArgsCount(aggregatedEvents);
+            }
+            else {
+                List<Event> eventList = data.getUnrolledResult().get().getEventList();
+                log.debug("Obtained unrolled list of individual events of size {}.", eventList.size());
+                jsonObject = dataService.getPairedArgsCount(eventList);
+            }
             log.debug("Sending data of type {} with {} nodes and {} links to the client ", datasource, jsonObject.getJSONArray("nodes").length(), jsonObject.getJSONArray("links").length());
             return jsonObject;
         } catch (InterruptedException | ExecutionException e) {

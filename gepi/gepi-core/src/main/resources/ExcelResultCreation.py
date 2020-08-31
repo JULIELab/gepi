@@ -5,6 +5,7 @@ import pandas as pd
 from pandas import ExcelWriter
 import csv
 import sys
+import os
 
 def makeArgumentSymbolPivotTable(df, column, order):
     givengenesfreq = df.pivot_table('docid', index=column, columns=['arg1matchtype','arg2matchtype'],aggfunc='count', fill_value=0)
@@ -33,13 +34,12 @@ def makeArgumentSymbolPivotTable(df, column, order):
 
 def writeresults(input,output):
     header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "arg1matchtype", "arg2matchtype", "relationtypes", "docid", "sentence"]
-    df = pd.read_csv(input, names=header,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object},quoting=csv.QUOTE_NONE)
+    df = pd.read_csv(input, names=header,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object},quoting=csv.QUOTE_NONE)
     print(f'Read {len(df)} data rows from {input}.')
     # Remove duplicates in the event types and sort them alphabetically
     reltypes=df["relationtypes"]
     for i in reltypes.index:
         types = list(set(reltypes.at[i].split(',')))
-        types.sort()
         reltypes.at[i]= ','.join(types)
     columnsorder=[ 'arg1symbol',  'arg2symbol', 'arg1text', 'arg2text', 'arg1entrezid', 'arg2entrezid',
          'arg1matchtype',  'arg2matchtype', 'relationtypes','docid', 'sentence']
@@ -91,8 +91,8 @@ def writeresults(input,output):
         giventodistinctothercount.to_excel(ew, sheet_name="Input Gene Event Div", index=False)
         frontpage = ew.sheets['Frontpage']
         #frontpage.hide_gridlines(2)
-        #bold = ew.book.add_format({'bold': True})
-        frontpage.write(0,0, f'This is the {output} file which contains results of event extraction.')
+        bold = ew.book.add_format({'bold': True})
+        frontpage.write(0,0, f'This is a GePi statistics file which contains results of event extraction.')
         frontpage.write(1,0, 'The contained worksheets contain the actual text mining results as well as statistics extracted from them.')
         frontpage.write(3,0, 'The "Results" sheet is a large table containing the gene event arguments, an indication of how well the text matched')
         frontpage.write(4,0, 'a gene synonym ("exact" or "fuzzy"), the recognized type of the event (such as "phosphorylation" or "regulation"),')

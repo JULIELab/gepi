@@ -82,7 +82,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 				String conceptId = i < conceptIds.size() ? (String) conceptIds.get(i) : null;
 				String geneId = i < geneIds.size() ? (String) geneIds.get(i) : null;
 				String topHomologyId = i < topHomologyIds.size() ? (String) topHomologyIds.get(i) : null;
-				String text = i < texts.size() ? (String) texts.get(i) : null;
+				String text = i < texts.size() ? StringUtils.normalizeSpace((String) texts.get(i)) : null;
 
 				if (conceptId != null) {
 

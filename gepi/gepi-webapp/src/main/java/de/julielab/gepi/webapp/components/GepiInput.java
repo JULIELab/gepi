@@ -138,6 +138,7 @@ public class GepiInput {
     private boolean reset;
     void onActivate(EventContext eventContext) {
         if (reset) {
+            log.debug("Reset is active, setting data to null.");
             data = null;
         }
     }

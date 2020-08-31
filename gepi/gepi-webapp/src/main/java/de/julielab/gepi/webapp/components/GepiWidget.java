@@ -29,7 +29,7 @@ public class GepiWidget {
 
     @Parameter
     @Property
-    private long dataSessionId;
+    protected long dataSessionId;
 
     @InjectPage
     private Index index;
