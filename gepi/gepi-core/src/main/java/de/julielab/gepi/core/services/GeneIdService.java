@@ -124,12 +124,15 @@ public class GeneIdService implements IGeneIdService {
                     Multimap<String, String> topAtids = HashMultimap.create();
 
                     String[] searchInput = geneNames.map(String::toLowerCase).toArray(String[]::new);
+//                    String cypher = "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.preferredName_lc IN $geneNames " +
+//                            "OPTIONAL MATCH (n)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) " +
+//                            "WITH n,a " +
+//                            "OPTIONAL MATCH (a)<-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) " +
+//                            "RETURN DISTINCT n.preferredName_lc AS SOURCE_ID,COALESCE(top.id,a.id,n.id) AS SEARCH_ID";
+                    String cypher = "MATCH (a:AGGREGATE_GENEGROUP) WHERE a.preferredName_lc IN $geneNames RETURN a.preferredName_lc AS SOURCE_ID,a.id AS SEARCH_ID\n" +
+                            "UNION\n" +
+                            "MATCH (c:CONCEPT)<-[:HAS_ROOT_CONCEPT]-(f:FACET) WHERE c:ID_MAP_NCBI_GENES AND c.preferredName_lc IN $geneNames RETURN c.preferredName_lc AS SOURCE_ID,c.id AS SEARCH_ID";
                     log.debug("Running query to map gene names to aggregate IDs.");
-                    String cypher = "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.preferredName_lc IN $geneNames " +
-                            "OPTIONAL MATCH (n)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) " +
-                            "WITH n,a " +
-                            "OPTIONAL MATCH (a)<-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) " +
-                            "RETURN DISTINCT n.preferredName_lc AS SOURCE_ID,COALESCE(top.id,a.id,n.id) AS SEARCH_ID";
                     Result result = tx.run(
                             cypher,
                             parameters("geneNames", searchInput));
