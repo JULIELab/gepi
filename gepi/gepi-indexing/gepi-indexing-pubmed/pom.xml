@@ -3,24 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>gepi-indexing-pipeline</artifactId>
+        <artifactId>gepi-indexing</artifactId>
         <groupId>de.julielab</groupId>
         <version>0.2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <outputDirectory>lib</outputDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <groupId>de.julielab</groupId>
     <artifactId>gepi-indexing-pubmed</artifactId>
 </project>
