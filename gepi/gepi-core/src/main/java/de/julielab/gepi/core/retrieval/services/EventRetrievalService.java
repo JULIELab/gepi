@@ -61,7 +61,6 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_LIKELIHOOD = "likelihood";
 
-    public static final String FIELD_EVENT_NUMARGUMENTS = "numargs";
     private static final int SCROLL_SIZE = 2000;
     private Logger log;
     private ISearchServerComponent searchServerComponent;
@@ -102,10 +101,6 @@ public class EventRetrievalService implements IEventRetrievalService {
                 TermsQuery listBQuery = new TermsQuery(Collections.unmodifiableCollection(idSetB));
                 listBQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
-                TermQuery filterQuery = new TermQuery();
-                filterQuery.term = 2;
-                filterQuery.field = FIELD_EVENT_NUMARGUMENTS;
-
                 BoolClause listAClause = new BoolClause();
                 listAClause.addQuery(listAQuery);
                 listAClause.occur = Occur.MUST;
@@ -114,14 +109,9 @@ public class EventRetrievalService implements IEventRetrievalService {
                 listBClause.addQuery(listBQuery);
                 listBClause.occur = Occur.MUST;
 
-                BoolClause filterClause = new BoolClause();
-                filterClause.addQuery(filterQuery);
-                filterClause.occur = FILTER;
-
                 BoolQuery eventQuery = new BoolQuery();
                 eventQuery.addClause(listAClause);
                 eventQuery.addClause(listBClause);
-                eventQuery.addClause(filterClause);
 
                 if (!eventTypes.isEmpty()) {
                     TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
@@ -161,8 +151,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                         FIELD_EVENT_ARG_MATCH_TYPES,
                         FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
                         FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                        FIELD_EVENT_ARG_TEXT,
-                        FIELD_EVENT_NUMARGUMENTS);
+                        FIELD_EVENT_ARG_TEXT);
                 serverCmd.downloadCompleteResults = true;
                 serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
@@ -318,8 +307,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                         FIELD_EVENT_ARG_MATCH_TYPES,
                         FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
                         FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                        FIELD_EVENT_ARG_TEXT,
-                        FIELD_EVENT_NUMARGUMENTS);
+                        FIELD_EVENT_ARG_TEXT);
                 serverCmd.downloadCompleteResults = true;
                 serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
