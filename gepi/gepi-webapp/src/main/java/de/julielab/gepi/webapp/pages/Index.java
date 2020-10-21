@@ -27,7 +27,7 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 /**
  * Start page of application gepi-webapp.
  */
-@Import(stylesheet = {"context:css-pages/index.less"}, library = {"context:mybootstrap/js/dropdown.js"})
+@Import(stylesheet = {"context:css-pages/index.css"}, library = {"context:mybootstrap/js/dropdown.js"})
 public class Index {
     @Inject
     private ComponentResources resources;

@@ -155,6 +155,6 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
         <groupId>de.julielab</groupId>
         <artifactId>gepi</artifactId>
         <version>0.2.0-SNAPSHOT</version>
-        <relativePath>..</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 </project>
