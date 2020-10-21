@@ -59,6 +59,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_SENTENCE = "sentence.text";
 
+    public static final String FIELD_EVENT_PARAGRAPH = "paragraph.text";
+
     public static final String FIELD_EVENT_LIKELIHOOD = "likelihood";
 
     private static final int SCROLL_SIZE = 2000;
@@ -76,17 +78,9 @@ public class EventRetrievalService implements IEventRetrievalService {
         this.searchServerComponent = searchServerComponent;
     }
 
-    /**
-     * BROKEN AS OF OCTOBER 2018 DUE TO INDEX REBUILD; COPY QUERY PART FROM OUTSIDE EVENTS AND ADAPT
-     *
-     * @param idStreamA
-     * @param idStreamB
-     * @param paragraphFilterString
-     * @return
-     */
     @Override
     public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Future<IdConversionResult> idStreamA,
-                                                                      Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter, String paragraphFilterString) {
+                                                                      Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Set<String> idSetA = idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet());
@@ -123,14 +117,10 @@ public class EventRetrievalService implements IEventRetrievalService {
                 }
 
                 if (!StringUtils.isBlank(sentenceFilter)) {
-                    final SimpleQueryStringQuery sentenceFilterQuery = new SimpleQueryStringQuery();
-                    sentenceFilterQuery.query = sentenceFilter;
-                    sentenceFilterQuery.fields = Arrays.asList(FIELD_EVENT_SENTENCE);
-                    sentenceFilterQuery.flags = Arrays.asList(SimpleQueryStringQuery.Flag.AND, SimpleQueryStringQuery.Flag.NOT, SimpleQueryStringQuery.Flag.OR);
-                    final BoolClause sentenceFilterClause = new BoolClause();
-                    sentenceFilterClause.addQuery(sentenceFilterQuery);
-                    sentenceFilterClause.occur = FILTER;
-                    eventQuery.addClause(sentenceFilterClause);
+                    addFulltextSearchFilter(sentenceFilter, FIELD_EVENT_SENTENCE, eventQuery);
+                }
+                if (!StringUtils.isBlank(paragraphFilter)) {
+                    addFulltextSearchFilter(paragraphFilter, FIELD_EVENT_PARAGRAPH, eventQuery);
                 }
 
                 SearchServerRequest serverCmd = new SearchServerRequest();
@@ -171,6 +161,23 @@ public class EventRetrievalService implements IEventRetrievalService {
             }
             return null;
         });
+    }
+
+    /**
+     * <p>Adds a filter clause to the given query that contains a simple query string query.</p>
+     * <p>The query allows boolean operators and quotes to mark phrases.</p>
+     * @param filterQuery The query string. May contain boolean operators and quoted phrases.
+     * @param field The fulltext field to filter on.
+     * @param eventQuery The top event query that is currently constructed.
+     */
+    private void addFulltextSearchFilter(String filterQuery, String field, BoolQuery eventQuery) {
+        final SimpleQueryStringQuery sentenceFilterQuery = new SimpleQueryStringQuery();
+        sentenceFilterQuery.query = filterQuery;
+        sentenceFilterQuery.fields = Arrays.asList(field);
+        final BoolClause sentenceFilterClause = new BoolClause();
+        sentenceFilterClause.addQuery(sentenceFilterQuery);
+        sentenceFilterClause.occur = FILTER;
+        eventQuery.addClause(sentenceFilterClause);
     }
 
     @Override
@@ -279,14 +286,10 @@ public class EventRetrievalService implements IEventRetrievalService {
                 }
 
                 if (!StringUtils.isBlank(sentenceFilter)) {
-                    final SimpleQueryStringQuery sentenceFilterQuery = new SimpleQueryStringQuery();
-                    sentenceFilterQuery.query = sentenceFilter;
-                    sentenceFilterQuery.fields = Arrays.asList(FIELD_EVENT_SENTENCE);
-                    sentenceFilterQuery.flags = Arrays.asList(SimpleQueryStringQuery.Flag.AND, SimpleQueryStringQuery.Flag.NOT, SimpleQueryStringQuery.Flag.OR);
-                    final BoolClause sentenceFilterClause = new BoolClause();
-                    sentenceFilterClause.addQuery(sentenceFilterQuery);
-                    sentenceFilterClause.occur = FILTER;
-                    eventQuery.addClause(sentenceFilterClause);
+                    addFulltextSearchFilter(sentenceFilter, FIELD_EVENT_SENTENCE, eventQuery);
+                }
+                if (!StringUtils.isBlank(paragraphFilter)) {
+                    addFulltextSearchFilter(paragraphFilter, FIELD_EVENT_PARAGRAPH, eventQuery);
                 }
 
 
