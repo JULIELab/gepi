@@ -57,7 +57,7 @@
                 <div class="row">
                     <hr class="thin bottom"/>
                     <div id="eventtypediv" class="col-md-12">
-                        <h5>Restrict event retrieval to the following event types. No selection means no restriction.
+                        <h5>Restrict event retrieval to the following event types.
                         </h5>
                         <t:checklist t:id="eventtypes" selected="selectedeventtypes" encoder="eventtypeencoder"
                                      model="eventtypemodel"/>
@@ -66,8 +66,15 @@
                 <div class="row">
                     <hr class="nomargin"/>
                     <div class="col-md-12">
-                        <h5>Enter words to filter the sentences on in which returned events occur.</h5>
-                        <t:TextField t:id="sentencefilter" value="filterstring"/>
+                        <h5>Enter words to filter the sentences in which returned events occur.</h5>
+                        <t:TextField t:id="sentencefilter" value="sentencefilterstring"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <hr class="nomargin"/>
+                    <div class="col-md-12">
+                        <h5>Enter words to filter the paragraphs in which returned events occur.</h5>
+                        <t:TextField t:id="paragraphfilter" value="paragraphfilterstring"/>
                     </div>
                 </div>
                 <div class="row">

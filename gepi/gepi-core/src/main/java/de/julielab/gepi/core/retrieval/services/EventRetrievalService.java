@@ -22,7 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.FILTER;
 
@@ -83,11 +82,12 @@ public class EventRetrievalService implements IEventRetrievalService {
      *
      * @param idStreamA
      * @param idStreamB
+     * @param paragraphFilterString
      * @return
      */
     @Override
     public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Future<IdConversionResult> idStreamA,
-                                                                      Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter) {
+                                                                      Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter, String paragraphFilterString) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Set<String> idSetA = idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet());
@@ -185,8 +185,8 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getBipartiteEvents(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter) {
-        return getBipartiteEvents(CompletableFuture.completedFuture(idStream1), CompletableFuture.completedFuture(idStream2), eventTypes, sentenceFilter);
+    public CompletableFuture<EventRetrievalResult> getBipartiteEvents(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
+        return getBipartiteEvents(CompletableFuture.completedFuture(idStream1), CompletableFuture.completedFuture(idStream2), eventTypes, sentenceFilter, paragraphFilter);
     }
 
     /**
@@ -262,7 +262,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStream, List<String> eventTypes, String sentenceFilter) {
+    public CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -344,8 +344,8 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter) {
-        return getOutsideEvents(CompletableFuture.completedFuture(idStream), eventTypes, sentenceFilter);
+    public CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
+        return getOutsideEvents(CompletableFuture.completedFuture(idStream), eventTypes, sentenceFilter, paragraphFilter);
     }
 
     /**

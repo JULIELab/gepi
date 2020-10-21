@@ -113,7 +113,10 @@ public class GepiInput {
     private List<String> selectedDevSettings;
 
     @Property
-    private String filterString;
+    private String sentenceFilterString;
+
+    @Property
+    private String paragraphFilterString;
 
     /**
      * This is not an ID for the servlet session but to the current data state.
@@ -213,11 +216,11 @@ public class GepiInput {
         if (isABSearchRequest) {
             esResult = eventRetrievalService.getBipartiteEvents(
                     listAGePiIds,
-                    listBGePiIds, selectedEventTypeNames, filterString);
+                    listBGePiIds, selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
         } else {
             if (isAListPresent) {
                 log.debug("Calling EventRetrievalService for outside events");
-                esResult = eventRetrievalService.getOutsideEvents(listAGePiIds, selectedEventTypeNames, filterString);
+                esResult = eventRetrievalService.getOutsideEvents(listAGePiIds, selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
                 if (resultPresent())
                     log.debug("Retrieved the response future. It is " + (esResult.isDone() ? "" : "not ") + "(ES)" + (neo4jResult != null && neo4jResult.isDone() ? "" : "not ") + "(Neo4j) finished.");
                 else log.debug("After retrieving the result");
