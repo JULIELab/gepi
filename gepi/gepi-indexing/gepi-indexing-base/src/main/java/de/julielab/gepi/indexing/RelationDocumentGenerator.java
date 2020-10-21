@@ -1,5 +1,6 @@
 package de.julielab.gepi.indexing;
 
+import com.sun.istack.NotNull;
 import de.julielab.jcore.consumer.es.*;
 import de.julielab.jcore.consumer.es.filter.ConstantOutputFilter;
 import de.julielab.jcore.consumer.es.filter.FilterChain;
@@ -12,10 +13,10 @@ import de.julielab.jcore.utility.index.JCoReOverlapAnnotationIndex;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,10 +83,10 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     }
 
     private Document createParagraphDocument(JCas jCas, String docId, FlattenedRelation rel, FeatureStructure[] argPair, JCoReOverlapAnnotationIndex<Zone> zoneIndex) throws CASException, FieldGenerationException {
-        List<Zone> zonesAscending = zoneIndex.search(rel).sorted(Comparator.comparingInt(z -> z.getEnd() - z.getBegin())).collect(Collectors.toList());
+        List<Zone> zonesAscending = zoneIndex.search(rel).stream().sorted(Comparator.comparingInt(z -> z.getEnd() - z.getBegin())).collect(Collectors.toList());
         ArrayFieldValue zoneHeadings = new ArrayFieldValue();
-        Title documentTitle = null;
-        Annotation paragraphLike = null;
+        Optional<Title> documentTitle = JCasUtil.select(jCas, Title.class).stream().filter(t -> t.getTitleType().equals("document")).findAny();
+        AnnotationFS paragraphLike = null;
         Map<Zone, Integer> zoneIds = new HashMap<>();
         int idCounter = 0;
         for (Zone z : zonesAscending) {
@@ -97,8 +98,6 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                     paragraphLike = z;
                 else if (z instanceof Caption)
                     paragraphLike = z;
-                else if (log.isWarnEnabled())
-                    log.warn("Unexpected case in document {}: There was no abstract or paragraph before a {} for relation at {}-{}", docId, z.getClass(), rel.getBegin(), rel.getEnd());
             }
             if (z instanceof AbstractSection)
                 zoneHeadings.add(new RawToken(((AbstractSection) z).getAbstractSectionHeading().getCoveredText()));
@@ -106,17 +105,17 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                 zoneHeadings.add(new RawToken(((Section) z).getSectionHeading().getCoveredText()));
             else if (z instanceof Caption)
                 zoneHeadings.add(new RawToken(z.getCoveredText()));
-            else if (z instanceof Title && ((Title) z).getTitleType().equals("document"))
-                documentTitle = (Title) z;
         }
         // If we couldn't fine one of the specified structures, use the smallest one
         if (paragraphLike == null && !zonesAscending.isEmpty())
             paragraphLike = zonesAscending.get(0);
         // If we couldn't find any zones, use the whole document. This is meant as a last fallback.
-        if (paragraphLike == null)
-            paragraphLike = JCasUtil.selectSingle(jCas, DocumentAnnotation.class);
-
-        zoneHeadings.add(new RawToken(documentTitle.getCoveredText()));
+        if (paragraphLike == null) {
+            paragraphLike = (AnnotationFS) jCas.getDocumentAnnotationFs();
+            log.debug("Using document annotation as fallback because no other paragraph like structure was found for event {} in document {}: " + paragraphLike, rel, docId);
+        }
+        // The top title is the document title.
+        documentTitle.ifPresent(t -> zoneHeadings.add(new RawToken(t.getCoveredText())));
 
         Document paragraphDocument = new Document(docId + "_par" + zoneIds.get(paragraphLike));
 
@@ -150,7 +149,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
      * @return A pre-computed field value for an ElasticSearch index field. That value is not further analyzed by ElasticSearch but stored as specified here.
      * @throws CASException If CAS access fails.
      */
-    private PreanalyzedFieldValue makePreanalyzedFulltextFieldValue(JCas jCas, Annotation fullTextSpan, FeatureStructure[] argPair) throws CASException {
+    private PreanalyzedFieldValue makePreanalyzedFulltextFieldValue(JCas jCas, AnnotationFS fullTextSpan, FeatureStructure[] argPair) throws CASException {
         FeaturePathSets featurePathSets = new FeaturePathSets();
         featurePathSets.add(new FeaturePathSet(Token.type, Arrays.asList("/:coveredText()"), null, textFb.textTokensFilter));
         featurePathSets.add(new FeaturePathSet(Gene.type, Arrays.asList("/resourceEntryList/entryId"), null, new FilterChain(geneFb.gene2tid2atidAddonFilter, new UniqueFilter())));

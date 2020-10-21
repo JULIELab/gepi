@@ -14,7 +14,7 @@
     <modules>
         <module>gepi-core</module>
         <module>gepi-webapp</module>
-        <module>gepi-indexing-pipeline</module>
+        <module>gepi-indexing</module>
         <module>gepi-concept-database</module>
     </modules>
     <dependencyManagement>
@@ -28,6 +28,6 @@
     </dependencyManagement>
     <properties>
         <tapestry-release-version>5.6.0</tapestry-release-version>
-        <jcore-version>2.3.0</jcore-version>
+        <jcore-version>2.6.0-SNAPSHOT</jcore-version>
     </properties>
 </project>
