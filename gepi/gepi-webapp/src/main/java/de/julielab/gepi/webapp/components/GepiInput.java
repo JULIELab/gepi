@@ -63,6 +63,12 @@ public class GepiInput {
     @InjectComponent
     private TextField dataSessionIdField;
 
+    @InjectComponent
+    private TextField sentenceFilter;
+
+    @InjectComponent
+    private TextField paragraphFilter;
+
     @Property
     @Persist
     private String listATextAreaValue;
@@ -170,8 +176,14 @@ public class GepiInput {
         // Note, this method is triggered even if server-side validation has
         // already found error(s).
 
-        if (listATextAreaValue == null || listATextAreaValue.isEmpty()) {
-            inputForm.recordError(lista, "List A must not be empty.");
+        boolean noIdsGiven = listATextAreaValue == null || listATextAreaValue.isEmpty();
+        boolean noSentenceFilterGiven = sentenceFilterString == null || sentenceFilterString.isBlank();
+        boolean noParagraphFilterGiven = paragraphFilterString == null || paragraphFilterString.isBlank();
+        if (noIdsGiven && noSentenceFilterGiven && noParagraphFilterGiven) {
+            String msg = "Either lists of gene IDs or names must be given or a filter query to restrict the returned events.";
+            inputForm.recordError(lista, msg);
+            inputForm.recordError(sentenceFilter, msg+"1");
+            inputForm.recordError(paragraphFilter, msg+"2");
             return;
         }
     }

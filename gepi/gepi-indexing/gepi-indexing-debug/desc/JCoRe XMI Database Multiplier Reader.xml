@@ -368,6 +368,8 @@
                         <string>de.julielab.jcore.types.ChunkNP</string>
                                                 
                         <string>de.julielab.jcore.types.PennBioIEPOSTag</string>
+                                                
+                        <string>de.julielab.jcore.types.Abbreviation</string>
                                             
                     </array>
                                     

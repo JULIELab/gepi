@@ -152,7 +152,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     private PreanalyzedFieldValue makePreanalyzedFulltextFieldValue(JCas jCas, AnnotationFS fullTextSpan, FeatureStructure[] argPair) throws CASException {
         FeaturePathSets featurePathSets = new FeaturePathSets();
         featurePathSets.add(new FeaturePathSet(Token.type, Arrays.asList("/:coveredText()"), null, textFb.textTokensFilter));
-        featurePathSets.add(new FeaturePathSet(Abbreviation.type, Arrays.asList("/textReference/:coveredText()"), null, textFb.textTokensFilter));
+        featurePathSets.add(new FeaturePathSet(Abbreviation.type, Arrays.asList("/textReference:coveredText()"), null, textFb.textTokensFilter));
         featurePathSets.add(new FeaturePathSet(Gene.type, Arrays.asList("/resourceEntryList/entryId"), null, new FilterChain(geneFb.gene2tid2atidAddonFilter, new UniqueFilter())));
         featurePathSets.add(new FeaturePathSet(FlattenedRelation.type, Arrays.asList("/rootRelation/specificType"), null, constantTriggerFilter));
         List<PreanalyzedToken> tokens = relationFieldValueGenerator.getTokensForAnnotationIndexes(featurePathSets, null, true, PreanalyzedToken.class, fullTextSpan, null, jCas);
