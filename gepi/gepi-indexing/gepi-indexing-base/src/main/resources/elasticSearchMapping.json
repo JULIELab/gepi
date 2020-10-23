@@ -23,7 +23,7 @@
   },
   "mappings": {
     "_source": {
-      "enabled": false
+      "enabled": true
     },
     "properties": {
       "pmid": {

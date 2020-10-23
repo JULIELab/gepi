@@ -5,7 +5,8 @@
             <name>CPERunner</name>
             <pipelinepath>.</pipelinepath>
             <numthreads>7</numthreads>
-            <heapsize>40g</heapsize>
+	    <heapsize>20g</heapsize>
+	    <jvmoptions>-XX:StringTableSize=16777216</jvmoptions>
         </runner>
     </runners>
 </configuration>

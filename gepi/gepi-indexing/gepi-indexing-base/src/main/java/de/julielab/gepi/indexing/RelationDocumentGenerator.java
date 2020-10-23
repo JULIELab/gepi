@@ -39,7 +39,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         relationFieldValueGenerator = new RelationFieldValueGenerator(filterRegistry);
         textFb = filterRegistry.getFilterBoard(TextFilterBoard.class);
         geneFb = filterRegistry.getFilterBoard(GeneFilterBoard.class);
-        constantTriggerFilter = new ConstantOutputFilter("#trigger#");
+        constantTriggerFilter = new ConstantOutputFilter("xtriggerx");
     }
 
     @Override
@@ -152,10 +152,11 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     private PreanalyzedFieldValue makePreanalyzedFulltextFieldValue(JCas jCas, AnnotationFS fullTextSpan, FeatureStructure[] argPair) throws CASException {
         FeaturePathSets featurePathSets = new FeaturePathSets();
         featurePathSets.add(new FeaturePathSet(Token.type, Arrays.asList("/:coveredText()"), null, textFb.textTokensFilter));
+        featurePathSets.add(new FeaturePathSet(Abbreviation.type, Arrays.asList("/textReference/:coveredText()"), null, textFb.textTokensFilter));
         featurePathSets.add(new FeaturePathSet(Gene.type, Arrays.asList("/resourceEntryList/entryId"), null, new FilterChain(geneFb.gene2tid2atidAddonFilter, new UniqueFilter())));
         featurePathSets.add(new FeaturePathSet(FlattenedRelation.type, Arrays.asList("/rootRelation/specificType"), null, constantTriggerFilter));
-        List<PreanalyzedToken> tokens = relationFieldValueGenerator.getTokensForAnnotationIndexes(featurePathSets, null, false, PreanalyzedToken.class, fullTextSpan, null, jCas);
-        // We only want the special highlighting term #argument# for the actual two arguments of the
+        List<PreanalyzedToken> tokens = relationFieldValueGenerator.getTokensForAnnotationIndexes(featurePathSets, null, true, PreanalyzedToken.class, fullTextSpan, null, jCas);
+        // We only want the special highlighting term xargumentx for the actual two arguments of the
         // current relation. Thus we need to interlace the argument terms with the sentence terms.
         addArgumentTokens(tokens, argPair);
         // First sort by offset. For equal offsets, put the tokens with positionIncrement == 1 first.
@@ -173,13 +174,13 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         token1.start = arg1.getBegin();
         token1.end = arg1.getEnd();
         token1.positionIncrement = 0;
-        token1.term = "#argument#";
+        token1.term = "xargumentx";
 
         PreanalyzedToken token2 = new PreanalyzedToken();
         token2.start = arg2.getBegin();
         token2.end = arg2.getEnd();
         token2.positionIncrement = 0;
-        token2.term = "#argument#";
+        token2.term = "xargumentx";
 
         tokens.add(token1);
         tokens.add(token2);

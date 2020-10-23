@@ -76,6 +76,7 @@
     <modules>
         <module>gepi-indexing-pubmed</module>
         <module>gepi-indexing-pmc</module>
-        <module>gepi-indexing-base</module>
+	<module>gepi-indexing-base</module>
+	<module>gepi-indexing-debug</module>
     </modules>
 </project>
