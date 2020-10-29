@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EventRetrievalResult {
-	public enum EventResultType {OUTSIDE, BIPARTITE}
+	public enum EventResultType {OUTSIDE, BIPARTITE, FULLTEXT_FILTERED}
 	private List<Event> eventList;
 	private EventResultType resultType;
 

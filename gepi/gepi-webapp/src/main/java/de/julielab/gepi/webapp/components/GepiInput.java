@@ -145,6 +145,7 @@ public class GepiInput {
      */
     @ActivationRequestParameter
     private boolean reset;
+
     void onActivate(EventContext eventContext) {
         if (reset) {
             log.debug("Reset is active, setting data to null.");
@@ -182,8 +183,8 @@ public class GepiInput {
         if (noIdsGiven && noSentenceFilterGiven && noParagraphFilterGiven) {
             String msg = "Either lists of gene IDs or names must be given or a filter query to restrict the returned events.";
             inputForm.recordError(lista, msg);
-            inputForm.recordError(sentenceFilter, msg+"1");
-            inputForm.recordError(paragraphFilter, msg+"2");
+            inputForm.recordError(sentenceFilter, msg + "1");
+            inputForm.recordError(paragraphFilter, msg + "2");
             return;
         }
     }
@@ -226,18 +227,19 @@ public class GepiInput {
 
     private void fetchEventsFromElasticSearch(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds) {
         if (isABSearchRequest) {
+            log.debug("Calling EventRetrievalService for AB search");
             esResult = eventRetrievalService.getBipartiteEvents(
                     listAGePiIds,
                     listBGePiIds, selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
+        } else if (isAListPresent) {
+            log.debug("Calling EventRetrievalService for A search");
+            esResult = eventRetrievalService.getOutsideEvents(listAGePiIds, selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
         } else {
-            if (isAListPresent) {
-                log.debug("Calling EventRetrievalService for outside events");
-                esResult = eventRetrievalService.getOutsideEvents(listAGePiIds, selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
-                if (resultPresent())
-                    log.debug("Retrieved the response future. It is " + (esResult.isDone() ? "" : "not ") + "(ES)" + (neo4jResult != null && neo4jResult.isDone() ? "" : "not ") + "(Neo4j) finished.");
-                else log.debug("After retrieving the result");
-            }
+            // No IDs were entered
+            log.debug("Calling EventRetrievalService for scope filtered events");
+            esResult = eventRetrievalService.getFulltextFilteredEvents(selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
         }
+
         persistEsResult = esResult;
     }
 

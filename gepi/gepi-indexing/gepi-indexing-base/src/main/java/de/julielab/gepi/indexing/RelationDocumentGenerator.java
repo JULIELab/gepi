@@ -45,33 +45,32 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     @Override
     public List<Document> createDocuments(JCas jCas) throws FieldGenerationException {
         List<Document> relDocs = new ArrayList<>();
-        Collection<Sentence> sentences = JCasUtil.select(jCas, Sentence.class);
         String docId = JCoReTools.getDocId(jCas);
         JCoReOverlapAnnotationIndex<Zone> zoneIndex = new JCoReOverlapAnnotationIndex<>(jCas, Zone.type);
+        JCoReOverlapAnnotationIndex<Sentence> sentIndex = new JCoReOverlapAnnotationIndex<>(jCas, Sentence.type);
         try {
             int i = 0;
-            for (Sentence sentence : sentences) {
-                FSIterator<Annotation> subiterator = jCas.getAnnotationIndex(FlattenedRelation.type).subiterator(sentence);
-                while (subiterator.hasNext()) {
-                    FlattenedRelation rel = (FlattenedRelation) subiterator.next();
-                    if (rel.getArguments().size() > 1) {
-                        ArrayFieldValue relationPairDocuments = (ArrayFieldValue) relationFieldValueGenerator.generateFieldValue(rel);
-                        for (IFieldValue fv : relationPairDocuments) {
-                            Document relDoc = (Document) fv;
-                            FeatureStructure[] argPair = ((ArrayFieldValue) relDoc.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
-                            relDoc.remove("ARGUMENT_FS");
-                            // We create the sentence as a document of its own. In the mapping we then could add it as
-                            // an object or as a nested document. There is no need to make it a nested document so we will
-                            // use the object mapping which performs better.
-                            Document sentenceDocument = createSentenceDocument(jCas, docId, i, sentence, argPair);
-                            // Likewise for the paragraph-like containing annotation of the relation
-                            Document paragraphDocument = createParagraphDocument(jCas, docId, rel, argPair, zoneIndex);
+            for (FlattenedRelation rel : jCas.<FlattenedRelation>getAnnotationIndex(FlattenedRelation.type)) {
+                if (rel.getArguments().size() > 1) {
+                    ArrayFieldValue relationPairDocuments = (ArrayFieldValue) relationFieldValueGenerator.generateFieldValue(rel);
+                    for (IFieldValue fv : relationPairDocuments) {
+                        Document relDoc = (Document) fv;
+                        FeatureStructure[] argPair = ((ArrayFieldValue) relDoc.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
+                        relDoc.remove("ARGUMENT_FS");
+                        // We create the sentence as a document of its own. In the mapping we then could add it as
+                        // an object or as a nested document. There is no need to make it a nested document so we will
+                        // use the object mapping which performs better.
+                        Document sentenceDocument = null;
+                        List<Sentence> overlappingSentences = sentIndex.search(rel);
+                        if (!overlappingSentences.isEmpty())
+                            createSentenceDocument(jCas, docId, i, overlappingSentences.get(0), argPair);
+                        // Likewise for the paragraph-like containing annotation of the relation
+                        Document paragraphDocument = createParagraphDocument(jCas, docId, rel, argPair, zoneIndex);
 
-                            relDoc.addField("sentence", sentenceDocument);
-                            relDoc.addField("paragraph", paragraphDocument);
+                        relDoc.addField("sentence", sentenceDocument);
+                        relDoc.addField("paragraph", paragraphDocument);
 
-                            relDocs.add(relDoc);
-                        }
+                        relDocs.add(relDoc);
                     }
                 }
                 ++i;
@@ -101,7 +100,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
             }
             if (z instanceof AbstractSection)
                 zoneHeadings.add(new RawToken(((AbstractSection) z).getAbstractSectionHeading().getCoveredText()));
-            else if (z instanceof Section)
+            else if (z instanceof Section && ((Section) z).getSectionHeading() != null)
                 zoneHeadings.add(new RawToken(((Section) z).getSectionHeading().getCoveredText()));
             else if (z instanceof Caption)
                 zoneHeadings.add(new RawToken(z.getCoveredText()));

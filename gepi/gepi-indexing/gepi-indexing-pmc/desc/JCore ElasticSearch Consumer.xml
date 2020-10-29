@@ -343,7 +343,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2topHomologyPrefName.map</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2topHomologyPrefName.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -369,7 +369,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2tophomo.map</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2tophomo.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -395,7 +395,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2atid.map</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2atid.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -421,7 +421,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2prefName.map</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2prefName.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -447,7 +447,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/egid2tid.map</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/egid2tid.map.gz</url>
                                         
                     <resourceMetaData>
                                                 

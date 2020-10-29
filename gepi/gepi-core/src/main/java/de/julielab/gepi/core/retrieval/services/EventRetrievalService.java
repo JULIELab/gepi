@@ -117,10 +117,10 @@ public class EventRetrievalService implements IEventRetrievalService {
                 }
 
                 if (!StringUtils.isBlank(sentenceFilter)) {
-                    addFulltextSearchFilter(sentenceFilter, FIELD_EVENT_SENTENCE, eventQuery);
+                    addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, Occur.FILTER, eventQuery);
                 }
                 if (!StringUtils.isBlank(paragraphFilter)) {
-                    addFulltextSearchFilter(paragraphFilter, FIELD_EVENT_PARAGRAPH, eventQuery);
+                    addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, Occur.FILTER, eventQuery);
                 }
 
                 SearchServerRequest serverCmd = new SearchServerRequest();
@@ -166,11 +166,13 @@ public class EventRetrievalService implements IEventRetrievalService {
     /**
      * <p>Adds a filter clause to the given query that contains a simple query string query.</p>
      * <p>The query allows boolean operators and quotes to mark phrases.</p>
+     *
      * @param filterQuery The query string. May contain boolean operators and quoted phrases.
-     * @param field The fulltext field to filter on.
-     * @param eventQuery The top event query that is currently constructed.
+     * @param field       The fulltext field to filter on.
+     * @param occur
+     * @param eventQuery  The top event query that is currently constructed.
      */
-    private void addFulltextSearchFilter(String filterQuery, String field, BoolQuery eventQuery) {
+    private void addFulltextSearchQuery(String filterQuery, String field, Occur occur, BoolQuery eventQuery) {
         final SimpleQueryStringQuery sentenceFilterQuery = new SimpleQueryStringQuery();
         sentenceFilterQuery.query = filterQuery;
         sentenceFilterQuery.fields = Arrays.asList(field);
@@ -286,10 +288,10 @@ public class EventRetrievalService implements IEventRetrievalService {
                 }
 
                 if (!StringUtils.isBlank(sentenceFilter)) {
-                    addFulltextSearchFilter(sentenceFilter, FIELD_EVENT_SENTENCE, eventQuery);
+                    addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, Occur.FILTER, eventQuery);
                 }
                 if (!StringUtils.isBlank(paragraphFilter)) {
-                    addFulltextSearchFilter(paragraphFilter, FIELD_EVENT_PARAGRAPH, eventQuery);
+                    addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, Occur.FILTER, eventQuery);
                 }
 
 
@@ -337,6 +339,65 @@ public class EventRetrievalService implements IEventRetrievalService {
     @Override
     public CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
         return getOutsideEvents(CompletableFuture.completedFuture(idStream), eventTypes, sentenceFilter, paragraphFilter);
+    }
+
+    @Override
+    public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
+        log.debug("Returning async result");
+        return CompletableFuture.supplyAsync(() -> {
+            BoolQuery eventQuery = new BoolQuery();
+
+            if (!eventTypes.isEmpty()) {
+                TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
+                eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
+                BoolClause eventTypeClause = new BoolClause();
+                eventTypeClause.addQuery(eventTypesQuery);
+                eventTypeClause.occur = FILTER;
+                eventQuery.addClause(eventTypeClause);
+            }
+
+            if (!StringUtils.isBlank(sentenceFilter)) {
+                addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, Occur.MUST, eventQuery);
+            }
+            if (!StringUtils.isBlank(paragraphFilter)) {
+                addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, Occur.MUST, eventQuery);
+            }
+
+
+            SearchServerRequest serverCmd = new SearchServerRequest();
+            serverCmd.query = eventQuery;
+            serverCmd.index = documentIndex;
+            serverCmd.rows = SCROLL_SIZE;
+            serverCmd.fieldsToReturn = Arrays.asList(
+                    FIELD_PMID,
+                    FIELD_PMCID,
+                    FIELD_EVENT_LIKELIHOOD,
+                    FIELD_EVENT_SENTENCE,
+                    FIELD_EVENT_MAINEVENTTYPE,
+                    FIELD_EVENT_ALL_EVENTTYPES,
+                    FIELD_EVENT_ARG_GENE_IDS,
+                    FIELD_EVENT_ARG_CONCEPT_IDS,
+                    FIELD_EVENT_ARG_PREFERRED_NAME,
+                    FIELD_EVENT_ARG_MATCH_TYPES,
+                    FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
+                    FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
+                    FIELD_EVENT_ARG_TEXT);
+            serverCmd.downloadCompleteResults = true;
+            serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
+
+            ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
+            carrier.addSearchServerRequest(serverCmd);
+            long time = System.currentTimeMillis();
+            searchServerComponent.process(carrier);
+
+
+            EventRetrievalResult eventResult = eventResponseProcessingService
+                    .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
+            time = System.currentTimeMillis() - time;
+            log.debug("Retrieved {} fulltext-filtered events in {} seconds", eventResult.getEventList().size(), time / 1000);
+            eventResult.setResultType(EventResultType.FULLTEXT_FILTERED);
+            return eventResult;
+        });
     }
 
     /**
