@@ -8,10 +8,11 @@ import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
 import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
-import de.julielab.jcore.utility.JCoReTools;
+import de.julielab.jcore.types.pubmed.Header;
+import de.julielab.jcore.types.pubmed.OtherID;
 import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 
@@ -118,7 +119,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     continue;
                 try {
                     JCas jCas = rel.getCAS().getJCas();
-                    String docId = JCoReTools.getDocId(jCas);
+                    String docId = getDocumentId(jCas);
                     FieldCreationUtils.addDocumentId(document, rel);
                     if (likelihood != null)
                         document.addField("likelihood", FieldCreationUtils.likelihoodValues.get(likelihood.getLikelihood()));
@@ -144,5 +145,20 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
             }
         }
         return relDocs;
+    }
+
+    private String getDocumentId(JCas jCas) {
+        Header header = JCasUtil.selectSingle(jCas, Header.class);
+        boolean ispmcDocument = false;
+        FSArray otherIDs = header.getOtherIDs();
+        if (otherIDs != null && otherIDs.size() > 0) {
+            OtherID other = (OtherID) otherIDs.get(0);
+            if (other.getSource().equals("PubMed"))
+                ispmcDocument = true;
+        }
+        String docId = header.getDocId();
+        if (ispmcDocument && !docId.startsWith("PMC"))
+            docId = "PMC" + docId;
+        return docId;
     }
 }

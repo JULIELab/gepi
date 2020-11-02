@@ -16,5 +16,8 @@
         <p:docIdCell>
             <a href="${documentUrl}" target="_blank" data-toggle="tooltip" data-placement="top" title="${articleReferenceTitle}">${eventrow.docId}</a>
         </p:docIdCell>
+        <p:contextCell>
+            <t:output value="${eventrow.context}" filter="false" format="contextformat"/>
+        </p:contextCell>
     </t:grid>
 </div>

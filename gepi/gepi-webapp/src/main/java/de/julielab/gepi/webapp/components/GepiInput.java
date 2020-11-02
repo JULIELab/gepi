@@ -124,6 +124,9 @@ public class GepiInput {
     @Property
     private String paragraphFilterString;
 
+    @Property
+    private String filterFieldsConnectionOperator;
+
     /**
      * This is not an ID for the servlet session but to the current data state.
      */
@@ -176,7 +179,7 @@ public class GepiInput {
     void onValidateFromInputForm() {
         // Note, this method is triggered even if server-side validation has
         // already found error(s).
-
+        System.out.println("Hier: "+ filterFieldsConnectionOperator);
         boolean noIdsGiven = listATextAreaValue == null || listATextAreaValue.isEmpty();
         boolean noSentenceFilterGiven = sentenceFilterString == null || sentenceFilterString.isBlank();
         boolean noParagraphFilterGiven = paragraphFilterString == null || paragraphFilterString.isBlank();
@@ -216,13 +219,15 @@ public class GepiInput {
     }
 
     private void fetchEventsFromNeo4j(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest) {
-        CompletableFuture<Stream<String>> aListIds = CompletableFuture.completedFuture(Stream.of(listATextAreaValue.split("\n")));
-        if (isABSearchRequest) {
-            neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, CompletableFuture.completedFuture(Stream.of(listBTextAreaValue.split("\n"))), selectedEventTypeNames);
-        } else if (isAListPresent) {
-            neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, selectedEventTypeNames);
+        if (listATextAreaValue != null && !listATextAreaValue.isBlank()) {
+            CompletableFuture<Stream<String>> aListIds = CompletableFuture.completedFuture(Stream.of(listATextAreaValue.split("\n")));
+            if (isABSearchRequest) {
+                neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, CompletableFuture.completedFuture(Stream.of(listBTextAreaValue.split("\n"))), selectedEventTypeNames);
+            } else if (isAListPresent) {
+                neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, selectedEventTypeNames);
+            }
+            persistNeo4jResult = neo4jResult;
         }
-        persistNeo4jResult = neo4jResult;
     }
 
     private void fetchEventsFromElasticSearch(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds) {
@@ -237,7 +242,7 @@ public class GepiInput {
         } else {
             // No IDs were entered
             log.debug("Calling EventRetrievalService for scope filtered events");
-            esResult = eventRetrievalService.getFulltextFilteredEvents(selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
+            esResult = eventRetrievalService.getFulltextFilteredEvents(selectedEventTypeNames, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator);
         }
 
         persistEsResult = esResult;
@@ -274,5 +279,5 @@ public class GepiInput {
     }
 
     private enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
-
+private enum KeywordOperator {AND, OR}
 }

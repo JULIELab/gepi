@@ -152,7 +152,7 @@ final public class GepiWidgetLayout {
     }
 
     public boolean isResultAvailable() {
-        if (getEsResult() != null && getNeo4jResult().isDone())
+        if (getNeo4jResult() != null && getNeo4jResult().isDone())
             return true;
         return getEsResult() != null && getEsResult().isDone();
     }

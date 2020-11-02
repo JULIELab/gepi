@@ -178,7 +178,7 @@ public class EventRetrievalService implements IEventRetrievalService {
         sentenceFilterQuery.fields = Arrays.asList(field);
         final BoolClause sentenceFilterClause = new BoolClause();
         sentenceFilterClause.addQuery(sentenceFilterQuery);
-        sentenceFilterClause.occur = FILTER;
+        sentenceFilterClause.occur = occur;
         eventQuery.addClause(sentenceFilterClause);
     }
 
@@ -342,7 +342,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
+    public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String filterFieldsConnectionOperator) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
             BoolQuery eventQuery = new BoolQuery();
@@ -356,11 +356,12 @@ public class EventRetrievalService implements IEventRetrievalService {
                 eventQuery.addClause(eventTypeClause);
             }
 
+            Occur filterFieldsOccur = filterFieldsConnectionOperator.equalsIgnoreCase("and") ? Occur.MUST : Occur.SHOULD;
             if (!StringUtils.isBlank(sentenceFilter)) {
-                addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, Occur.MUST, eventQuery);
+                addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, filterFieldsOccur, eventQuery);
             }
             if (!StringUtils.isBlank(paragraphFilter)) {
-                addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, Occur.MUST, eventQuery);
+                addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, filterFieldsOccur, eventQuery);
             }
 
 
@@ -385,7 +386,21 @@ public class EventRetrievalService implements IEventRetrievalService {
             serverCmd.downloadCompleteResults = true;
             serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
-            ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
+//            HighlightCommand hlc = new HighlightCommand();
+//            hlc.addField(FIELD_EVENT_SENTENCE, 1, Integer.MAX_VALUE);
+//            hlc.addField(FIELD_EVENT_PARAGRAPH, 1, Integer.MAX_VALUE);
+//            hlc.fields.forEach(f -> {
+//                f.type = HighlightCommand.Highlighter.fastvector;
+//                f.pre = "<b>";
+//                f.post = "</b>";
+//                MatchQuery hlQuery = new MatchQuery();
+//                hlQuery.field = FIELD_EVENT_SENTENCE;
+//                hlQuery.query = "xargumentx";
+//                f.highlightQuery = hlQuery;
+//            });
+//            serverCmd.addHighlightCmd(hlc);
+
+            ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("FulltextFilteredEvents");
             carrier.addSearchServerRequest(serverCmd);
             long time = System.currentTimeMillis();
             searchServerComponent.process(carrier);

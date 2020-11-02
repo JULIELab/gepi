@@ -8,7 +8,8 @@
         <div class="panel-body">
             <form role="form" t:type="form" async="true" t:id="inputform" id="inputform">
                 <!-- Hidden field to store the data session ID to the client -->
-                <t:textfield t:id="dataSessionIdField" value="dataSessionId" class="hidden" title="Hidden field to store session information."/>
+                <t:textfield t:id="dataSessionIdField" value="dataSessionId" class="hidden"
+                             title="Hidden field to store session information."/>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="text-center">
@@ -75,6 +76,27 @@
                     <div class="col-md-12">
                         <h5>Enter words to filter the paragraphs in which returned events occur.</h5>
                         <t:TextField t:id="paragraphfilter" value="paragraphfilterstring"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div>
+                            Keyword Operator
+                                <t:RadioGroup t:id="kwgroup" value="filterFieldsConnectionOperator">
+                                    <div class="form-check form-check-inline">
+                                        <t:Radio t:id="and" id="and" class="form-check-input" type="radio"
+                                                 value="literal:AND"
+                                                 label="AND"/>
+                                        <t:label for="and" class="form-check-label"/>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <t:Radio t:id="or" class="form-check-input" id="or" type="radio"
+                                                 value="literal:OR"
+                                                 label="OR"/>
+                                        <t:label for="or" class="form-check-label"/>
+                                    </div>
+                                </t:RadioGroup>
+                            </div>
                     </div>
                 </div>
                 <div class="row">

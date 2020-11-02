@@ -70,6 +70,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             Optional<String> mainEventType = eventDocument.get(FIELD_EVENT_MAINEVENTTYPE);
             Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
             Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE);
+            List<String> sentenceHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE);
             String eventId = eventDocument.getId();
 
             Map<String, List<String>> highlights = eventDocument.getHighlights();
@@ -110,7 +111,9 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             event.setAllEventTypes(allEventTypes.stream().map(String.class::cast).collect(Collectors.toList()));
             event.setHighlightedSentence(highlights.getOrDefault(FIELD_EVENT_SENTENCE, Collections.emptyList()).stream()
                     .findFirst().orElse(null));
-            if (sentence.isPresent())
+            if (sentenceHl != null && !sentence.isEmpty())
+                event.setSentence(StringUtils.normalizeSpace(sentenceHl.get(0)));
+            else if (sentence.isPresent())
                 event.setSentence(StringUtils.normalizeSpace(sentence.get()));
             for (int i = 0; i < event.getNumArguments(); i++) {
                 event.getArgument(i).setPreferredName((String) argPrefNames.get(i));

@@ -1,7 +1,13 @@
 package de.julielab.gepi.webapp.components;
 
 import java.io.*;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.MessageFormat;
+import java.text.ParsePosition;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -58,6 +64,10 @@ public class TableResultWidget extends GepiWidget {
     @Persist
     private BeanModel<BeanModelEvent> tableModel;
 
+    @Property
+    @Persist
+    private Format contextFormat;
+
     void setupRender() {
         tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
         tableModel.include(
@@ -71,7 +81,7 @@ public class TableResultWidget extends GepiWidget {
                 "secondArgumentMatchType",
                 "allEventTypes",
                 "docId",
-                "sentence");
+                "context");
         tableModel.get("firstArgumentPreferredName").label("gene A symbol");
         tableModel.get("secondArgumentPreferredName").label("gene B symbol");
         tableModel.get("firstArgumentText").label("gene A text");
@@ -82,6 +92,18 @@ public class TableResultWidget extends GepiWidget {
         tableModel.get("secondArgumentMatchType").label("gene B match type");
         tableModel.get("allEventTypes").label("relation types");
         tableModel.get("docId").label("document id");
+
+        contextFormat = new Format() {
+            @Override
+            public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
+                return toAppendTo.append(obj);
+            }
+
+            @Override
+            public Object parseObject(String source, ParsePosition pos) {
+                return source;
+            }
+        };
     }
 
     void onUpdateTableData() {
@@ -212,7 +234,7 @@ public class TableResultWidget extends GepiWidget {
             return String.join(", ", event.getAllEventTypes());
         }
 
-        public String getSentence() {
+        public String getContext() {
             return event.getSentence();
         }
 
