@@ -20,16 +20,14 @@ import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.*;
 
 public class EventResponseProcessingService implements IEventResponseProcessingService {
 
+    private final static Pattern FULLTEXT_QUERY_HIGHLIGHT_PATTERN = Pattern.compile("<em>");
     @Inject
     private IEventPostProcessingService eventPPService;
-
     private Logger log;
 
     public EventResponseProcessingService(Logger log) {
         this.log = log;
     }
-
-    private final static Pattern FULLTEXT_QUERY_HIGHLIGHT_PATTERN = Pattern.compile("<em>");
 
     @Log
     @Override
@@ -55,8 +53,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 
     private Stream<Event> resultDocuments2Events(Stream<ISearchServerDocument> documents) {
         return documents.map(eventDocument -> {
-            Optional<String> pmid = eventDocument.getFieldValue(FIELD_PMID);
-            Optional<String> pmcid = eventDocument.getFieldValue(FIELD_PMCID);
+            Optional<String> docId = eventDocument.getFieldValue(FIELD_PMID);
             List<Object> conceptIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_CONCEPT_IDS)
                     .orElse(Collections.emptyList());
             List<Object> geneIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_GENE_IDS)
@@ -79,7 +76,6 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             List<String> paragraphHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH);
             String eventId = eventDocument.getId();
 
-            Map<String, List<String>> highlights = eventDocument.getHighlights();
 
             int numArguments = geneIds.size();
             List<Argument> arguments = new ArrayList<>();
@@ -107,8 +103,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             }
 
             Event event = new Event();
-            pmid.ifPresent(event::setPmid);
-            pmcid.ifPresent(event::setPmcid);
+            docId.ifPresent(event::setDocId);
             event.setEventId(eventId);
             event.setArguments(arguments);
             if (likelihood.isPresent())
@@ -116,12 +111,12 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             event.setMainEventType(mainEventType.get());
             event.setAllEventTypes(allEventTypes.stream().map(String.class::cast).collect(Collectors.toList()));
             if (sentenceHl != null && !sentenceHl.isEmpty())
-                event.setSentence(StringUtils.normalizeSpace(sentenceHl.get(0)));
-            else if (sentence.isPresent())
+                event.setHlSentence(StringUtils.normalizeSpace(sentenceHl.get(0)));
+            if (sentence.isPresent())
                 event.setSentence(StringUtils.normalizeSpace(sentence.get()));
             if (paragraphHl != null && !paragraphHl.isEmpty())
-                event.setParagraph(StringUtils.normalizeSpace(paragraphHl.get(0)));
-            else if (paragraph.isPresent())
+                event.setHlParagraph(StringUtils.normalizeSpace(paragraphHl.get(0)));
+            if (paragraph.isPresent())
                 event.setParagraph(StringUtils.normalizeSpace(paragraph.get()));
             for (int i = 0; i < event.getNumArguments(); i++) {
                 event.getArgument(i).setPreferredName((String) argPrefNames.get(i));
@@ -130,15 +125,15 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                 if (i < matchTypes.size())
                     event.getArgument(i).setMatchType((String) matchTypes.get(i));
             }
-            if (event.getSentence() != null) {
-                Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getSentence());
+            if (event.getHlSentence() != null) {
+                Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getHlSentence());
                 if (fulltextQueryHighlightedMatcher.find())
                     event.setSentenceMatchingFulltextQuery(true);
-                if (event.getParagraph() != null) {
-                    fulltextQueryHighlightedMatcher.reset(event.getParagraph());
-                    if (fulltextQueryHighlightedMatcher.find())
-                        event.setParagraphMatchingFulltextQuery(true);
-                }
+            }
+            if (event.getHlParagraph() != null) {
+                Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getHlParagraph());
+                if (fulltextQueryHighlightedMatcher.find())
+                    event.setParagraphMatchingFulltextQuery(true);
             }
 
             return event;

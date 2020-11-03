@@ -10,11 +10,11 @@ import os
 def makeArgumentSymbolPivotTable(df, column, order):
     givengenesfreq = df.pivot_table('docid', index=column, columns=['arg1matchtype','arg2matchtype'],aggfunc='count', fill_value=0)
     # We want to order to pivot table counted arg1symbol occurrences with respect to the match type.
-    # We we cannot know if a specific match type combination is actually in the data, so we iterate over the possible
+    # We cannot know if a specific match type combination is actually in the data, so we iterate over the possible
     # combinations and try.
     for o in order:
         if o in givengenesfreq:
-            givengenesfreq.sort_values(by=o,ascending=False)
+            givengenesfreq.sort_values(by=o,ascending=False,inplace=True)
             break
     # Here we summarize over all exact arg1 events:
     givengenesfreq[('exact','sum')] = 0
@@ -33,7 +33,7 @@ def makeArgumentSymbolPivotTable(df, column, order):
     return givengenesfreq
 
 def writeresults(input,output):
-    header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "arg1matchtype", "arg2matchtype", "relationtypes", "docid", "fulltextmatchtype", "sentence"]
+    header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "arg1matchtype", "arg2matchtype", "relationtypes", "docid", "fulltextmatchtype", "context"]
     columndesc=[ 'Input gene symbol',
                  'Event partner gene symbol',
                  'the document text of the input gene in the found sentence',
@@ -45,7 +45,7 @@ def writeresults(input,output):
                  'The type(s) of events the input gene and its event partner are involved in',
                  'PubMed or PMC document ID',
                  'Place of fulltext query match',
-                 'The sentence from the literature in which the event was found.']
+                 'The textual context from the literature in which the event was found. That is the sentence enclosing the event by default. In case of a paragraph-level filter query this can also be the enclosing paragraph. This would then be indicated by the value of the fulltextmatchtype column.']
     df = pd.read_csv(input, names=header,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object},quoting=csv.QUOTE_NONE)
     print(f'Read {len(df)} data rows from {input}.')
     # Remove duplicates in the event types and sort them alphabetically
@@ -54,7 +54,7 @@ def writeresults(input,output):
         types = list(set(reltypes.at[i].split(',')))
         reltypes.at[i]= ','.join(types)
     columnsorder=[ 'arg1symbol',  'arg2symbol', 'arg1text', 'arg2text', 'arg1entrezid', 'arg2entrezid',
-         'arg1matchtype',  'arg2matchtype', 'relationtypes','docid', 'fulltextmatchtype', 'sentence']
+         'arg1matchtype',  'arg2matchtype', 'relationtypes','docid', 'fulltextmatchtype', 'context']
     df = df[columnsorder]
     df = df.query('arg1entrezid != arg2entrezid')
     # Input genes argument counts
@@ -80,7 +80,6 @@ def writeresults(input,output):
     relfreq.reset_index(inplace=True)
     giventodistinctothercount = df[['arg1symbol', 'arg2symbol']].drop_duplicates().groupby(['arg1symbol']).count().sort_values(by=["arg2symbol"], ascending=False)
     giventodistinctothercount.reset_index(inplace=True)
-
 
     resultsdesc = pd.DataFrame({'column':columnsorder, 'description':columndesc})
     print(f'Writing results to {output}.')

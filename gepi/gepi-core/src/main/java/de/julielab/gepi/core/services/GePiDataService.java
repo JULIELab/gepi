@@ -283,13 +283,16 @@ public class GePiDataService implements IGePiDataService {
                 row.add(e.getSecondArgument().getMatchType());
                 row.add(String.join(",", e.getAllEventTypes()));
                 row.add(e.getDocId());
-                if (e.isSentenceMatchingFulltextQuery())
+                if (e.isSentenceMatchingFulltextQuery()) {
                     row.add("sentence");
-                else if (e.isParagraphMatchingFulltextQuery())
+                    row.add(e.getSentence());
+                } else if (e.isParagraphMatchingFulltextQuery()) {
                     row.add("paragraph");
-                else
+                    row.add(e.getParagraph());
+                } else {
                     row.add("");
-                row.add(e.getSentence());
+                    row.add(e.getSentence());
+                }
 
                 bw.write(String.join("\t", row));
                 bw.newLine();

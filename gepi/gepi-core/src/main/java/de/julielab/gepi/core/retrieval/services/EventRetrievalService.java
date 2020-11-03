@@ -396,9 +396,10 @@ public class EventRetrievalService implements IEventRetrievalService {
             serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
             HighlightCommand hlc = new HighlightCommand();
-            hlc.addField(FIELD_EVENT_SENTENCE, 1, Integer.MAX_VALUE);
-            hlc.addField(FIELD_EVENT_PARAGRAPH, 1, Integer.MAX_VALUE);
-//            hlc.fields.forEach(f -> {
+            hlc.addField(FIELD_EVENT_SENTENCE, 1, 0);
+            hlc.addField(FIELD_EVENT_PARAGRAPH, 1, 0);
+            hlc.fields.forEach(f -> {
+//                f.boundaryChars = new char[]{'\n', '\t'};
 //                f.type = HighlightCommand.Highlighter.fastvector;
 //                f.pre = "<b>";
 //                f.post = "</b>";
@@ -406,7 +407,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 //                hlQuery.field = FIELD_EVENT_SENTENCE;
 //                hlQuery.query = "xargumentx";
 //                f.highlightQuery = hlQuery;
-//            });
+            });
             serverCmd.addHighlightCmd(hlc);
 
 

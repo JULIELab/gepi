@@ -21,13 +21,29 @@ public class Event {
 
     protected String documentType;
 
-    protected String pmid;
-
-    protected String pmcid;
+    protected String docId;
 
     protected boolean sentenceMatchingFulltextQuery;
     protected boolean paragraphMatchingFulltextQuery;
+    String hlSentence;
     private String paragraph;
+    private String hlParagraph;
+
+    public String getHlParagraph() {
+        return hlParagraph;
+    }
+
+    public void setHlParagraph(String hlParagraph) {
+        this.hlParagraph = hlParagraph;
+    }
+
+    public String getHlSentence() {
+        return hlSentence;
+    }
+
+    public void setHlSentence(String hlSentence) {
+        this.hlSentence = hlSentence;
+    }
 
     public boolean isSentenceMatchingFulltextQuery() {
         return sentenceMatchingFulltextQuery;
@@ -46,20 +62,13 @@ public class Event {
     }
 
     public String getPmid() {
-        return pmid;
+        return docId;
     }
 
-    public void setPmid(String pmid) {
-        this.pmid = pmid;
+    public void setDocId(String pmid) {
+        this.docId = pmid;
     }
 
-    public String getPmcid() {
-        return pmcid;
-    }
-
-    public void setPmcid(String pmcid) {
-        this.pmcid = pmcid;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -178,16 +187,16 @@ public class Event {
     }
 
     public String getDocId() {
-        if (getEventId().startsWith("pmc")) return "PMC" + getPmcid();
+        if (getEventId().startsWith("PMC")) return "PMC" + docId;
         else if (getPmid() != null) return getPmid();
         throw new IllegalStateException("No document ID for event " + this);
     }
 
-    public void setParagraph(String paragraph) {
-        this.paragraph = paragraph;
-    }
-
     public String getParagraph() {
         return paragraph;
+    }
+
+    public void setParagraph(String paragraph) {
+        this.paragraph = paragraph;
     }
 }

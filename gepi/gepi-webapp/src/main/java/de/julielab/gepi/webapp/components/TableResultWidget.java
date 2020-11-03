@@ -5,10 +5,7 @@ import java.text.FieldPosition;
 import java.text.Format;
 import java.text.MessageFormat;
 import java.text.ParsePosition;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -69,7 +66,7 @@ public class TableResultWidget extends GepiWidget {
     private Format contextFormat;
 
     void setupRender() {
-        List<String> availableColumns = List.of("firstArgumentPreferredName",
+        List<String> availableColumns = new ArrayList<>(List.of("firstArgumentPreferredName",
                 "secondArgumentPreferredName",
                 "firstArgumentText",
                 "secondArgumentText",
@@ -80,7 +77,7 @@ public class TableResultWidget extends GepiWidget {
                 "allEventTypes",
                 "fulltextMatchSource",
                 "docId",
-                "context");
+                "context"));
         if (inputMode != null && !inputMode.contains(GepiInput.InputMode.FULLTEXT_QUERY))
             availableColumns.remove("fulltextMatchSource");
 
@@ -237,6 +234,10 @@ public class TableResultWidget extends GepiWidget {
         }
 
         public String getContext() {
+            if (event.isParagraphMatchingFulltextQuery() && !event.isSentenceMatchingFulltextQuery())
+                return event.getHlParagraph();
+            if (event.isSentenceMatchingFulltextQuery())
+                return event.getHlSentence();
             return event.getSentence();
         }
 
@@ -252,6 +253,11 @@ public class TableResultWidget extends GepiWidget {
                 return "sentence";
             if (event.isParagraphMatchingFulltextQuery())
                 return "paragraph";
+            System.out.println(event.getEventId());
+            System.out.println(event.getSentence());
+            System.out.println(event.getHlSentence());
+            System.out.println(event.getParagraph());
+            System.out.println(event.getHlParagraph());
             throw new IllegalStateException("The full text match source of event " + event + " was requested but neither the sentence nor the paragraph have a match. Either this is not a fulltext query request or there is an result that actually doesn't match the query.");
         }
     }
