@@ -1,13 +1,11 @@
 package de.julielab.gepi.webapp.pages;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GePiData;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.webapp.components.GepiInput;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
@@ -21,8 +19,11 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Start page of application gepi-webapp.
@@ -54,8 +55,12 @@ public class Index {
     private long dataSessionId;
     @Parameter
     private long dataSessionIdParameter;
+    @Property
+    @Persist
+    private EnumSet<GepiInput.InputMode> inputMode;
     @Persist
     private boolean hasLargeWidget;
+
     private boolean resultNonNullOnLoad;
 
     @Inject

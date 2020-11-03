@@ -11,6 +11,8 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +28,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
     public EventResponseProcessingService(Logger log) {
         this.log = log;
     }
+
+    private final static Pattern FULLTEXT_QUERY_HIGHLIGHT_PATTERN = Pattern.compile("<em>");
 
     @Log
     @Override
@@ -70,7 +74,9 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             Optional<String> mainEventType = eventDocument.get(FIELD_EVENT_MAINEVENTTYPE);
             Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
             Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE);
+            Optional<String> paragraph = eventDocument.get(FIELD_EVENT_PARAGRAPH);
             List<String> sentenceHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE);
+            List<String> paragraphHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH);
             String eventId = eventDocument.getId();
 
             Map<String, List<String>> highlights = eventDocument.getHighlights();
@@ -109,18 +115,30 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                 event.setLikelihood(likelihood.get());
             event.setMainEventType(mainEventType.get());
             event.setAllEventTypes(allEventTypes.stream().map(String.class::cast).collect(Collectors.toList()));
-            event.setHighlightedSentence(highlights.getOrDefault(FIELD_EVENT_SENTENCE, Collections.emptyList()).stream()
-                    .findFirst().orElse(null));
-            if (sentenceHl != null && !sentence.isEmpty())
+            if (sentenceHl != null && !sentenceHl.isEmpty())
                 event.setSentence(StringUtils.normalizeSpace(sentenceHl.get(0)));
             else if (sentence.isPresent())
                 event.setSentence(StringUtils.normalizeSpace(sentence.get()));
+            if (paragraphHl != null && !paragraphHl.isEmpty())
+                event.setParagraph(StringUtils.normalizeSpace(paragraphHl.get(0)));
+            else if (paragraph.isPresent())
+                event.setParagraph(StringUtils.normalizeSpace(paragraph.get()));
             for (int i = 0; i < event.getNumArguments(); i++) {
                 event.getArgument(i).setPreferredName((String) argPrefNames.get(i));
                 event.getArgument(i).setTopHomologyPreferredName((String) argHomologyPrefNames.get(i));
                 // legacy index support where the matchTypes do not exist
                 if (i < matchTypes.size())
                     event.getArgument(i).setMatchType((String) matchTypes.get(i));
+            }
+            if (event.getSentence() != null) {
+                Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getSentence());
+                if (fulltextQueryHighlightedMatcher.find())
+                    event.setSentenceMatchingFulltextQuery(true);
+                if (event.getParagraph() != null) {
+                    fulltextQueryHighlightedMatcher.reset(event.getParagraph());
+                    if (fulltextQueryHighlightedMatcher.find())
+                        event.setParagraphMatchingFulltextQuery(true);
+                }
             }
 
             return event;

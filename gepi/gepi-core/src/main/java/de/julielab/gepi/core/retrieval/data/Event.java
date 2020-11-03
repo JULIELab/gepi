@@ -5,172 +5,189 @@ import java.util.List;
 import java.util.Objects;
 
 public class Event {
-	protected List<String> allEventTypes;
+    protected List<String> allEventTypes;
 
-	protected List<Argument> arguments;
+    protected List<Argument> arguments;
 
-	protected String highlightedSentence;
+    protected int likelihood;
 
-	protected int likelihood;
+    protected String mainEventType;
 
-	protected String mainEventType;
+    protected int numDistinctArguments;
 
-	protected int numDistinctArguments;
-	
-	protected String sentence;
-	
-	protected String eventId;
-	
-	protected String documentType;
+    protected String sentence;
 
-	protected String pmid;
+    protected String eventId;
 
-	protected String pmcid;
+    protected String documentType;
 
-	public String getPmid() {
-		return pmid;
-	}
+    protected String pmid;
 
-	public void setPmid(String pmid) {
-		this.pmid = pmid;
-	}
+    protected String pmcid;
 
-	public String getPmcid() {
-		return pmcid;
-	}
+    protected boolean sentenceMatchingFulltextQuery;
+    protected boolean paragraphMatchingFulltextQuery;
+    private String paragraph;
 
-	public void setPmcid(String pmcid) {
-		this.pmcid = pmcid;
-	}
+    public boolean isSentenceMatchingFulltextQuery() {
+        return sentenceMatchingFulltextQuery;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Event event = (Event) o;
-		return Objects.equals(arguments, event.arguments);
-	}
+    public void setSentenceMatchingFulltextQuery(boolean sentenceMatchingFulltextQuery) {
+        this.sentenceMatchingFulltextQuery = sentenceMatchingFulltextQuery;
+    }
 
-	@Override
-	public int hashCode() {
+    public boolean isParagraphMatchingFulltextQuery() {
+        return paragraphMatchingFulltextQuery;
+    }
 
-		return Objects.hash(arguments);
-	}
+    public void setParagraphMatchingFulltextQuery(boolean paragraphMatchingFulltextQuery) {
+        this.paragraphMatchingFulltextQuery = paragraphMatchingFulltextQuery;
+    }
 
-	public String getEventId() {
-		return eventId;
-	}
+    public String getPmid() {
+        return pmid;
+    }
 
-	public void setEventId(String eventId) {
-		this.eventId = eventId;
-	}
+    public void setPmid(String pmid) {
+        this.pmid = pmid;
+    }
 
-	public String getDocumentType() {
-		return documentType;
-	}
+    public String getPmcid() {
+        return pmcid;
+    }
 
-	public void setDocumentType(String documentType) {
-		this.documentType = documentType;
-	}
+    public void setPmcid(String pmcid) {
+        this.pmcid = pmcid;
+    }
 
-	public List<String> getAllEventTypes() {
-		return allEventTypes;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return Objects.equals(arguments, event.arguments);
+    }
 
-	public Argument getArgument(int position) {
-		return arguments.get(position);
-	}
+    @Override
+    public int hashCode() {
 
-	public List<Argument> getArguments() {
-		return arguments;
-	}
+        return Objects.hash(arguments);
+    }
 
-	public String getHighlightedSentence() {
-		return highlightedSentence;
-	}
+    public String getEventId() {
+        return eventId;
+    }
 
-	public int getLikelihood() {
-		return likelihood;
-	}
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
 
-	public String getMainEventType() {
-		if (mainEventType != null)
-			return mainEventType;
-		return "";
-	}
+    public String getDocumentType() {
+        return documentType;
+    }
 
-	public int getNumArguments() {
-		return arguments.size();
-	}
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
+    }
 
-	public int getNumDistinctArguments() {
-		return numDistinctArguments;
-	}
+    public List<String> getAllEventTypes() {
+        return allEventTypes;
+    }
 
-	public String getSentence() {
-		if (sentence != null)
-			return sentence;
-		return "";
-	}
+    public void setAllEventTypes(List<String> allEventTypes) {
+        this.allEventTypes = allEventTypes;
+    }
 
-	public void setAllEventTypes(List<String> allEventTypes) {
-		this.allEventTypes = allEventTypes;
-	}
+    public Argument getArgument(int position) {
+        return arguments.get(position);
+    }
 
-	public void setArguments(List<Argument> arguments) {
-		this.arguments = arguments;
-	}
+    public List<Argument> getArguments() {
+        return arguments;
+    }
 
-	public void setHighlightedSentence(String highlightedSentence) {
-		this.highlightedSentence = highlightedSentence;
-	}
+    public void setArguments(List<Argument> arguments) {
+        this.arguments = arguments;
+    }
 
-	public void setLikelihood(int likelihood) {
-		this.likelihood = likelihood;
-	}
+    public int getLikelihood() {
+        return likelihood;
+    }
 
-	public void setMainEventType(String mainEventType) {
-		this.mainEventType = mainEventType;
-	}
+    public void setLikelihood(int likelihood) {
+        this.likelihood = likelihood;
+    }
 
-	public void setNumDistinctArguments(int numDistinctArguments) {
-		this.numDistinctArguments = numDistinctArguments;
-	}
+    public String getMainEventType() {
+        if (mainEventType != null)
+            return mainEventType;
+        return "";
+    }
 
-	public void setSentence(String sentence) {
-		this.sentence = sentence;
-	}
+    public void setMainEventType(String mainEventType) {
+        this.mainEventType = mainEventType;
+    }
 
-	public Argument getFirstArgument() {
-		return getArgument(0);
-	}
+    public int getNumArguments() {
+        return arguments.size();
+    }
 
-	public Argument getSecondArgument() {
-		if (arguments.size() < 2)
-			return null;
-		return getArgument(1);
-	}
+    public int getNumDistinctArguments() {
+        return numDistinctArguments;
+    }
 
-	@Override
-	public String toString() {
-		return getMainEventType() + ": " + arguments;
-	}
+    public void setNumDistinctArguments(int numDistinctArguments) {
+        this.numDistinctArguments = numDistinctArguments;
+    }
 
-	public Event copy() {
-		Event e = new Event();
-		e.allEventTypes = allEventTypes != null ? new ArrayList<>(allEventTypes) : null;
-		e.arguments = arguments != null ? new ArrayList<>(arguments) : null;
-		e.highlightedSentence = highlightedSentence;
-		e.likelihood = likelihood;
-		e.mainEventType = mainEventType;
-		e.numDistinctArguments = numDistinctArguments;
-		e.sentence = sentence;
-		return e;
-	}
+    public String getSentence() {
+        if (sentence != null)
+            return sentence;
+        return "";
+    }
 
-	public String getDocId() {
-		if (getEventId().startsWith("pmc")) return "PMC" + getPmcid();
-		else if (getPmid() != null) return getPmid();
-		throw new IllegalStateException("No document ID for event " + this);
-	}
+    public void setSentence(String sentence) {
+        this.sentence = sentence;
+    }
+
+    public Argument getFirstArgument() {
+        return getArgument(0);
+    }
+
+    public Argument getSecondArgument() {
+        if (arguments.size() < 2)
+            return null;
+        return getArgument(1);
+    }
+
+    @Override
+    public String toString() {
+        return getMainEventType() + ": " + arguments;
+    }
+
+    public Event copy() {
+        Event e = new Event();
+        e.allEventTypes = allEventTypes != null ? new ArrayList<>(allEventTypes) : null;
+        e.arguments = arguments != null ? new ArrayList<>(arguments) : null;
+        e.likelihood = likelihood;
+        e.mainEventType = mainEventType;
+        e.numDistinctArguments = numDistinctArguments;
+        e.sentence = sentence;
+        return e;
+    }
+
+    public String getDocId() {
+        if (getEventId().startsWith("pmc")) return "PMC" + getPmcid();
+        else if (getPmid() != null) return getPmid();
+        throw new IllegalStateException("No document ID for event " + this);
+    }
+
+    public void setParagraph(String paragraph) {
+        this.paragraph = paragraph;
+    }
+
+    public String getParagraph() {
+        return paragraph;
+    }
 }

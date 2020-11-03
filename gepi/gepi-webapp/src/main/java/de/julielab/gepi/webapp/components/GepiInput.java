@@ -134,6 +134,9 @@ public class GepiInput {
     @Property
     private long dataSessionId;
 
+    @Parameter
+    private EnumSet<InputMode> inputMode;
+
     @Persist(PersistenceConstants.FLASH)
     private boolean newSearch;
     /**
@@ -174,12 +177,12 @@ public class GepiInput {
 
     void setupRender() {
         //listATextAreaValue = "2475\n196";
+        log.warn("{}", inputMode);
     }
 
     void onValidateFromInputForm() {
         // Note, this method is triggered even if server-side validation has
         // already found error(s).
-        System.out.println("Hier: "+ filterFieldsConnectionOperator);
         boolean noIdsGiven = listATextAreaValue == null || listATextAreaValue.isEmpty();
         boolean noSentenceFilterGiven = sentenceFilterString == null || sentenceFilterString.isBlank();
         boolean noParagraphFilterGiven = paragraphFilterString == null || paragraphFilterString.isBlank();
@@ -201,6 +204,8 @@ public class GepiInput {
         boolean isAListPresent = listATextAreaValue != null && listATextAreaValue.trim().length() > 0;
         boolean isABSearchRequest = listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
                 && listBTextAreaValue.trim().length() > 0;
+        boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
+        boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
         System.out.println("dev settings: " + selectedDevSettings);
         Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
         Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, "listB");
@@ -209,6 +214,18 @@ public class GepiInput {
 //        } else {
         fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
 //        }
+
+        if (isABSearchRequest) {
+            inputMode = EnumSet.of(InputMode.AB);
+        } else if (isAListPresent){
+            inputMode = EnumSet.of(InputMode.A);
+        }
+        if (isSentenceFilterPresent || isParagraphFilterPresent) {
+            if (inputMode != null)
+                inputMode.add(InputMode.FULLTEXT_QUERY);
+            else
+                inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
+        }
 
         data = new GePiData(neo4jResult, esResult, listAGePiIds, listBGePiIds);
         log.debug("Setting newly retrieved data for dataSessionId: {}", dataSessionId);
@@ -279,5 +296,6 @@ public class GepiInput {
     }
 
     private enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
-private enum KeywordOperator {AND, OR}
+
+    public enum InputMode {A, AB, FULLTEXT_QUERY}
 }

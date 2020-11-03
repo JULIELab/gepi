@@ -10,6 +10,7 @@ import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
+import java.util.EnumSet;
 import java.util.concurrent.Future;
 
 public class GepiWidget {
@@ -30,6 +31,9 @@ public class GepiWidget {
     @Parameter
     @Property
     protected long dataSessionId;
+
+    @Parameter
+    protected EnumSet<GepiInput.InputMode> inputMode;
 
     @InjectPage
     private Index index;

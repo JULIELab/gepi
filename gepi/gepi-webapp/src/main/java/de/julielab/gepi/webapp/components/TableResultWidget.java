@@ -69,9 +69,7 @@ public class TableResultWidget extends GepiWidget {
     private Format contextFormat;
 
     void setupRender() {
-        tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
-        tableModel.include(
-                "firstArgumentPreferredName",
+        List<String> availableColumns = List.of("firstArgumentPreferredName",
                 "secondArgumentPreferredName",
                 "firstArgumentText",
                 "secondArgumentText",
@@ -80,8 +78,15 @@ public class TableResultWidget extends GepiWidget {
                 "firstArgumentMatchType",
                 "secondArgumentMatchType",
                 "allEventTypes",
+                "fulltextMatchSource",
                 "docId",
                 "context");
+        if (inputMode != null && !inputMode.contains(GepiInput.InputMode.FULLTEXT_QUERY))
+            availableColumns.remove("fulltextMatchSource");
+
+        tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
+        tableModel.include(availableColumns.toArray(new String[0]));
+
         tableModel.get("firstArgumentPreferredName").label("gene A symbol");
         tableModel.get("secondArgumentPreferredName").label("gene B symbol");
         tableModel.get("firstArgumentText").label("gene A text");
@@ -243,6 +248,14 @@ public class TableResultWidget extends GepiWidget {
             if (null != argument)
                 return argument.getText() + " (" + argument.getPreferredName() + ")";
             return "";
+        }
+
+        public String getFulltextMatchSource() {
+            if (event.isSentenceMatchingFulltextQuery())
+                return "sentence";
+            if (event.isParagraphMatchingFulltextQuery())
+                return "paragraph";
+            throw new IllegalStateException("The full text match source of event " + event + " was requested but neither the sentence nor the paragraph have a match. Either this is not a fulltext query request or there is an result that actually doesn't match the query.");
         }
     }
 }
