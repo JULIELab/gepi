@@ -33,7 +33,19 @@ def makeArgumentSymbolPivotTable(df, column, order):
     return givengenesfreq
 
 def writeresults(input,output):
-    header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "arg1matchtype", "arg2matchtype", "relationtypes", "docid", "sentence"]
+    header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "arg1matchtype", "arg2matchtype", "relationtypes", "docid", "fulltextmatchtype", "sentence"]
+    columndesc=[ 'Input gene symbol',
+                 'Event partner gene symbol',
+                 'the document text of the input gene in the found sentence',
+                 'the document text of the event partner gene in the found sentence',
+                 'Entrez ID the input gene',
+                 'Entrez ID of the event partner gene',
+                 'Input gene match type',
+                 'Event partner gene match type',
+                 'The type(s) of events the input gene and its event partner are involved in',
+                 'PubMed or PMC document ID',
+                 'Place of fulltext query match',
+                 'The sentence from the literature in which the event was found.']
     df = pd.read_csv(input, names=header,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object},quoting=csv.QUOTE_NONE)
     print(f'Read {len(df)} data rows from {input}.')
     # Remove duplicates in the event types and sort them alphabetically
@@ -42,7 +54,7 @@ def writeresults(input,output):
         types = list(set(reltypes.at[i].split(',')))
         reltypes.at[i]= ','.join(types)
     columnsorder=[ 'arg1symbol',  'arg2symbol', 'arg1text', 'arg2text', 'arg1entrezid', 'arg2entrezid',
-         'arg1matchtype',  'arg2matchtype', 'relationtypes','docid', 'sentence']
+         'arg1matchtype',  'arg2matchtype', 'relationtypes','docid', 'fulltextmatchtype', 'sentence']
     df = df[columnsorder]
     df = df.query('arg1entrezid != arg2entrezid')
     # Input genes argument counts
@@ -69,17 +81,7 @@ def writeresults(input,output):
     giventodistinctothercount = df[['arg1symbol', 'arg2symbol']].drop_duplicates().groupby(['arg1symbol']).count().sort_values(by=["arg2symbol"], ascending=False)
     giventodistinctothercount.reset_index(inplace=True)
 
-    columndesc=[ 'Input gene symbol',
-                'Event partner gene symbol',
-                'the document text of the input gene in the found sentence',
-                'the document text of the event partner gene in the found sentence',
-                'Entrez ID the input gene',
-                'Entrez ID of the event partner gene',
-                'Input gene match type',
-                'Event partner gene match type',
-                'The type(s) of events the input gene and its event partner are involved in',
-                'PubMed or PMC document ID',
-                'The sentence from the literature in which the event was found.']
+
     resultsdesc = pd.DataFrame({'column':columnsorder, 'description':columndesc})
     print(f'Writing results to {output}.')
     with ExcelWriter(output, mode="w") as ew:

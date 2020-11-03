@@ -150,9 +150,6 @@ public class TableResultWidget extends GepiWidget {
      */
     @Log
     StreamResponse onDownload(long dataSessionId) {
-        if (!getEsResult().isDone()) {
-            //TODO: how to handle case when download button is clicked, but the request is not yet fully done
-        }
         return new StreamResponse() {
 
             private File statisticsFile;
