@@ -176,7 +176,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         List<PreanalyzedToken> tokens = relationFieldValueGenerator.getTokensForAnnotationIndexes(featurePathSets, null, true, PreanalyzedToken.class, fullTextSpan, null, jCas);
         // We only want the special highlighting term xargumentx for the actual two arguments of the
         // current relation. Thus we need to interlace the argument terms with the sentence terms.
-        addArgumentTokens(tokens, argPair, fullTextSpan.getBegin());
+        addArgumentTokens(tokens, argPair, fullTextSpan.getBegin(), fullTextSpan.getEnd());
         // First sort by offset. For equal offsets, put the tokens with positionIncrement == 1 first.
         Collections.sort(tokens, Comparator.<PreanalyzedToken>comparingInt(t -> t.start).thenComparing(t -> t.positionIncrement, Comparator.reverseOrder()));
         PreanalyzedFieldValue preanalyzedFieldValue = relationFieldValueGenerator.createPreanalyzedFieldValue(fullTextSpan.getCoveredText(), tokens);
@@ -186,27 +186,28 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     }
 
 
-    private void addArgumentTokens(List<PreanalyzedToken> tokens, FeatureStructure[] argPair, int fullTextSpanOffset) {
+    private void addArgumentTokens(List<PreanalyzedToken> tokens, FeatureStructure[] argPair, int fullTextSpanStart, int fullTextSpanEnd) {
         ArgumentMention arg1 = (ArgumentMention) argPair[0];
         ArgumentMention arg2 = (ArgumentMention) argPair[1];
 
         PreanalyzedToken token1 = new PreanalyzedToken();
-        token1.start = arg1.getBegin() - fullTextSpanOffset;
-        token1.end = arg1.getEnd() - fullTextSpanOffset;
+        token1.start = arg1.getBegin() - fullTextSpanStart;
+        token1.end = arg1.getEnd() - fullTextSpanStart;
         token1.positionIncrement = 0;
         token1.term = "xargumentx";
-        log.trace("Adding xargumentx token for argument 1 at {}-{} (fullTextSpanOffset: {})", token1.start, token1.end, fullTextSpanOffset);
 
         PreanalyzedToken token2 = new PreanalyzedToken();
-        token2.start = arg2.getBegin() - fullTextSpanOffset;
-        token2.end = arg2.getEnd() - fullTextSpanOffset;
+        token2.start = arg2.getBegin() - fullTextSpanStart;
+        token2.end = arg2.getEnd() - fullTextSpanStart;
         token2.positionIncrement = 0;
         token2.term = "xargumentx";
-        log.trace("Adding xargumentx token for argument 2 at {}-{} (fullTextSpanOffset: {})", token2.start, token2.end, fullTextSpanOffset);
 
-        if (token1.start >= fullTextSpanOffset)
-            tokens.add(token1);
-        if (token2.start >= fullTextSpanOffset)
-            tokens.add(token2);
+        if (token1.start < 0 || token1.end > fullTextSpanEnd-fullTextSpanStart)
+            throw new IllegalStateException(String.format("xargumentx token offsets are out of bounds: %d-%d. Covering span annotation has offsets %d-%d, length %d", token1.start, token1.end, fullTextSpanStart, fullTextSpanEnd, fullTextSpanEnd-fullTextSpanStart));
+        if (token2.start < 0 || token2.end > fullTextSpanEnd-fullTextSpanStart)
+            throw new IllegalStateException(String.format("xargumentx token offsets are out of bounds: %d-%d. Covering span annotation has offsets %d-%d, length %d", token2.start, token2.end, fullTextSpanStart, fullTextSpanEnd, fullTextSpanEnd-fullTextSpanStart));
+
+        tokens.add(token1);
+        tokens.add(token2);
     }
 }

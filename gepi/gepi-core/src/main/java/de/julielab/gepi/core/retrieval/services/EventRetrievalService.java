@@ -3,6 +3,7 @@ package de.julielab.gepi.core.retrieval.services;
 import de.julielab.elastic.query.components.ISearchServerComponent;
 import de.julielab.elastic.query.components.data.ElasticSearchCarrier;
 import de.julielab.elastic.query.components.data.ElasticServerResponse;
+import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.elastic.query.components.data.SortCommand.SortOrder;
 import de.julielab.elastic.query.components.data.query.*;
@@ -14,6 +15,7 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
@@ -356,14 +358,20 @@ public class EventRetrievalService implements IEventRetrievalService {
                 eventQuery.addClause(eventTypeClause);
             }
 
+            BoolQuery fulltextQuery = new BoolQuery();
+
             Occur filterFieldsOccur = filterFieldsConnectionOperator.equalsIgnoreCase("and") ? Occur.MUST : Occur.SHOULD;
             if (!StringUtils.isBlank(sentenceFilter)) {
-                addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, filterFieldsOccur, eventQuery);
+                addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, filterFieldsOccur, fulltextQuery);
             }
             if (!StringUtils.isBlank(paragraphFilter)) {
-                addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, filterFieldsOccur, eventQuery);
+                addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, filterFieldsOccur, fulltextQuery);
             }
 
+            BoolClause fulltextClause = new BoolClause();
+            fulltextClause.addQuery(fulltextQuery);
+            fulltextClause.occur = Occur.MUST;
+            eventQuery.addClause(fulltextClause);
 
             SearchServerRequest serverCmd = new SearchServerRequest();
             serverCmd.query = eventQuery;
@@ -386,9 +394,9 @@ public class EventRetrievalService implements IEventRetrievalService {
             serverCmd.downloadCompleteResults = true;
             serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
-//            HighlightCommand hlc = new HighlightCommand();
-//            hlc.addField(FIELD_EVENT_SENTENCE, 1, Integer.MAX_VALUE);
-//            hlc.addField(FIELD_EVENT_PARAGRAPH, 1, Integer.MAX_VALUE);
+            HighlightCommand hlc = new HighlightCommand();
+            hlc.addField(FIELD_EVENT_SENTENCE, 1, Integer.MAX_VALUE);
+            hlc.addField(FIELD_EVENT_PARAGRAPH, 1, Integer.MAX_VALUE);
 //            hlc.fields.forEach(f -> {
 //                f.type = HighlightCommand.Highlighter.fastvector;
 //                f.pre = "<b>";
@@ -398,7 +406,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 //                hlQuery.query = "xargumentx";
 //                f.highlightQuery = hlQuery;
 //            });
-//            serverCmd.addHighlightCmd(hlc);
+            serverCmd.addHighlightCmd(hlc);
+
 
             ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("FulltextFilteredEvents");
             carrier.addSearchServerRequest(serverCmd);
