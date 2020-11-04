@@ -2,6 +2,7 @@ package de.julielab.gepi.webapp.components;
 
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.services.GePiDataService;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.pages.Index;
@@ -33,7 +34,7 @@ public class GepiWidget {
     protected long dataSessionId;
 
     @Parameter
-    protected EnumSet<GepiInput.InputMode> inputMode;
+    protected EnumSet<InputMode> inputMode;
 
     @InjectPage
     private Index index;

@@ -2,6 +2,7 @@ package de.julielab.gepi.core.services;
 
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.data.InputMode;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.testng.annotations.Test;
@@ -9,6 +10,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -36,7 +38,8 @@ public class GePiDataServiceTest {
 
         // This event shares the target of the first event
         Event e2 = new Event();
-        e2.setEventId("pmc680_2");
+        e2.setDocId("PMC680");
+        e2.setEventId("PMC680_2");
         e2.setAllEventTypes(List.of("Binding"));
         Argument a3 = new Argument("g3", "c3", "h3", "arg3");
         a3.setPreferredName("arg3");
@@ -45,12 +48,14 @@ public class GePiDataServiceTest {
         // Lets have this one three times.
         events.add(e2);
         e2 = new Event();
-        e2.setEventId("pmc780_1");
+        e2.setDocId("PMC780");
+        e2.setEventId("PMC780_1");
         e2.setAllEventTypes(List.of("Binding"));
         e2.setArguments(Arrays.asList(a3, a2));
         events.add(e2);
         e2 = new Event();
-        e2.setEventId("pmc926_13");
+        e2.setDocId("PMC926");
+        e2.setEventId("PMC926_13");
         e2.setAllEventTypes(List.of("Binding"));
         e2.setArguments(Arrays.asList(a3, a2));
         events.add(e2);
@@ -68,7 +73,7 @@ public class GePiDataServiceTest {
 
 
         GePiDataService gePiDataService = new GePiDataService();
-        File outputFile = gePiDataService.getOverviewExcel(events, 1234);
+        File outputFile = gePiDataService.getOverviewExcel(events, 1234, EnumSet.of(InputMode.A));
         assertThat(outputFile).exists();
     }
 

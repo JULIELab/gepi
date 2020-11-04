@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.java.utilities.FileUtilities;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -78,7 +79,7 @@ public class TableResultWidget extends GepiWidget {
                 "fulltextMatchSource",
                 "docId",
                 "context"));
-        if (inputMode != null && !inputMode.contains(GepiInput.InputMode.FULLTEXT_QUERY))
+        if (inputMode != null && !inputMode.contains(InputMode.FULLTEXT_QUERY))
             availableColumns.remove("fulltextMatchSource");
 
         tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
@@ -154,7 +155,7 @@ public class TableResultWidget extends GepiWidget {
             @Override
             public void prepareResponse(Response response) {
                 try {
-                    statisticsFile = dataService.getOverviewExcel(getEsResult().get().getEventList(), dataSessionId);
+                    statisticsFile = dataService.getOverviewExcel(getEsResult().get().getEventList(), dataSessionId, inputMode);
 
                     response.setHeader("Content-Length", "" + statisticsFile.length()); // output into file
                     response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getName());

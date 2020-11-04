@@ -8,10 +8,8 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.GePiData;
+import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalService;
-import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import de.julielab.gepi.core.services.IGePiDataService;
 import org.apache.tapestry5.*;
 import org.apache.tapestry5.annotations.*;
@@ -28,7 +26,6 @@ import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.pages.Index;
@@ -297,5 +294,5 @@ public class GepiInput {
 
     private enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
 
-    public enum InputMode {A, AB, FULLTEXT_QUERY}
+
 }

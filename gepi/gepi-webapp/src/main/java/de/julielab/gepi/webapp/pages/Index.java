@@ -1,9 +1,6 @@
 package de.julielab.gepi.webapp.pages;
 
-import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.GePiData;
+import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.components.GepiInput;
 import org.apache.tapestry5.ComponentResources;
@@ -57,7 +54,7 @@ public class Index {
     private long dataSessionIdParameter;
     @Property
     @Persist
-    private EnumSet<GepiInput.InputMode> inputMode;
+    private EnumSet<InputMode> inputMode;
     @Persist
     private boolean hasLargeWidget;
 

@@ -32,7 +32,7 @@ def makeArgumentSymbolPivotTable(df, column, order):
     givengenesfreq[('both','total sum')] = givengenesfreq[('exact','sum')] + givengenesfreq[('fuzzy','sum')]
     return givengenesfreq
 
-def writeresults(input,output):
+def writeresults(input,output,inputMode):
     header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "arg1matchtype", "arg2matchtype", "relationtypes", "docid", "fulltextmatchtype", "context"]
     columndesc=[ 'Input gene symbol',
                  'Event partner gene symbol',
@@ -71,6 +71,17 @@ def writeresults(input,output):
     # Arg2 counts
     othergenesfreq = makeArgumentSymbolPivotTable(df, 'arg2symbol', order)
     othergenesfreq.rename(columns={'exact':'exact match', 'fuzzy':'fuzzy match'},inplace=True)
+    # Directionless counts
+    bothgenesfreq = givengenesfreq.add(othergenesfreq, fill_value=0)
+    for o in [('exact match', 'exact match'),
+              ('exact match', 'fuzzy match'),
+              ('exact match',   'sum'),
+              ('fuzzy match', 'exact match'),
+              ('fuzzy match', 'fuzzy match'),
+              ('fuzzy match', 'sum')]:
+        if o in bothgenesfreq:
+            bothgenesfreq.sort_values(by=o,ascending=False,inplace=True)
+            break
     # Relation counts
     relfreq = makeArgumentSymbolPivotTable(df, ['arg1symbol','arg2symbol'], order)
     relfreq.rename(columns={'docid':'numrelations'}, inplace=True)
@@ -78,18 +89,34 @@ def writeresults(input,output):
     othergenesfreq.reset_index(inplace=True)
     givengenesfreq.reset_index(inplace=True)
     relfreq.reset_index(inplace=True)
+    # Distinct gene interaction partner counts
     giventodistinctothercount = df[['arg1symbol', 'arg2symbol']].drop_duplicates().groupby(['arg1symbol']).count().sort_values(by=["arg2symbol"], ascending=False)
     giventodistinctothercount.reset_index(inplace=True)
+
+    # Make lists of argument pairs in both directions for concatenation and distinct counting
+    arg1arg2 = df[['arg1symbol', 'arg2symbol']]
+    arg2arg1 = df[['arg2symbol', 'arg1symbol']]
+    # Switch the column names so that they match arg1arg2
+    arg2arg1 = arg2arg1.rename(columns={'arg1symbol':'arg2symbol', 'arg2symbol':'arg1symbol'})
+    allgenesdistinctcounts = pd.concat([arg1arg2, arg2arg1]).drop_duplicates().groupby(['arg1symbol']).count().sort_values(by=["arg2symbol"], ascending=False)
+    allgenesdistinctcounts.reset_index(inplace=True)
+    allgenesdistinctcounts.rename(columns={'arg1symbol':'symbol', 'arg2symbol':'count'},inplace=True)
 
     resultsdesc = pd.DataFrame({'column':columnsorder, 'description':columndesc})
     print(f'Writing results to {output}.')
     with ExcelWriter(output, mode="w") as ew:
         pd.DataFrame().to_excel(ew, sheet_name='Frontpage')
         df.to_excel(ew, sheet_name="Results", index=False)
-        givengenesfreq.to_excel(ew, sheet_name="Given Genes Statistics")
-        othergenesfreq.to_excel(ew, sheet_name="Event Partner Statistics")
-        relfreq.to_excel(ew, sheet_name="Event Statistics")
-        giventodistinctothercount.to_excel(ew, sheet_name="Input Gene Event Div", index=False)
+        if 'A' in inputMode or 'AB' in inputMode:
+            givengenesfreq.to_excel(ew, sheet_name="Given Genes Statistics")
+            othergenesfreq.to_excel(ew, sheet_name="Event Partner Statistics")
+            relfreq.to_excel(ew, sheet_name="Event Statistics")
+            giventodistinctothercount.to_excel(ew, sheet_name="Input Gene Event Div", index=False)
+            allgenesdistinctcounts.to_excel(ew, sheet_name="Gene Argument Event Div", index=False)
+        else:
+            bothgenesfreq.to_excel(ew, sheet_name="Gene Interaction Statistics")
+            relfreq.to_excel(ew, sheet_name="Event Statistics")
+            allgenesdistinctcounts.to_excel(ew, sheet_name="Gene Argument Event Div", index=False)
         frontpage = ew.sheets['Frontpage']
         #frontpage.hide_gridlines(2)
         bold = ew.book.add_format({'bold': True})
@@ -105,16 +132,23 @@ def writeresults(input,output):
         frontpage.write(22,0, 'Example: Assume the text match was "{}". This cannot be found exactly in NCBI Gene. However, the synonym "{}" exists which could be used for the mapping.'.format('25 kDa lysophospholipid-specific lysophospholipase', 'lysophospholipid-specific lysophospholipase'))
         #frontpage.write(24,0,  'Description of the sheets:', bold)
         frontpage.write(24,0,  'Description of the sheets:')
-        frontpage.write(25,0,  '"Given Genes Statistics" shows how often the input gene symbols were found in relations with other genes, separated by exact and fuzzy matches.')
-        frontpage.write(26,0,  '"Event Partner Statistics" shows the same but from the perspective of the interaction partners of the input genes.')
-        frontpage.write(27,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results.')
-        frontpage.write(28,0,  '"Input Gene Event Diversity" shows for each input gene symbol how many different interaction partners it has in the results.')
+        if 'A' in inputMode or 'AB' in inputMode:
+            frontpage.write(25,0,  '"Given Genes Statistics" shows how often the input gene symbols were found in relations with other genes, separated by exact and fuzzy matches.')
+            frontpage.write(26,0,  '"Event Partner Statistics" shows the same but from the perspective of the interaction partners of the input genes.')
+            frontpage.write(27,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results.')
+            frontpage.write(28,0,  '"Input Gene Event Diversity" shows for each input gene symbol how many different interaction partners it has in the results.')
+            frontpage.write(29,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results.')
+        else:
+            frontpage.write(25,0,  '"Gene Interaction Statistics" shows how often gene symbols were found in relations with other genes, separated by exact and fuzzy matches.')
+            frontpage.write(26,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results.')
+            frontpage.write(27,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results.')
 
     return df
 
 if __name__ == "__main__":
-    input  = sys.argv[1]
-    output = sys.argv[2]
+    input     = sys.argv[1]
+    output    = sys.argv[2]
+    inputMode = sys.argv[3].split(' ')
 
-    writeresults(input,output)
+    writeresults(input,output,inputMode)
 
