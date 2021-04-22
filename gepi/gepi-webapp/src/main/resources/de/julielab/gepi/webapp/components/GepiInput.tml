@@ -59,30 +59,30 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <hr class="thin bottom"/>
+                <div class="row mt-3">
+                    <hr class=""/>
                     <div id="eventtypediv" class="col-12">
                         <h5>Restrict event retrieval to the following event types.
                         </h5>
                         <t:checklist t:id="eventtypes" selected="selectedeventtypes" encoder="eventtypeencoder"
-                                     model="eventtypemodel"/>
+                                     model="eventtypemodel" class="testclass" t:t-checklist-row="testzeugs"/>
                     </div>
                 </div>
-                <div class="row">
-                    <hr class="nomargin"/>
+                <div class="row mt-3">
+                    <hr class=""/>
                     <div class="col-12">
                         <h5>Enter words to filter the sentences in which returned events occur.</h5>
                         <t:TextField t:id="sentencefilter" value="sentencefilterstring"/>
                     </div>
                 </div>
-                <div class="row">
-                    <hr class="nomargin"/>
+                <div class="row mt-3">
+                    <hr class=""/>
                     <div class="col-12">
                         <h5>Enter words to filter the paragraphs in which returned events occur.</h5>
                         <t:TextField t:id="paragraphfilter" value="paragraphfilterstring"/>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-3">
                     <div class="col-12">
                         <div>
                             Keyword Operator
@@ -103,15 +103,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <hr class="nomargin"/>
+                <div class="row mt-3">
+                    <hr class=""/>
                     <h3>Development settings</h3>
                     <div class="col-12">
                         <t:checklist t:id="devsettings" selected="selecteddevsettings" encoder="devsettingsencoder"
                                      model="devsettingsmodel"/>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-3">
                     <hr class="medium bottom top"/>
                     <div class="col-12 text-center">
                         <t:submit class="btn btn-primary btn-block" value="Go!"/>

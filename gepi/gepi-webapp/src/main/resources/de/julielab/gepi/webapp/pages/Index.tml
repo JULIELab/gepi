@@ -27,7 +27,7 @@
                         <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
                         <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
                     </div>
-                    <div class="row">
+                    <div class="row mt-3">
                         <t:tableresultwidget class="col-12" dataSessionId="dataSessionId" inputMode="inputMode"/>
                     </div>
                 </t:zone>
