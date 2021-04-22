@@ -30,11 +30,8 @@
                                 <t:pagelink page="prop:pageName" class="nav-link">${pageName}</t:pagelink>
                             </t:any>
                         </t:loop>
-                        <li class="nav-item">
-                            <a href="#" id="inputToggleButton" class="nav-link">Toggle Input Panel</a>
-                        </li>
                         <t:any element="li" class="nav-item">
-                            <t:EventLink event="reset" class="nav-link">Reset Session</t:EventLink>
+                            <t:EventLink id="resetlink" event="reset" class="nav-link">Reset Session</t:EventLink>
                         </t:any>
                     </ul>
 <!--                    <ul id="filteroptions" class="nav navbar-nav hidden">-->

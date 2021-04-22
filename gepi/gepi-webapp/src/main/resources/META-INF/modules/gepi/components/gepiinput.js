@@ -123,21 +123,12 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         }
 
         function setupShowInputPanel() {
-            let button = $("#inputToggleButton");
-            console.log("[setupShowInputPanel] resultExists: " + resultExists);
             if (resultExists) {
-                if (button.hasClass("disabled")) {
-                    button.addClass("navbar-highlight");
-                    setTimeout(() => button.removeClass("navbar-highlight"), 3000);
-                }
-                $("#inputToggleButton").removeClass("disabled");
                 hideInput();
-                $("#inputToggleButton,#disableplane").off("click");
-                $("#inputToggleButton,#disableplane,#inputcolhandle").on("click", function() {
+                $("#disableplane").off("click");
+                $("#disableplane,#inputcolhandle").on("click", function() {
                  toggleShowInputPanel();
                 });
-            } else {
-                $("#inputToggleButton").addClass("disabled");
             }
         }
 
