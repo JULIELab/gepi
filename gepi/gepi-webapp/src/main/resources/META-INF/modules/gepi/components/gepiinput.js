@@ -162,14 +162,11 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
 
         function observeInputFetchArea() {
             let inputFetchArea = $("#inputfetcharea,#inputcolhandle");
-            console.log("Einrichtung")
-            inputFetchArea.hover(function() {
-                console.log("rein")
-                inputColHandle.removeClass("inputcolhandle-retracted");
-                inputColHandle.addClass("inputcolhandle-extended");
+            inputFetchArea.hover(() => {
+                    inputColHandle.removeClass("inputcolhandle-retracted");
+                    inputColHandle.addClass("inputcolhandle-extended");
                 },
-                function() {
-                    console.log("raus")
+                () => {
                     inputColHandle.removeClass("inputcolhandle-extended");
                     inputColHandle.addClass("inputcolhandle-retracted");
                 }
@@ -218,7 +215,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         let inputColWidth = parseInt(inputCol.css("width").slice(0, -2));
         let inputColPadding = parseInt(inputCol.css("padding-right").slice(0, -2));
         inputCol.css("margin-left", "-"+(inputColWidth-inputColPadding)+"px");
-        inputColHandle.removeClass("background-arrow-left inputcolhandle-extended");
+        inputColHandle.removeClass("background-arrow-left fade inputcolhandle-extended");
         inputColHandle.addClass("background-arrow-right inputcolhandle-retracted");
     }
 

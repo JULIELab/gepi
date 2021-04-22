@@ -1,34 +1,37 @@
 #inputcolhandle {
     --inputcolhandle-width: 15px;
+    --extended-width: 30px;
     position: absolute;
-    width: var(--inputcolhandle-width);
     height: 80%;
     top: 10%;
-    background-color: rgb(248, 248, 248);
-    border: 1px solid rgba(227, 227, 227);
-    transition: right .3s;
+    background-color: rgb(170, 170, 170);
+    border: 1px solid rgba(50, 50, 50);
+    border-left: 0;
     cursor: pointer;
+    transition: width, .3s;
     z-index: var(--inputcol-z-index);
 }
 
-.inputcolhandle-extended {
-    right: calc(-1*var(--inputcolhandle-width));
-}
-
-.inputcolhandle-retracted {
-    right: 0;
-}
-
 .background-arrow-right {
-    background-image: url("../images/chevron_right_black_24dp.svg");
+    background-image: url("../images/chevron_right_white_24dp.svg");
     background-position: center center;
     background-repeat: no-repeat;
 }
 
 .background-arrow-left {
-    background-image: url("../images/chevron_left_black_24dp.svg");
+    background-image: url("../images/chevron_left_white_24dp.svg");
     background-position: center center;
     background-repeat: no-repeat;
+}
+
+.inputcolhandle-retracted {
+    width: var(--inputcolhandle-width);
+    right: calc(-1 * (var(--inputcolhandle-width) + 1px));
+}
+
+.inputcolhandle-extended {
+    width: var(--extended-width);
+    right: calc(-1 * (var(--extended-width) + 1px));
 }
 
 #eventtypediv > div > div {

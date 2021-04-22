@@ -12,7 +12,7 @@
             </div>
         </div>
         <div id="disableplane" class="fade"/>
-        <div class="row">
+        <div id="outputrow" class="row">
             <div id="outputcol" class="col-12 fade ${showOutputClass}">
                 <t:zone t:id="outputzone" id="outputzone">
                     <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>

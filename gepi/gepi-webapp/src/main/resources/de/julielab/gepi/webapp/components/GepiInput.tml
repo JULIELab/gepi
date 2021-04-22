@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
-    <div class="card" tabindex="0">
+    <div class="card no-outline" tabindex="0">
         <div class="card-header">
             <h4 class="text-center">
                 Input Specification
@@ -8,7 +8,7 @@
             </h4>
         </div>
         <div class="card-body">
-            <div id="inputcolhandle" class="background-arrow-left inputcolhandle-extended"/>
+            <div id="inputcolhandle" class="background-arrow-left fade no-outline"/>
             <form role="form" t:type="form" async="true" t:id="inputform" id="inputform">
                 <!-- Hidden field to store the data session ID to the client -->
                 <t:textfield t:id="dataSessionIdField" value="dataSessionId" hidden="true"
