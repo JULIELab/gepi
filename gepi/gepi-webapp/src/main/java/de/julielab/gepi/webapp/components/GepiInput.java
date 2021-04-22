@@ -271,6 +271,7 @@ public class GepiInput {
 
     void afterRender() {
         javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize").with(resultPresent());
+        log.debug("Result present: " + resultPresent());
         if (resultPresent() && newSearch) {
             log.debug("Sending JS call to show the output widgets.");
             javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");
@@ -289,7 +290,7 @@ public class GepiInput {
     }
 
     private boolean resultPresent() {
-        return esResult != null || neo4jResult != null;
+        return dataService.getData(dataSessionId) != GePiData.EMPTY;
     }
 
     private enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}

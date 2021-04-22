@@ -1,8 +1,11 @@
 <html t:type="layout" title="GePI Index"
       xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
     <body class="${bodyScrollClass}">
-        <div class="row">
-            <div id="inputcol" class="col-md-4 col-md-offset-4 fade ${showInputClass}">
+        <!-- Although the input column is not a part of the grid, we give the row class for correct spacing.
+             When we don't do this, the input area won't completely vanish from the screen when hiding. -->
+        <div id="inputrow" class="row">
+            <div id="inputfetcharea"/>
+            <div id="inputcol" class="">
                 <t:zone t:id="inputzone" id="inputzone">
                     <t:gepiinput dataSessionId="dataSessionId" inputMode="inputMode"/>
                 </t:zone>
@@ -10,21 +13,22 @@
         </div>
         <div id="disableplane" class="fade"/>
         <div class="row">
-            <div id="outputcol" class="col-md-12 fade ${showOutputclass}">
+            <div id="outputcol" class="col-12 fade ${showOutputClass}">
                 <t:zone t:id="outputzone" id="outputzone">
                     <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
                     <div class="row">
-<!--                        <t:piechartwidget result="result" class="col-md-4" />-->
-                        <t:sankeywidget class="col-md-4" dataSessionId="dataSessionId" elementId="sankeychart" commonPartners="false" />
-<!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
-<!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
-<!--                        <t:piechartwidget result="result" class="col-md-4" />-->
-<!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychart" commonPartners="false" />-->
-<!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
-<!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
+                        <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
+                        <t:sankeywidget class="col-4" dataSessionId="dataSessionId" elementId="sankeychart"
+                                        commonPartners="false"/>
+                        <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
+                        <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
+                        <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
+                        <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychart" commonPartners="false" />-->
+                        <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
+                        <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
                     </div>
                     <div class="row">
-                        <t:tableresultwidget class="col-md-12" dataSessionId="dataSessionId" inputMode="inputMode"/>
+                        <t:tableresultwidget class="col-12" dataSessionId="dataSessionId" inputMode="inputMode"/>
                     </div>
                 </t:zone>
             </div>

@@ -32,7 +32,7 @@ public class GePiDataService implements IGePiDataService {
     private String excelResultCreationScript;
 
     public GePiDataService() throws IOException {
-        // We use weak keys and values. So when a user session is evicted,
+        // We use weak values. So when a user session is evicted,
         // its GePi data can also be removed as soon as possible.
         dataCache = CacheBuilder.newBuilder().weakValues().build();
         excelResultCreationScript = IOStreamUtilities.getStringFromInputStream(GePiDataService.class.getResourceAsStream("/ExcelResultCreation.py"));

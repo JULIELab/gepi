@@ -7,6 +7,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         let lista = '#' + listaId;
         let listb = '#' + listbId;
         inputCol = $("#inputcol");
+        inputColHandle = $("#inputcolhandle");
 
         observelistbchange();
         togglelistb();
@@ -16,6 +17,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         setupShowInputPanel();
         observekeypress();
         observeFormSubmit();
+        observeInputFetchArea();
 
         /*
          * On changes of list B, checks if the list is empty. If not, some
@@ -122,15 +124,16 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
 
         function setupShowInputPanel() {
             let button = $("#inputToggleButton");
+            console.log("[setupShowInputPanel] resultExists: " + resultExists);
             if (resultExists) {
                 if (button.hasClass("disabled")) {
                     button.addClass("navbar-highlight");
                     setTimeout(() => button.removeClass("navbar-highlight"), 3000);
                 }
                 $("#inputToggleButton").removeClass("disabled");
-                inputCol.addClass("hidden");
+                hideInput();
                 $("#inputToggleButton,#disableplane").off("click");
-                $("#inputToggleButton,#disableplane").on("click", function() {
+                $("#inputToggleButton,#disableplane,#inputcolhandle").on("click", function() {
                  toggleShowInputPanel();
                 });
             } else {
@@ -156,10 +159,28 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
             form = $("form[id^='input']");
             form.on("submit", form => {console.log("Search form was submitted, clearing data chache."); data.clearData();});
         }
+
+        function observeInputFetchArea() {
+            let inputFetchArea = $("#inputfetcharea,#inputcolhandle");
+            console.log("Einrichtung")
+            inputFetchArea.hover(function() {
+                console.log("rein")
+                inputColHandle.removeClass("inputcolhandle-retracted");
+                inputColHandle.addClass("inputcolhandle-extended");
+                },
+                function() {
+                    console.log("raus")
+                    inputColHandle.removeClass("inputcolhandle-extended");
+                    inputColHandle.addClass("inputcolhandle-retracted");
+                }
+            );
+        }
     };
 
+
+
     function toggleShowInputPanel() {
-        let shown = inputCol.hasClass("into");
+        let shown = !inputCol.css("margin-left").includes("-");
 
         if (!shown || shown === 0) {
             console.log("Showing input");
@@ -172,9 +193,9 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
 
     let showOutput = function() {
         console.log("Showing output widgets");
-        inputCol.removeClass("into");
-        $("#disableplane").removeClass("into");
-        $("#outputcol").addClass("in");
+        hideInput();
+        $("#disableplane").removeClass("show");
+        $("#outputcol").addClass("show");
         let semaphor = $.Deferred();
         inputCol.data("animationtimer", semaphor);
         setTimeout(() => semaphor.resolve(), 300);
@@ -185,10 +206,21 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
 
     let showInput = function() {
         console.log("Showing input panel");
-        inputCol.removeClass("hidden");
-        inputCol.addClass("into");
-        $("#disableplane").addClass("into");
+        inputCol.css("margin-left", "");
+        inputColHandle.removeClass("show");
+        $("#disableplane").addClass("show");
+        inputColHandle.removeClass("background-arrow-right inputcolhandle-retracted");
+        inputColHandle.addClass("background-arrow-left inputcolhandle-extended");
     };
+
+    let hideInput = function() {
+        console.log("Hiding input panel");
+        let inputColWidth = parseInt(inputCol.css("width").slice(0, -2));
+        let inputColPadding = parseInt(inputCol.css("padding-right").slice(0, -2));
+        inputCol.css("margin-left", "-"+(inputColWidth-inputColPadding)+"px");
+        inputColHandle.removeClass("background-arrow-left inputcolhandle-extended");
+        inputColHandle.addClass("background-arrow-right inputcolhandle-retracted");
+    }
 
     return {
         "initialize": initialize,

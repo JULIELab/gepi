@@ -1,3 +1,36 @@
+#inputcolhandle {
+    --inputcolhandle-width: 15px;
+    position: absolute;
+    width: var(--inputcolhandle-width);
+    height: 80%;
+    top: 10%;
+    background-color: rgb(248, 248, 248);
+    border: 1px solid rgba(227, 227, 227);
+    transition: right .3s;
+    cursor: pointer;
+    z-index: var(--inputcol-z-index);
+}
+
+.inputcolhandle-extended {
+    right: calc(-1*var(--inputcolhandle-width));
+}
+
+.inputcolhandle-retracted {
+    right: 0;
+}
+
+.background-arrow-right {
+    background-image: url("../images/chevron_right_black_24dp.svg");
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.background-arrow-left {
+    background-image: url("../images/chevron_left_black_24dp.svg");
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
 #eventtypediv > div > div {
     display: inline-block;
     margin:0px 0px 0px 30px;

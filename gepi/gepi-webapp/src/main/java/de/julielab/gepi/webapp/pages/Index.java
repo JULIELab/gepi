@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
 /**
  * Start page of application gepi-webapp.
  */
-@Import(stylesheet = {"context:css-pages/index.css"}, library = {"context:mybootstrap/js/dropdown.js"})
+@Import(stylesheet = {"context:css-pages/index.css"})
 public class Index {
     @Inject
     private ComponentResources resources;
@@ -119,15 +119,15 @@ public class Index {
      */
     public String getShowOutputClass() {
         if (isResultPresent())
-            return "into";
+            return "show";
         return "";
     }
 
-    public String getShowInputClass() {
-        if (getEsResult() == null && getNeo4jResult() == null)
-            return "into";
-        return "";
-    }
+//    public String getShowInputClass() {
+//        if (getEsResult() == null && getNeo4jResult() == null)
+//            return "show";
+//        return "";
+//    }
 
     public Object onReset() {
         log.debug("Reset!");

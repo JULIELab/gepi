@@ -14,7 +14,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 /**
  * Layout component for pages of application test-project.
  */
-@Import(library = "context:mybootstrap/js/collapse.js", stylesheet = "context:css-components/layout.css")
+@Import(stylesheet = "context:css-components/layout.css")
 public class Layout {
 	@Inject
 	private ComponentResources resources;
@@ -39,7 +39,7 @@ public class Layout {
 	private String appVersion;
 
 	public String getClassForPageName() {
-		return resources.getPageName().equalsIgnoreCase(pageName) ? "active" : null;
+		return resources.getPageName().equalsIgnoreCase(pageName) ? "active nav-item" : "nav-item";
 	}
 
 	public String[] getPageNames() {

@@ -8,12 +8,31 @@ body.noScroll {
 	cursor: pointer;
 }
 
-#inputcol {
+#inputrow {
     position: absolute;
-    z-index: 10;
+    width: 100%;
 }
 
-#disableplane.fade.into {
+#inputfetcharea {
+    position: absolute;
+    left: 0;
+    width: 200px;
+    height: calc(100vh - 100px);
+    border: 1px solid;
+    z-index: 9;
+}
+
+#inputcol {
+    --inputcol-z-index: 10;
+    position: relative;
+    margin-left: 33%;
+    width: 33%;
+    transition-property: margin-left;
+    transition-duration: .5s;
+    z-index: var(--inputcol-z-index);
+}
+
+#disableplane.fade.show {
     background-color: #000000;
     opacity: .4;
     z-index: 9;
@@ -24,21 +43,6 @@ body.noScroll {
     left: 0;
 }
 
-#disableplane.fade {
-    z-index: -1;
-}
-
-.fade {
-	opacity: 0;
-	transition-property: opacity;
-	transition-duration: .3s;
-}
-
-.into {
-	opacity: 1;
-	transition-property: opacity;
-	transition-duration: .7s;
-}
 
 #widgetOverlay {
 	position: fixed;
