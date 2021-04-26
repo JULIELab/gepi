@@ -18,10 +18,9 @@
                     <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
                     <div class="row">
                         <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
-                        <t:sankeywidget class="col-4" dataSessionId="dataSessionId" elementId="sankeychart"
-                                        commonPartners="false"/>
+                        <t:sankeywidget class="col-4" dataSessionId="dataSessionId" elementId="sankeychart" commonPartners="false"/>
                         <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
-                        <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
+                        <t:circlewidget class="col-4" dataSessionId="dataSessionId" elementId="circlechart" />
                         <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
                         <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychart" commonPartners="false" />-->
                         <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->

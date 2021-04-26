@@ -16,7 +16,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           console.log('Preparing to draw sankey chart for element ID ' + this.elementId + ' with node ordering type ' + this.orderType);
 
           index.getReadySemaphor().done(() => {
-            console.log('Chart drawing has green light from the central index semaphor, requesting data');
+            console.log('Chart drawing has green light from the central index semaphor, requesting for dataSessionId ' + this.widgetSettings.dataSessionId);
             data.awaitData('relationCounts', this.widgetSettings.dataSessionId).done(() => {
               console.log('Loading data was successful. Checking if the input column also gives green light.');
               const inputcolReadyPromise = $('#inputcol').data('animationtimer');

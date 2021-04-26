@@ -50,9 +50,9 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
     function getData(name) {
         return data.get(name);
     }
-
     function awaitData(sourceName, dataSessionId) {
         console.log("Data with source name " + sourceName + " was requested for dataSessionId " + dataSessionId);
+// TODO dataSessionId must be part of the key
         let promise = requestedData.get(sourceName);
         if (!promise) {
             console.log("Creating new promise for data " + sourceName);
@@ -60,7 +60,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             requestedData.set(sourceName, promise);
             loadData(sourceName, dataSessionId);
         } else {
-            console.log("Data with source name " + sourceName + " was already requested and is not loaded again.");
+            console.log("Data with source name " + sourceName + " was already requested for dataSessionId " + dataSessionId + " and is not loaded again.");
         }
         return promise;
     }

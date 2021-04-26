@@ -105,6 +105,7 @@ final public class GepiWidgetLayout {
     void afterRender() {
         if (useTapestryZoneUpdates) {
             JSONObject widgetSettings = getWidgetSettings();
+            // Not called for sankey, circle and all other widgets managing their JS themselves.
             javaScriptSupport.require("gepi/components/widgetManager").invoke("addWidget")
                     .with(clientId, widgetSettings);
         }
