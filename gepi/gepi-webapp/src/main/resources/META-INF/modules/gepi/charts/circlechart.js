@@ -68,6 +68,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 'Grey out nodes and links by default',
                 this.settings.default_grey,
                 (state) => this.settings.default_grey = state,
+                this.draw.bind(this)
             );
 
             this.add_toggle(
@@ -76,6 +77,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 'Highlight nodes based on edge weight',
                 this.settings.fine_node_highlights,
                 (state) => this.settings.fine_node_highlights = state,
+                this.draw.bind(this)
             );
 
             // add_slider(this.elementId, "size_slider", "Size of the diagram: ", 50, 300, 5, this.settings.node_count, (count) => {
@@ -264,17 +266,15 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
               });
 
 
-          let theNodeHover = this.nodeHover;
-          let theNodeUnhover = this.nodeUnhover;
-          theNodeHover = theNodeHover.bind(this);
-          theNodeUnhover = theNodeUnhover.bind(this);
+          const boundNodeHover = this.nodeHover.bind(this);
+          const boundNodeUnhover = this.nodeUnhover.bind(this);
           const node_texts = this.nodes.append('text')
               .attr('class', 'nodeText')
               .attr('x', this.settings.radius + 10)
               .attr('y', 4)
               .text((d) => nodesById.get(d.id).name)
-              .property('onmouseover', () => theNodeHover)
-              .property('onmouseout', () => theNodeUnhover)
+              .property('onmouseover', () => boundNodeHover)
+              .property('onmouseout', () => boundNodeUnhover)
               .attr('fill', (d) => {
                 const red = Math.round(d.weight_ratio * 100);
                 const green = Math.round((1 - d.weight_ratio) * 100);
@@ -386,7 +386,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           return path;
         }
 
-        add_toggle(elementId, id, text, initial_state, change_handler) {
+        add_toggle(elementId, id, text, initial_state, change_handler, draw) {
           const p = d3.select('#'+elementId+'-container .settings .checkboxes').append('p');
           console.log(p.node());
           const input = p.append('input').attr('type', 'checkbox').attr('id', id);
@@ -400,7 +400,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           });
         }
 
-        add_slider(elementId, id, label_text, min, max, step, value, change_handler) {
+        add_slider(elementId, id, label_text, min, max, step, value, change_handler, draw) {
           const p = d3.select('#' + elementId + '-container .settings .sliders').append('p');
 
           p.append('label')
