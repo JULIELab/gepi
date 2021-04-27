@@ -48,19 +48,18 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         first_draw() {
           if (!$('#'+this.elementId).data('firstDrawn')) {
             let running = false;
-            let theDraw = this.draw;
             window.onresize = () => {
               if (!running) {
                 running = true;
                 console.log("Trying to call theDraw")
-                theDraw(this.elementId);
+                this.draw(this.elementId);
                 console.log("After trying to call theDraw")
                 running = false;
               }
             };
 
             $('#' + widgetManager.getWidget('circlechart-outer').handleId).click(function() {
-              theDraw(this.elementId);
+              this.draw(this.elementId);
             });
 
             this.add_toggle(
@@ -264,8 +263,11 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 return 'rotate(' + (d.pos - 90) + ')';
               });
 
-          let theNodeHover =  this.nodeHover;
+
+          let theNodeHover = this.nodeHover;
           let theNodeUnhover = this.nodeUnhover;
+          theNodeHover = theNodeHover.bind(this);
+          theNodeUnhover = theNodeUnhover.bind(this);
           const node_texts = this.nodes.append('text')
               .attr('class', 'nodeText')
               .attr('x', this.settings.radius + 10)
@@ -291,10 +293,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             window.opacity_base = 0.99;
           }
 
-          let computeLinkPath = this.computeLinkPath;
-          let degToCoord = this.degToCoord;
-          let settings = this.settings;
-          degToCoord = input => degToCoord(input, settings);
           this.links = svg.append('g')
               .attr('class', 'links')
               .selectAll('path.link')
@@ -304,25 +302,25 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
               .attr('fill', 'none')
               .attr('opacity', (d) => (1 - Math.pow(window.opacity_base, d.frequency)))
               .attr('stroke', this.hoverless_link_color())
-              .attr('d', function(link) {return computeLinkPath(link, degToCoord);})
+              .attr('d', link => this.computeLinkPath(link))
               .attr('stroke-width', 5);
 
           let opacity_redraw = () => draw(this.elementId);
         }
 
         nodeHover(event) {
-          let hovered_id = event.target.__data__.id;
+          this.hovered_id = event.target.__data__.id;
 
           const connected_nodes = {};
-          connected_nodes[hovered_id] = 10000000;
+          connected_nodes[this.hovered_id] = 10000000;
 
           this.links.attr('stroke', this.settings.inactive_link_color);
 
           this.links.filter((link) => {
-            if (link.source === hovered_id) {
+            if (link.source === this.hovered_id) {
               connected_nodes[link.target] = link.frequency;
               return true;
-            } else if (link.target === hovered_id) {
+            } else if (link.target === this.hovered_id) {
               connected_nodes[link.source] = link.frequency;
               return true;
             } else {
@@ -330,8 +328,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             }
           }).attr('stroke', this.settings.active_link_color).raise();
 
-          nodes.attr('opacity', (n) => {
-            if (settings.fine_node_highlights) {
+          this.nodes.attr('opacity', (n) => {
+            if (this.settings.fine_node_highlights) {
               const v1 = 1 - Math.pow(0.97, connected_nodes[n.id] || 0);
               return (this.settings.active_node_opacity - this.settings.inactive_node_opacity) * v1 +
                         this.settings.inactive_node_opacity;
@@ -348,8 +346,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         nodeUnhover(event) {
           const unhovered_id = event.target.__data__.id;
 
-          if (unhovered_id === hovered_id) {
-            hovered_id = '';
+          if (unhovered_id === this.hovered_id) {
+            this.hovered_id = '';
             this.links.attr('stroke', this.hoverless_link_color());
             this.nodes.attr('opacity', this.hoverless_node_opacity());
           }
@@ -371,19 +369,19 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           }
         }
 
-        degToCoord(deg, settings) {
-          const r = settings.radius;
+        degToCoord(deg) {
+          const r = this.settings.radius;
           const rad = deg / 180 * Math.PI;
           return (r * Math.sin(rad)) + ' ' + (-1 * r * Math.cos(rad));
         }
 
-        computeLinkPath(link, degToCoord) {
+        computeLinkPath(link) {
           const {
             start_pos,
             end_pos,
           } = link;
-          const path = 'M ' + degToCoord(start_pos) +
-                ' Q 0 0 ' + degToCoord(end_pos);
+          const path = 'M ' + this.degToCoord(start_pos) +
+                ' Q 0 0 ' + this.degToCoord(end_pos);
 
           return path;
         }
