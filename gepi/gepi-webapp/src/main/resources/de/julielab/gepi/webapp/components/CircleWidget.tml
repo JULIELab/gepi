@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
      widgettitle="Circle Widget" t:clientId="${elementId}-outer" class="${classes}"
-     sizeClass="widget-small" esResult="esResult" neo4jResult="neo4jResult" useTapestryZoneUpdates="false" dataSessionId="dataSessionId">
+     sizeClass="widget-small" esResult="esResult" neo4jResult="neo4jResult" useTapestryZoneUpdates="false"
+     dataSessionId="dataSessionId">
 
     <div class="row">
-        <div class="col-10">
+        <div class="${chartAreaColumnSizeClass}">
             <div id="${elementId}" style="width: 100%; height: 100%;"/>
         </div>
-        <div class="col-2">
-            <div id="${elementId}-container">
-                <div class="settings">
-                    <div class="checkboxes"></div>
-                    <div class="sliders"></div>
+        <t:if t:test="largeView">
+            <div class="col-2">
+                <div id="${elementId}-container">
+                    <div class="settings">
+                        <div class="checkboxes"></div>
+                        <div class="sliders"></div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </t:if>
     </div>
 </div>

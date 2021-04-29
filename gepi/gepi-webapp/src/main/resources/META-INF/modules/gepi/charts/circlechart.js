@@ -36,33 +36,40 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
               const inputcolReadyPromise = $('#inputcol').data('animationtimer');
               if (inputcolReadyPromise) {
                 inputcolReadyPromise.done(() =>
-                  this.first_draw());
+                  this.firstDraw());
               } else {
-                this.first_draw();
+                this.firstDraw();
               }
             });
           });
         }
 
 
-        first_draw() {
+        firstDraw() {
           if (!$('#'+this.elementId).data('firstDrawn')) {
-            let running = false;
-            window.onresize = () => {
-              if (!running) {
-                running = true;
-                console.log("Trying to call theDraw")
-                this.draw(this.elementId);
-                console.log("After trying to call theDraw")
-                running = false;
-              }
-            };
+             let running = false;
+          window.addEventListener('resize',() => {
+            if (!running) {
+              running = true;
+              window.setTimeout(() => {this.draw.bind(this)(this.elementId);running = false;}, 1000);
+            }
+          });
+
+
+            // let running = false;
+            // window.onresize = () => {
+            //   if (!running) {
+            //     running = true;
+            //     this.draw(this.elementId);
+            //     running = false;
+            //   }
+            // };
 
             $('#' + widgetManager.getWidget('circlechart-outer').handleId).click(function() {
               this.draw(this.elementId);
             });
 
-            this.add_toggle(
+            this.addToggle(
                 this.elementId,
                 'default-gray-toggle',
                 'Grey out nodes and links by default',
@@ -71,7 +78,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 this.draw.bind(this)
             );
 
-            this.add_toggle(
+            this.addToggle(
                 this.elementId,
                 'fine-opacity-toggle',
                 'Highlight nodes based on edge weight',
@@ -80,7 +87,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 this.draw.bind(this)
             );
 
-            // add_slider(this.elementId, "size_slider", "Size of the diagram: ", 50, 300, 5, this.settings.node_count, (count) => {
+            // addSlider(this.elementId, "size_slider", "Size of the diagram: ", 50, 300, 5, this.settings.node_count, (count) => {
             //     this.settings.node_count = count;
             //     this.settings.radius = 2 * count;
             // });
@@ -88,11 +95,11 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             this.draw(this.elementId);
             $('#'+this.elementId).data('firstDrawn', true);
           } else {
-            console.log('Not executing circleshart#first_draw() because it has already been run.');
+            console.log('Not executing circleshart#firstDraw() because it has already been run.');
           }
         }
 
-        prepare_data(links) {
+        prepareData(links) {
           // input: links der form (sourceId, targetId, frequency)
           // let {raw_nodes, links} = data();
           const node_indices = {};
@@ -139,8 +146,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           // now we have included_nodes: nodeId -> true
           // of 100 most frequent nodes
 
-          console.log('Included nodes: ', included_nodes);
-
           links = links.filter(({
             source,
             target,
@@ -168,7 +173,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             while (nodes[next_index % node_count]) {
               next_index += 1;
               if (next_index > 2*node_count) {
-                console.log('Critical error!');
+                console.log('Critical error! Check out source code of the circlechart to find this message and fix the issue.');
                 break;
               }
             }
@@ -196,9 +201,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           }
           // the links now have (sourceId, targetId, frequency, start_pos, end_pos)
           // thus, everything required to draw them
-
-          console.log(node_weights);
-          console.log(links);
 
           // links: [(sourceId, targetId, frequency, start_pos, end_pos)]
           // raw_nodes: [nodeId]
@@ -241,18 +243,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
        draw(elementId) {
           const svg = this.get_svg(elementId);
 
-          // let data = prepare_data(raw_data);
+          // let data = prepareData(raw_data);
 
           let chartData = data.getData('relationCounts');
           const nodesById = new Map();
           chartData.nodes.forEach((n) => nodesById.set(n.id, n));
-          console.log('Relation counts for circle chart:');
-          console.log(chartData);
-          chartData = this.prepare_data(chartData.links);
-
-          console.log('Circle chart preprocessed data:');
-          console.log(chartData);
-
+          chartData = this.prepareData(chartData.links);
 
           this.nodes = svg.append('g')
               .attr('class', 'nodes')
@@ -386,21 +382,25 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           return path;
         }
 
-        add_toggle(elementId, id, text, initial_state, change_handler, draw) {
+        addToggle(elementId, id, text, initial_state, change_handler, draw) {
           const p = d3.select('#'+elementId+'-container .settings .checkboxes').append('p');
-          console.log(p.node());
-          const input = p.append('input').attr('type', 'checkbox').attr('id', id);
+          const input = p.append('input')
+            .attr('type', 'checkbox')
+            .attr('class', 'btn-check')
+            .attr('id', id);
           if (initial_state) {
             input.attr('checked', 'checked');
           }
-          p.append('label').attr('for', id).text(' '+text);
+          p.append('label').attr('for', id)
+            .attr('class', 'btn btn-primary')
+            .text(' '+text);
           input.on('change', function() {
             change_handler(this.checked);
             draw(elementId);
           });
         }
 
-        add_slider(elementId, id, label_text, min, max, step, value, change_handler, draw) {
+        addSlider(elementId, id, label_text, min, max, step, value, change_handler, draw) {
           const p = d3.select('#' + elementId + '-container .settings .sliders').append('p');
 
           p.append('label')

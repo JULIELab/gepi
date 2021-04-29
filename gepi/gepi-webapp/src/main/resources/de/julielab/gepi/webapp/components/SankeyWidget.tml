@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
      widgettitle="Sankey Diagram: Most Frequent Interaction Partners" t:clientId="${elementId}-outer" class="${classes}"
-     sizeClass="widget-small" esResult="esResult" neo4jResult="neo4jResult" useTapestryZoneUpdates="false" dataSessionId="dataSessionId">
+     sizeClass="widget-small" esResult="esResult" neo4jResult="neo4jResult" useTapestryZoneUpdates="false"
+     dataSessionId="dataSessionId">
     <!-- useTapestryZoneUpdates should be false for all JavaScript-based widgets. They just receive data from the
     server which is sent once and can then be reused. Updating the whole widget via Ajax basically resets it
     which can cause issues with HTML elements which are renewed and then not found in JavaScript any more. -->
 
     <!-- Sankey widgets manage themselves in JavaScript, thus we always render all elements independently from the view mode -->
     <div class="row">
-        <div class="col-10">
+        <div class="${chartAreaColumnSizeClass}">
             <div id="${elementId}" style="width: 100%; height: 100%;"/>
         </div>
-        <div class="col-2">
-            <div id="${elementId}-container" class="hidden">
-                <div class="settings">
-                    <div class="sliders"></div>
-                    <div class="checkboxes"></div>
-                    <div class="buttons"></div>
+        <t:if t:test="largeView">
+            <div class="col-2">
+                <div id="${elementId}-container" class="hidden">
+                    <div class="settings">
+                        <div class="sliders"></div>
+                        <div class="checkboxes"></div>
+                        <div class="buttons"></div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </t:if>
     </div>
 </div>

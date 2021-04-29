@@ -6,8 +6,16 @@
 	color: black;
 }
 
-.glyphicon-resize-full {
+.widget-resize-full {
 	cursor: pointer;
+    background-image: url("../images/open_in_full_black_24dp.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.widget-tool-symbol {
+    width: 24px;
+    height: 24px;
 }
 
 .widget {

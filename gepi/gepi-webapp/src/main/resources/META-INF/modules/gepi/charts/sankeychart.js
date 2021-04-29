@@ -55,13 +55,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
 
           let running = false;
-          window.onresize = () => {
+          window.addEventListener('resize',() => {
             if (!running) {
               running = true;
-              this.redraw();
-              running = false;
+              window.setTimeout(() => {this.redraw.bind(this)();running = false;}, 1000);
             }
-          };
+          });
 
 
           this.selected_by_node_id = {};
@@ -79,11 +78,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
             this.redraw();
 
-            this.add_slider('padding-slider', 'Padding: ', 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
-            this.add_slider('min-size-slider', 'Minimum node size: ', 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
-            this.add_slider('node-height-slider', 'Chart height: ', 0, 1000, 2, settings.height, (value) => settings.height = value - 0);
+            console.log("Sankey widget settings: " + JSON.stringify(this.widgetSettings))
+            this.add_slider('padding-slider', 'Padding: ', 2, 25, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
+            this.add_slider('min-size-slider', 'Minimum node size: ', 5, 25, 2, settings.min_node_height, (value) => settings.min_node_height = value);
+            //this.add_slider('node-height-slider', 'Chart height: ', 40, 400, 2, settings.height, (value) => settings.height = value - 0);
             // add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, this.settings.max_number_nodes, (value) => this.settings.max_number_nodes = value);
-            this.add_slider('max-other-slider', 'Maximum size of "Other" node:', 0, 300, 2, settings.max_other_height, (value) => settings.max_other_height = value);
+            this.add_slider('max-other-slider', 'Maximum size of "Other" node:', 2, 150, 2, settings.max_other_height, (value) => settings.max_other_height = value);
 
             this.add_toggle(
                 'restrict-other-toggle',
@@ -101,7 +101,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
             this.add_button('Clear selection', () => {
               this.selected_by_node_id = {};
-              console.log('who am I: ' + this);
               this.redraw();
             });
             $('#' + this.elementId).data('mainWasCalled', true);
@@ -135,7 +134,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           const svg = this.create_svg();
 
-          console.log('Preparing sankey data');
           let max_other_height;
           if (this.settings.restrict_other_height) {
             max_other_height = Number(this.settings.max_other_height);
@@ -158,7 +156,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           console.log('Computing sankey layout...');
           sankey();
-          console.log('Done');
+          console.log('Done laying out sankey.');
 
           // shift(the_data.nodes[4], 50, 20);
 
@@ -221,7 +219,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           nodes.on('click', (d) => {
             this.selected_by_node_id[d.id] = !this.selected_by_node_id[d.id];
-            console.log('nodes.on click');
             this.redraw();
           });
 
@@ -245,12 +242,17 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
         add_toggle(id, text, initial_state, change_handler) {
           const p = d3.select('#' + this.elementId + '-container .settings .checkboxes').append('p');
-          console.log('[add_toggle] node: ' + p.node());
-          const input = p.append('input').attr('type', 'checkbox').attr('id', id);
+          const input = p.append('input')
+            .attr('type', 'checkbox')
+            .attr('class', 'btn-check')
+            .attr('id', id);
           if (initial_state) {
             input.attr('checked', 'checked');
           }
-          p.append('label').attr('for', id).text(' ' + text);
+          p.append('label')
+            .attr('for', id)
+            .attr('class', 'btn btn-primary')
+            .text(' ' + text);
           const redraw = this.redraw.bind(this);
           input.on('change', function() {
             change_handler(this.checked);

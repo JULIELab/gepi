@@ -51,4 +51,8 @@ public class GepiWidget {
         final GepiWidgetLayout.ViewMode mode = gepiWidgetLayout.viewMode();
         return mode == GepiWidgetLayout.ViewMode.LARGE || mode == GepiWidgetLayout.ViewMode.FULLSCREEN;
     }
+
+    public String getChartAreaColumnSizeClass() {
+        return isLargeView() ? "col-10" : "col-12";
+    }
 }

@@ -28,12 +28,10 @@ public class SankeyWidget extends GepiWidget {
     private GepiWidgetLayout component;
 
     void afterRender() {
-        System.out.println("SankeyWidget dataSessionId: " + component.getWidgetSettings().get("dataSessionId"));
         if (commonPartners) {
             javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "commonPartnersHarmonicMean", component.getWidgetSettings());
         } else {
             javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "frequency", component.getWidgetSettings());
         }
     }
-
 }

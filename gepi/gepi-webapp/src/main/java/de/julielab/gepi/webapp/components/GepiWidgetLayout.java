@@ -207,6 +207,7 @@ final public class GepiWidgetLayout {
         return clientId + "_resize";
     }
 
+
     @Log
     public boolean isLarge() {
         return viewMode.equals(ViewMode.LARGE.name().toLowerCase());

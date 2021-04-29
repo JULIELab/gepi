@@ -18,6 +18,16 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         observekeypress();
         observeFormSubmit();
         observeInputFetchArea();
+        let running = false;
+        window.addEventListener('resize',() => {
+            if (!running) {
+                running = true;
+                let shown = !inputCol.css("margin-left").includes("-");ing = false;
+                if (!shown) {
+                    window.setTimeout(() => {hideInput(); running = false;}, 1000);
+                }
+            }
+        });
 
         /*
          * On changes of list B, checks if the list is empty. If not, some

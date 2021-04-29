@@ -4,7 +4,7 @@
 		<div class="card ${viewmode} widget" id="${clientId}">
 			<div class="card-header text-center">
 				${widgettitle}
-				<span id="${resizeHandleId}" class="glyphicon float-right glyphicon-resize-full" />
+				<span id="${resizeHandleId}" class="float-right widget-resize-full widget-tool-symbol" />
 			</div>
 			<t:zone t:id="widgetZone" id="prop:${zoneid}">
 				<div class="card-body ${sizeclass}">
