@@ -5,6 +5,7 @@ import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.javascript.InitializationPriority;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 public class CircleWidget extends GepiWidget {
@@ -20,8 +21,8 @@ public class CircleWidget extends GepiWidget {
     private GepiWidgetLayout component;
 
     void afterRender() {
-        System.out.println("CircleWidget dataSessionId: " + component.getWidgetSettings().get("dataSessionId"));
-        javaScriptSupport.require("gepi/charts/circlechart").with(elementId, component.getWidgetSettings());
+        if (component.isResultLoading() || component.isResultAvailable())
+            javaScriptSupport.require("gepi/charts/circlechart").priority(InitializationPriority.LATE).invoke("init").with(elementId, component.getWidgetSettings());
     }
 
 }

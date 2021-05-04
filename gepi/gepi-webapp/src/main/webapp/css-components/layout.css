@@ -13,3 +13,10 @@ body {
 #resetlink:hover {
     background-image: url("../images/settings_backup_restore_light_gray_24dp.svg");
 }
+
+.vertical-center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}

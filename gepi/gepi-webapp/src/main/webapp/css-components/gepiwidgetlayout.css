@@ -1,3 +1,12 @@
+.full-height {
+    height: 100%;
+}
+
+.chart.area {
+    width: 100%;
+    display: inline-block;
+}
+
 .float-right {
 	float: right;
 }
@@ -32,6 +41,10 @@
 	-o-transition: all 5s ease;
 	transition: all 5s ease;
 	
+}
+
+.widget.overview {
+    min-height: 25rem;
 }
 
 .widget.large {

@@ -14,15 +14,19 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
         setup() {
           console.log('Preparing to draw sankey chart for element ID ' + this.elementId + ' with node ordering type ' + this.orderType);
-
+          
           index.getReadySemaphor().done(() => {
             console.log('Chart drawing has green light from the central index semaphor, requesting for dataSessionId ' + this.widgetSettings.dataSessionId);
             data.awaitData('relationCounts', this.widgetSettings.dataSessionId).done(() => {
               console.log('Loading data was successful. Checking if the input column also gives green light.');
               const inputcolReadyPromise = $('#inputcol').data('animationtimer');
+              const circleWidgetAfterDrawIndicator = widgetManager.getWidget('circlechart').widgetObject.afterDrawIndicator
               if (inputcolReadyPromise) {
-                inputcolReadyPromise.done(() =>
-                  this.init(this.elementId, this.orderType));
+                inputcolReadyPromise.done(() => {
+                  circleWidgetAfterDrawIndicator.done(() => {
+                    this.init(this.elementId, this.orderType);
+                  })
+                });
               } else {
                 this.init(this.elementId, this.orderType);
               }
@@ -73,8 +77,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           console.log('Call to main');
           if (!$('#' + this.elementId).data('mainWasCalled')) {
             const settings = this.settings;
-            // Hide the Loading... banner
-            $('#' + this.elementId + '-outer .panel-body .shine').addClass('hidden');
+            // Remove the Loading... banner
+            $('#' + this.elementId + '-outer .text-center.shine').remove();
 
             this.redraw();
 
@@ -131,7 +135,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
         redraw() {
           console.log('Redrawing sankey!');
-
+          
           const svg = this.create_svg();
 
           let max_other_height;
@@ -238,6 +242,13 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           nodes.append('title')
               .text((d) => d.name);
+
+
+          let height = parseInt($('#' + this.elementId).css('height').slice(0, -2));
+          let parentHeight = parseInt($('#' + this.elementId).parent().css('height').slice(0, -2));
+          let headerHeight = parseInt($('#'+this.elementId+'-outer .card-header').css('height').slice(0, -2));
+          $('#' + this.elementId).css('position', 'absolute');
+          $('#' + this.elementId).css('top', (headerHeight+((parentHeight-height)/2))+'px');
         }
 
         add_toggle(id, text, initial_state, change_handler) {

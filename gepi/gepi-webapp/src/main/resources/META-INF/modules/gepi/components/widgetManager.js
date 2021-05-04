@@ -1,13 +1,13 @@
 define(['jquery', 't5/core/zone'], function($, zoneManager) {
-  function Widget(w) {
-    this.widgetObject = w;
-    this.handleId = w.widgetSettings.handleId;
-    this.widgetId = w.widgetSettings.widgetId;
-    this.toggleViewModeUrl = w.widgetSettings.toggleViewModeUrl;
-    this.refreshContentsUrl = w.widgetSettings.refreshContentsUrl;
-    this.zoneElementId = w.widgetSettings.zoneElementId;
+  function Widget(widgetObject) {
+    this.widgetObject = widgetObject;
+    this.handleId = widgetObject.handleId;
+    this.widgetId = widgetObject.widgetId;
+    this.toggleViewModeUrl = widgetObject.toggleViewModeUrl;
+    this.refreshContentsUrl = widgetObject.refreshContentsUrl;
+    this.zoneElementId = widgetObject.zoneElementId;
     this.widget = $('#' + this.widgetId);
-    this.useTapestryZoneUpdates = w.widgetSettings.useTapestryZoneUpdates;
+    this.useTapestryZoneUpdates = widgetObject.useTapestryZoneUpdates;
     this.setupViewModeHandle();
   }
   Widget.prototype.getViewMode = function() {
@@ -53,8 +53,8 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
   // FOR ZONE UPDATES (Table widget)
   // This is called from GepiWidgetLayout#afterRender
   // for widgets to be updated via the Tapestry Zone update mechanism.
-  const addWidget = function(name, widgetSettings) {
-    widgetWrapper = new Widget({widgetSettings: widgetSettings});
+  const addWidget = function(name, widgetObject) {
+    widgetWrapper = new Widget(widgetObject);
     widgets.set(name, widgetWrapper);
 
     return widgetWrapper;
