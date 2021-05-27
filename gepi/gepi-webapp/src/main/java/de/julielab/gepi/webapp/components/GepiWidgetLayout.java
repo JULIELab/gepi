@@ -105,9 +105,10 @@ final public class GepiWidgetLayout {
     void afterRender() {
         if (useTapestryZoneUpdates) {
             JSONObject widgetSettings = getWidgetSettings();
+            JSONObject widgetObject = new JSONObject("widgetSettings", widgetSettings);
             // Not called for sankey, circle and all other widgets managing their JS themselves.
             javaScriptSupport.require("gepi/components/widgetManager").invoke("addWidget")
-                    .with(clientId, widgetSettings);
+                    .with(clientId, widgetObject);
         }
     }
 
@@ -176,6 +177,7 @@ final public class GepiWidgetLayout {
     }
 
     void onToggleViewMode() {
+        System.out.println("toggle!!");
         switch (viewMode) {
             case "fullscreen":
                 break;

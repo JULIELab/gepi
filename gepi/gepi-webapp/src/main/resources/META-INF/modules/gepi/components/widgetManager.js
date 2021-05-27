@@ -1,13 +1,15 @@
 define(['jquery', 't5/core/zone'], function($, zoneManager) {
   function Widget(widgetObject) {
-    this.widgetObject = widgetObject;
-    this.handleId = widgetObject.handleId;
-    this.widgetId = widgetObject.widgetId;
-    this.toggleViewModeUrl = widgetObject.toggleViewModeUrl;
-    this.refreshContentsUrl = widgetObject.refreshContentsUrl;
-    this.zoneElementId = widgetObject.zoneElementId;
+    this.widgetObject= widgetObject;
+    let widgetSettings = widgetObject.widgetSettings;
+    this.handleId = widgetSettings.handleId;
+    this.widgetId = widgetSettings.widgetId;
+    this.toggleViewModeUrl = widgetSettings.toggleViewModeUrl;
+    this.refreshContentsUrl = widgetSettings.refreshContentsUrl;
+    this.zoneElementId = widgetSettings.zoneElementId;
     this.widget = $('#' + this.widgetId);
-    this.useTapestryZoneUpdates = widgetObject.useTapestryZoneUpdates;
+    this.useTapestryZoneUpdates = widgetSettings.useTapestryZoneUpdates;
+    console.log("Creating Widget with settings " + JSON.stringify(widgetSettings))
     this.setupViewModeHandle();
   }
   Widget.prototype.getViewMode = function() {

@@ -8,7 +8,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           this.elementId = elementId;
           this.orderType = orderType;
           this.widgetSettings = widgetSettings;
-
+          console.log("Creating sankey with settings: " + widgetSettings)
           this.setup();
         }
 
