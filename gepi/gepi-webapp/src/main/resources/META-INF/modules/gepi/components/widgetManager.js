@@ -1,6 +1,6 @@
 define(['jquery', 't5/core/zone'], function($, zoneManager) {
   function Widget(widgetObject) {
-    this.widgetObject= widgetObject;
+    this.widgetObject = widgetObject;
     let widgetSettings = widgetObject.widgetSettings;
     this.handleId = widgetSettings.handleId;
     this.widgetId = widgetSettings.widgetId;
@@ -25,13 +25,13 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
       switch (currentMode) {
         case 'large':
           $('body').removeClass('noScroll');
-          $('#widgetOverlay').removeClass('into');
+          $('#disableplane').removeClass('show');
           newMode = 'overview';
           break;
         case 'overview':
           $('body').addClass('noScroll');
           newMode = 'large';
-          $('#widgetOverlay').addClass('into');
+          window.setTimeout(() => $('#disableplane').addClass('show'), 500);
           break;
       }
 

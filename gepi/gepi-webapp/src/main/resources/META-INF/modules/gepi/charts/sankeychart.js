@@ -8,7 +8,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           this.elementId = elementId;
           this.orderType = orderType;
           this.widgetSettings = widgetSettings;
-          console.log("Creating sankey with settings: " + widgetSettings)
+          console.log("Creating sankey with settings: " + JSON.stringify(widgetSettings))
           this.setup();
         }
 
@@ -44,8 +44,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             width: 500,
             height: 300,
             min_height: 200,
-            padding_x: 100,
-            padding_y: 10,
+            padding_x: 0,
+            padding_y: 20,
             node_spacing: 7,
             min_node_height: 5,
             label_font_size: 12,
@@ -59,12 +59,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
 
           let running = false;
-          window.addEventListener('resize',() => {
-            if (!running) {
-              running = true;
-              window.setTimeout(() => {this.redraw.bind(this)();running = false;}, 1000);
-            }
-          });
+          //window.addEventListener('resize',() => {
+          //  if (!running) {
+          //    running = true;
+          //    window.setTimeout(() => {this.redraw.bind(this)();running = false;}, 1000);
+          //  }
+          //});
 
 
           this.selected_by_node_id = {};
@@ -74,7 +74,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         }
 
         main() {
-          console.log('Call to main');
           if (!$('#' + this.elementId).data('mainWasCalled')) {
             const settings = this.settings;
             // Remove the Loading... banner
@@ -82,7 +81,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
             this.redraw();
 
-            console.log("Sankey widget settings: " + JSON.stringify(this.widgetSettings))
             this.add_slider('padding-slider', 'Padding: ', 2, 25, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
             this.add_slider('min-size-slider', 'Minimum node size: ', 5, 25, 2, settings.min_node_height, (value) => settings.min_node_height = value);
             //this.add_slider('node-height-slider', 'Chart height: ', 40, 400, 2, settings.height, (value) => settings.height = value - 0);
@@ -124,12 +122,14 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           // chartContainer.closest(".panel-body > .shine").addClass("hidden");
           chartContainer.removeClass('hidden');
           this.settings.width = chart_elem.clientWidth - 2 * this.settings.padding_x - 10;
+          this.settings.height = chart_elem.clientHeight - 2 * this.settings.padding_y;
+          console.log("Creating svg element with size " + this.settings.width + " x " + this.settings.height)
           const svg = chart
               .append('svg')
-              .attr('width', this.settings.width + 2 * this.settings.padding_x)
-              .attr('height', this.settings.height + 2 * this.settings.padding_y);
+              .attr('width', this.settings.width)
+              .attr('height', this.settings.height);
 
-          return svg.append('g').attr('transform', 'translate(' + this.settings.padding_x + ',' + this.settings.padding_y + ')');
+          return svg;//.append('g');//.attr('transform', 'translate(' + this.settings.padding_x + ',' + this.settings.padding_y + ')');
         }
 
 
@@ -149,14 +149,15 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           const sankey = d3.sankey();
 
+          console.log("Sankey size set to " + this.settings.width + " x " + this.settings.height + " with origin (0, 0).")
           sankey
-              .size([this.settings.width, this.settings.height])
+              .size([this.settings.width - 1 , this.settings.height - 5])
               .nodeWidth(this.settings.node_width)
               .nodePadding(this.settings.node_spacing)
               .nodeId((d) => d.id)
               .nodes(the_data.nodes)
-              .links(the_data.links)
-              .iterations(0);
+              .links(the_data.links);
+              //.iterations(0);
 
           console.log('Computing sankey layout...');
           sankey();
@@ -190,22 +191,13 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           const nodes = svg.append('g')
               .selectAll('.node')
               .data(the_data.nodes)
-              .enter().append('g')
-              .attr('class', 'node')
-              .attr('transform', (d) => 'translate(' + d.x0 + ',' + d.y0 + ')');
-
-          // nodes: rects
-          nodes.append('rect')
-              .attr('height', (d) => d.y1 - d.y0)
-              .attr('width', (d) => d.x1 - d.x0)
-              .attr('opacity', (d) => {
-                if (d.id === 'MISC_from' || d.id === 'MISC_to') {
-                  return 0.4;
-                } else {
-                  return 1;
-                }
-              })
-              .attr('fill', (d) => {
+              .join("rect")
+                .attr('class', 'node')
+                .attr("x", d => d.x0)
+                .attr("y", d => d.y0)
+                .attr("height", d => d.y1 - d.y0)
+                .attr("width", d => d.x1 - d.x0)
+                .attr("fill", (d) => {
                 /* COLOR SCHEME FOR NODES
                     normal - black
                     misc/hidden - gray (semi-transparent)
@@ -218,8 +210,43 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                   return '#0040a0';
                 } else {
                   return '#000000';
+                }})
+                .attr('opacity', (d) => {
+                if (d.id === 'MISC_from' || d.id === 'MISC_to') {
+                  return 0.4;
+                } else {
+                  return 1;
                 }
-              });
+              })
+            .append("title")
+              .text(d => d.name);
+
+          // nodes: rects
+          // nodes.append('rect')
+          //     .attr('height', (d) => d.y1 - d.y0)
+          //     .attr('width', (d) => d.x1 - d.x0)
+          //     .attr('opacity', (d) => {
+          //       if (d.id === 'MISC_from' || d.id === 'MISC_to') {
+          //         return 0.4;
+          //       } else {
+          //         return 1;
+          //       }
+          //     })
+          //     .attr('fill', (d) => {
+          //        COLOR SCHEME FOR NODES
+          //           normal - black
+          //           misc/hidden - gray (semi-transparent)
+          //           selected - blue
+          //           pinned - ? maybe a pattern? red checkerboard?
+
+                     
+
+          //       if (this.selected_by_node_id[d.id]) {
+          //         return '#0040a0';
+          //       } else {
+          //         return '#000000';
+          //       }
+          //     });
 
           nodes.on('click', (d) => {
             this.selected_by_node_id[d.id] = !this.selected_by_node_id[d.id];
@@ -228,27 +255,30 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           const settings = this.settings;
           // nodes: labels
-          nodes.append('text')
-              .text((d) => d.name)
-              .style('font-size', this.settings.label_font_size + 'px')
-              .attr('y', (d) => (d.y1 - d.y0 + this.settings.label_font_size) / 2)
-              .attr('x', function(d) {
-                if (d.id.endsWith('_from')) {
-                  return -this.getComputedTextLength() - settings.node_to_label_spacing;
-                } else {
-                  return settings.node_width + settings.node_to_label_spacing;
-                }
-              });
+          svg.append('g')
+              .attr('font-size', this.settings.label_font_size + 'px')
+              .attr('font-family', 'sans-serif')
+              .selectAll('text')
+              .data(the_data.nodes)
+              .join("text")
+                .text((d) => d.name)
+                .attr('y', (d) => (d.y1 + d.y0) / 2)
+                .attr('x', (d) => d.x0 < this.settings.width / 2 ? d.x1 + 6 : d.x0 - 6)
+                .attr("dy", "0.35em")
+                .attr("text-anchor", d => d.x0 < this.settings.width / 2 ? "start" : "end");
 
-          nodes.append('title')
-              .text((d) => d.name);
+          // nodes.append('title')
+              // .text((d) => d.name);
 
 
-          let height = parseInt($('#' + this.elementId).css('height').slice(0, -2));
-          let parentHeight = parseInt($('#' + this.elementId).parent().css('height').slice(0, -2));
-          let headerHeight = parseInt($('#'+this.elementId+'-outer .card-header').css('height').slice(0, -2));
-          $('#' + this.elementId).css('position', 'absolute');
-          $('#' + this.elementId).css('top', (headerHeight+((parentHeight-height)/2))+'px');
+          // vertical centering in the widget
+          //let height = parseInt($('#' + this.elementId).css('height').slice(0, -2));
+          //let parentHeight = parseInt($('#' + this.elementId).parent().css('height').slice(0, -2));
+          //let parentWidth = parseInt($('#' + this.elementId).parent().css('width').slice(0, -2));
+          //let headerHeight = parseInt($('#'+this.elementId+'-outer .card-header').css('height').slice(0, -2));
+          //$('#' + this.elementId).css('position', 'absolute');
+          //$('#' + this.elementId).css('top', (headerHeight+((parentHeight-height)/2))+'px');
+          //$('#' + this.elementId).css('width', (parentWidth*2/3)+'px');
         }
 
         add_toggle(id, text, initial_state, change_handler) {

@@ -10,18 +10,16 @@
     <!-- Sankey widgets manage themselves in JavaScript, thus we always render all elements independently from the view mode -->
     <div class="row full-height">
         <div class="${chartAreaColumnSizeClass} text-center full-height">
-            <div id="${elementId}" class="chart-area"/>
+            <div id="${elementId}" class="chart-area full-height"/>
         </div>
-        <t:if t:test="largeView">
-            <div class="col-2">
-                <div id="${elementId}-container" class="hidden">
-                    <div class="settings">
-                        <div class="sliders"></div>
-                        <div class="checkboxes"></div>
-                        <div class="buttons"></div>
-                    </div>
+        <div class="col-2">
+            <div id="${elementId}-container" class="hidden">
+                <div class="settings">
+                    <div class="sliders"></div>
+                    <div class="checkboxes"></div>
+                    <div class="buttons"></div>
                 </div>
             </div>
-        </t:if>
+        </div>
     </div>
 </div>

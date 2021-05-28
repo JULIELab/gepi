@@ -2,6 +2,10 @@
     height: 100%;
 }
 
+.full-width {
+    width: 100%;
+}
+
 .chart.area {
     width: 100%;
     display: inline-block;
@@ -27,24 +31,9 @@
     height: 24px;
 }
 
-.widget {
-   -webkit-transition: all 1s ease;
-	-moz-transition: all 1s ease;
-	-o-transition: all 1s ease;
-	transition: all 1s ease;
-	overflow: hidden;
-}
-
-.chart {
-   -webkit-transition: all 5s ease;
-	-moz-transition: all 5s ease;
-	-o-transition: all 5s ease;
-	transition: all 5s ease;
-	
-}
 
 .widget.overview {
-    min-height: 25rem;
+    height: 500px;
 }
 
 .widget.large {
@@ -52,23 +41,24 @@
 	top: 70px;
 	left: 15px;
 	width: calc(100% - 30px);
-	/* One above #widgetOverlay in index.tml/index.less */
+    height: calc(100vh - 88px);
+	/* One above #widgetOverlay in index.tml/index.css */
 	z-index: 11;
 }
 
-.widget.large .panel-body {
-	height: calc(100vh - 126px);
-	/* One above #widgetOverlay in index.tml/index.less */
+.widget.large .card-body {
+	/* One above #widgetOverlay in index.tml/index.css */
 	z-index: 11;
 	overflow-y: auto;
 }
 
-.widget-small.panel-body {
-    height: 230px;
+.widget-small.card-body {
+    height: 430px;
+    padding-top: 10px;
     overflow: hidden;
 }
 
-.widget-large.panel-body {
+.widget-large.card-body {
  /*   height: 440px;*/
 }
 
