@@ -131,6 +131,7 @@ final public class GepiWidgetLayout {
         JSONObject widgetSettings = new JSONObject();
         widgetSettings.put("handleId", getResizeHandleId());
         widgetSettings.put("widgetId", clientId);
+        widgetSettings.put("viewMode", "overview");
         widgetSettings.put("toggleViewModeUrl", toggleViewModeEventLink.toAbsoluteURI());
         widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI());
         widgetSettings.put("zoneElementId", widgetZone.getClientId());

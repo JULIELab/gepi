@@ -52,13 +52,13 @@
 	overflow-y: auto;
 }
 
-.widget-small.card-body {
+.widget.overview.card-body {
     height: 430px;
     padding-top: 10px;
     overflow: hidden;
 }
 
-.widget-large.card-body {
+.widget.large.card-body {
  /*   height: 440px;*/
 }
 

@@ -36,9 +36,16 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
       }
 
       widget.widget.addClass(newMode).removeClass(currentMode);
+      // jQuery selector with the widget object as context, i.e. as selector root:
+      // this finds the element with the card-body class which is an descendent
+      // of the widget.widget object
+      $('.card-body', widget.widget).addClass(newMode).removeClass(currentMode);
+      console.log("Setting widgetSetting viewMode to " + currentMode)
+      widget.widgetObject.widgetSettings.viewMode = currentMode;
       if (widget.useTapestryZoneUpdates) {
         zoneManager.deferredZoneUpdate(widget.zoneElementId, widget.toggleViewModeUrl);
       } else {
+        console.log("Redrawing widget after setting viewMode")
         widget.widgetObject.redraw();
       }
     });
