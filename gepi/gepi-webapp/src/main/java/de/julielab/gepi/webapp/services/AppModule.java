@@ -194,7 +194,7 @@ public class AppModule {
     public void contributeApplicationStateManager(
             MappedConfiguration<Class<?>, ApplicationStateContribution> configuration, @Inject Request request,
             @Autobuild GePiSessionStateCreator sessionStateCreator) {
-        configuration.add(GePiSessionState.class, new ApplicationStateContribution("session", sessionStateCreator));
+        configuration.add(GePiSessionState.class, new ApplicationStateContribution("gepisession", sessionStateCreator));
     }
 
 
