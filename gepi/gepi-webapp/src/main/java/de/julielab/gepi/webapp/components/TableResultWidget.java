@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.java.utilities.FileUtilities;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -43,7 +44,7 @@ public class TableResultWidget extends GepiWidget {
     private BeanModelEvent eventRow;
 
     @Property
-    @Persist
+    @Persist("tab")
     private List<BeanModelEvent> beanEvents;
 
     @Inject
@@ -59,11 +60,11 @@ public class TableResultWidget extends GepiWidget {
     private ComponentResources resources;
 
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private BeanModel<BeanModelEvent> tableModel;
 
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private Format contextFormat;
 
     void setupRender() {

@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.webapp.base.TabPersistentField;
 import org.apache.tapestry5.*;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Form;
@@ -67,11 +68,11 @@ public class GepiInput {
     private TextField paragraphFilter;
 
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private String listATextAreaValue;
 
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private String listBTextAreaValue;
 
     @Inject
@@ -93,14 +94,14 @@ public class GepiInput {
     private CompletableFuture<EventRetrievalResult> esResult;
 
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private CompletableFuture<EventRetrievalResult> persistEsResult;
 
     @Parameter
     private CompletableFuture<AggregatedEventsRetrievalResult> neo4jResult;
 
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private CompletableFuture<AggregatedEventsRetrievalResult> persistNeo4jResult;
 
     @Inject

@@ -2,6 +2,7 @@ package de.julielab.gepi.webapp.pages;
 
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.components.GepiInput;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
@@ -48,14 +49,14 @@ public class Index {
     @Property
     private Event eventItem;
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private long dataSessionId;
     @Parameter
     private long dataSessionIdParameter;
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private EnumSet<InputMode> inputMode;
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private boolean hasLargeWidget;
 
     private boolean resultNonNullOnLoad;

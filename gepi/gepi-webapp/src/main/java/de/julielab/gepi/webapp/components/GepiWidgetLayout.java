@@ -13,6 +13,7 @@ import java.util.Optional;
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.services.GePiDataService;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.webapp.base.TabPersistentField;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -89,7 +90,7 @@ final public class GepiWidgetLayout {
     @Environmental
     private JavaScriptSupport javaScriptSupport;
 
-    @Persist
+    @Persist(TabPersistentField.TAB)
     @Property
     private String viewMode;
     @InjectPage
