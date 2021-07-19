@@ -40,7 +40,7 @@
                 <creator xmlns="http://www.julielab.de/conceptdb/concepts/ncbigene">
                     <name>NCBIGeneConceptCreator</name>
                     <configuration>
-			<basepath>/data/erik/geno/build</basepath>
+			        <basepath>/data/erik/geno/build</basepath>
                         <gene_info>
                             resources/gene_info_organism_filtered.gz
                         </gene_info>
