@@ -57,6 +57,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                     ArrayFieldValue relationPairDocuments = (ArrayFieldValue) relationFieldValueGenerator.generateFieldValue(rel);
                     for (IFieldValue fv : relationPairDocuments) {
                         Document relDoc = (Document) fv;
+                        // Retrieve the argument pair of the current relation/event from the already created document for this relation
                         FeatureStructure[] argPair = ((ArrayFieldValue) relDoc.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
                         relDoc.remove("ARGUMENT_FS");
                         // We create the sentence as a document of its own. In the mapping we then could add it as
@@ -64,15 +65,17 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                         // use the object mapping which performs better.
                         Document sentenceDocument = null;
                         Collection<Sentence> overlappingSentences = sentIndex.get(rel);
-                        if (!overlappingSentences.isEmpty())
-                            sentenceDocument = createSentenceDocument(jCas, docId, i, overlappingSentences.stream().findAny().get(), argPair);
-                        // Likewise for the paragraph-like containing annotation of the relation
-                        Document paragraphDocument = createParagraphDocument(jCas, docId, rel, argPair, zoneIndex);
+                        if(argPairLiesWithinSentence(overlappingSentences, argPair)) {
+                            if (!overlappingSentences.isEmpty())
+                                sentenceDocument = createSentenceDocument(jCas, docId, i, overlappingSentences.stream().findAny().get(), argPair);
+                            // Likewise for the paragraph-like containing annotation of the relation
+                            Document paragraphDocument = createParagraphDocument(jCas, docId, rel, argPair, zoneIndex);
 
-                        relDoc.addField("sentence", sentenceDocument);
-                        relDoc.addField("paragraph", paragraphDocument);
+                            relDoc.addField("sentence", sentenceDocument);
+                            relDoc.addField("paragraph", paragraphDocument);
 
-                        relDocs.add(relDoc);
+                            relDocs.add(relDoc);
+                        }
                     }
                 }
                 ++i;
@@ -81,6 +84,25 @@ public class RelationDocumentGenerator extends DocumentGenerator {
             throw new FieldGenerationException(e);
         }
         return relDocs;
+    }
+
+    private boolean argPairLiesWithinSentence(Collection<Sentence> overlappingSentences, FeatureStructure[] argPair) {
+        if (overlappingSentences.isEmpty())
+            return false;
+        Sentence sentence = overlappingSentences.stream().findAny().get();
+        int fullTextSpanStart = sentence.getBegin();
+        int fullTextSpanEnd = sentence.getEnd();
+        ArgumentMention arg1 = (ArgumentMention) argPair[0];
+        ArgumentMention arg2 = (ArgumentMention) argPair[1];
+        if (arg1.getBegin() < fullTextSpanStart)
+            return false;
+        if (arg1.getEnd() > fullTextSpanEnd)
+            return false;
+        if (arg2.getBegin() < fullTextSpanStart)
+            return false;
+        if (arg2.getEnd() > fullTextSpanEnd)
+            return false;
+        return true;
     }
 
     private String getDocumentId(JCas jCas) {
