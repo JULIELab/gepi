@@ -235,7 +235,7 @@
                         
             <description>egid2tid</description>
                         
-            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
                         
             <optional>false</optional>
                     
@@ -355,7 +355,7 @@
                                     
                 </configurableDataResourceSpecifier>
                                 
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.MapProvider</implementationName>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
                             
             </externalResource>
                         
@@ -381,7 +381,7 @@
                                     
                 </configurableDataResourceSpecifier>
                                 
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.MapProvider</implementationName>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
                             
             </externalResource>
                         
@@ -407,7 +407,7 @@
                                     
                 </configurableDataResourceSpecifier>
                                 
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider</implementationName>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
                             
             </externalResource>
                         
@@ -433,7 +433,7 @@
                                     
                 </configurableDataResourceSpecifier>
                                 
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.MapProvider</implementationName>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
                             
             </externalResource>
                         
@@ -459,7 +459,7 @@
                                     
                 </configurableDataResourceSpecifier>
                                 
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider</implementationName>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
                             
             </externalResource>
                     

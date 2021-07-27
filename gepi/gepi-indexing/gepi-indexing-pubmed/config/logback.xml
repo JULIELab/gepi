@@ -9,7 +9,7 @@
 		</encoder>
 	</appender>
 	<logger name="de.julielab.jcore.ae.genemapper.genemodel.GeneDocument" level="ERROR" />
-	<logger name="de.julielab.jcore.consumer.neo4jrelations.Neo4jRelationsConsumer" level="DEBUG"/>
+	<logger name="de.julielab.jcore.consumer.neo4jrelations.Neo4jRelationsConsumer" level="INFO"/>
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>
