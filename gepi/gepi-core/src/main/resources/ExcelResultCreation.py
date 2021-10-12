@@ -6,6 +6,7 @@ from pandas import ExcelWriter
 import csv
 import sys
 import os
+from datetime import date
 
 def makeArgumentSymbolPivotTable(df, column, order):
     givengenesfreq = df.pivot_table('docid', index=column, columns=['arg1matchtype','arg2matchtype'],aggfunc='count', fill_value=0)
@@ -43,8 +44,8 @@ def writeresults(input,output,inputMode):
                  'Input gene match type',
                  'Event partner gene match type',
                  'The type(s) of events the input gene and its event partner are involved in',
-                 'PubMed or PMC document ID',
-                 'Place of fulltext query match',
+                 'PubMed or PMC document ID. PMC documents carry the "PMC" prefix.',
+                 'Place of fulltext filter match. Only applicable if filter terms were specified.',
                  'The textual context from the literature in which the event was found. That is the sentence enclosing the event by default. In case of a paragraph-level filter query this can also be the enclosing paragraph. This would then be indicated by the value of the fulltextmatchtype column.']
     df = pd.read_csv(input, names=header,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object},quoting=csv.QUOTE_NONE)
     print(f'Read {len(df)} data rows from {input}.')
@@ -120,7 +121,7 @@ def writeresults(input,output,inputMode):
         frontpage = ew.sheets['Frontpage']
         #frontpage.hide_gridlines(2)
         bold = ew.book.add_format({'bold': True})
-        frontpage.write(0,0, f'This is a GePi statistics file which contains results of event extraction.')
+        frontpage.write(0,0, f'This is a GePi statistics file which contains results of event extraction. Creation date is {date.today()}.')
         frontpage.write(1,0, 'The contained worksheets contain the actual text mining results as well as statistics extracted from them.')
         frontpage.write(3,0, 'The "Results" sheet is a large table containing the gene event arguments, an indication of how well the text matched')
         frontpage.write(4,0, 'a gene synonym ("exact" or "fuzzy"), the recognized type of the event (such as "phosphorylation" or "regulation"),')

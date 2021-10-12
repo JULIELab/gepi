@@ -38,8 +38,10 @@
 		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
 		level="TRACE" />
 	<logger name="de.julielab" level="DEBUG" />
+	<logger name="de.julielab.gepi.webapp.state.GePiSessionStateCreator" level="TRACE"/>
+	<logger name="de.julielab.gepi.webapp.state.GePiSessionState" level="TRACE"/>
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE" />
+<!--		<appender-ref ref="FILE" />-->
 	</root>
 </configuration>

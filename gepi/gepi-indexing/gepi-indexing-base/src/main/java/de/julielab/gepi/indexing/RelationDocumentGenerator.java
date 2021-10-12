@@ -144,7 +144,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
             else if (z instanceof Caption)
                 zoneHeadings.add(new RawToken(z.getCoveredText()));
         }
-        // If we couldn't fine one of the specified structures, use the smallest one
+        // If we couldn't find one of the specified structures, use the smallest one
         if (paragraphLike == null && !zonesAscending.isEmpty())
             paragraphLike = zonesAscending.get(0);
         // If we couldn't find any zones, use the whole document. This is meant as a last fallback.
@@ -157,7 +157,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
 
         Document paragraphDocument = new Document(docId + "_par" + zoneIds.get(paragraphLike));
 
-        log.trace("Creating preanalyzedFieldValue for paragaph");
+        log.trace("Creating preanalyzedFieldValue for paragraph");
         PreanalyzedFieldValue preanalyzedFieldValue = makePreanalyzedFulltextFieldValue(jCas, paragraphLike, argPair);
         paragraphDocument.addField("text", preanalyzedFieldValue);
         paragraphDocument.addField("id", paragraphDocument.getId());

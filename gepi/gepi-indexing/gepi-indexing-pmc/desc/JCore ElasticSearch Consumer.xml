@@ -153,7 +153,9 @@
                                         
                     <array>
                                                 
-                        <string>http://h6:9201</string>
+                        <string>http://h5:9200</string>
+                                                
+                        <string>http://h6:9200</string>
                                             
                     </array>
                                     

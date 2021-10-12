@@ -12,18 +12,20 @@ import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
+import de.julielab.gepi.webapp.state.GePiSessionState;
 import org.apache.tapestry5.*;
 import org.apache.tapestry5.annotations.*;
+import org.apache.tapestry5.commons.Messages;
+import org.apache.tapestry5.commons.services.TypeCoercer;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.TextArea;
 import org.apache.tapestry5.corelib.components.TextField;
+import org.apache.tapestry5.http.services.Request;
 import org.apache.tapestry5.internal.OptionModelImpl;
 import org.apache.tapestry5.internal.SelectModelImpl;
 import org.apache.tapestry5.internal.services.StringValueEncoder;
-import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.services.TypeCoercer;
-import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.services.ApplicationStateManager;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
@@ -45,6 +47,9 @@ public class GepiInput {
 
     @Inject
     private Request request;
+
+    @Inject
+    private ApplicationStateManager asm;
 
     @Environmental
     private JavaScriptSupport javaScriptSupport;

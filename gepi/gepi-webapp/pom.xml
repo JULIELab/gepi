@@ -15,7 +15,7 @@
              need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
         <dependency>
             <groupId>org.apache.tapestry</groupId>
-            <artifactId>tapestry-core</artifactId>
+            <artifactId>tapestry-http</artifactId>
             <version>${tapestry-release-version}</version>
         </dependency>
 

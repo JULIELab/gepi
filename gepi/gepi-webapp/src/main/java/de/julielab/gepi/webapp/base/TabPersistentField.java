@@ -6,36 +6,45 @@ import org.apache.tapestry5.ioc.internal.util.InternalUtils;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.apache.tapestry5.services.PersistentFieldChange;
 import org.apache.tapestry5.services.PersistentFieldStrategy;
+import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.apache.tapestry5.ioc.internal.util.CollectionFactory.newList;
 
 public class TabPersistentField implements PersistentFieldStrategy {
+    private Logger log;
     public static final String TAB = "tab";
     private ApplicationStateManager asm;
 
 
-    public TabPersistentField(ApplicationStateManager asm) {
+    public TabPersistentField(Logger log, ApplicationStateManager asm) {
+        this.log = log;
         this.asm = asm;
     }
 
 
     @Override
     public Collection<PersistentFieldChange> gatherFieldChanges(String pageName) {
+        // We first check if there was a session state to begin with purely for logging
         GePiSessionState sessionState = asm.getIfExists(GePiSessionState.class);
+        if (sessionState == null) {
+            log.debug("No state exists for this session yet. Creating one to store the current changes.");
+            sessionState = asm.get(GePiSessionState.class);
+        }
 
+        log.trace("Gathering tab-persistent field changes for page {}.", pageName, sessionState);
         if (sessionState == null)
             return Collections.emptyList();
 
-        List<PersistentFieldChange> result = newList();
+        List<PersistentFieldChange> result = new ArrayList<>();
 
         int activeTab = sessionState.getActiveTabIndex();
 
         String fullPrefix = TAB + activeTab + ":" + pageName + ":";
-
+        log.trace("Persistence field prefix is: {}", fullPrefix);
         for (String name : sessionState.getAttributeNames(fullPrefix)) {
             Object persistedValue = sessionState.getAttribute(name);
 
@@ -65,6 +74,7 @@ public class TabPersistentField implements PersistentFieldStrategy {
 
     @Override
     public void postChange(String pageName, String componentId, String fieldName, Object newValue) {
+        log.debug("Posting tab-persistent changes.");
         GePiSessionState sessionState = asm.getIfExists(GePiSessionState.class);
 
         assert InternalUtils.isNonBlank(pageName);

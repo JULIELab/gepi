@@ -1,14 +1,15 @@
 package de.julielab.gepi.webapp.services;
 
-import java.io.IOException;
-
+import de.julielab.gepi.core.services.ConfigurationSymbolProvider;
+import de.julielab.gepi.core.services.GepiCoreModule;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.state.GePiSessionState;
 import de.julielab.gepi.webapp.state.GePiSessionStateCreator;
 import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.commons.MappedConfiguration;
+import org.apache.tapestry5.commons.OrderedConfiguration;
+import org.apache.tapestry5.http.services.*;
 import org.apache.tapestry5.ioc.LoggerSource;
-import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.*;
 import org.apache.tapestry5.ioc.services.ApplicationDefaults;
@@ -18,8 +19,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptStack;
 import org.apache.tapestry5.services.javascript.StackExtension;
 import org.slf4j.Logger;
 
-import de.julielab.gepi.core.services.ConfigurationSymbolProvider;
-import de.julielab.gepi.core.services.GepiCoreModule;
+import java.io.IOException;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to
@@ -187,14 +187,14 @@ public class AppModule {
      * @param asm           Tapestry's {@link ApplicationStateManager}.
      */
     public void contributePersistentFieldManager(MappedConfiguration<String, PersistentFieldStrategy> configuration,
-                                                 ApplicationStateManager asm) {
-        configuration.add(TabPersistentField.TAB, new TabPersistentField(asm));
+                                                 ApplicationStateManager asm, LoggerSource loggerSource) {
+        configuration.add(TabPersistentField.TAB, new TabPersistentField(loggerSource.getLogger(TabPersistentField.class), asm));
     }
 
     public void contributeApplicationStateManager(
             MappedConfiguration<Class<?>, ApplicationStateContribution> configuration, @Inject Request request,
             @Autobuild GePiSessionStateCreator sessionStateCreator) {
-        configuration.add(GePiSessionState.class, new ApplicationStateContribution("gepisession", sessionStateCreator));
+        configuration.add(GePiSessionState.class, new ApplicationStateContribution("session", sessionStateCreator));
     }
 
 

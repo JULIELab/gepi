@@ -1,6 +1,6 @@
 package de.julielab.gepi.webapp.state;
 
-import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.http.services.Request;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -60,7 +60,6 @@ public class GePiSessionState {
         // parameter, the back button will return to
         // the state where tab1 was set to be active, this is read at this place
         // here as set into the session.
-log.warn("HIER");
         if (request.isXHR()) {
             log.debug(
                     "Request was XHR enabled, most probably an AJAX call, it is not tried to read the active tab from it.");
@@ -81,7 +80,7 @@ log.warn("HIER");
                         activeTabParam);
             }
         } else {
-            log.debug("Request parameter {} is not set.", PARAM_ACTIVE_TAB);
+            log.debug("Request parameter '{}' is not set.", PARAM_ACTIVE_TAB);
         }
         if (activeTabIndex == -1) {
             if (getTabs().size() == 1) {
