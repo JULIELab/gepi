@@ -66,6 +66,70 @@
         "type": "keyword",
         "store": true
       },
+      "argument1": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument1geneid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument1coveredtext": {
+        "type": "text",
+        "store": true
+      },
+      "argument1prefname": {
+        "type": "text",
+        "store": true
+      },
+      "argument1homoprefname": {
+        "type": "text",
+        "store": true
+      },
+      "argument1conceptid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument1tophomoid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument1matchtype": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2geneid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2coveredtext": {
+        "type": "text",
+        "store": true
+      },
+      "argument2prefname": {
+        "type": "text",
+        "store": true
+      },
+      "argument2homoprefname": {
+        "type": "text",
+        "store": true
+      },
+      "argument2conceptid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2tophomoid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2matchtype": {
+        "type": "keyword",
+        "store": true
+      },
       "maineventtype": {
         "type": "keyword",
         "store": true
