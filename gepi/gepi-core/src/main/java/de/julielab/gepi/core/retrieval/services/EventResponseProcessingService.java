@@ -53,7 +53,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 
     private Stream<Event> resultDocuments2Events(Stream<ISearchServerDocument> documents) {
         return documents.map(eventDocument -> {
-            Optional<String> docId = eventDocument.getFieldValue(FIELD_PMID);
+            Optional<String> pmid = eventDocument.getFieldValue(FIELD_PMID);
+            Optional<String> pmcid = eventDocument.getFieldValue(FIELD_PMCID);
             List<Object> conceptIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_CONCEPT_IDS)
                     .orElse(Collections.emptyList());
             List<Object> geneIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_GENE_IDS)
@@ -75,7 +76,6 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             List<String> sentenceHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE);
             List<String> paragraphHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH);
             String eventId = eventDocument.getId();
-
 
             int numArguments = geneIds.size();
             List<Argument> arguments = new ArrayList<>();
@@ -103,7 +103,9 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             }
 
             Event event = new Event();
-            docId.ifPresent(event::setDocId);
+            // Only one ID is present currently
+            pmid.ifPresent(event::setDocId);
+            pmcid.ifPresent(event::setDocId);
             event.setEventId(eventId);
             event.setArguments(arguments);
             if (likelihood.isPresent())
@@ -135,7 +137,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                 if (fulltextQueryHighlightedMatcher.find())
                     event.setParagraphMatchingFulltextQuery(true);
             }
-
+            if (event.getDocId() == null || event.getEventId() == null)
+                System.out.println("hier");
             return event;
         }).filter(Objects::nonNull);
     }

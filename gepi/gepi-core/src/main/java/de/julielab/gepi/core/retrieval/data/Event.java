@@ -177,6 +177,9 @@ public class Event {
 
     public Event copy() {
         Event e = new Event();
+        e.eventId = eventId;
+        e.docId = docId;
+        e.documentType = documentType;
         e.allEventTypes = allEventTypes != null ? new ArrayList<>(allEventTypes) : null;
         e.arguments = arguments != null ? new ArrayList<>(arguments) : null;
         e.likelihood = likelihood;
@@ -187,7 +190,7 @@ public class Event {
     }
 
     public String getDocId() {
-        if (getEventId().startsWith("PMC")) return "PMC" + docId;
+        if (getEventId() != null && getEventId().startsWith("PMC")) return "PMC" + docId;
         else if (getPmid() != null) return getPmid();
         throw new IllegalStateException("No document ID for event " + this);
     }

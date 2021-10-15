@@ -215,7 +215,7 @@ public class GepiInput {
 //        if ((filterString != null && !filterString.isBlank()) || selectedDevSettings.contains("Always use ES")) {
         fetchEventsFromElasticSearch(selectedEventTypeNames, isAListPresent, isABSearchRequest, listAGePiIds, listBGePiIds);
 //        } else {
-        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
+//        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
 //        }
 
         if (isABSearchRequest) {
