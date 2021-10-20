@@ -15,7 +15,6 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.search.BooleanClause;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
@@ -59,6 +58,38 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME = "argumenthomoprefnames";
 
+    public static final String FIELD_EVENT_ARGUMENT1SEARCH = "argument1";
+
+    public static final String FIELD_EVENT_ARG1_GENE_ID = "argument1geneid";
+
+    public static final String FIELD_EVENT_ARG1_CONCEPT_ID = "argument1conceptid";
+
+    public static final String FIELD_EVENT_ARG1_TOP_HOMOLOGY_ID = "argument1tophomoid";
+
+    public static final String FIELD_EVENT_ARG1_MATCH_TYPE = "argument1matchtype";
+
+    public static final String FIELD_EVENT_ARG1_TEXT = "argument1coveredtext";
+
+    public static final String FIELD_EVENT_ARG1_PREFERRED_NAME = "argument1prefname";
+
+    public static final String FIELD_EVENT_ARG1_HOMOLOGY_PREFERRED_NAME = "argument1homoprefname";
+
+    public static final String FIELD_EVENT_ARGUMENT2SEARCH = "argument2";
+
+    public static final String FIELD_EVENT_ARG2_GENE_ID = "argument2geneid";
+
+    public static final String FIELD_EVENT_ARG2_CONCEPT_ID = "argument2conceptid";
+
+    public static final String FIELD_EVENT_ARG2_TOP_HOMOLOGY_ID = "argument2tophomoid";
+
+    public static final String FIELD_EVENT_ARG2_MATCH_TYPE = "argument2matchtype";
+
+    public static final String FIELD_EVENT_ARG2_TEXT = "argument2coveredtext";
+
+    public static final String FIELD_EVENT_ARG2_PREFERRED_NAME = "argument2prefname";
+
+    public static final String FIELD_EVENT_ARG2_HOMOLOGY_PREFERRED_NAME = "argument2homoprefname";
+
     public static final String FIELD_EVENT_SENTENCE = "sentence.text";
 
     public static final String FIELD_EVENT_PARAGRAPH = "paragraph.text";
@@ -91,23 +122,46 @@ public class EventRetrievalService implements IEventRetrievalService {
 
                 log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idSetA.size(), idSetB.size());
 
-                TermsQuery listAQuery = new TermsQuery(Collections.unmodifiableCollection(idSetA));
-                listAQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
+                TermsQuery listA1Query = new TermsQuery(Collections.unmodifiableCollection(idSetA));
+                listA1Query.field = FIELD_EVENT_ARGUMENT1SEARCH;
+                TermsQuery listA2Query = new TermsQuery(Collections.unmodifiableCollection(idSetA));
+                listA2Query.field = FIELD_EVENT_ARGUMENT2SEARCH;
 
-                TermsQuery listBQuery = new TermsQuery(Collections.unmodifiableCollection(idSetB));
-                listBQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
+                TermsQuery listB1Query = new TermsQuery(Collections.unmodifiableCollection(idSetB));
+                listB1Query.field = FIELD_EVENT_ARGUMENT1SEARCH;
+                TermsQuery listB2Query = new TermsQuery(Collections.unmodifiableCollection(idSetB));
+                listB2Query.field = FIELD_EVENT_ARGUMENT2SEARCH;
 
-                BoolClause listAClause = new BoolClause();
-                listAClause.addQuery(listAQuery);
-                listAClause.occur = Occur.MUST;
+                BoolClause a1b2Clause = new BoolClause();
+                a1b2Clause.addQuery(listA1Query);
+                a1b2Clause.addQuery(listB2Query);
+                a1b2Clause.occur = Occur.MUST;
 
-                BoolClause listBClause = new BoolClause();
-                listBClause.addQuery(listBQuery);
-                listBClause.occur = Occur.MUST;
+                BoolClause a2b1Clause = new BoolClause();
+                a2b1Clause.addQuery(listA2Query);
+                a2b1Clause.addQuery(listB1Query);
+                a2b1Clause.occur = Occur.MUST;
+
+                BoolQuery a1b2Query = new BoolQuery();
+                a1b2Query.addClause(a1b2Clause);
+
+                BoolQuery a2b1Query = new BoolQuery();
+                a2b1Query.addClause(a2b1Clause);
+
+                BoolClause argClause = new BoolClause();
+                argClause.addQuery(a1b2Query);
+                argClause.addQuery(a2b1Query);
+                argClause.occur = Occur.SHOULD;
+
+                BoolQuery mustQuery = new BoolQuery();
+                mustQuery.addClause(argClause);
+
+                BoolClause mustClause = new BoolClause();
+                mustClause.addQuery(mustQuery);
+                mustClause.occur = Occur.MUST;
 
                 BoolQuery eventQuery = new BoolQuery();
-                eventQuery.addClause(listAClause);
-                eventQuery.addClause(listBClause);
+                eventQuery.addClause(mustClause);
 
                 if (!eventTypes.isEmpty()) {
                     TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
@@ -191,9 +245,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     /**
      * Reorders the arguments of the events to make the first argument correspond to
-     * the A ID list and the second argument to the B ID list. Also adds new events
-     * in case of more than two ID hits in the same so we can handle all results as
-     * binary events.
+     * the A ID list and the second argument to the B ID list.
      *
      * @param idSetA      The set of list A query IDs.
      * @param idSetB      The set of list B query IDs.
@@ -206,59 +258,11 @@ public class EventRetrievalService implements IEventRetrievalService {
         // an input ID from list A and the second argument corresponds to an
         // ID from list B
 
-        // It might happen that an event has more than two gene arguments.
-        // Thus, it might also happen, that more than two input IDs are
-        // found in the event. However, GePi currently only handles binary
-        // events. Hence, we split larger events into pairs of arguments if
-        // necessary.
-        List<Event> extendedResults = new ArrayList<>();
-        for (Iterator<Event> it = eventResult.getEventList().iterator(); it.hasNext(); ) {
-            Event e = it.next();
-            List<Integer> idAHits = new ArrayList<>();
-            List<Integer> idBHits = new ArrayList<>();
-            for (int i = 0; i < e.getNumArguments(); ++i) {
-                Argument g = e.getArgument(i);
-                // As we expand given ids to top-homology ids we need to compare to those
-                // not the input genes, e.g. g.geneId(); see also #60 and #62
-                if (idSetA.contains(g.getTopHomologyId()) || idSetA.contains(g.getConceptId()) || idSetA.contains(g.getGeneId())) {
-                    idAHits.add(i);
-                }
-                if (idSetB.contains(g.getTopHomologyId()) || idSetB.contains(g.getConceptId()) || idSetB.contains(g.getGeneId())) {
-                    idBHits.add(i);
-                }
-            }
-            if (idAHits.size() + idBHits.size() < 2)
-                throw new IllegalStateException(
-                        "An event was returned that does not contain one of the input argument IDs: " + e);
-            // create events for all pairs of indices containing an input
-            // ID, if the IDs at those indices are different
-            List<Argument> originalArguments = new ArrayList<>(e.getArguments());
-            for (int i = 0; i < idAHits.size(); ++i) {
-                for (int j = 0; j < idBHits.size(); ++j) {
-                    // for the first combination, use the original event
-                    // object; for all others, we need a copy
-                    Event event;
-                    List<Argument> arguments;
-                    if (i == 0 && j == 0) {
-                        event = e;
-                        arguments = e.getArguments();
-                    } else {
-                        event = e.copy();
-                        extendedResults.add(event);
-                        arguments = new ArrayList<>(originalArguments);
-                    }
-                    // arrange the arguments according to the positions of
-                    // listAId and listBId
-                    int inputAIdPosition = idAHits.get(i);
-                    int inputBIdPosition = idBHits.get(j);
-                    if (inputAIdPosition > 0)
-                        Collections.swap(arguments, 0, inputAIdPosition);
-                    if (inputBIdPosition > 1)
-                        Collections.swap(arguments, 1, inputBIdPosition);
-                }
-            }
+        for (Event e : eventResult.getEventList()) {
+            Argument firstArg = e.getFirstArgument();
+            if (!(idSetA.contains(firstArg.getGeneId()) || idSetA.contains(firstArg.getTopHomologyId())))
+                e.swapArguments();
         }
-        eventResult.getEventList().addAll(extendedResults);
     }
 
     @Override

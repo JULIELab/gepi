@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.retrieval.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -189,9 +190,18 @@ public class Event {
         return e;
     }
 
+    /**
+     * If there are exactly two arguments for this event, swap their positions.
+     * @throws IllegalStateException If there are not exactly two arguments.
+     */
+    public void swapArguments() {
+        if (arguments.size() != 2)
+            throw new IllegalStateException("There are not exactly two arguments but " + arguments.size());
+        Collections.swap(arguments, 0, 1);
+    }
+
     public String getDocId() {
-        if (getEventId() != null && getEventId().startsWith("PMC")) return "PMC" + docId;
-        else if (getPmid() != null) return getPmid();
+        if (getPmid() != null) return getPmid();
         throw new IllegalStateException("No document ID for event " + this);
     }
 

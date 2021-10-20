@@ -17,11 +17,11 @@ import org.apache.tapestry5.services.HttpError;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Start page of application gepi-webapp.
@@ -179,10 +179,13 @@ public class Index {
             }
             else {
                 List<Event> eventList = data.getUnrolledResult().get().getEventList();
+                Set<String> idSet = eventList.stream().map(Event::getEventId).collect(Collectors.toSet());
+                Set<String> duplicates = new HashSet<>();
+                log.warn("All returned events: {}; unique event IDs: {}; some duplicate eventIDs: {}", eventList.size(), idSet.size(), eventList.stream().map(Event::getEventId).filter(Predicate.not(duplicates::add)).limit(10).collect(Collectors.toList()));
                 log.debug("Obtained unrolled list of individual events of size {}.", eventList.size());
                 jsonObject = dataService.getPairedArgsCount(eventList);
             }
-            log.debug("Sending data of type {} with {} nodes and {} links to the client ", datasource, jsonObject.getJSONArray("nodes").length(), jsonObject.getJSONArray("links").length());
+            log.debug("Sending data of type {} with {} nodes and {} links to the client ", datasource, jsonObject.getJSONArray("nodes").size(), jsonObject.getJSONArray("links").size());
             return jsonObject;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

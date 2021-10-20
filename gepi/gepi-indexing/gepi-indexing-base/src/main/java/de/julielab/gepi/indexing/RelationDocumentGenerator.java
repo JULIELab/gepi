@@ -224,10 +224,25 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         token2.positionIncrement = 0;
         token2.term = "xargumentx";
 
-        if (token1.start < 0 || token1.end > fullTextSpanEnd-fullTextSpanStart)
-            throw new IllegalStateException(String.format("xargumentx token offsets are out of bounds: %d-%d. Covering span annotation has offsets %d-%d, length %d", token1.start, token1.end, fullTextSpanStart, fullTextSpanEnd, fullTextSpanEnd-fullTextSpanStart));
-        if (token2.start < 0 || token2.end > fullTextSpanEnd-fullTextSpanStart)
-            throw new IllegalStateException(String.format("xargumentx token offsets are out of bounds: %d-%d. Covering span annotation has offsets %d-%d, length %d", token2.start, token2.end, fullTextSpanStart, fullTextSpanEnd, fullTextSpanEnd-fullTextSpanStart));
+
+        if (token1.start < 0 || token1.end > fullTextSpanEnd-fullTextSpanStart) {
+            String docId = null;
+            try {
+                docId = JCoReTools.getDocId(arg1.getCAS().getJCas());
+            } catch (CASException e) {
+                docId = "<unknown>";
+            }
+            throw new IllegalStateException(String.format("xargumentx token offsets are out of bounds: %d-%d. Covering span annotation has offsets %d-%d, length %d. DocumentID: %s", token1.start, token1.end, fullTextSpanStart, fullTextSpanEnd, fullTextSpanEnd - fullTextSpanStart, docId));
+        }
+        if (token2.start < 0 || token2.end > fullTextSpanEnd-fullTextSpanStart) {
+            String docId = null;
+            try {
+                docId = JCoReTools.getDocId(arg1.getCAS().getJCas());
+            } catch (CASException e) {
+                docId = "<unknown>";
+            }
+            throw new IllegalStateException(String.format("xargumentx token offsets are out of bounds: %d-%d. Covering span annotation has offsets %d-%d, length %d. DocumentID: %s", token2.start, token2.end, fullTextSpanStart, fullTextSpanEnd, fullTextSpanEnd - fullTextSpanStart, docId));
+        }
 
         tokens.add(token1);
         tokens.add(token2);

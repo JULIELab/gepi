@@ -279,6 +279,7 @@ public class GePiDataService implements IGePiDataService {
                 row.add(e.getSecondArgument().getMatchType());
                 row.add(String.join(",", e.getAllEventTypes()));
                 row.add(e.getDocId());
+                row.add(e.getEventId());
                 if (e.isSentenceMatchingFulltextQuery()) {
                     row.add("sentence");
                     row.add(e.getSentence());

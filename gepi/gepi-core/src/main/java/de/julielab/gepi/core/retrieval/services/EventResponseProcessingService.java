@@ -137,8 +137,6 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                 if (fulltextQueryHighlightedMatcher.find())
                     event.setParagraphMatchingFulltextQuery(true);
             }
-            if (event.getDocId() == null || event.getEventId() == null)
-                System.out.println("hier");
             return event;
         }).filter(Objects::nonNull);
     }

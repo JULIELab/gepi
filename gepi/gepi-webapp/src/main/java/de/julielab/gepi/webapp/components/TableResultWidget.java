@@ -79,6 +79,7 @@ public class TableResultWidget extends GepiWidget {
                 "allEventTypes",
                 "fulltextMatchSource",
                 "docId",
+                "eventId",
                 "context"));
         if (inputMode != null && !inputMode.contains(InputMode.FULLTEXT_QUERY))
             availableColumns.remove("fulltextMatchSource");
@@ -96,6 +97,7 @@ public class TableResultWidget extends GepiWidget {
         tableModel.get("secondArgumentMatchType").label("gene B match type");
         tableModel.get("allEventTypes").label("relation types");
         tableModel.get("docId").label("document id");
+        tableModel.get("eventId").label("event id");
 
         contextFormat = new Format() {
             @Override
@@ -188,6 +190,10 @@ public class TableResultWidget extends GepiWidget {
 
         public String getDocId() {
             return event.getDocId();
+        }
+
+        public String getEventId() {
+            return event.getEventId();
         }
 
         public String getFirstArgumentText() {
