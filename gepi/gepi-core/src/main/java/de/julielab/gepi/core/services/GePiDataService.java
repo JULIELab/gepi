@@ -239,17 +239,17 @@ public class GePiDataService implements IGePiDataService {
     }
 
     @Override
-    public File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode) throws IOException {
+    public File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString) throws IOException {
         log.debug("Creating event statistics Excel file for dataSessionId {}", dataSessionId);
         File tsvFile = getTempTsvDataFile(dataSessionId);
         File xlsFile = getTempXlsDataFile(dataSessionId);
         writeOverviewTsvFile(events, tsvFile);
-        createExcelSummaryFile(tsvFile, xlsFile, inputMode);
+        createExcelSummaryFile(tsvFile, xlsFile, inputMode, sentenceFilterString, paragraphFilterString);
         return xlsFile;
     }
 
-    private void createExcelSummaryFile(File tsvFile, File xlsFile, EnumSet<InputMode> inputMode) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder().command("python", "-c", excelResultCreationScript, tsvFile.getAbsolutePath(), xlsFile.getAbsolutePath(), inputMode.stream().map(InputMode::name).collect(Collectors.joining(" ")));
+    private void createExcelSummaryFile(File tsvFile, File xlsFile, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString) throws IOException {
+        ProcessBuilder builder = new ProcessBuilder().command("python", "-c", excelResultCreationScript, tsvFile.getAbsolutePath(), xlsFile.getAbsolutePath(), inputMode.stream().map(InputMode::name).collect(Collectors.joining(" ")), sentenceFilterString != null ? sentenceFilterString : "<none>", paragraphFilterString != null ? paragraphFilterString : "<none>");
         Process process = builder.start();
         InputStream processInput = process.getInputStream();
         InputStream processErrors = process.getErrorStream();

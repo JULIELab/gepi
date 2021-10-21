@@ -33,8 +33,6 @@ public class GepiWidget {
     @Property
     protected long dataSessionId;
 
-    @Parameter
-    protected EnumSet<InputMode> inputMode;
 
     @InjectPage
     private Index index;

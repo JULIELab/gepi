@@ -56,6 +56,12 @@ public class Index {
     @Property
     @Persist(TabPersistentField.TAB)
     private EnumSet<InputMode> inputMode;
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private String sentenceFilterString;
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private String paragraphFilterString;
     @Persist(TabPersistentField.TAB)
     private boolean hasLargeWidget;
 
@@ -179,9 +185,6 @@ public class Index {
             }
             else {
                 List<Event> eventList = data.getUnrolledResult().get().getEventList();
-                Set<String> idSet = eventList.stream().map(Event::getEventId).collect(Collectors.toSet());
-                Set<String> duplicates = new HashSet<>();
-                log.warn("All returned events: {}; unique event IDs: {}; some duplicate eventIDs: {}", eventList.size(), idSet.size(), eventList.stream().map(Event::getEventId).filter(Predicate.not(duplicates::add)).limit(10).collect(Collectors.toList()));
                 log.debug("Obtained unrolled list of individual events of size {}.", eventList.size());
                 jsonObject = dataService.getPairedArgsCount(eventList);
             }

@@ -122,9 +122,11 @@ public class GepiInput {
     private List<String> selectedDevSettings;
 
     @Property
+    @Parameter
     private String sentenceFilterString;
 
     @Property
+    @Parameter
     private String paragraphFilterString;
 
     @Property

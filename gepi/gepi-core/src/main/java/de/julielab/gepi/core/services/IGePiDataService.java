@@ -68,7 +68,9 @@ public interface IGePiDataService {
      * resulting Excel file is then read back in the form of the InputStream.</p>
      * @param events The events to create the result workbook for.
      * @param inputMode
+     * @param sentenceFilterString
+     * @param paragraphFilterString
      * @return An InputStream of the created Excel file.
      */
-    File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode) throws IOException;
+    File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString) throws IOException;
 }

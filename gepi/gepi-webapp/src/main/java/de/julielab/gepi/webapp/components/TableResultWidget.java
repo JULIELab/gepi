@@ -1,25 +1,15 @@
 package de.julielab.gepi.webapp.components;
 
-import java.io.*;
-import java.text.FieldPosition;
-import java.text.Format;
-import java.text.MessageFormat;
-import java.text.ParsePosition;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.Argument;
+import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.java.utilities.FileUtilities;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Log;
+import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.beanmodel.BeanModel;
@@ -27,10 +17,19 @@ import org.apache.tapestry5.beanmodel.services.BeanModelSource;
 import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Inject;
-
-import de.julielab.gepi.core.retrieval.data.Argument;
-import de.julielab.gepi.core.retrieval.data.Event;
 import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class TableResultWidget extends GepiWidget {
 
@@ -58,6 +57,15 @@ public class TableResultWidget extends GepiWidget {
 
     @Inject
     private ComponentResources resources;
+
+    @Parameter
+    protected EnumSet<InputMode> inputMode;
+
+    @Parameter
+    private String sentenceFilterString;
+
+    @Parameter
+    private String paragraphFilterString;
 
     @Property
     @Persist(TabPersistentField.TAB)
@@ -158,7 +166,7 @@ public class TableResultWidget extends GepiWidget {
             @Override
             public void prepareResponse(Response response) {
                 try {
-                    statisticsFile = dataService.getOverviewExcel(getEsResult().get().getEventList(), dataSessionId, inputMode);
+                    statisticsFile = dataService.getOverviewExcel(getEsResult().get().getEventList(), dataSessionId, inputMode, sentenceFilterString, paragraphFilterString);
 
                     response.setHeader("Content-Length", "" + statisticsFile.length()); // output into file
                     response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getName());
@@ -243,9 +251,9 @@ public class TableResultWidget extends GepiWidget {
 
         public String getContext() {
             if (event.isParagraphMatchingFulltextQuery() && !event.isSentenceMatchingFulltextQuery())
-                return event.getHlParagraph();
+                return event.getSentence() + "<br>" + event.getHlParagraph();
             if (event.isSentenceMatchingFulltextQuery())
-                return event.getHlSentence();
+                return event.getSentence() + "<br>" + event.getHlSentence();
             return event.getSentence();
         }
 

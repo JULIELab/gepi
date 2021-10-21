@@ -20,7 +20,7 @@ import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.*;
 
 public class EventResponseProcessingService implements IEventResponseProcessingService {
 
-    private final static Pattern FULLTEXT_QUERY_HIGHLIGHT_PATTERN = Pattern.compile("<em>");
+    private final static Pattern FULLTEXT_QUERY_HIGHLIGHT_PATTERN = Pattern.compile("<b>");
     @Inject
     private IEventPostProcessingService eventPPService;
     private Logger log;

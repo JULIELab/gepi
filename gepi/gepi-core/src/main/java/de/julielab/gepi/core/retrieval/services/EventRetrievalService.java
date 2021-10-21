@@ -189,6 +189,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                         FIELD_PMCID,
                         FIELD_EVENT_LIKELIHOOD,
                         FIELD_EVENT_SENTENCE,
+                        FIELD_EVENT_PARAGRAPH,
                         FIELD_EVENT_MAINEVENTTYPE,
                         FIELD_EVENT_ALL_EVENTTYPES,
                         FIELD_EVENT_ARG_GENE_IDS,
@@ -200,6 +201,23 @@ public class EventRetrievalService implements IEventRetrievalService {
                         FIELD_EVENT_ARG_TEXT);
                 serverCmd.downloadCompleteResults = true;
                 serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
+                if (!StringUtils.isBlank(sentenceFilter) || !StringUtils.isBlank(paragraphFilter)) {
+                    HighlightCommand hlc = new HighlightCommand();
+                    hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
+                    hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
+                    hlc.fields.forEach(f -> {
+//                f.boundaryChars = new char[]{'\n', '\t'};
+//                f.type = HighlightCommand.Highlighter.fastvector;
+                f.pre = "<b>";
+                f.post = "</b>";
+//                MatchQuery hlQuery = new MatchQuery();
+//                hlQuery.field = FIELD_EVENT_SENTENCE;
+//                hlQuery.query = "xargumentx";
+//                f.highlightQuery = hlQuery;
+                    });
+                    serverCmd.addHighlightCmd(hlc);
+                }
+
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier<>("BipartiteEvents");
                 carrier.addSearchServerRequest(serverCmd);
@@ -229,13 +247,14 @@ public class EventRetrievalService implements IEventRetrievalService {
      * @param eventQuery  The top event query that is currently constructed.
      */
     private void addFulltextSearchQuery(String filterQuery, String field, Occur occur, BoolQuery eventQuery) {
-        final SimpleQueryStringQuery sentenceFilterQuery = new SimpleQueryStringQuery();
-        sentenceFilterQuery.query = filterQuery;
-        sentenceFilterQuery.fields = Arrays.asList(field);
-        final BoolClause sentenceFilterClause = new BoolClause();
-        sentenceFilterClause.addQuery(sentenceFilterQuery);
-        sentenceFilterClause.occur = occur;
-        eventQuery.addClause(sentenceFilterClause);
+        final SimpleQueryStringQuery textFilterQuery = new SimpleQueryStringQuery();
+        textFilterQuery.flags = List.of(SimpleQueryStringQuery.Flag.ALL);
+        textFilterQuery.query = filterQuery;
+        textFilterQuery.fields = Arrays.asList(field);
+        final BoolClause textFilterClause = new BoolClause();
+        textFilterClause.addQuery(textFilterQuery);
+        textFilterClause.occur = occur;
+        eventQuery.addClause(textFilterClause);
     }
 
     @Override
@@ -260,7 +279,10 @@ public class EventRetrievalService implements IEventRetrievalService {
 
         for (Event e : eventResult.getEventList()) {
             Argument firstArg = e.getFirstArgument();
+            Argument secondArg = e.getSecondArgument();
             if (!(idSetA.contains(firstArg.getGeneId()) || idSetA.contains(firstArg.getTopHomologyId())))
+                e.swapArguments();
+            else if (!(idSetB.contains(secondArg.getGeneId()) || idSetB.contains(secondArg.getTopHomologyId())))
                 e.swapArguments();
         }
     }
@@ -400,13 +422,13 @@ public class EventRetrievalService implements IEventRetrievalService {
             serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 
             HighlightCommand hlc = new HighlightCommand();
-            hlc.addField(FIELD_EVENT_SENTENCE, 1, 0);
-            hlc.addField(FIELD_EVENT_PARAGRAPH, 1, 0);
+            hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
+            hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
             hlc.fields.forEach(f -> {
 //                f.boundaryChars = new char[]{'\n', '\t'};
 //                f.type = HighlightCommand.Highlighter.fastvector;
-//                f.pre = "<b>";
-//                f.post = "</b>";
+                f.pre = "<b>";
+                f.post = "</b>";
 //                MatchQuery hlQuery = new MatchQuery();
 //                hlQuery.field = FIELD_EVENT_SENTENCE;
 //                hlQuery.query = "xargumentx";

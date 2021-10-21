@@ -33,7 +33,7 @@ def makeArgumentSymbolPivotTable(df, column, order):
     givengenesfreq[('both','total sum')] = givengenesfreq[('exact','sum')] + givengenesfreq[('fuzzy','sum')]
     return givengenesfreq
 
-def writeresults(input,output,inputMode):
+def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterString):
     header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "arg1matchtype", "arg2matchtype", "relationtypes", "docid", "eventid", "fulltextmatchtype", "context"]
     columndesc=[ 'Input gene symbol',
                  'Event partner gene symbol',
@@ -124,26 +124,30 @@ def writeresults(input,output,inputMode):
         bold = ew.book.add_format({'bold': True})
         frontpage.write(0,0, f'This is a GePi statistics file which contains results of event extraction. Creation date is {date.today()}.')
         frontpage.write(1,0, 'The contained worksheets contain the actual text mining results as well as statistics extracted from them.')
-        frontpage.write(3,0, 'The "Results" sheet is a large table containing the gene event arguments, an indication of how well the text matched')
-        frontpage.write(4,0, 'a gene synonym ("exact" or "fuzzy"), the recognized type of the event (such as "phosphorylation" or "regulation"),')
-        frontpage.write(5,0, 'the document ID (PubMed ID for PubMed results, PMC ID for PubMed Central results) and the sentence in which the')
-        frontpage.write(6,0, 'respective event was found.')
+        frontpage.write(2,0, 'The result was obtained using the following filter terms:')
+        frontpage.write(3,0, f'Sentence level filter terms: {sentenceFilterString}')
+        frontpage.write(4,0, f'Paragraph level filter terms: {paragraphFilterString}')
+        frontpage.write(5,0, 'Only molecular events that were described in a sentence or a paragraph containing the filter terms was returned for this result.')
+        frontpage.write(7,0, 'The "Results" sheet is a large table containing the gene event arguments, an indication of how well the text matched')
+        frontpage.write(8,0, 'a gene synonym ("exact" or "fuzzy"), the recognized type of the event (such as "phosphorylation" or "regulation"),')
+        frontpage.write(9,0, 'the document ID (PubMed ID for PubMed results, PMC ID for PubMed Central results) and the sentence in which the')
+        frontpage.write(10,0, 'respective event was found.')
         resultsdesc.to_excel(ew, startrow=7, index=False, sheet_name='Frontpage')
-        frontpage.write(20,0, 'The matchtype "exact" means that the textual gene name could be matched perfectly to a synonym of a NCBI Gene database entry.')
-        frontpage.write(21,0, '"Fuzzy" means that the gene name found in the literature could only be mapped to an NCBI Gene record by allowing minor differences when comparing with the synonyms.')
-        frontpage.write(22,0, 'Example: Assume the text match was "{}". This cannot be found exactly in NCBI Gene. However, the synonym "{}" exists which could be used for the mapping.'.format('25 kDa lysophospholipid-specific lysophospholipase', 'lysophospholipid-specific lysophospholipase'))
+        frontpage.write(24,0, 'The matchtype "exact" means that the textual gene name could be matched perfectly to a synonym of a NCBI Gene database entry.')
+        frontpage.write(25,0, '"Fuzzy" means that the gene name found in the literature could only be mapped to an NCBI Gene record by allowing minor differences when comparing with the synonyms.')
+        frontpage.write(26,0, 'Example: Assume the text match was "{}". This cannot be found exactly in NCBI Gene. However, the synonym "{}" exists which could be used for the mapping.'.format('25 kDa lysophospholipid-specific lysophospholipase', 'lysophospholipid-specific lysophospholipase'))
         #frontpage.write(24,0,  'Description of the sheets:', bold)
-        frontpage.write(24,0,  'Description of the sheets:')
+        frontpage.write(28,0,  'Description of the sheets:')
         if 'A' in inputMode or 'AB' in inputMode:
-            frontpage.write(25,0,  '"Given Genes Statistics" shows how often the input gene symbols were found in relations with other genes, separated by exact and fuzzy matches.')
-            frontpage.write(26,0,  '"Event Partner Statistics" shows the same but from the perspective of the interaction partners of the input genes.')
-            frontpage.write(27,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results.')
-            frontpage.write(28,0,  '"Input Gene Event Diversity" shows for each input gene symbol how many different interaction partners it has in the results.')
-            frontpage.write(29,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results.')
+            frontpage.write(29,0,  '"Given Genes Statistics" shows how often the input gene symbols were found in relations with other genes, separated by exact and fuzzy matches.')
+            frontpage.write(30,0,  '"Event Partner Statistics" shows the same but from the perspective of the interaction partners of the input genes.')
+            frontpage.write(31,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results.')
+            frontpage.write(32,0,  '"Input Gene Event Diversity" shows for each input gene symbol how many different interaction partners it has in the results.')
+            frontpage.write(33,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results.')
         else:
-            frontpage.write(25,0,  '"Gene Interaction Statistics" shows how often gene symbols were found in relations with other genes, separated by exact and fuzzy matches.')
-            frontpage.write(26,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results.')
-            frontpage.write(27,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results.')
+            frontpage.write(29,0,  '"Gene Interaction Statistics" shows how often gene symbols were found in relations with other genes, separated by exact and fuzzy matches.')
+            frontpage.write(30,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results.')
+            frontpage.write(31,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results.')
 
     return df
 
@@ -151,6 +155,8 @@ if __name__ == "__main__":
     input     = sys.argv[1]
     output    = sys.argv[2]
     inputMode = sys.argv[3].split(' ')
+    sentenceFilterString = sys.argv[4]
+    paragraphFilterString = sys.argv[5]
 
-    writeresults(input,output,inputMode)
+    writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterString)
 
