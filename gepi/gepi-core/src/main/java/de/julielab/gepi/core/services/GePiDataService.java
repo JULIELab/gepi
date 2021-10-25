@@ -287,7 +287,7 @@ public class GePiDataService implements IGePiDataService {
                     row.add("paragraph");
                     row.add(e.getParagraph());
                 } else {
-                    row.add("");
+                    row.add("N/A");
                     row.add(e.getSentence());
                 }
 

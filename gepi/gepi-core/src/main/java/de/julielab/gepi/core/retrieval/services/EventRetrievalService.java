@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.FILTER;
+import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.SHOULD;
 
 /**
  * Gets any IDs, converts them to GePi IDs (or just queries the index?!) and
@@ -172,11 +173,20 @@ public class EventRetrievalService implements IEventRetrievalService {
                     eventQuery.addClause(eventTypeClause);
                 }
 
+                BoolQuery filterQuery = new BoolQuery();
                 if (!StringUtils.isBlank(sentenceFilter)) {
-                    addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, Occur.FILTER, eventQuery);
+                    // TODO should vs must should be adapted according to the user input
+                    addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, SHOULD, filterQuery);
                 }
                 if (!StringUtils.isBlank(paragraphFilter)) {
-                    addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, Occur.FILTER, eventQuery);
+                    // TODO should vs must should be adapted according to the user input
+                    addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, SHOULD, filterQuery);
+                }
+                if (filterQuery.clauses != null) {
+                    BoolClause fulltextFilterClause = new BoolClause();
+                    fulltextFilterClause.occur = FILTER;
+                    fulltextFilterClause.addQuery(filterQuery);
+                    eventQuery.addClause(fulltextFilterClause);
                 }
 
                 SearchServerRequest serverCmd = new SearchServerRequest();
