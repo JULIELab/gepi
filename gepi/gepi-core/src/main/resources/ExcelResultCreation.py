@@ -48,7 +48,7 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
                  'Internal event ID. Useful to find unique identifiers for each event.',
                  'Place of fulltext filter match. Only applicable if filter terms were specified.',
                  'The textual context from the literature in which the event was found. That is the sentence enclosing the event by default. In case of a paragraph-level filter query this can also be the enclosing paragraph. This would then be indicated by the value of the fulltextmatchtype column.']
-    df = pd.read_csv(input, names=header,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object},quoting=csv.QUOTE_NONE)
+    df = pd.read_csv(input, names=header,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object,'fulltextmatchtype':object},quoting=csv.QUOTE_NONE,keep_default_na=False)
     print(f'Read {len(df)} data rows from {input}.')
     # Remove duplicates in the event types and sort them alphabetically
     reltypes=df["relationtypes"]
