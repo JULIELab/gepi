@@ -1,15 +1,12 @@
 package de.julielab.gepi.core.retrieval.data;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EventRetrievalResult {
+
 	public enum EventResultType {OUTSIDE, BIPARTITE, FULLTEXT_FILTERED}
 	private List<Event> eventList;
 	private EventResultType resultType;
@@ -20,6 +17,10 @@ public class EventRetrievalResult {
 
 	public void setEvents(Stream<Event> events) {
 		eventList = events.collect(Collectors.toList());
+	}
+
+	public void setEvents(List<Event> eventList) {
+		this.eventList = eventList;
 	}
 
 	public EventResultType getResultType() {

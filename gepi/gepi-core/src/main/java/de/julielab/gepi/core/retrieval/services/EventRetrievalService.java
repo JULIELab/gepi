@@ -474,7 +474,8 @@ public class EventRetrievalService implements IEventRetrievalService {
         // reorder all arguments such that the first argument corresponds to
         // the input ID that caused the match
 
-        for (Iterator<Event> it = eventResult.getEventList().iterator(); it.hasNext(); ) {
+        List<Event> reorderedEvents = new ArrayList<>(eventResult.getEventList());
+        for (Iterator<Event> it = reorderedEvents.iterator(); it.hasNext(); ) {
             Event e = it.next();
             // remove events that do not have any other argument than the
             // input ID itself
@@ -502,6 +503,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 arguments.set(inputIdPosition, tmp);
             }
         }
+        eventResult.setEvents(reorderedEvents);
     }
 
 }
