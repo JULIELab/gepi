@@ -128,7 +128,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           const svg = chart
               .append('svg')
               .attr('width', this.settings.width)
-              .attr('height', this.settings.height);
+              .attr('height', this.settings.height)
+              .attr('top', '50px');
 
           return svg;//.append('g');//.attr('transform', 'translate(' + this.settings.padding_x + ',' + this.settings.padding_y + ')');
         }
@@ -138,10 +139,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           console.log('Redrawing sankey!');
           
           console.log("SankeyWidget viewMode: " + this.widgetSettings.viewMode)
-          if (this.widgetSettings.viewMode !== 'overview') {
-            $('#'+this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-10')
+          if (this.widgetSettings.viewMode === 'small') {
+            $('#'+this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-12');
+            $('#'+this.elementId+'-container').parent().addClass('d-none');
           } else {
-            $('#'+this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-12')
+            $('#'+this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-10');
+            $('#'+this.elementId+'-container').parent().removeClass('d-none');
           }
 
           const svg = this.create_svg();

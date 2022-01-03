@@ -8,12 +8,14 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
     this.refreshContentsUrl = widgetSettings.refreshContentsUrl;
     this.zoneElementId = widgetSettings.zoneElementId;
     this.widget = $('#' + this.widgetId);
+    this.handle = $('#' + this.handleId);
+    this.chartArea = $('#' + this.widgetId.split('-')[0])
     this.useTapestryZoneUpdates = widgetSettings.useTapestryZoneUpdates;
     console.log("Creating Widget with settings " + JSON.stringify(widgetSettings))
     this.setupViewModeHandle();
   }
   Widget.prototype.getViewMode = function() {
-    return this.widget.hasClass('large') ? 'large' : 'overview';
+    return this.widget.hasClass('large') ? 'large' : 'small';
   };
   Widget.prototype.setupViewModeHandle = function() {
     const widget = this;
@@ -22,32 +24,40 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
     $('#' + this.handleId).click(function() {
       const currentMode = widget.getViewMode();
       let newMode;
+      let oldHandleClass;
+      let newHandleClass;
       switch (currentMode) {
         case 'large':
           $('body').removeClass('noScroll');
           $('#disableplane').removeClass('show');
-          newMode = 'overview';
+          newMode = 'small';
+          oldHandleClass = 'widget-resize-to-small';
+          newHandleClass = 'widget-resize-to-full';
           break;
-        case 'overview':
+        case 'small':
           $('body').addClass('noScroll');
           newMode = 'large';
+          oldHandleClass = 'widget-resize-to-full';
+          newHandleClass = 'widget-resize-to-small';
           window.setTimeout(() => $('#disableplane').addClass('show'), 500);
           break;
       }
 
       widget.widget.addClass(newMode).removeClass(currentMode);
+      widget.handle.addClass(newHandleClass).removeClass(oldHandleClass);
       // jQuery selector with the widget object as context, i.e. as selector root:
-      // this finds the element with the card-body class which is an descendent
+      // this finds the element with the card-body class which is an descendant
       // of the widget.widget object
       $('.card-body', widget.widget).addClass(newMode).removeClass(currentMode);
-      console.log("Setting widgetSetting viewMode to " + currentMode)
-      widget.widgetObject.widgetSettings.viewMode = currentMode;
+      console.log("["+widget.widgetId+"] Setting widgetSetting viewMode to " + newMode)
+      widget.widgetObject.widgetSettings.viewMode = newMode;
       if (widget.useTapestryZoneUpdates) {
         zoneManager.deferredZoneUpdate(widget.zoneElementId, widget.toggleViewModeUrl);
       } else {
-        console.log("Redrawing widget after setting viewMode")
+        console.log("["+widget.widgetId+"] Redrawing widget after setting viewMode")
         widget.widgetObject.redraw();
       }
+      console.log(widget.chartArea.parent())
     });
   };
 

@@ -72,7 +72,7 @@ final public class GepiWidgetLayout {
         if (getEsResult() == null)
             viewMode = null;
         if (viewMode == null)
-            viewMode = ViewMode.OVERVIEW.name().toLowerCase();
+            viewMode = ViewMode.SMALL.name().toLowerCase();
     }
 
     void afterRender() {
@@ -104,7 +104,7 @@ final public class GepiWidgetLayout {
         JSONObject widgetSettings = new JSONObject();
         widgetSettings.put("handleId", getResizeHandleId());
         widgetSettings.put("widgetId", clientId);
-        widgetSettings.put("viewMode", "overview");
+        widgetSettings.put("viewMode", "small");
         widgetSettings.put("toggleViewModeUrl", toggleViewModeEventLink.toAbsoluteURI());
         widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI());
         widgetSettings.put("zoneElementId", widgetZone.getClientId());
@@ -156,10 +156,10 @@ final public class GepiWidgetLayout {
             case "fullscreen":
                 break;
             case "large":
-                viewMode = ViewMode.OVERVIEW.name().toLowerCase();
+                viewMode = ViewMode.SMALL.name().toLowerCase();
                 index.setHasLargeWidget(false);
                 break;
-            case "overview":
+            case "small":
                 viewMode = ViewMode.LARGE.name().toLowerCase();
                 index.setHasLargeWidget(true);
                 break;
@@ -193,7 +193,7 @@ final public class GepiWidgetLayout {
         /**
          * The widget is in its overview mode, shown in juxtaposition to other widgets.
          */
-        OVERVIEW,
+        SMALL,
         /**
          * The widget covers the main view area of GePi, hiding other widgets.
          */
