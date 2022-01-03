@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
 	<div class="${classes}">
-		<div class="panel panel-default ${viewmode} widget" id="${clientId}">
-			<div class="panel-heading text-center">
+		<div class="card ${viewmode} widget full-height" id="${clientId}">
+			<div class="card-header text-center">
 				${widgettitle}
-				<span id="${resizeHandleId}" class="glyphicon float-right glyphicon-resize-full" />
+				<span id="${resizeHandleId}" class="float-right widget-resize-full widget-tool-symbol" />
 			</div>
 			<t:zone t:id="widgetZone" id="prop:${zoneid}">
-				<div class="panel-body ${sizeclass}">
+				<div class="card-body widget ${sizeclass}">
 					<!-- Note that is not if-else but two ifs. For JS-based charts, the body is always rendered
 					but manually hidden until data is available. In all cases, the waiting message is displayed
 					if no data is available at render time -->
-					<t:if test="renderbody">
-						<t:body />
-					</t:if>
 					<t:if test="resultloading">
-						<div class="text-center shine">
+						<div class="text-center shine mt-2">
 							${message:loading}
 						</div>
 						<t:trigger event="load" />
+					</t:if>
+					<t:if test="renderbody">
+						<t:body />
 					</t:if>
 				</div>
 			</t:zone>

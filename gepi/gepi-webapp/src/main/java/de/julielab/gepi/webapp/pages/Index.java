@@ -1,33 +1,32 @@
 package de.julielab.gepi.webapp.pages;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.GePiData;
+import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.webapp.base.TabPersistentField;
+import de.julielab.gepi.webapp.components.GepiInput;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Zone;
+import org.apache.tapestry5.http.services.Request;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.HttpError;
-import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Start page of application gepi-webapp.
  */
-@Import(stylesheet = {"context:css-pages/index.less"}, library = {"context:mybootstrap/js/dropdown.js"})
+@Import(stylesheet = {"context:css-pages/index.css"})
 public class Index {
     @Inject
     private ComponentResources resources;
@@ -50,12 +49,22 @@ public class Index {
     @Property
     private Event eventItem;
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private long dataSessionId;
     @Parameter
     private long dataSessionIdParameter;
-    @Persist
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private EnumSet<InputMode> inputMode;
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private String sentenceFilterString;
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private String paragraphFilterString;
+    @Persist(TabPersistentField.TAB)
     private boolean hasLargeWidget;
+
     private boolean resultNonNullOnLoad;
 
     @Inject
@@ -117,15 +126,15 @@ public class Index {
      */
     public String getShowOutputClass() {
         if (isResultPresent())
-            return "into";
+            return "show";
         return "";
     }
 
-    public String getShowInputClass() {
-        if (getEsResult() == null && getNeo4jResult() == null)
-            return "into";
-        return "";
-    }
+//    public String getShowInputClass() {
+//        if (getEsResult() == null && getNeo4jResult() == null)
+//            return "show";
+//        return "";
+//    }
 
     public Object onReset() {
         log.debug("Reset!");
@@ -179,7 +188,7 @@ public class Index {
                 log.debug("Obtained unrolled list of individual events of size {}.", eventList.size());
                 jsonObject = dataService.getPairedArgsCount(eventList);
             }
-            log.debug("Sending data of type {} with {} nodes and {} links to the client ", datasource, jsonObject.getJSONArray("nodes").length(), jsonObject.getJSONArray("links").length());
+            log.debug("Sending data of type {} with {} nodes and {} links to the client ", datasource, jsonObject.getJSONArray("nodes").size(), jsonObject.getJSONArray("links").size());
             return jsonObject;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

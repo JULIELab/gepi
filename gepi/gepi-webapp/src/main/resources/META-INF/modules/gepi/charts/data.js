@@ -1,8 +1,8 @@
-define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], function($, t5ajax, functions) {
+    define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], function($, t5ajax, functions) {
     // This map holds the original data downloaded from the web application
     // as well as transformed versions for caching
     let data = new Map();
-    // For synchonization: Deferrer objects created on data requests
+    // For synchronization: Deferrer objects created on data requests
     // which are resolved when a
     // specific dataset has actually been set
     let requestedData = new Map();
@@ -50,9 +50,9 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
     function getData(name) {
         return data.get(name);
     }
-
     function awaitData(sourceName, dataSessionId) {
         console.log("Data with source name " + sourceName + " was requested for dataSessionId " + dataSessionId);
+// TODO dataSessionId must be part of the key
         let promise = requestedData.get(sourceName);
         if (!promise) {
             console.log("Creating new promise for data " + sourceName);
@@ -60,7 +60,7 @@ define(["jquery", "t5/core/ajax", "gepi/charts/sankey/weightfunctions"], functio
             requestedData.set(sourceName, promise);
             loadData(sourceName, dataSessionId);
         } else {
-            console.log("Data with source name " + sourceName + " was already requested and is not loaded again.");
+            console.log("Data with source name " + sourceName + " was already requested for dataSessionId " + dataSessionId + " and is not loaded again.");
         }
         return promise;
     }

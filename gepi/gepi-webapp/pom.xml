@@ -15,22 +15,23 @@
              need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
         <dependency>
             <groupId>org.apache.tapestry</groupId>
-            <artifactId>tapestry-core</artifactId>
+            <artifactId>tapestry-http</artifactId>
             <version>${tapestry-release-version}</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.apache.tapestry</groupId>
-            <artifactId>tapestry-webresources</artifactId>
-            <version>${tapestry-release-version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+<!-- EF 10-2020: required for the built-in less compiler. However, the last time I wanted to include this, the less compiler library was not loaded
+by intellij. Since I didn't need it, I just removed the dependency. -->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.tapestry</groupId>-->
+<!--            <artifactId>tapestry-webresources</artifactId>-->
+<!--            <version>${tapestry-release-version}</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>com.google.guava</groupId>-->
+<!--                    <artifactId>guava</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
 
         <!-- Uncomment this to add support for file uploads: -->
         <!--
@@ -155,6 +156,6 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
         <groupId>de.julielab</groupId>
         <artifactId>gepi</artifactId>
         <version>0.2.0-SNAPSHOT</version>
-        <relativePath>..</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 </project>

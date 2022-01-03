@@ -8,27 +8,27 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.GePiData;
+import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalService;
-import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.webapp.base.TabPersistentField;
+import de.julielab.gepi.webapp.state.GePiSessionState;
 import org.apache.tapestry5.*;
 import org.apache.tapestry5.annotations.*;
+import org.apache.tapestry5.commons.Messages;
+import org.apache.tapestry5.commons.services.TypeCoercer;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.TextArea;
 import org.apache.tapestry5.corelib.components.TextField;
+import org.apache.tapestry5.http.services.Request;
 import org.apache.tapestry5.internal.OptionModelImpl;
 import org.apache.tapestry5.internal.SelectModelImpl;
 import org.apache.tapestry5.internal.services.StringValueEncoder;
-import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.services.TypeCoercer;
-import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.services.ApplicationStateManager;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.pages.Index;
@@ -48,6 +48,9 @@ public class GepiInput {
     @Inject
     private Request request;
 
+    @Inject
+    private ApplicationStateManager asm;
+
     @Environmental
     private JavaScriptSupport javaScriptSupport;
 
@@ -63,12 +66,18 @@ public class GepiInput {
     @InjectComponent
     private TextField dataSessionIdField;
 
+    @InjectComponent
+    private TextField sentenceFilter;
+
+    @InjectComponent
+    private TextField paragraphFilter;
+
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private String listATextAreaValue;
 
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private String listBTextAreaValue;
 
     @Inject
@@ -90,14 +99,14 @@ public class GepiInput {
     private CompletableFuture<EventRetrievalResult> esResult;
 
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private CompletableFuture<EventRetrievalResult> persistEsResult;
 
     @Parameter
     private CompletableFuture<AggregatedEventsRetrievalResult> neo4jResult;
 
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private CompletableFuture<AggregatedEventsRetrievalResult> persistNeo4jResult;
 
     @Inject
@@ -113,7 +122,15 @@ public class GepiInput {
     private List<String> selectedDevSettings;
 
     @Property
-    private String filterString;
+    @Parameter
+    private String sentenceFilterString;
+
+    @Property
+    @Parameter
+    private String paragraphFilterString;
+
+    @Property
+    private String filterFieldsConnectionOperator;
 
     /**
      * This is not an ID for the servlet session but to the current data state.
@@ -121,6 +138,9 @@ public class GepiInput {
     @Parameter
     @Property
     private long dataSessionId;
+
+    @Parameter
+    private EnumSet<InputMode> inputMode;
 
     @Persist(PersistenceConstants.FLASH)
     private boolean newSearch;
@@ -136,6 +156,7 @@ public class GepiInput {
      */
     @ActivationRequestParameter
     private boolean reset;
+
     void onActivate(EventContext eventContext) {
         if (reset) {
             log.debug("Reset is active, setting data to null.");
@@ -161,14 +182,20 @@ public class GepiInput {
 
     void setupRender() {
         //listATextAreaValue = "2475\n196";
+        log.warn("{}", inputMode);
     }
 
     void onValidateFromInputForm() {
         // Note, this method is triggered even if server-side validation has
         // already found error(s).
-
-        if (listATextAreaValue == null || listATextAreaValue.isEmpty()) {
-            inputForm.recordError(lista, "List A must not be empty.");
+        boolean noIdsGiven = listATextAreaValue == null || listATextAreaValue.isEmpty();
+        boolean noSentenceFilterGiven = sentenceFilterString == null || sentenceFilterString.isBlank();
+        boolean noParagraphFilterGiven = paragraphFilterString == null || paragraphFilterString.isBlank();
+        if (noIdsGiven && noSentenceFilterGiven && noParagraphFilterGiven) {
+            String msg = "Either lists of gene IDs or names must be given or a filter query to restrict the returned events.";
+            inputForm.recordError(lista, msg);
+            inputForm.recordError(sentenceFilter, msg + "1");
+            inputForm.recordError(paragraphFilter, msg + "2");
             return;
         }
     }
@@ -182,14 +209,28 @@ public class GepiInput {
         boolean isAListPresent = listATextAreaValue != null && listATextAreaValue.trim().length() > 0;
         boolean isABSearchRequest = listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
                 && listBTextAreaValue.trim().length() > 0;
+        boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
+        boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
         System.out.println("dev settings: " + selectedDevSettings);
         Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
         Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, "listB");
 //        if ((filterString != null && !filterString.isBlank()) || selectedDevSettings.contains("Always use ES")) {
         fetchEventsFromElasticSearch(selectedEventTypeNames, isAListPresent, isABSearchRequest, listAGePiIds, listBGePiIds);
 //        } else {
-        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
+//        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
 //        }
+
+        if (isABSearchRequest) {
+            inputMode = EnumSet.of(InputMode.AB);
+        } else if (isAListPresent){
+            inputMode = EnumSet.of(InputMode.A);
+        }
+        if (isSentenceFilterPresent || isParagraphFilterPresent) {
+            if (inputMode != null)
+                inputMode.add(InputMode.FULLTEXT_QUERY);
+            else
+                inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
+        }
 
         data = new GePiData(neo4jResult, esResult, listAGePiIds, listBGePiIds);
         log.debug("Setting newly retrieved data for dataSessionId: {}", dataSessionId);
@@ -200,29 +241,32 @@ public class GepiInput {
     }
 
     private void fetchEventsFromNeo4j(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest) {
-        CompletableFuture<Stream<String>> aListIds = CompletableFuture.completedFuture(Stream.of(listATextAreaValue.split("\n")));
-        if (isABSearchRequest) {
-            neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, CompletableFuture.completedFuture(Stream.of(listBTextAreaValue.split("\n"))), selectedEventTypeNames);
-        } else if (isAListPresent) {
-            neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, selectedEventTypeNames);
+        if (listATextAreaValue != null && !listATextAreaValue.isBlank()) {
+            CompletableFuture<Stream<String>> aListIds = CompletableFuture.completedFuture(Stream.of(listATextAreaValue.split("\n")));
+            if (isABSearchRequest) {
+                neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, CompletableFuture.completedFuture(Stream.of(listBTextAreaValue.split("\n"))), selectedEventTypeNames);
+            } else if (isAListPresent) {
+                neo4jResult = aggregatedEventsRetrievalService.getEvents(aListIds, selectedEventTypeNames);
+            }
+            persistNeo4jResult = neo4jResult;
         }
-        persistNeo4jResult = neo4jResult;
     }
 
     private void fetchEventsFromElasticSearch(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds) {
         if (isABSearchRequest) {
+            log.debug("Calling EventRetrievalService for AB search");
             esResult = eventRetrievalService.getBipartiteEvents(
                     listAGePiIds,
-                    listBGePiIds, selectedEventTypeNames, filterString);
+                    listBGePiIds, selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
+        } else if (isAListPresent) {
+            log.debug("Calling EventRetrievalService for A search");
+            esResult = eventRetrievalService.getOutsideEvents(listAGePiIds, selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
         } else {
-            if (isAListPresent) {
-                log.debug("Calling EventRetrievalService for outside events");
-                esResult = eventRetrievalService.getOutsideEvents(listAGePiIds, selectedEventTypeNames, filterString);
-                if (resultPresent())
-                    log.debug("Retrieved the response future. It is " + (esResult.isDone() ? "" : "not ") + "(ES)" + (neo4jResult != null && neo4jResult.isDone() ? "" : "not ") + "(Neo4j) finished.");
-                else log.debug("After retrieving the result");
-            }
+            // No IDs were entered
+            log.debug("Calling EventRetrievalService for scope filtered events");
+            esResult = eventRetrievalService.getFulltextFilteredEvents(selectedEventTypeNames, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator);
         }
+
         persistEsResult = esResult;
     }
 
@@ -235,6 +279,7 @@ public class GepiInput {
 
     void afterRender() {
         javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize").with(resultPresent());
+        log.debug("Result present: " + resultPresent());
         if (resultPresent() && newSearch) {
             log.debug("Sending JS call to show the output widgets.");
             javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");
@@ -253,9 +298,10 @@ public class GepiInput {
     }
 
     private boolean resultPresent() {
-        return esResult != null || neo4jResult != null;
+        return dataService.getData(dataSessionId) != GePiData.EMPTY;
     }
 
     private enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
+
 
 }

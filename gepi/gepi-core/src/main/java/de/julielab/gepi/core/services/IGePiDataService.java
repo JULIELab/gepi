@@ -2,10 +2,12 @@ package de.julielab.gepi.core.services;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.List;
 
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GePiData;
+import de.julielab.gepi.core.retrieval.data.InputMode;
 import org.apache.tapestry5.json.JSONArray;
 
 import de.julielab.gepi.core.retrieval.data.Event;
@@ -65,7 +67,10 @@ public interface IGePiDataService {
      * <p>To do this, the event data is written to a temporary file, a Python-Pandas script is applied and the
      * resulting Excel file is then read back in the form of the InputStream.</p>
      * @param events The events to create the result workbook for.
+     * @param inputMode
+     * @param sentenceFilterString
+     * @param paragraphFilterString
      * @return An InputStream of the created Excel file.
      */
-    File getOverviewExcel(List<Event> events, long dataSessionId) throws IOException;
+    File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString) throws IOException;
 }

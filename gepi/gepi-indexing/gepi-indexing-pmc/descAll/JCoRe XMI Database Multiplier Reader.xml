@@ -319,7 +319,7 @@
                                 
                 <value>
                                         
-                    <string>gepi.reldocs</string>
+                    <string>gepi._documents_mirror</string>
                                     
                 </value>
                             
@@ -368,6 +368,8 @@
                         <string>de.julielab.jcore.types.ChunkNP</string>
                                                 
                         <string>de.julielab.jcore.types.PennBioIEPOSTag</string>
+                                                
+                        <string>de.julielab.jcore.types.Abbreviation</string>
                                             
                     </array>
                                     

@@ -2,14 +2,15 @@ package de.julielab.gepi.core.services;
 
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.data.InputMode;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -21,7 +22,7 @@ public class GePiDataServiceTest {
         List<Event> events = new ArrayList<>();
 
         Event e = new Event();
-        e.setPmid("135");
+        e.setDocId("135");
         e.setEventId("135_1");
         e.setAllEventTypes(List.of("Binding"));
         Argument a1 = new Argument("g1", "c1", "h1", "arg1");
@@ -37,8 +38,8 @@ public class GePiDataServiceTest {
 
         // This event shares the target of the first event
         Event e2 = new Event();
-        e2.setPmcid("680");
-        e2.setEventId("pmc680_2");
+        e2.setDocId("PMC680");
+        e2.setEventId("PMC680_2");
         e2.setAllEventTypes(List.of("Binding"));
         Argument a3 = new Argument("g3", "c3", "h3", "arg3");
         a3.setPreferredName("arg3");
@@ -47,21 +48,21 @@ public class GePiDataServiceTest {
         // Lets have this one three times.
         events.add(e2);
         e2 = new Event();
-        e2.setPmcid("780");
-        e2.setEventId("pmc780_1");
+        e2.setDocId("PMC780");
+        e2.setEventId("PMC780_1");
         e2.setAllEventTypes(List.of("Binding"));
         e2.setArguments(Arrays.asList(a3, a2));
         events.add(e2);
         e2 = new Event();
-        e2.setPmcid("926");
-        e2.setEventId("pmc926_13");
+        e2.setDocId("PMC926");
+        e2.setEventId("PMC926_13");
         e2.setAllEventTypes(List.of("Binding"));
         e2.setArguments(Arrays.asList(a3, a2));
         events.add(e2);
 
         // And one single event
         Event e4 = new Event();
-        e4.setPmid("246");
+        e4.setDocId("246");
         e4.setEventId("246_5");
         e4.setAllEventTypes(List.of("Binding"));
         Argument a6 = new Argument("g6", "c6", "h6", "arg6");
@@ -72,7 +73,7 @@ public class GePiDataServiceTest {
 
 
         GePiDataService gePiDataService = new GePiDataService();
-        File outputFile = gePiDataService.getOverviewExcel(events, 1234);
+        File outputFile = gePiDataService.getOverviewExcel(events, 1234, EnumSet.of(InputMode.A), null, null);
         assertThat(outputFile).exists();
     }
 

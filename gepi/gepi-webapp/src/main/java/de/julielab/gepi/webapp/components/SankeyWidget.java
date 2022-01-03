@@ -6,6 +6,7 @@ import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.services.javascript.InitializationPriority;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 public class SankeyWidget extends GepiWidget {
@@ -28,11 +29,12 @@ public class SankeyWidget extends GepiWidget {
     private GepiWidgetLayout component;
 
     void afterRender() {
-        if (commonPartners) {
-            javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "commonPartnersHarmonicMean", component.getWidgetSettings());
-        } else {
-            javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "frequency", component.getWidgetSettings());
+        if (component.isResultLoading() || component.isResultAvailable()) {
+            if (commonPartners) {
+                javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "commonPartnersHarmonicMean", component.getWidgetSettings());
+            } else {
+                javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "frequency", component.getWidgetSettings());
+            }
         }
     }
-
 }

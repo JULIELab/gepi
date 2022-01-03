@@ -8,21 +8,25 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           this.elementId = elementId;
           this.orderType = orderType;
           this.widgetSettings = widgetSettings;
-
+          console.log("Creating sankey with settings: " + JSON.stringify(widgetSettings))
           this.setup();
         }
 
         setup() {
           console.log('Preparing to draw sankey chart for element ID ' + this.elementId + ' with node ordering type ' + this.orderType);
-
+          
           index.getReadySemaphor().done(() => {
-            console.log('Chart drawing has green light from the central index semaphor, requesting data');
+            console.log('Chart drawing has green light from the central index semaphor, requesting for dataSessionId ' + this.widgetSettings.dataSessionId);
             data.awaitData('relationCounts', this.widgetSettings.dataSessionId).done(() => {
               console.log('Loading data was successful. Checking if the input column also gives green light.');
               const inputcolReadyPromise = $('#inputcol').data('animationtimer');
+              const circleWidgetAfterDrawIndicator = widgetManager.getWidget('circlechart').widgetObject.afterDrawIndicator
               if (inputcolReadyPromise) {
-                inputcolReadyPromise.done(() =>
-                  this.init(this.elementId, this.orderType));
+                inputcolReadyPromise.done(() => {
+                  circleWidgetAfterDrawIndicator.done(() => {
+                    this.init(this.elementId, this.orderType);
+                  })
+                });
               } else {
                 this.init(this.elementId, this.orderType);
               }
@@ -40,8 +44,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             width: 500,
             height: 300,
             min_height: 200,
-            padding_x: 100,
-            padding_y: 10,
+            padding_x: 0,
+            padding_y: 20,
             node_spacing: 7,
             min_node_height: 5,
             label_font_size: 12,
@@ -55,13 +59,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
 
           let running = false;
-          window.onresize = () => {
-            if (!running) {
-              running = true;
-              this.redraw();
-              running = false;
-            }
-          };
+          //window.addEventListener('resize',() => {
+          //  if (!running) {
+          //    running = true;
+          //    window.setTimeout(() => {this.redraw.bind(this)();running = false;}, 1000);
+          //  }
+          //});
 
 
           this.selected_by_node_id = {};
@@ -71,19 +74,18 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         }
 
         main() {
-          console.log('Call to main');
           if (!$('#' + this.elementId).data('mainWasCalled')) {
             const settings = this.settings;
-            // Hide the Loading... banner
-            $('#' + this.elementId + '-outer .panel-body .shine').addClass('hidden');
+            // Remove the Loading... banner
+            $('#' + this.elementId + '-outer .text-center.shine').remove();
 
             this.redraw();
 
-            this.add_slider('padding-slider', 'Padding: ', 0, 50, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
-            this.add_slider('min-size-slider', 'Minimum node size: ', 0, 150, 2, settings.min_node_height, (value) => settings.min_node_height = value);
-            this.add_slider('node-height-slider', 'Chart height: ', 0, 1000, 2, settings.height, (value) => settings.height = value - 0);
+            this.add_slider('padding-slider', 'Padding: ', 2, 25, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
+            this.add_slider('min-size-slider', 'Minimum node size: ', 5, 25, 2, settings.min_node_height, (value) => settings.min_node_height = value);
+            //this.add_slider('node-height-slider', 'Chart height: ', 40, 400, 2, settings.height, (value) => settings.height = value - 0);
             // add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, this.settings.max_number_nodes, (value) => this.settings.max_number_nodes = value);
-            this.add_slider('max-other-slider', 'Maximum size of "Other" node:', 0, 300, 2, settings.max_other_height, (value) => settings.max_other_height = value);
+            this.add_slider('max-other-slider', 'Maximum size of "Other" node:', 2, 150, 2, settings.max_other_height, (value) => settings.max_other_height = value);
 
             this.add_toggle(
                 'restrict-other-toggle',
@@ -101,9 +103,9 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
             this.add_button('Clear selection', () => {
               this.selected_by_node_id = {};
-              console.log('who am I: ' + this);
               this.redraw();
             });
+            
             $('#' + this.elementId).data('mainWasCalled', true);
             console.log('Finished main.');
           } else {
@@ -121,21 +123,29 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           // chartContainer.closest(".panel-body > .shine").addClass("hidden");
           chartContainer.removeClass('hidden');
           this.settings.width = chart_elem.clientWidth - 2 * this.settings.padding_x - 10;
+          this.settings.height = chart_elem.clientHeight - 2 * this.settings.padding_y;
+          console.log("Creating svg element with size " + this.settings.width + " x " + this.settings.height)
           const svg = chart
               .append('svg')
-              .attr('width', this.settings.width + 2 * this.settings.padding_x)
-              .attr('height', this.settings.height + 2 * this.settings.padding_y);
+              .attr('width', this.settings.width)
+              .attr('height', this.settings.height);
 
-          return svg.append('g').attr('transform', 'translate(' + this.settings.padding_x + ',' + this.settings.padding_y + ')');
+          return svg;//.append('g');//.attr('transform', 'translate(' + this.settings.padding_x + ',' + this.settings.padding_y + ')');
         }
 
 
         redraw() {
           console.log('Redrawing sankey!');
+          
+          console.log("SankeyWidget viewMode: " + this.widgetSettings.viewMode)
+          if (this.widgetSettings.viewMode !== 'overview') {
+            $('#'+this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-10')
+          } else {
+            $('#'+this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-12')
+          }
 
           const svg = this.create_svg();
 
-          console.log('Preparing sankey data');
           let max_other_height;
           if (this.settings.restrict_other_height) {
             max_other_height = Number(this.settings.max_other_height);
@@ -147,18 +157,19 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           const sankey = d3.sankey();
 
+          console.log("Sankey size set to " + this.settings.width + " x " + this.settings.height + " with origin (0, 0).")
           sankey
-              .size([this.settings.width, this.settings.height])
+              .size([this.settings.width - 1 , this.settings.height - 5])
               .nodeWidth(this.settings.node_width)
               .nodePadding(this.settings.node_spacing)
               .nodeId((d) => d.id)
               .nodes(the_data.nodes)
-              .links(the_data.links)
-              .iterations(0);
+              .links(the_data.links);
+              //.iterations(0);
 
           console.log('Computing sankey layout...');
           sankey();
-          console.log('Done');
+          console.log('Done laying out sankey.');
 
           // shift(the_data.nodes[4], 50, 20);
 
@@ -188,22 +199,13 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           const nodes = svg.append('g')
               .selectAll('.node')
               .data(the_data.nodes)
-              .enter().append('g')
-              .attr('class', 'node')
-              .attr('transform', (d) => 'translate(' + d.x0 + ',' + d.y0 + ')');
-
-          // nodes: rects
-          nodes.append('rect')
-              .attr('height', (d) => d.y1 - d.y0)
-              .attr('width', (d) => d.x1 - d.x0)
-              .attr('opacity', (d) => {
-                if (d.id === 'MISC_from' || d.id === 'MISC_to') {
-                  return 0.4;
-                } else {
-                  return 1;
-                }
-              })
-              .attr('fill', (d) => {
+              .join("rect")
+                .attr('class', 'node')
+                .attr("x", d => d.x0)
+                .attr("y", d => d.y0)
+                .attr("height", d => d.y1 - d.y0)
+                .attr("width", d => d.x1 - d.x0)
+                .attr("fill", (d) => {
                 /* COLOR SCHEME FOR NODES
                     normal - black
                     misc/hidden - gray (semi-transparent)
@@ -216,41 +218,90 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                   return '#0040a0';
                 } else {
                   return '#000000';
+                }})
+                .attr('opacity', (d) => {
+                if (d.id === 'MISC_from' || d.id === 'MISC_to') {
+                  return 0.4;
+                } else {
+                  return 1;
                 }
-              });
+              })
+            .append("title")
+              .text(d => d.name);
+
+          // nodes: rects
+          // nodes.append('rect')
+          //     .attr('height', (d) => d.y1 - d.y0)
+          //     .attr('width', (d) => d.x1 - d.x0)
+          //     .attr('opacity', (d) => {
+          //       if (d.id === 'MISC_from' || d.id === 'MISC_to') {
+          //         return 0.4;
+          //       } else {
+          //         return 1;
+          //       }
+          //     })
+          //     .attr('fill', (d) => {
+          //        COLOR SCHEME FOR NODES
+          //           normal - black
+          //           misc/hidden - gray (semi-transparent)
+          //           selected - blue
+          //           pinned - ? maybe a pattern? red checkerboard?
+
+                     
+
+          //       if (this.selected_by_node_id[d.id]) {
+          //         return '#0040a0';
+          //       } else {
+          //         return '#000000';
+          //       }
+          //     });
 
           nodes.on('click', (d) => {
             this.selected_by_node_id[d.id] = !this.selected_by_node_id[d.id];
-            console.log('nodes.on click');
             this.redraw();
           });
 
           const settings = this.settings;
           // nodes: labels
-          nodes.append('text')
-              .text((d) => d.name)
-              .style('font-size', this.settings.label_font_size + 'px')
-              .attr('y', (d) => (d.y1 - d.y0 + this.settings.label_font_size) / 2)
-              .attr('x', function(d) {
-                if (d.id.endsWith('_from')) {
-                  return -this.getComputedTextLength() - settings.node_to_label_spacing;
-                } else {
-                  return settings.node_width + settings.node_to_label_spacing;
-                }
-              });
+          svg.append('g')
+              .attr('font-size', this.settings.label_font_size + 'px')
+              .attr('font-family', 'sans-serif')
+              .selectAll('text')
+              .data(the_data.nodes)
+              .join("text")
+                .text((d) => d.name)
+                .attr('y', (d) => (d.y1 + d.y0) / 2)
+                .attr('x', (d) => d.x0 < this.settings.width / 2 ? d.x1 + 6 : d.x0 - 6)
+                .attr("dy", "0.35em")
+                .attr("text-anchor", d => d.x0 < this.settings.width / 2 ? "start" : "end");
 
-          nodes.append('title')
-              .text((d) => d.name);
+          // nodes.append('title')
+              // .text((d) => d.name);
+
+
+          // vertical centering in the widget
+          //let height = parseInt($('#' + this.elementId).css('height').slice(0, -2));
+          //let parentHeight = parseInt($('#' + this.elementId).parent().css('height').slice(0, -2));
+          //let parentWidth = parseInt($('#' + this.elementId).parent().css('width').slice(0, -2));
+          //let headerHeight = parseInt($('#'+this.elementId+'-outer .card-header').css('height').slice(0, -2));
+          //$('#' + this.elementId).css('position', 'absolute');
+          //$('#' + this.elementId).css('top', (headerHeight+((parentHeight-height)/2))+'px');
+          //$('#' + this.elementId).css('width', (parentWidth*2/3)+'px');
         }
 
         add_toggle(id, text, initial_state, change_handler) {
           const p = d3.select('#' + this.elementId + '-container .settings .checkboxes').append('p');
-          console.log('[add_toggle] node: ' + p.node());
-          const input = p.append('input').attr('type', 'checkbox').attr('id', id);
+          const input = p.append('input')
+            .attr('type', 'checkbox')
+            .attr('class', 'btn-check')
+            .attr('id', id);
           if (initial_state) {
             input.attr('checked', 'checked');
           }
-          p.append('label').attr('for', id).text(' ' + text);
+          p.append('label')
+            .attr('for', id)
+            .attr('class', 'btn btn-primary')
+            .text(' ' + text);
           const redraw = this.redraw.bind(this);
           input.on('change', function() {
             change_handler(this.checked);

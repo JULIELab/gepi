@@ -1,6 +1,6 @@
 package de.julielab.gepi.core.services;
 
-import org.apache.tapestry5.ioc.OrderedConfiguration;
+import org.apache.tapestry5.commons.OrderedConfiguration;
 import org.apache.tapestry5.ioc.annotations.Autobuild;
 import org.apache.tapestry5.ioc.annotations.ImportModule;
 import org.apache.tapestry5.ioc.annotations.Startup;

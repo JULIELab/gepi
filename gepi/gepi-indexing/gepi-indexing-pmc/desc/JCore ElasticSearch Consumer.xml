@@ -153,9 +153,9 @@
                                         
                     <array>
                                                 
-                        <string>http://h6:9200</string>
-                                                
                         <string>http://h5:9200</string>
+                                                
+                        <string>http://h6:9200</string>
                                             
                     </array>
                                     
@@ -237,7 +237,7 @@
                         
             <description>egid2tid</description>
                         
-            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
                         
             <optional>false</optional>
                     
@@ -343,7 +343,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2topHomologyPrefName.map</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2topHomologyPrefName.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -357,7 +357,7 @@
                                     
                 </configurableDataResourceSpecifier>
                                 
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.MapProvider</implementationName>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
                             
             </externalResource>
                         
@@ -369,7 +369,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2tophomo.map</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2tophomo.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -383,7 +383,7 @@
                                     
                 </configurableDataResourceSpecifier>
                                 
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.MapProvider</implementationName>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
                             
             </externalResource>
                         
@@ -395,7 +395,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2atid.map</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2atid.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -409,7 +409,7 @@
                                     
                 </configurableDataResourceSpecifier>
                                 
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider</implementationName>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
                             
             </externalResource>
                         
@@ -421,7 +421,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2prefName.map</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2prefName.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -435,7 +435,7 @@
                                     
                 </configurableDataResourceSpecifier>
                                 
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.MapProvider</implementationName>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
                             
             </externalResource>
                         
@@ -447,7 +447,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/egid2tid.map</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/egid2tid.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -461,7 +461,7 @@
                                     
                 </configurableDataResourceSpecifier>
                                 
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.AddonTermsProvider</implementationName>
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
                             
             </externalResource>
                     

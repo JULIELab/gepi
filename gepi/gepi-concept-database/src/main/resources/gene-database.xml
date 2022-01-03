@@ -8,7 +8,7 @@
         <version>0.2.0-SNAPSHOT</version>
     </versioning>
     <connection>
-        <uri>http://darwin.coling.uni-jena.de:7575</uri>
+        <uri>http://darwin:7575</uri>
         <user>neo4j</user>
         <password>julielab</password>
     </connection>
@@ -40,7 +40,7 @@
                 <creator xmlns="http://www.julielab.de/conceptdb/concepts/ncbigene">
                     <name>NCBIGeneConceptCreator</name>
                     <configuration>
-                        <basepath>/home/faessler/tmp/genores/build</basepath>
+			        <basepath>/data/erik/geno/build</basepath>
                         <gene_info>
                             resources/gene_info_organism_filtered.gz
                         </gene_info>

@@ -1,13 +1,15 @@
 define(['jquery', 't5/core/zone'], function($, zoneManager) {
-  function Widget(w) {
-    this.widgetObject = w;
-    this.handleId = w.widgetSettings.handleId;
-    this.widgetId = w.widgetSettings.widgetId;
-    this.toggleViewModeUrl = w.widgetSettings.toggleViewModeUrl;
-    this.refreshContentsUrl = w.widgetSettings.refreshContentsUrl;
-    this.zoneElementId = w.widgetSettings.zoneElementId;
+  function Widget(widgetObject) {
+    this.widgetObject = widgetObject;
+    let widgetSettings = widgetObject.widgetSettings;
+    this.handleId = widgetSettings.handleId;
+    this.widgetId = widgetSettings.widgetId;
+    this.toggleViewModeUrl = widgetSettings.toggleViewModeUrl;
+    this.refreshContentsUrl = widgetSettings.refreshContentsUrl;
+    this.zoneElementId = widgetSettings.zoneElementId;
     this.widget = $('#' + this.widgetId);
-    this.useTapestryZoneUpdates = w.widgetSettings.useTapestryZoneUpdates;
+    this.useTapestryZoneUpdates = widgetSettings.useTapestryZoneUpdates;
+    console.log("Creating Widget with settings " + JSON.stringify(widgetSettings))
     this.setupViewModeHandle();
   }
   Widget.prototype.getViewMode = function() {
@@ -23,20 +25,27 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
       switch (currentMode) {
         case 'large':
           $('body').removeClass('noScroll');
-          $('#widgetOverlay').removeClass('into');
+          $('#disableplane').removeClass('show');
           newMode = 'overview';
           break;
         case 'overview':
           $('body').addClass('noScroll');
           newMode = 'large';
-          $('#widgetOverlay').addClass('into');
+          window.setTimeout(() => $('#disableplane').addClass('show'), 500);
           break;
       }
 
       widget.widget.addClass(newMode).removeClass(currentMode);
+      // jQuery selector with the widget object as context, i.e. as selector root:
+      // this finds the element with the card-body class which is an descendent
+      // of the widget.widget object
+      $('.card-body', widget.widget).addClass(newMode).removeClass(currentMode);
+      console.log("Setting widgetSetting viewMode to " + currentMode)
+      widget.widgetObject.widgetSettings.viewMode = currentMode;
       if (widget.useTapestryZoneUpdates) {
         zoneManager.deferredZoneUpdate(widget.zoneElementId, widget.toggleViewModeUrl);
       } else {
+        console.log("Redrawing widget after setting viewMode")
         widget.widgetObject.redraw();
       }
     });
@@ -53,8 +62,8 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
   // FOR ZONE UPDATES (Table widget)
   // This is called from GepiWidgetLayout#afterRender
   // for widgets to be updated via the Tapestry Zone update mechanism.
-  const addWidget = function(name, widgetSettings) {
-    widgetWrapper = new Widget({widgetSettings: widgetSettings});
+  const addWidget = function(name, widgetObject) {
+    widgetWrapper = new Widget(widgetObject);
     widgets.set(name, widgetWrapper);
 
     return widgetWrapper;

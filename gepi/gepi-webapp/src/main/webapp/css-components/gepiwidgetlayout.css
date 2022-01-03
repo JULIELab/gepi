@@ -1,3 +1,16 @@
+.full-height {
+    height: 100%;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.chart.area {
+    width: 100%;
+    display: inline-block;
+}
+
 .float-right {
 	float: right;
 }
@@ -6,24 +19,21 @@
 	color: black;
 }
 
-.glyphicon-resize-full {
+.widget-resize-full {
 	cursor: pointer;
+    background-image: url("../images/open_in_full_black_24dp.svg");
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
-.widget {
-   -webkit-transition: all 1s ease;
-	-moz-transition: all 1s ease;
-	-o-transition: all 1s ease;
-	transition: all 1s ease;
-	overflow: hidden;
+.widget-tool-symbol {
+    width: 24px;
+    height: 24px;
 }
 
-.chart {
-   -webkit-transition: all 5s ease;
-	-moz-transition: all 5s ease;
-	-o-transition: all 5s ease;
-	transition: all 5s ease;
-	
+
+.widget.overview {
+    height: 500px;
 }
 
 .widget.large {
@@ -31,23 +41,24 @@
 	top: 70px;
 	left: 15px;
 	width: calc(100% - 30px);
-	/* One above #widgetOverlay in index.tml/index.less */
+    height: calc(100vh - 88px);
+	/* One above #widgetOverlay in index.tml/index.css */
 	z-index: 11;
 }
 
-.widget.large .panel-body {
-	height: calc(100vh - 126px);
-	/* One above #widgetOverlay in index.tml/index.less */
+.widget.large .card-body {
+	/* One above #widgetOverlay in index.tml/index.css */
 	z-index: 11;
 	overflow-y: auto;
 }
 
-.widget-small.panel-body {
-    height: 230px;
+.widget.overview.card-body {
+    height: 430px;
+    padding-top: 10px;
     overflow: hidden;
 }
 
-.widget-large.panel-body {
+.widget.large.card-body {
  /*   height: 440px;*/
 }
 
@@ -64,11 +75,6 @@
     -webkit-animation-iteration-count: infinite;
 }
 
-.navbar-highlight {
-    -webkit-animation-name: highlight;
-    -webkit-animation-duration: 1.5s;
-    -webkit-animation-iteration-count: 2;
-}
 
 @-webkit-keyframes shine
 {

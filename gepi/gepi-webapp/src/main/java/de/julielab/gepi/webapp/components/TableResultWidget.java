@@ -1,31 +1,35 @@
 package de.julielab.gepi.webapp.components;
 
-import java.io.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.Argument;
+import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.java.utilities.FileUtilities;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Log;
+import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.beaneditor.BeanModel;
-import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.beanmodel.BeanModel;
+import org.apache.tapestry5.beanmodel.services.BeanModelSource;
+import org.apache.tapestry5.commons.Messages;
+import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.services.BeanModelSource;
-
-import de.julielab.gepi.core.retrieval.data.Argument;
-import de.julielab.gepi.core.retrieval.data.Event;
-import org.apache.tapestry5.services.Response;
 import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class TableResultWidget extends GepiWidget {
 
@@ -39,7 +43,7 @@ public class TableResultWidget extends GepiWidget {
     private BeanModelEvent eventRow;
 
     @Property
-    @Persist
+    @Persist("tab")
     private List<BeanModelEvent> beanEvents;
 
     @Inject
@@ -54,14 +58,25 @@ public class TableResultWidget extends GepiWidget {
     @Inject
     private ComponentResources resources;
 
+    @Parameter
+    protected EnumSet<InputMode> inputMode;
+
+    @Parameter
+    private String sentenceFilterString;
+
+    @Parameter
+    private String paragraphFilterString;
+
     @Property
-    @Persist
+    @Persist(TabPersistentField.TAB)
     private BeanModel<BeanModelEvent> tableModel;
 
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private Format contextFormat;
+
     void setupRender() {
-        tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
-        tableModel.include(
-                "firstArgumentPreferredName",
+        List<String> availableColumns = new ArrayList<>(List.of("firstArgumentPreferredName",
                 "secondArgumentPreferredName",
                 "firstArgumentText",
                 "secondArgumentText",
@@ -70,8 +85,16 @@ public class TableResultWidget extends GepiWidget {
                 "firstArgumentMatchType",
                 "secondArgumentMatchType",
                 "allEventTypes",
+                "fulltextMatchSource",
                 "docId",
-                "sentence");
+                "eventId",
+                "context"));
+        if (inputMode != null && !inputMode.contains(InputMode.FULLTEXT_QUERY))
+            availableColumns.remove("fulltextMatchSource");
+
+        tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
+        tableModel.include(availableColumns.toArray(new String[0]));
+
         tableModel.get("firstArgumentPreferredName").label("gene A symbol");
         tableModel.get("secondArgumentPreferredName").label("gene B symbol");
         tableModel.get("firstArgumentText").label("gene A text");
@@ -82,6 +105,19 @@ public class TableResultWidget extends GepiWidget {
         tableModel.get("secondArgumentMatchType").label("gene B match type");
         tableModel.get("allEventTypes").label("relation types");
         tableModel.get("docId").label("document id");
+        tableModel.get("eventId").label("event id");
+
+        contextFormat = new Format() {
+            @Override
+            public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
+                return toAppendTo.append(obj);
+            }
+
+            @Override
+            public Object parseObject(String source, ParsePosition pos) {
+                return source;
+            }
+        };
     }
 
     void onUpdateTableData() {
@@ -123,9 +159,6 @@ public class TableResultWidget extends GepiWidget {
      */
     @Log
     StreamResponse onDownload(long dataSessionId) {
-        if (!getEsResult().isDone()) {
-            //TODO: how to handle case when download button is clicked, but the request is not yet fully done
-        }
         return new StreamResponse() {
 
             private File statisticsFile;
@@ -133,7 +166,7 @@ public class TableResultWidget extends GepiWidget {
             @Override
             public void prepareResponse(Response response) {
                 try {
-                    statisticsFile = dataService.getOverviewExcel(getEsResult().get().getEventList(), dataSessionId);
+                    statisticsFile = dataService.getOverviewExcel(getEsResult().get().getEventList(), dataSessionId, inputMode, sentenceFilterString, paragraphFilterString);
 
                     response.setHeader("Content-Length", "" + statisticsFile.length()); // output into file
                     response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getName());
@@ -165,6 +198,10 @@ public class TableResultWidget extends GepiWidget {
 
         public String getDocId() {
             return event.getDocId();
+        }
+
+        public String getEventId() {
+            return event.getEventId();
         }
 
         public String getFirstArgumentText() {
@@ -212,7 +249,11 @@ public class TableResultWidget extends GepiWidget {
             return String.join(", ", event.getAllEventTypes());
         }
 
-        public String getSentence() {
+        public String getContext() {
+            if (event.isParagraphMatchingFulltextQuery() && !event.isSentenceMatchingFulltextQuery())
+                return event.getSentence() + "<br>" + event.getHlParagraph();
+            if (event.isSentenceMatchingFulltextQuery())
+                return event.getSentence() + "<br>" + event.getHlSentence();
             return event.getSentence();
         }
 
@@ -221,6 +262,19 @@ public class TableResultWidget extends GepiWidget {
             if (null != argument)
                 return argument.getText() + " (" + argument.getPreferredName() + ")";
             return "";
+        }
+
+        public String getFulltextMatchSource() {
+            if (event.isSentenceMatchingFulltextQuery())
+                return "sentence";
+            if (event.isParagraphMatchingFulltextQuery())
+                return "paragraph";
+            System.out.println(event.getEventId());
+            System.out.println(event.getSentence());
+            System.out.println(event.getHlSentence());
+            System.out.println(event.getParagraph());
+            System.out.println(event.getHlParagraph());
+            throw new IllegalStateException("The full text match source of event " + event + " was requested but neither the sentence nor the paragraph have a match. Either this is not a fulltext query request or there is an result that actually doesn't match the query.");
         }
     }
 }

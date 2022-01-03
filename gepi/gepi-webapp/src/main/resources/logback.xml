@@ -4,7 +4,7 @@
 		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
 			by default -->
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{80} - %msg%n
 			</pattern>
 		</encoder>
 	</appender>
@@ -38,8 +38,10 @@
 		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
 		level="TRACE" />
 	<logger name="de.julielab" level="DEBUG" />
+	<logger name="de.julielab.gepi.webapp.state.GePiSessionStateCreator" level="TRACE"/>
+	<logger name="de.julielab.gepi.webapp.state.GePiSessionState" level="TRACE"/>
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE" />
+<!--		<appender-ref ref="FILE" />-->
 	</root>
 </configuration>

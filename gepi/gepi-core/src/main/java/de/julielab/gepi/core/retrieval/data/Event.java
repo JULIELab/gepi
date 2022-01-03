@@ -1,176 +1,215 @@
 package de.julielab.gepi.core.retrieval.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class Event {
-	protected List<String> allEventTypes;
+    protected List<String> allEventTypes;
 
-	protected List<Argument> arguments;
+    protected List<Argument> arguments;
 
-	protected String highlightedSentence;
+    protected int likelihood;
 
-	protected int likelihood;
+    protected String mainEventType;
 
-	protected String mainEventType;
+    protected int numDistinctArguments;
 
-	protected int numDistinctArguments;
-	
-	protected String sentence;
-	
-	protected String eventId;
-	
-	protected String documentType;
+    protected String sentence;
 
-	protected String pmid;
+    protected String eventId;
 
-	protected String pmcid;
+    protected String documentType;
 
-	public String getPmid() {
-		return pmid;
-	}
+    protected String docId;
 
-	public void setPmid(String pmid) {
-		this.pmid = pmid;
-	}
+    protected boolean sentenceMatchingFulltextQuery;
+    protected boolean paragraphMatchingFulltextQuery;
+    String hlSentence;
+    private String paragraph;
+    private String hlParagraph;
 
-	public String getPmcid() {
-		return pmcid;
-	}
+    public String getHlParagraph() {
+        return hlParagraph;
+    }
 
-	public void setPmcid(String pmcid) {
-		this.pmcid = pmcid;
-	}
+    public void setHlParagraph(String hlParagraph) {
+        this.hlParagraph = hlParagraph;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Event event = (Event) o;
-		return Objects.equals(arguments, event.arguments);
-	}
+    public String getHlSentence() {
+        return hlSentence;
+    }
 
-	@Override
-	public int hashCode() {
+    public void setHlSentence(String hlSentence) {
+        this.hlSentence = hlSentence;
+    }
 
-		return Objects.hash(arguments);
-	}
+    public boolean isSentenceMatchingFulltextQuery() {
+        return sentenceMatchingFulltextQuery;
+    }
 
-	public String getEventId() {
-		return eventId;
-	}
+    public void setSentenceMatchingFulltextQuery(boolean sentenceMatchingFulltextQuery) {
+        this.sentenceMatchingFulltextQuery = sentenceMatchingFulltextQuery;
+    }
 
-	public void setEventId(String eventId) {
-		this.eventId = eventId;
-	}
+    public boolean isParagraphMatchingFulltextQuery() {
+        return paragraphMatchingFulltextQuery;
+    }
 
-	public String getDocumentType() {
-		return documentType;
-	}
+    public void setParagraphMatchingFulltextQuery(boolean paragraphMatchingFulltextQuery) {
+        this.paragraphMatchingFulltextQuery = paragraphMatchingFulltextQuery;
+    }
 
-	public void setDocumentType(String documentType) {
-		this.documentType = documentType;
-	}
+    public String getPmid() {
+        return docId;
+    }
 
-	public List<String> getAllEventTypes() {
-		return allEventTypes;
-	}
+    public void setDocId(String pmid) {
+        this.docId = pmid;
+    }
 
-	public Argument getArgument(int position) {
-		return arguments.get(position);
-	}
 
-	public List<Argument> getArguments() {
-		return arguments;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return Objects.equals(arguments, event.arguments);
+    }
 
-	public String getHighlightedSentence() {
-		return highlightedSentence;
-	}
+    @Override
+    public int hashCode() {
 
-	public int getLikelihood() {
-		return likelihood;
-	}
+        return Objects.hash(arguments);
+    }
 
-	public String getMainEventType() {
-		if (mainEventType != null)
-			return mainEventType;
-		return "";
-	}
+    public String getEventId() {
+        return eventId;
+    }
 
-	public int getNumArguments() {
-		return arguments.size();
-	}
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
 
-	public int getNumDistinctArguments() {
-		return numDistinctArguments;
-	}
+    public String getDocumentType() {
+        return documentType;
+    }
 
-	public String getSentence() {
-		if (sentence != null)
-			return sentence;
-		return "";
-	}
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
+    }
 
-	public void setAllEventTypes(List<String> allEventTypes) {
-		this.allEventTypes = allEventTypes;
-	}
+    public List<String> getAllEventTypes() {
+        return allEventTypes;
+    }
 
-	public void setArguments(List<Argument> arguments) {
-		this.arguments = arguments;
-	}
+    public void setAllEventTypes(List<String> allEventTypes) {
+        this.allEventTypes = allEventTypes;
+    }
 
-	public void setHighlightedSentence(String highlightedSentence) {
-		this.highlightedSentence = highlightedSentence;
-	}
+    public Argument getArgument(int position) {
+        return arguments.get(position);
+    }
 
-	public void setLikelihood(int likelihood) {
-		this.likelihood = likelihood;
-	}
+    public List<Argument> getArguments() {
+        return arguments;
+    }
 
-	public void setMainEventType(String mainEventType) {
-		this.mainEventType = mainEventType;
-	}
+    public void setArguments(List<Argument> arguments) {
+        this.arguments = arguments;
+    }
 
-	public void setNumDistinctArguments(int numDistinctArguments) {
-		this.numDistinctArguments = numDistinctArguments;
-	}
+    public int getLikelihood() {
+        return likelihood;
+    }
 
-	public void setSentence(String sentence) {
-		this.sentence = sentence;
-	}
+    public void setLikelihood(int likelihood) {
+        this.likelihood = likelihood;
+    }
 
-	public Argument getFirstArgument() {
-		return getArgument(0);
-	}
+    public String getMainEventType() {
+        if (mainEventType != null)
+            return mainEventType;
+        return "";
+    }
 
-	public Argument getSecondArgument() {
-		if (arguments.size() < 2)
-			return null;
-		return getArgument(1);
-	}
+    public void setMainEventType(String mainEventType) {
+        this.mainEventType = mainEventType;
+    }
 
-	@Override
-	public String toString() {
-		return getMainEventType() + ": " + arguments;
-	}
+    public int getNumArguments() {
+        return arguments.size();
+    }
 
-	public Event copy() {
-		Event e = new Event();
-		e.allEventTypes = allEventTypes != null ? new ArrayList<>(allEventTypes) : null;
-		e.arguments = arguments != null ? new ArrayList<>(arguments) : null;
-		e.highlightedSentence = highlightedSentence;
-		e.likelihood = likelihood;
-		e.mainEventType = mainEventType;
-		e.numDistinctArguments = numDistinctArguments;
-		e.sentence = sentence;
-		return e;
-	}
+    public int getNumDistinctArguments() {
+        return numDistinctArguments;
+    }
 
-	public String getDocId() {
-		if (getEventId().startsWith("pmc")) return "PMC" + getPmcid();
-		else if (getPmid() != null) return getPmid();
-		throw new IllegalStateException("No document ID for event " + this);
-	}
+    public void setNumDistinctArguments(int numDistinctArguments) {
+        this.numDistinctArguments = numDistinctArguments;
+    }
+
+    public String getSentence() {
+        if (sentence != null)
+            return sentence;
+        return "";
+    }
+
+    public void setSentence(String sentence) {
+        this.sentence = sentence;
+    }
+
+    public Argument getFirstArgument() {
+        return getArgument(0);
+    }
+
+    public Argument getSecondArgument() {
+        if (arguments.size() < 2)
+            return null;
+        return getArgument(1);
+    }
+
+    @Override
+    public String toString() {
+        return getMainEventType() + ": " + arguments;
+    }
+
+    public Event copy() {
+        Event e = new Event();
+        e.eventId = eventId;
+        e.docId = docId;
+        e.documentType = documentType;
+        e.allEventTypes = allEventTypes != null ? new ArrayList<>(allEventTypes) : null;
+        e.arguments = arguments != null ? new ArrayList<>(arguments) : null;
+        e.likelihood = likelihood;
+        e.mainEventType = mainEventType;
+        e.numDistinctArguments = numDistinctArguments;
+        e.sentence = sentence;
+        return e;
+    }
+
+    /**
+     * If there are exactly two arguments for this event, swap their positions.
+     * @throws IllegalStateException If there are not exactly two arguments.
+     */
+    public void swapArguments() {
+        if (arguments.size() != 2)
+            throw new IllegalStateException("There are not exactly two arguments but " + arguments.size());
+        Collections.swap(arguments, 0, 1);
+    }
+
+    public String getDocId() {
+        if (getPmid() != null) return getPmid();
+        throw new IllegalStateException("No document ID for event " + this);
+    }
+
+    public String getParagraph() {
+        return paragraph;
+    }
+
+    public void setParagraph(String paragraph) {
+        this.paragraph = paragraph;
+    }
 }

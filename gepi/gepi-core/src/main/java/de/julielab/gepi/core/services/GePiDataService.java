@@ -8,9 +8,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.GePiData;
-import de.julielab.java.utilities.FileUtilities;
+import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.java.utilities.IOStreamUtilities;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tapestry5.annotations.Log;
@@ -19,9 +17,7 @@ import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
-import de.julielab.gepi.core.retrieval.data.Event;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -36,7 +32,7 @@ public class GePiDataService implements IGePiDataService {
     private String excelResultCreationScript;
 
     public GePiDataService() throws IOException {
-        // We use weak keys and values. So when a user session is evicted,
+        // We use weak values. So when a user session is evicted,
         // its GePi data can also be removed as soon as possible.
         dataCache = CacheBuilder.newBuilder().weakValues().build();
         excelResultCreationScript = IOStreamUtilities.getStringFromInputStream(GePiDataService.class.getResourceAsStream("/ExcelResultCreation.py"));
@@ -243,17 +239,17 @@ public class GePiDataService implements IGePiDataService {
     }
 
     @Override
-    public File getOverviewExcel(List<Event> events, long dataSessionId) throws IOException {
+    public File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString) throws IOException {
         log.debug("Creating event statistics Excel file for dataSessionId {}", dataSessionId);
         File tsvFile = getTempTsvDataFile(dataSessionId);
         File xlsFile = getTempXlsDataFile(dataSessionId);
         writeOverviewTsvFile(events, tsvFile);
-        createExcelSummaryFile(tsvFile, xlsFile);
+        createExcelSummaryFile(tsvFile, xlsFile, inputMode, sentenceFilterString, paragraphFilterString);
         return xlsFile;
     }
 
-    private void createExcelSummaryFile(File tsvFile, File xlsFile) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder().command("python", "-c", excelResultCreationScript, tsvFile.getAbsolutePath(), xlsFile.getAbsolutePath());
+    private void createExcelSummaryFile(File tsvFile, File xlsFile, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString) throws IOException {
+        ProcessBuilder builder = new ProcessBuilder().command("python", "-c", excelResultCreationScript, tsvFile.getAbsolutePath(), xlsFile.getAbsolutePath(), inputMode.stream().map(InputMode::name).collect(Collectors.joining(" ")), sentenceFilterString != null ? sentenceFilterString : "<none>", paragraphFilterString != null ? paragraphFilterString : "<none>");
         Process process = builder.start();
         InputStream processInput = process.getInputStream();
         InputStream processErrors = process.getErrorStream();
@@ -283,7 +279,17 @@ public class GePiDataService implements IGePiDataService {
                 row.add(e.getSecondArgument().getMatchType());
                 row.add(String.join(",", e.getAllEventTypes()));
                 row.add(e.getDocId());
-                row.add(e.getSentence());
+                row.add(e.getEventId());
+                if (e.isSentenceMatchingFulltextQuery()) {
+                    row.add("sentence");
+                    row.add(e.getSentence());
+                } else if (e.isParagraphMatchingFulltextQuery()) {
+                    row.add("paragraph");
+                    row.add(e.getParagraph());
+                } else {
+                    row.add("N/A");
+                    row.add(e.getSentence());
+                }
 
                 bw.write(String.join("\t", row));
                 bw.newLine();

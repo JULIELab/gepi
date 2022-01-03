@@ -1,22 +1,25 @@
 package de.julielab.gepi.webapp.services;
 
-import java.io.IOException;
-
-import de.julielab.gepi.webapp.pages.Index;
-import org.apache.tapestry5.Link;
+import de.julielab.gepi.core.services.ConfigurationSymbolProvider;
+import de.julielab.gepi.core.services.GepiCoreModule;
+import de.julielab.gepi.webapp.base.TabPersistentField;
+import de.julielab.gepi.webapp.state.GePiSessionState;
+import de.julielab.gepi.webapp.state.GePiSessionStateCreator;
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.annotations.Service;
-import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.OrderedConfiguration;
+import org.apache.tapestry5.commons.MappedConfiguration;
+import org.apache.tapestry5.commons.OrderedConfiguration;
+import org.apache.tapestry5.http.services.*;
+import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.*;
 import org.apache.tapestry5.ioc.services.ApplicationDefaults;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.apache.tapestry5.services.*;
+import org.apache.tapestry5.services.javascript.JavaScriptStack;
+import org.apache.tapestry5.services.javascript.StackExtension;
 import org.slf4j.Logger;
 
-import de.julielab.gepi.core.services.ConfigurationSymbolProvider;
-import de.julielab.gepi.core.services.GepiCoreModule;
+import java.io.IOException;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to
@@ -75,10 +78,20 @@ public class AppModule {
         // Support for jQuery is new in Tapestry 5.4 and will become the only supported
         // option in 5.5.
         configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
-        configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "context:mybootstrap");
+        configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "context:bootstrap-5.0.0-beta3-dist");
         configuration.add(SymbolConstants.MINIFICATION_ENABLED, false);
     }
 
+    @Core
+    @Contribute(JavaScriptStack.class)
+    public static void overrideJquery(OrderedConfiguration<StackExtension> conf) {
+        conf.override("jquery-library", StackExtension.library("classpath:META-INF/assets/jquery/jquery-3.6.0.min.js"));
+    }
+
+    @Contribute(RequestHandler.class)
+    public static void contributeRequestFilters(final OrderedConfiguration<RequestFilter> filters) {
+        filters.addInstance(GePiRequestFilter.class.getSimpleName(), GePiRequestFilter.class, "after:ErrorFilter");
+    }
 
     /**
      * This is a service definition, the service will be named "TimingFilter". The interface,
@@ -125,7 +138,7 @@ public class AppModule {
         return (request, response, handler) -> {
             Session session = request.getSession(false);
 //            log.debug("Session is {}", session);
-            if (session != null){
+            if (session != null) {
                 for (String name : session.getAttributeNames()) {
                     log.debug("Session attribute {} has value {}", name, session.getAttribute(name));
                 }
@@ -166,4 +179,23 @@ public class AppModule {
 //        configuration.add("Timing", filter);
 //        configuration.add("SessionCheck", sessionCheckFilter);
     }
+
+    /**
+     * This sets up the custom "tab" state persistence strategy.
+     *
+     * @param configuration Service configuration.
+     * @param asm           Tapestry's {@link ApplicationStateManager}.
+     */
+    public void contributePersistentFieldManager(MappedConfiguration<String, PersistentFieldStrategy> configuration,
+                                                 ApplicationStateManager asm, LoggerSource loggerSource) {
+        configuration.add(TabPersistentField.TAB, new TabPersistentField(loggerSource.getLogger(TabPersistentField.class), asm));
+    }
+
+    public void contributeApplicationStateManager(
+            MappedConfiguration<Class<?>, ApplicationStateContribution> configuration, @Inject Request request,
+            @Autobuild GePiSessionStateCreator sessionStateCreator) {
+        configuration.add(GePiSessionState.class, new ApplicationStateContribution("session", sessionStateCreator));
+    }
+
+
 }

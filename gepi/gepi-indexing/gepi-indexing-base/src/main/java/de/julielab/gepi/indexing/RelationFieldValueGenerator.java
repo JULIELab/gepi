@@ -8,10 +8,11 @@ import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
 import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
-import de.julielab.jcore.utility.JCoReTools;
+import de.julielab.jcore.types.pubmed.Header;
+import de.julielab.jcore.types.pubmed.OtherID;
 import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 
@@ -118,7 +119,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     continue;
                 try {
                     JCas jCas = rel.getCAS().getJCas();
-                    String docId = JCoReTools.getDocId(jCas);
+                    String docId = getDocumentId(jCas);
                     FieldCreationUtils.addDocumentId(document, rel);
                     if (likelihood != null)
                         document.addField("likelihood", FieldCreationUtils.likelihoodValues.get(likelihood.getLikelihood()));
@@ -133,6 +134,22 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     document.addField("argumentprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
                     document.addField("argumenthomoprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
                     document.addField("argumentmatchtypes", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
+                    document.addField("argument1", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
+                    document.addField("argument1geneid", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", null));
+                    document.addField("argument1conceptid", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", geneFb.eg2tidReplaceFilter));
+                    document.addField("argument1tophomoid", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", geneFb.eg2tophomoFilter));
+                    document.addField("argument1coveredtext", createRawFieldValueForAnnotation(argPair[0], "/:coveredText()", null));
+                    document.addField("argument1prefname", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
+                    document.addField("argument1homoprefname", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
+                    document.addField("argument1matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
+                    document.addField("argument2", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
+                    document.addField("argument2geneid", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", null));
+                    document.addField("argument2conceptid", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", geneFb.eg2tidReplaceFilter));
+                    document.addField("argument2tophomoid", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", geneFb.eg2tophomoFilter));
+                    document.addField("argument2coveredtext", createRawFieldValueForAnnotation(argPair[1], "/:coveredText()", null));
+                    document.addField("argument2prefname", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
+                    document.addField("argument2homoprefname", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
+                    document.addField("argument2matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                     document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
                     document.addField("alleventtypes", Stream.of(rel.getRelations().toArray()).map(EventMention.class::cast).map(EventMention::getSpecificType).collect(Collectors.toSet()).toArray());
                     document.addField("ARGUMENT_FS", argPair);
@@ -144,5 +161,20 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
             }
         }
         return relDocs;
+    }
+
+    private String getDocumentId(JCas jCas) {
+        Header header = JCasUtil.selectSingle(jCas, Header.class);
+        boolean ispmcDocument = false;
+        FSArray otherIDs = header.getOtherIDs();
+        if (otherIDs != null && otherIDs.size() > 0) {
+            OtherID other = (OtherID) otherIDs.get(0);
+            if (other.getSource().equals("PubMed"))
+                ispmcDocument = true;
+        }
+        String docId = header.getDocId();
+        if (ispmcDocument && !docId.startsWith("PMC"))
+            docId = "PMC" + docId;
+        return docId;
     }
 }
