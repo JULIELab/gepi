@@ -52,12 +52,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         firstDraw() {
           if (!$('#'+this.elementId).data('firstDrawn')) {
              let running = false;
-          window.addEventListener('resize',() => {
-            if (!running) {
-              running = true;
-              window.setTimeout(() => {this.draw.bind(this)(this.elementId);running = false;}, 1000);
-            }
-          });
+//          window.addEventListener('resize',() => {
+//            if (!running) {
+//              running = true;
+//              window.setTimeout(() => {this.redraw.bind(this)(this.elementId);running = false;}, 1000);
+//            }
+//          });
 
           // Remove the Loading... banner
             $('#' + this.elementId + '-outer .text-center.shine').remove();
@@ -66,14 +66,14 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             // window.onresize = () => {
             //   if (!running) {
             //     running = true;
-            //     this.draw(this.elementId);
+            //     this.redraw(this.elementId);
             //     running = false;
             //   }
             // };
 
-            $('#' + widgetManager.getWidget(this.elementId).handleId).click(function() {
-              this.draw(this.elementId);
-            });
+//            $('#' + widgetManager.getWidget(this.elementId).handleId).click(function() {
+//              this.redraw();
+//            });
 
             this.addToggle(
                 this.elementId,
@@ -81,7 +81,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 'Grey out nodes and links by default',
                 this.settings.default_grey,
                 (state) => this.settings.default_grey = state,
-                this.draw.bind(this)
+                this.redraw.bind(this)
             );
 
             this.addToggle(
@@ -90,7 +90,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 'Highlight nodes based on edge weight',
                 this.settings.fine_node_highlights,
                 (state) => this.settings.fine_node_highlights = state,
-                this.draw.bind(this)
+                this.redraw.bind(this)
             );
 
             // addSlider(this.elementId, "size_slider", "Size of the diagram: ", 50, 300, 5, this.settings.node_count, (count) => {
@@ -98,7 +98,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             //     this.settings.radius = 2 * count;
             // });
 
-            this.draw(this.elementId);
+            this.redraw();
             $('#'+this.elementId).data('firstDrawn', true);
             // Indicate that the circly widget has finished drawing
             console.log("resolving afterDrawIndicator")
@@ -249,8 +249,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           return svg.append('g').attr('transform', 'translate(' + offset + ',' + offset + ')');
         }
 
-       draw(elementId) {
-          const svg = this.get_svg(elementId);
+       redraw() {
+          const svg = this.get_svg(this.elementId);
 
           // let data = prepareData(raw_data);
 
@@ -310,7 +310,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
               .attr('d', link => this.computeLinkPath(link))
               .attr('stroke-width', 5);
 
-          let opacity_redraw = () => draw(this.elementId);
+          let opacity_redraw = () => redraw();
         }
 
         nodeHover(event) {
@@ -391,7 +391,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           return path;
         }
 
-        addToggle(elementId, id, text, initial_state, change_handler, draw) {
+        addToggle(elementId, id, text, initial_state, change_handler, redraw) {
           const p = d3.select('#'+elementId+'-container .settings .checkboxes').append('p');
           const input = p.append('input')
             .attr('type', 'checkbox')
@@ -405,11 +405,11 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             .text(' '+text);
           input.on('change', function() {
             change_handler(this.checked);
-            draw(elementId);
+            redraw();
           });
         }
 
-        addSlider(elementId, id, label_text, min, max, step, value, change_handler, draw) {
+        addSlider(elementId, id, label_text, min, max, step, value, change_handler, redraw) {
           const p = d3.select('#' + elementId + '-container .settings .sliders').append('p');
 
           p.append('label')
@@ -426,7 +426,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
               .on('input', function() {
                 const value = this.value;
                 change_handler(value);
-                draw(this.elementId);
+                redraw();
               });
         }
 
