@@ -13,7 +13,7 @@
             <div id="${elementId}" class="chart-area full-height"/>
         </div>
         <div class="col-2">
-            <div id="${elementId}-container" class="hidden">
+            <div id="${elementId}-container">
                 <div class="settings">
                     <div class="sliders"></div>
                     <div class="checkboxes"></div>

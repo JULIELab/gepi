@@ -136,9 +136,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
 
         redraw() {
-          console.log('Redrawing sankey!');
-          
-          console.log("SankeyWidget viewMode: " + this.widgetSettings.viewMode)
           if (this.widgetSettings.viewMode === 'small') {
             $('#'+this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-12');
             $('#'+this.elementId+'-container').parent().addClass('d-none');

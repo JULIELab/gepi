@@ -250,6 +250,14 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         }
 
        redraw() {
+          if (this.widgetSettings.viewMode === 'small') {
+            $('#'+this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-12');
+            $('#'+this.elementId+'-container').parent().addClass('d-none');
+          } else {
+            $('#'+this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-10');
+            $('#'+this.elementId+'-container').parent().removeClass('d-none');
+          }
+
           const svg = this.get_svg(this.elementId);
 
           // let data = prepareData(raw_data);

@@ -8,15 +8,13 @@
         <div class="${chartAreaColumnSizeClass} text-center">
             <div id="${elementId}" class="chart-area full-height"/>
         </div>
-        <t:if t:test="largeView">
-            <div class="col-2">
-                <div id="${elementId}-container">
-                    <div class="settings">
-                        <div class="checkboxes"></div>
-                        <div class="sliders"></div>
-                    </div>
+        <div class="col-2">
+            <div id="${elementId}-container">
+                <div class="settings">
+                    <div class="checkboxes"></div>
+                    <div class="sliders"></div>
                 </div>
             </div>
-        </t:if>
+        </div>
     </div>
 </div>
