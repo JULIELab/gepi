@@ -148,6 +148,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           const node_count = Math.min(this.settings.node_count, node_weight_target.size);
 
+          // sort nodes descendingly by the sum of their weights (=connection frequency to other nodes)
           const sorted_nodes_and_weights = Array.from(Object.entries(node_weights)).sort(([n1, w1], [n2, w2]) => w2 - w1).slice(0, node_count);
           const included_nodes = {};
 
@@ -171,12 +172,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           // raw_nodes: [nodeId] (i.e. index below is just the array index)
           // node_weights: nodeId -> frequencySum
           // nodes is empty until now
-          // psi: Fibonacci-Konstante; sorgt für eine gleichmaessige
+          // psi: Fibonacci-Konstante / "golden ratio"; sorgt für eine gleichmaessige
           // Verteilung der Knoten auf dem Kreis, wobei die grossen
           // (eben die ersten) Knoten ungefaehr ihre urspruengliche
           // Position behalten und die letzteres Knoten dazwischen
           // verteilt werden.
-          const psi = (Math.sqrt(5) - 1) / 2;
+          const psi = (Math.sqrt(5) + 1) / 2;
           let next_index = 0;
           const offset = Math.round(psi * node_count);
           for (const [id, weight] of sorted_nodes_and_weights) {
@@ -191,6 +192,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             next_index %= node_count;
 
             const weight_target = node_weight_target[id];
+            // weight is the sum of weights to all connected nodes, weight_target is the weight of this particular
+            // connected node
             const weight_ratio = weight_target / weight;
 
             nodes[next_index] = {
@@ -243,12 +246,13 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
               .append('svg')
               //.style('margin-left', 'auto')
               //.style('margin-right', 'auto')
-              .attr('width', 2 * this.settings.radius)
-              .attr('height', 2 * this.settings.radius);
+              .attr('width', parent.clientWidth)
+              .attr('height', parent.clientHeight);
 
-          const offset = this.settings.padding + this.settings.radius;
+          const offsetX = this.settings.padding / 2 + parent.clientWidth / 2;
+          const offsetY = this.settings.padding / 2 + parent.clientHeight / 2;
 
-          return svg.append('g').attr('transform', 'translate(' + offset + ',' + offset + ')');
+          return svg.append('g').attr('transform', 'translate(' + offsetX + ',' + offsetY + ')');
         }
 
        redraw() {
