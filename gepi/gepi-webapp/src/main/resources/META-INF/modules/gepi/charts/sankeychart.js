@@ -128,8 +128,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           const svg = chart
               .append('svg')
               .attr('width', this.settings.width)
-              .attr('height', this.settings.height)
-              .attr('top', '50px');
+              .attr('height', this.settings.height);
+              //.attr('top', '50px');
 
           return svg;//.append('g');//.attr('transform', 'translate(' + this.settings.padding_x + ',' + this.settings.padding_y + ')');
         }

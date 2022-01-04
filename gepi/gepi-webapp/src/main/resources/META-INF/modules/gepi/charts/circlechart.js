@@ -12,10 +12,11 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           this.elementId = elementId;
           this.widgetSettings = widgetSettings;
           this.settings = {
-            radius: 150,
-            min_radius: 120,
+            // the radius is calculated in get_svg()
+            radius: 0,
+            min_radius: 0,
             node_count: 75,
-            padding: 90,
+            padding: 0,
             node_spacing: 10,
             node_thickness: 10,
             default_grey: false,
@@ -121,6 +122,16 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           // node_count is defined below because we need to know
           // how many nodes there are before setting the count
 
+          function add_to_node(node, w) {
+             if (node_weights[node] === undefined) {
+               node_weights[node] = 0;
+               const index = raw_nodes.length;
+               raw_nodes.push(node);
+               node_weight_target.set(node, 0);
+             }
+             node_weights[node] += w;
+          }
+
           for (const {
             source,
             target,
@@ -128,15 +139,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           } of links) {
             total_weight += frequency;
 
-            function add_to_node(node, w) {
-              if (node_weights[node] === undefined) {
-                node_weights[node] = 0;
-                const index = raw_nodes.length;
-                raw_nodes.push(node);
-                node_weight_target.set(node, 0);
-              }
-              node_weights[node] += w;
-            }
             add_to_node(source, frequency);
             add_to_node(target, frequency);
             node_weight_target.set(target, node_weight_target.get(target) + frequency);
@@ -226,7 +228,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           const parent = element.parentElement;
           this.settings.radius = Math.min(
               parent.clientWidth / 2,
-              parent.parentElement.parentElement.clientHeight / 2 - 30,
+              parent.clientHeight / 2,
           ) - this.settings.padding;
 
           this.settings.radius = Math.max(this.settings.radius, this.settings.min_radius);
@@ -239,10 +241,10 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           const svg = chart
               .append('svg')
-              .style('margin-left', 'auto')
-              .style('margin-right', 'auto')
-              .attr('width', 2 * this.settings.radius + 2 * this.settings.padding)
-              .attr('height', 2 * this.settings.radius + 2 * this.settings.padding);
+              //.style('margin-left', 'auto')
+              //.style('margin-right', 'auto')
+              .attr('width', 2 * this.settings.radius)
+              .attr('height', 2 * this.settings.radius);
 
           const offset = this.settings.padding + this.settings.radius;
 

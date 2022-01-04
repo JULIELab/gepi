@@ -6,8 +6,8 @@
 				${widgettitle}
 				<span id="${resizeHandleId}" class="float-right widget-resize-to-full widget-tool-symbol" />
 			</div>
-			<t:zone t:id="widgetZone" id="prop:${zoneid}">
-				<div class="card-body widget ${viewmode}">
+			<t:zone t:id="widgetZone" id="prop:${zoneid}" class="full-height">
+				<div class="card-body widget ${viewmode} full-height">
 					<!-- Note that is not if-else but two ifs. For JS-based charts, the body is always rendered
 					but manually hidden until data is available. In all cases, the waiting message is displayed
 					if no data is available at render time -->

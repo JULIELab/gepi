@@ -5,7 +5,7 @@
      dataSessionId="dataSessionId">
 
     <div class="row full-height">
-        <div class="${chartAreaColumnSizeClass} text-center">
+        <div class="${chartAreaColumnSizeClass} text-center full-height">
             <div id="${elementId}" class="chart-area full-height"/>
         </div>
         <div class="col-2">
