@@ -48,7 +48,7 @@
 }
 
 .widget.small.card-body {
-    height: 400px;
+    min-height: 300px;
    /* padding-top: 10px;*/
     overflow: hidden;
 }

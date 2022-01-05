@@ -16,7 +16,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             radius: 0,
             min_radius: 0,
             node_count: 75,
-            padding: 0,
+            padding: 60,
             node_spacing: 10,
             node_thickness: 10,
             default_grey: false,
@@ -242,15 +242,17 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           chart.selectAll('svg').remove();
 
+          const width  = parent.clientWidth;
+          const height = parent.clientHeight;
           const svg = chart
               .append('svg')
               //.style('margin-left', 'auto')
               //.style('margin-right', 'auto')
-              .attr('width', parent.clientWidth)
-              .attr('height', parent.clientHeight);
+              .attr('width', width)
+              .attr('height', height);
 
-          const offsetX = this.settings.padding / 2 + parent.clientWidth / 2;
-          const offsetY = this.settings.padding / 2 + parent.clientHeight / 2;
+          const offsetX = width / 2;
+          const offsetY = height / 2;
 
           return svg.append('g').attr('transform', 'translate(' + offsetX + ',' + offsetY + ')');
         }
