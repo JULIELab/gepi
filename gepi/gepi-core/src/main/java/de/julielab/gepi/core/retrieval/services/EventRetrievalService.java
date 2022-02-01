@@ -9,11 +9,8 @@ import de.julielab.elastic.query.components.data.SortCommand.SortOrder;
 import de.julielab.elastic.query.components.data.query.*;
 import de.julielab.elastic.query.components.data.query.BoolClause.Occur;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
-import de.julielab.gepi.core.retrieval.data.Argument;
-import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
-import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
@@ -110,6 +107,24 @@ public class EventRetrievalService implements IEventRetrievalService {
         this.log = log;
         this.eventResponseProcessingService = eventResponseProcessingService;
         this.searchServerComponent = searchServerComponent;
+    }
+
+    @Override
+    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData) {
+        CompletableFuture<EventRetrievalResult> esResult;
+        EnumSet<InputMode> inputMode = requestData.getInputMode();
+        if (inputMode.contains(InputMode.AB)) {
+            log.debug("Calling EventRetrievalService for AB search");
+            esResult = getBipartiteEvents(requestData.getListAGePiIds(), requestData.getListBGePiIds(), requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString());
+        } else if (inputMode.contains(InputMode.A)) {
+            log.debug("Calling EventRetrievalService for A search");
+            esResult = getOutsideEvents(requestData.getListAGePiIds(), requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString());
+        } else {
+            // No IDs were entered
+            log.debug("Calling EventRetrievalService for scope filtered events");
+            esResult = getFulltextFilteredEvents(requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getFilterFieldsConnectionOperator());
+        }
+        return esResult;
     }
 
     @Override
@@ -218,8 +233,8 @@ public class EventRetrievalService implements IEventRetrievalService {
                     hlc.fields.forEach(f -> {
 //                f.boundaryChars = new char[]{'\n', '\t'};
 //                f.type = HighlightCommand.Highlighter.fastvector;
-                f.pre = "<b>";
-                f.post = "</b>";
+                        f.pre = "<b>";
+                        f.post = "</b>";
 //                MatchQuery hlQuery = new MatchQuery();
 //                hlQuery.field = FIELD_EVENT_SENTENCE;
 //                hlQuery.query = "xargumentx";
@@ -298,61 +313,15 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
+    public CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
             try {
-                Set<String> idSet = idStream.get().getConvertedItems().values().stream().collect(Collectors.toSet());
+                Set<String> idSet = idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet());
 
                 log.debug("Retrieving outside events for {} A IDs", idSet.size());
                 log.trace("The A IDs are: {}", idSet);
-                TermsQuery termsQuery = new TermsQuery(Collections.unmodifiableCollection(idSet));
-                termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
-
-                BoolClause termsClause = new BoolClause();
-                termsClause.addQuery(termsQuery);
-                termsClause.occur = Occur.MUST;
-
-                BoolQuery eventQuery = new BoolQuery();
-                eventQuery.addClause(termsClause);
-
-                if (!eventTypes.isEmpty()) {
-                    TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
-                    eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
-                    BoolClause eventTypeClause = new BoolClause();
-                    eventTypeClause.addQuery(eventTypesQuery);
-                    eventTypeClause.occur = FILTER;
-                    eventQuery.addClause(eventTypeClause);
-                }
-
-                if (!StringUtils.isBlank(sentenceFilter)) {
-                    addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, Occur.FILTER, eventQuery);
-                }
-                if (!StringUtils.isBlank(paragraphFilter)) {
-                    addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, Occur.FILTER, eventQuery);
-                }
-
-
-                SearchServerRequest serverCmd = new SearchServerRequest();
-                serverCmd.query = eventQuery;
-                serverCmd.index = documentIndex;
-                serverCmd.rows = SCROLL_SIZE;
-                serverCmd.fieldsToReturn = Arrays.asList(
-                        FIELD_PMID,
-                        FIELD_PMCID,
-                        FIELD_EVENT_LIKELIHOOD,
-                        FIELD_EVENT_SENTENCE,
-                        FIELD_EVENT_MAINEVENTTYPE,
-                        FIELD_EVENT_ALL_EVENTTYPES,
-                        FIELD_EVENT_ARG_GENE_IDS,
-                        FIELD_EVENT_ARG_CONCEPT_IDS,
-                        FIELD_EVENT_ARG_PREFERRED_NAME,
-                        FIELD_EVENT_ARG_MATCH_TYPES,
-                        FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
-                        FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                        FIELD_EVENT_ARG_TEXT);
-                serverCmd.downloadCompleteResults = true;
-                serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
+                SearchServerRequest serverCmd = getOutsideServerRequest(idStreamA, eventTypes, sentenceFilter, paragraphFilter);
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
                 carrier.addSearchServerRequest(serverCmd);
@@ -369,14 +338,78 @@ public class EventRetrievalService implements IEventRetrievalService {
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
                 log.error("Could not retrieve the IDs for the query", e);
+                throw new RuntimeException(e);
             }
-            return null;
         });
     }
 
     @Override
     public CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
         return getOutsideEvents(CompletableFuture.completedFuture(idStream), eventTypes, sentenceFilter, paragraphFilter);
+    }
+
+    @Override
+    public SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter) throws ExecutionException, InterruptedException {
+        TermsQuery termsQuery = new TermsQuery(Collections.unmodifiableCollection(idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet())));
+        termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
+
+        BoolClause termsClause = new BoolClause();
+        termsClause.addQuery(termsQuery);
+        termsClause.occur = Occur.MUST;
+
+        BoolQuery eventQuery = new BoolQuery();
+        eventQuery.addClause(termsClause);
+
+        if (!eventTypes.isEmpty()) {
+            TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
+            eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
+            BoolClause eventTypeClause = new BoolClause();
+            eventTypeClause.addQuery(eventTypesQuery);
+            eventTypeClause.occur = FILTER;
+            eventQuery.addClause(eventTypeClause);
+        }
+
+        if (!StringUtils.isBlank(sentenceFilter)) {
+            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, Occur.FILTER, eventQuery);
+        }
+        if (!StringUtils.isBlank(paragraphFilter)) {
+            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, Occur.FILTER, eventQuery);
+        }
+
+
+        SearchServerRequest serverCmd = new SearchServerRequest();
+        serverCmd.query = eventQuery;
+        serverCmd.index = documentIndex;
+        serverCmd.rows = SCROLL_SIZE;
+        serverCmd.fieldsToReturn = Arrays.asList(
+                FIELD_PMID,
+                FIELD_PMCID,
+                FIELD_EVENT_LIKELIHOOD,
+                FIELD_EVENT_SENTENCE,
+                FIELD_EVENT_MAINEVENTTYPE,
+                FIELD_EVENT_ALL_EVENTTYPES,
+                FIELD_EVENT_ARG_GENE_IDS,
+                FIELD_EVENT_ARG_CONCEPT_IDS,
+                FIELD_EVENT_ARG_PREFERRED_NAME,
+                FIELD_EVENT_ARG_MATCH_TYPES,
+                FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
+                FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
+                FIELD_EVENT_ARG_TEXT);
+        serverCmd.downloadCompleteResults = true;
+        serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
+        HighlightCommand hlc = new HighlightCommand();
+        hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
+        hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
+        hlc.fields.forEach(f -> {
+            f.pre = "<b>";
+            f.post = "</b>";
+            TermQuery tq = new TermQuery();
+            tq.field = f.field;
+            tq.term = "xargumentx";
+            f.highlightQuery = tq;
+        });
+        serverCmd.addHighlightCmd(hlc);
+        return serverCmd;
     }
 
     @Override

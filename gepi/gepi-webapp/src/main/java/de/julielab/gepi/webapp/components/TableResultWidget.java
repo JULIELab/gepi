@@ -2,6 +2,7 @@ package de.julielab.gepi.webapp.components;
 
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
@@ -66,6 +67,9 @@ public class TableResultWidget extends GepiWidget {
 
     @Parameter
     private String paragraphFilterString;
+
+    @Parameter
+    private GepiRequestData requestData;
 
     @Property
     @Persist(TabPersistentField.TAB)

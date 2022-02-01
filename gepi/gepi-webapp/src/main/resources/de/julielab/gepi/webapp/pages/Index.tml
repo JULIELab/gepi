@@ -7,7 +7,7 @@
             <div id="inputfetcharea"/>
             <div id="inputcol" class="">
                 <t:zone t:id="inputzone" id="inputzone">
-                    <t:gepiinput dataSessionId="dataSessionId" inputMode="inputMode" sentenceFilterString="sentenceFilterString" paragraphFilterString="paragraphFilterString"/>
+                    <t:gepiinput dataSessionId="dataSessionId" requestData="requestData"/>
                 </t:zone>
             </div>
         </div>
@@ -27,7 +27,7 @@
                         <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
                     </div>
                     <div class="row mt-3">
-                        <t:tableresultwidget class="col-12" dataSessionId="dataSessionId" inputMode="inputMode" sentenceFilterString="sentenceFilterString" paragraphFilterString="paragraphFilterString"/>
+                        <t:tableresultwidget class="col-12" requestData="requestData"/>
                     </div>
                 </t:zone>
             </div>

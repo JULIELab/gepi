@@ -51,17 +51,20 @@ public class Index {
     @Property
     @Persist(TabPersistentField.TAB)
     private long dataSessionId;
-    @Parameter
-    private long dataSessionIdParameter;
     @Property
     @Persist(TabPersistentField.TAB)
-    private EnumSet<InputMode> inputMode;
-    @Property
-    @Persist(TabPersistentField.TAB)
-    private String sentenceFilterString;
-    @Property
-    @Persist(TabPersistentField.TAB)
-    private String paragraphFilterString;
+    private GepiRequestData requestData;
+//    @Parameter
+//    private long dataSessionIdParameter;
+//    @Property
+//    @Persist(TabPersistentField.TAB)
+//    private EnumSet<InputMode> inputMode;
+//    @Property
+//    @Persist(TabPersistentField.TAB)
+//    private String sentenceFilterString;
+//    @Property
+//    @Persist(TabPersistentField.TAB)
+//    private String paragraphFilterString;
     @Persist(TabPersistentField.TAB)
     private boolean hasLargeWidget;
 

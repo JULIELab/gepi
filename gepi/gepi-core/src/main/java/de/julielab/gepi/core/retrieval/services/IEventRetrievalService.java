@@ -2,13 +2,18 @@ package de.julielab.gepi.core.retrieval.services;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import de.julielab.gepi.core.services.IGeneIdService.IdType;
 
 public interface IEventRetrievalService {
+	CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData);
+
 	/**
 	 * Retrieves events between two lists of genes. The IDs may be of any
 	 * accepted type (see {@link IdType}) and will be converted automatically.
@@ -26,14 +31,19 @@ public interface IEventRetrievalService {
 	 * The IDs may be of any accepted type (see {@link IdType}) and will be
 	 * converted automatically.
 	 * 
-	 * @param listAIds
+	 *
+	 * @param idStreamA
+	 * @param eventTypes
+	 * @param sentenceFilter
 	 * @param paragraphFilter
 	 * @return Events between genes identified by the input stream and other
 	 *         genes.
 	 */
-	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> listAIds, List<String> eventTypes, String sentenceFilter, String paragraphFilter);
+	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter);
 
 	CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter);
+
+	SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter) throws ExecutionException, InterruptedException;
 
 	CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String filterFieldsConnectionOperator);
 }

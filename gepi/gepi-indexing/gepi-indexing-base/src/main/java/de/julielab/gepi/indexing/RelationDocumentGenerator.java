@@ -10,15 +10,12 @@ import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.types.pubmed.OtherID;
 import de.julielab.jcore.utility.JCoReTools;
-import de.julielab.jcore.utility.index.JCoReOverlapAnnotationIndex;
 import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +64,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                         Collection<Sentence> overlappingSentences = sentIndex.get(rel);
                         if(argPairLiesWithinSentence(overlappingSentences, argPair)) {
                             if (!overlappingSentences.isEmpty())
-                                sentenceDocument = createSentenceDocument(jCas, docId, i, overlappingSentences.stream().findAny().get(), argPair);
+                                sentenceDocument = createSentenceDocument(jCas, docId, i, overlappingSentences.stream().findAny().get(), argPair, rel);
                             // Likewise for the paragraph-like containing annotation of the relation
                             Document paragraphDocument = createParagraphDocument(jCas, docId, rel, argPair, zoneIndex);
 
@@ -158,7 +155,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         Document paragraphDocument = new Document(docId + "_par" + zoneIds.get(paragraphLike));
 
         log.trace("Creating preanalyzedFieldValue for paragraph");
-        PreanalyzedFieldValue preanalyzedFieldValue = makePreanalyzedFulltextFieldValue(jCas, paragraphLike, argPair);
+        PreanalyzedFieldValue preanalyzedFieldValue = makePreanalyzedFulltextFieldValue(jCas, paragraphLike, argPair, rel);
         paragraphDocument.addField("text", preanalyzedFieldValue);
         paragraphDocument.addField("id", paragraphDocument.getId());
         paragraphDocument.addField("likelihood", FieldCreationUtils.getMeanLikelihood(paragraphLike));
@@ -168,11 +165,11 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     }
 
     @NotNull
-    private Document createSentenceDocument(JCas jCas, String docId, int i, Sentence sentence, FeatureStructure[] argPair) throws CASException, FieldGenerationException {
+    private Document createSentenceDocument(JCas jCas, String docId, int i, Sentence sentence, FeatureStructure[] argPair, FlattenedRelation rel) throws CASException, FieldGenerationException {
         Document sentenceDocument = new Document(docId + "_" + sentence.getId());
 
         log.trace("Creating preanalyzedFieldValue for sentence");
-        PreanalyzedFieldValue preanalyzedFieldValue = makePreanalyzedFulltextFieldValue(jCas, sentence, argPair);
+        PreanalyzedFieldValue preanalyzedFieldValue = makePreanalyzedFulltextFieldValue(jCas, sentence, argPair, rel);
 
         sentenceDocument.addField("text", preanalyzedFieldValue);
         sentenceDocument.addField("id", docId + "_" + (sentence.getId() != null ? sentence.getId() : i));
@@ -186,10 +183,11 @@ public class RelationDocumentGenerator extends DocumentGenerator {
      * @param jCas         The jCas.
      * @param fullTextSpan The text containing annotation, i.e. the sentence or the paragraph-like FeatureStrucure.
      * @param argPair      The two arguments in focus that make up the current relation document.
+     * @param relation     The relation being processed.
      * @return A pre-computed field value for an ElasticSearch index field. That value is not further analyzed by ElasticSearch but stored as specified here.
      * @throws CASException If CAS access fails.
      */
-    private PreanalyzedFieldValue makePreanalyzedFulltextFieldValue(JCas jCas, AnnotationFS fullTextSpan, FeatureStructure[] argPair) throws CASException {
+    private PreanalyzedFieldValue makePreanalyzedFulltextFieldValue(JCas jCas, AnnotationFS fullTextSpan, FeatureStructure[] argPair, FlattenedRelation relation) throws CASException {
         FeaturePathSets featurePathSets = new FeaturePathSets();
         featurePathSets.add(new FeaturePathSet(Token.type, Arrays.asList("/:coveredText()"), null, textFb.textTokensFilter));
         featurePathSets.add(new FeaturePathSet(Abbreviation.type, Arrays.asList("/textReference:coveredText()"), null, textFb.textTokensFilter));
@@ -198,7 +196,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         List<PreanalyzedToken> tokens = relationFieldValueGenerator.getTokensForAnnotationIndexes(featurePathSets, null, true, PreanalyzedToken.class, fullTextSpan, null, jCas);
         // We only want the special highlighting term xargumentx for the actual two arguments of the
         // current relation. Thus we need to interlace the argument terms with the sentence terms.
-        addArgumentTokens(tokens, argPair, fullTextSpan.getBegin(), fullTextSpan.getEnd());
+        addArgumentTokens(tokens, argPair, fullTextSpan.getBegin(), fullTextSpan.getEnd(), relation);
         // First sort by offset. For equal offsets, put the tokens with positionIncrement == 1 first.
         Collections.sort(tokens, Comparator.<PreanalyzedToken>comparingInt(t -> t.start).thenComparing(t -> t.positionIncrement, Comparator.reverseOrder()));
         PreanalyzedFieldValue preanalyzedFieldValue = relationFieldValueGenerator.createPreanalyzedFieldValue(fullTextSpan.getCoveredText(), tokens);
@@ -208,7 +206,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     }
 
 
-    private void addArgumentTokens(List<PreanalyzedToken> tokens, FeatureStructure[] argPair, int fullTextSpanStart, int fullTextSpanEnd) {
+    private void addArgumentTokens(List<PreanalyzedToken> tokens, FeatureStructure[] argPair, int fullTextSpanStart, int fullTextSpanEnd, FlattenedRelation relation) {
         ArgumentMention arg1 = (ArgumentMention) argPair[0];
         ArgumentMention arg2 = (ArgumentMention) argPair[1];
 
@@ -224,24 +222,23 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         token2.positionIncrement = 0;
         token2.term = "xargumentx";
 
-
         if (token1.start < 0 || token1.end > fullTextSpanEnd-fullTextSpanStart) {
-            String docId = null;
+            String docId;
             try {
                 docId = JCoReTools.getDocId(arg1.getCAS().getJCas());
             } catch (CASException e) {
                 docId = "<unknown>";
             }
-            throw new IllegalStateException(String.format("xargumentx token offsets are out of bounds: %d-%d. Covering span annotation has offsets %d-%d, length %d. DocumentID: %s", token1.start, token1.end, fullTextSpanStart, fullTextSpanEnd, fullTextSpanEnd - fullTextSpanStart, docId));
+            throw new IllegalStateException(String.format("xargumentx token offsets are out of bounds: %d-%d. Respective event argument text: \"%s\". Covering span annotation has offsets %d-%d, length %d. DocumentID: %s. Processed event is: %s", token1.start, token1.end, arg1.getCoveredText(), fullTextSpanStart, fullTextSpanEnd, fullTextSpanEnd - fullTextSpanStart, docId, relation));
         }
         if (token2.start < 0 || token2.end > fullTextSpanEnd-fullTextSpanStart) {
-            String docId = null;
+            String docId;
             try {
                 docId = JCoReTools.getDocId(arg1.getCAS().getJCas());
             } catch (CASException e) {
                 docId = "<unknown>";
             }
-            throw new IllegalStateException(String.format("xargumentx token offsets are out of bounds: %d-%d. Covering span annotation has offsets %d-%d, length %d. DocumentID: %s", token2.start, token2.end, fullTextSpanStart, fullTextSpanEnd, fullTextSpanEnd - fullTextSpanStart, docId));
+            throw new IllegalStateException(String.format("xargumentx token offsets are out of bounds: %d-%d. Respective event argument text: \"%s\". Covering span annotation has offsets %d-%d, length %d. DocumentID: %s. Processed event is: %s", token2.start, token2.end, arg2.getCoveredText(), fullTextSpanStart, fullTextSpanEnd, fullTextSpanEnd - fullTextSpanStart, docId, relation));
         }
 
         tokens.add(token1);
