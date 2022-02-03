@@ -40,6 +40,7 @@
                 <transformer>
                   <resource>META-INF/services/org.apache.lucene.codecs.DocValuesFormat</resource>
                 </transformer>
+                <transformer />
               </transformers>
               <filters>
                 <filter>

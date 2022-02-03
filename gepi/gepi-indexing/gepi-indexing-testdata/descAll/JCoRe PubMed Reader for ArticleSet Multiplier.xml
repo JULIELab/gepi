@@ -106,6 +106,18 @@
                 </value>
                             
             </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>InputFile</name>
+                                
+                <value>
+                                        
+                    <string>input/gepi-test-documents.xml</string>
+                                    
+                </value>
+                            
+            </nameValuePair>
                     
         </configurationParameterSettings>
                 

@@ -208,5 +208,297 @@
         </operationalProperties>
             
     </analysisEngineMetaData>
+        
+    <externalResourceDependencies>
+                
+        <externalResourceDependency>
+                        
+            <key>egid2tid</key>
+                        
+            <description>egid2tid</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>tid2atid</key>
+                        
+            <description>tid2atid</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>tid2prefName</key>
+                        
+            <description>tid2prefName</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>tid2topHomologyPrefName</key>
+                        
+            <description>tid2topHomologyPrefName</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>tid2tophomo</key>
+                        
+            <description>tid2tophomo</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>stopwords</key>
+                        
+            <description>stopwords</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IListProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+            
+    </externalResourceDependencies>
+        
+    <resourceManagerConfiguration>
+                
+        <externalResources>
+                        
+            <externalResource>
+                                
+                <name>stopword_file</name>
+                                
+                <description>stopwords</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:resources/galago_inquery.txt</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.ListProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>tid2topHomologyPrefName</name>
+                                
+                <description>tid2topHomologyPrefName</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:resources/es-consumer-resources/tid2topHomologyPrefName.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>tid2tophomo</name>
+                                
+                <description>tid2tophomo</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:resources/es-consumer-resources/tid2tophomo.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>tid2atid</name>
+                                
+                <description>tid2atid</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:resources/es-consumer-resources/tid2atid.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>tid2prefName</name>
+                                
+                <description>tid2prefName</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:resources/es-consumer-resources/tid2prefName.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>egid2tid.map</name>
+                                
+                <description>egid2tid.map</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:resources/es-consumer-resources/egid2tid.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                    
+        </externalResources>
+                
+        <externalResourceBindings>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2topHomologyPrefName</key>
+                                
+                <resourceName>tid2topHomologyPrefName</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>egid2tid</key>
+                                
+                <resourceName>egid2tid.map</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2tophomo</key>
+                                
+                <resourceName>tid2tophomo</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2atid</key>
+                                
+                <resourceName>tid2atid</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2prefName</key>
+                                
+                <resourceName>tid2prefName</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>stopwords</key>
+                                
+                <resourceName>stopword_file</resourceName>
+                            
+            </externalResourceBinding>
+                    
+        </externalResourceBindings>
+            
+    </resourceManagerConfiguration>
     
 </analysisEngineDescription>
