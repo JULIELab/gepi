@@ -1,1 +1,0 @@
-The files in this directory are created via the createTestpipelineEsData.sh script in the gepi-concept-database directory.
