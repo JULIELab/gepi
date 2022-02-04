@@ -1,35 +1,4 @@
-6239	|	Caenorhabditis elegans	|		|	scientific name	|
-6239	|	Caenorhabditis elegans (Maupas, 1900)	|		|	authority	|
-6239	|	Rhabditis elegans	|		|	synonym	|
-6239	|	Rhabditis elegans Maupas, 1900	|		|	authority	|
-6239	|	roundworm	|	roundworm <Caenorhabditis elegans>	|	common name	|
-10090	|	LK3 transgenic mice	|		|	includes	|
-10090	|	Mus muscaris	|		|	misnomer	|
-10090	|	Mus musculus	|		|	scientific name	|
-10090	|	Mus musculus Linnaeus, 1758	|		|	authority	|
-10090	|	Mus sp. 129SV	|		|	includes	|
-10090	|	house mouse	|		|	genbank common name	|
-10090	|	mice C57BL/6xCBA/CaJ hybrid	|		|	misspelling	|
-10090	|	mouse	|	mouse <Mus musculus>	|	common name	|
-10090	|	nude mice	|		|	includes	|
-10090	|	transgenic mice	|		|	includes	|
-10116	|	Buffalo rat	|		|	includes	|
-10116	|	Gunn rats	|		|	misnomer	|
-10116	|	Norway rat	|		|	genbank common name	|
-10116	|	Rattus PC12 clone IS	|		|	includes	|
-10116	|	Rattus norvegicus	|		|	scientific name	|
-10116	|	Rattus norvegicus8	|		|	misspelling	|
-10116	|	Rattus norwegicus	|		|	misspelling	|
-10116	|	Rattus rattiscus	|		|	misnomer	|
-10116	|	Rattus sp. strain Wistar	|		|	equivalent name	|
-10116	|	Sprague-Dawley rat	|		|	includes	|
-10116	|	Wistar rats	|		|	includes	|
-10116	|	brown rat	|		|	common name	|
-10116	|	laboratory rat	|		|	includes	|
-10116	|	rat	|	rat <Rattus norvegicus>	|	common name	|
-10116	|	rats	|	rats <Rattus norvegicus>	|	common name	|
-10116	|	zitter rats	|		|	includes	|
-37733	|	PNRSV	|		|	acronym	|
-37733	|	Prunus necrotic ring spot virus	|		|	synonym	|
-37733	|	Prunus necrotic ringspot ilarvirus pnrsv	|		|	misnomer	|
-37733	|	Prunus necrotic ringspot virus	|		|	scientific name	|
+9606	|	Homo sapiens	|		|	scientific name	|
+9606	|	Homo sapiens Linnaeus, 1758	|		|	authority	|
+9606	|	human	|		|	genbank common name	|
+9606	|	man	|		|	common name	|

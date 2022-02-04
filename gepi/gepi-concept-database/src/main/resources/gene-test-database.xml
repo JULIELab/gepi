@@ -23,8 +23,7 @@
                         <genedescriptions>genes/gene2summary_test</genedescriptions>
                         <organismlist>organisms/taxIdsForTests.lst</organismlist>
                         <organismnames>organisms/names_test.dmp</organismnames>
-                        <homologene>genes/homologene_test.data</homologene>
-                        <gene_group>genes/gene_group_test</gene_group>
+                        <gene_group>genes/gene_orthologs_test</gene_group>
                     </configuration>
                 </creator>
             </concepts>

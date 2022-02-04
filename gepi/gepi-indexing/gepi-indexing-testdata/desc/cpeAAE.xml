@@ -19,9 +19,9 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="JCoRe JSON Writer">
+        <delegateAnalysisEngine key="JCoRe Consumer AAE">
                         
-            <import location="JCoRe JSON Writer.xml"/>
+            <import location="AggregateConsumer.xml"/>
                     
         </delegateAnalysisEngine>
             
@@ -43,7 +43,7 @@
                                 
                 <node>JCoRe Pipeline AAE</node>
                                 
-                <node>JCoRe JSON Writer</node>
+                <node>JCoRe Consumer AAE</node>
                             
             </fixedFlow>
                     

@@ -43,9 +43,9 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="JCoRe BANNER AE for Biomedical English">
+        <delegateAnalysisEngine key="JCoRe Flair Named Entity Recognizer">
                         
-            <import location="JCoRe BANNER AE for Biomedical English.xml"/>
+            <import location="JCoRe Flair Named Entity Recognizer.xml"/>
                     
         </delegateAnalysisEngine>
                 
@@ -107,7 +107,7 @@
                                 
                 <node>JCore LINNAEUS Species AE</node>
                                 
-                <node>JCoRe BANNER AE for Biomedical English</node>
+                <node>JCoRe Flair Named Entity Recognizer</node>
                                 
                 <node>JCoRe BioSEM Event Annotator</node>
                                 
