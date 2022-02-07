@@ -5,13 +5,13 @@
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
     <t:trigger event="updateTableData"/>
     <div>${viewmode}</div>
-    <t:eventlink event="download" context="requestData.dataSessionId" role="button" class="btn btn-primary">Download</t:eventlink>
+    <t:eventlink event="download" role="button" class="btn btn-primary">Download</t:eventlink>
     <t:grid source="beanevents" row="eventrow" model="tableModel" rowsPerPage="${rowsperpage}" pagerPosition="bottom">
         <p:firstArgumentPreferredNameCell>
-            <a href="https://www.ncbi.nlm.nih.gov/gene/${eventrow.firstargumentgeneid}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open in NCBI Gene">${eventrow.firstArgumentPreferredName}</a>
+            <a href="https://www.ncbi.nlm.nih.gov/gene/${eventrow.firstargumentgeneid}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open gene ID ${eventrow.firstargumentgeneid} in NCBI Gene">${eventrow.firstArgumentPreferredName}</a>
         </p:firstArgumentPreferredNameCell>
         <p:secondArgumentPreferredNameCell>
-            <a href="https://www.ncbi.nlm.nih.gov/gene/${eventrow.secondargumentgeneid}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open in NCBI Gene">${eventrow.secondArgumentPreferredName}</a>
+            <a href="https://www.ncbi.nlm.nih.gov/gene/${eventrow.secondargumentgeneid}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open gene ID ${eventrow.secondargumentgeneid} in NCBI Gene">${eventrow.secondArgumentPreferredName}</a>
         </p:secondArgumentPreferredNameCell>
         <p:docIdCell>
             <a href="${documentUrl}" target="_blank" data-toggle="tooltip" data-placement="top" title="${articleReferenceTitle}">${eventrow.docId}</a>

@@ -20,12 +20,10 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             data.awaitData('relationCounts', this.widgetSettings.dataSessionId).done(() => {
               console.log('Loading data was successful. Checking if the input column also gives green light.');
               const inputcolReadyPromise = $('#inputcol').data('animationtimer');
-              const circleWidgetAfterDrawIndicator = widgetManager.getWidget('circlechart').widgetObject.afterDrawIndicator
               if (inputcolReadyPromise) {
                 inputcolReadyPromise.done(() => {
-                  circleWidgetAfterDrawIndicator.done(() => {
+                  console.log("Input column gives green light")
                     this.init(this.elementId, this.orderType);
-                  })
                 });
               } else {
                 this.init(this.elementId, this.orderType);

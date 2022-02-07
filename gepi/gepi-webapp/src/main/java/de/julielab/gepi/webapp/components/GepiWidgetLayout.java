@@ -71,15 +71,15 @@ final public class GepiWidgetLayout {
     private Index index;
 
     void setupRender() {
-        System.out.println("GepiWidgetLayout");
         if (getEsResult() == null)
             viewMode = null;
         if (viewMode == null)
             viewMode = ViewMode.SMALL.name().toLowerCase();
-    }
-
-    void afterRender() {
         if (useTapestryZoneUpdates) {
+            // normally, JavaScript is put into afterRender() to allow access to the rendered HTML elements of
+            // a component. Here, however, we need to add the widget to the WidgetManager before we render
+            // the component. During component rendering, the refreshContents() event handler is called
+            // for which the WidgetManager needs to have the widget already.
             JSONObject widgetSettings = getWidgetSettings();
             JSONObject widgetObject = new JSONObject("widgetSettings", widgetSettings);
             // Not called for sankey, circle and all other widgets managing their JS themselves.

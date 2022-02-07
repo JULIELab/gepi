@@ -73,6 +73,7 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
   // This is called from GepiWidgetLayout#afterRender
   // for widgets to be updated via the Tapestry Zone update mechanism.
   const addWidget = function(name, widgetObject) {
+    console.log("Adding widget '"+name+"'.");
     widgetWrapper = new Widget(widgetObject);
     widgets.set(name, widgetWrapper);
 
@@ -85,6 +86,9 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
 
   const refreshWidget = function(name) {
     console.log("Refresh for widget " + name + " requested.")
+    let widget = getWidget(name);
+    if (!widget)
+        console.error("There is no widget registered with name '" + name + "'. Current widgets: " + JSON.stringify(widgets));
     getWidget(name).ajaxRefresh();
   };
 

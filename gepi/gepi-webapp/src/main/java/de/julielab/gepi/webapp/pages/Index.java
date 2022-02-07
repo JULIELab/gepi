@@ -83,7 +83,7 @@ public class Index {
     }
 
     void setupRender() {
-        if (dataSessionId == 0) {
+        if (requestData == null) {
             dataSessionId = dataService.newSession();
             log.debug("Current dataSessionId is 0, initializing GePi session with ID {}", dataSessionId);
         } else {
@@ -141,7 +141,8 @@ public class Index {
 
     public Object onReset() {
         log.debug("Reset!");
-        dataSessionId = 0;
+        requestData = null;
+//        dataSessionId = 0;
 //        dataSessionIdParameter = 0;
         return this;
     }

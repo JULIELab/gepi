@@ -20,6 +20,7 @@ public class GepiRequestData {
     private long dataSessionId;
 
     public GepiRequestData(List<String> eventTypes, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, EnumSet<InputMode> inputMode, long dataSessionId) {
+        System.out.println("New RequestData with data session ID " + dataSessionId);
         this.eventTypes = eventTypes;
         this.listAGePiIds = listAGePiIds;
         this.listBGePiIds = listBGePiIds;

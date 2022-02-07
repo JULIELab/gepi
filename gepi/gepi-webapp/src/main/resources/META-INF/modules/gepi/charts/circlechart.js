@@ -6,6 +6,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         links
         nodes
         hovered_id = ''
+        // TODO deprecated; was used to let other charts render after this one for alignment purposes. Not required any more
         afterDrawIndicator
 
         constructor(elementId, widgetSettings) {
@@ -30,10 +31,10 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         }
 
         setup() {
-          console.log("Creating afterDrawIndicator")
-          this.afterDrawIndicator = $.Deferred(); 
+//          console.log("Creating afterDrawIndicator")
+//          this.afterDrawIndicator = $.Deferred();
           console.log('Preparing to draw circle chart for element ID ' + this.elementId);
-          console.log("afterDrawIndicator value: " + this.afterDrawIndicator);
+//          console.log("afterDrawIndicator value: " + this.afterDrawIndicator);
           index.getReadySemaphor().done(() => {
             console.log('Chart drawing has green light from the central index semaphor, requesting data for dataSessionId ' + this.widgetSettings.dataSessionId);
             data.awaitData('relationCounts', this.widgetSettings.dataSessionId).done(() => {
@@ -102,8 +103,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             this.redraw();
             $('#'+this.elementId).data('firstDrawn', true);
             // Indicate that the circly widget has finished drawing
-            console.log("resolving afterDrawIndicator")
-            this.afterDrawIndicator.resolve();
+//            console.log("resolving afterDrawIndicator")
+//            this.afterDrawIndicator.resolve();
           } else {
             console.log('Not executing circleshart#firstDraw() because it has already been run.');
           }
