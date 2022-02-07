@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
      widgettitle="Table View" t:clientId="tableresult_widget" class="${classes}" sizeClass="widget-large" esResult="esResult"
-     viewMode="viewMode" useTapestryZoneUpdates="true" dataSessionId="dataSessionId"
+     viewMode="viewMode" useTapestryZoneUpdates="true" requestData="requestData"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
     <t:trigger event="updateTableData"/>
     <div>${viewmode}</div>
-    <t:eventlink event="download" context="dataSessionId" role="button" class="btn btn-primary">Download</t:eventlink>
+    <t:eventlink event="download" context="requestData.dataSessionId" role="button" class="btn btn-primary">Download</t:eventlink>
     <t:grid source="beanevents" row="eventrow" model="tableModel" rowsPerPage="${rowsperpage}" pagerPosition="bottom">
         <p:firstArgumentPreferredNameCell>
             <a href="https://www.ncbi.nlm.nih.gov/gene/${eventrow.firstargumentgeneid}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open in NCBI Gene">${eventrow.firstArgumentPreferredName}</a>

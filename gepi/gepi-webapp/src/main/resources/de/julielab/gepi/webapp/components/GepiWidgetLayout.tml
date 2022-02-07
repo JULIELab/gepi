@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter">
 	<div class="${classes}">
 		<div class="card ${viewmode} widget full-height" id="${clientId}">
 			<div class="card-header text-center">

@@ -34,42 +34,30 @@ import java.util.stream.Collectors;
 
 public class TableResultWidget extends GepiWidget {
 
+    @Parameter
+    protected EnumSet<InputMode> inputMode;
     @Inject
     private Logger log;
-
     @Property
     private String viewMode;
-
     @Property
     private BeanModelEvent eventRow;
-
     @Property
     @Persist("tab")
     private List<BeanModelEvent> beanEvents;
-
     @Inject
     private BeanModelSource beanModelSource;
-
     @Inject
     private Messages messages;
-
     @Inject
     private IGePiDataService dataService;
-
     @Inject
     private ComponentResources resources;
-
-    @Parameter
-    protected EnumSet<InputMode> inputMode;
-
     @Parameter
     private String sentenceFilterString;
 
     @Parameter
     private String paragraphFilterString;
-
-    @Parameter
-    private GepiRequestData requestData;
 
     @Property
     @Persist(TabPersistentField.TAB)

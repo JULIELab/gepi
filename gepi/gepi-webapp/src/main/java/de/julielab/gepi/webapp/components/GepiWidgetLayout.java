@@ -2,6 +2,7 @@ package de.julielab.gepi.webapp.components;
 
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.pages.Index;
@@ -51,7 +52,8 @@ final public class GepiWidgetLayout {
     @Property
     private boolean useTapestryZoneUpdates;
     @Parameter
-    private long dataSessionId;
+    @Property
+    protected GepiRequestData requestData;
 
     @InjectComponent
     private Zone widgetZone;
@@ -69,6 +71,7 @@ final public class GepiWidgetLayout {
     private Index index;
 
     void setupRender() {
+        System.out.println("GepiWidgetLayout");
         if (getEsResult() == null)
             viewMode = null;
         if (viewMode == null)
@@ -86,11 +89,11 @@ final public class GepiWidgetLayout {
     }
 
     public Future<EventRetrievalResult> getEsResult() {
-        return dataService.getData(dataSessionId).getUnrolledResult();
+        return dataService.getData(requestData.getDataSessionId()).getUnrolledResult();
     }
 
     public Future<AggregatedEventsRetrievalResult> getNeo4jResult() {
-        return dataService.getData(dataSessionId).getAggregatedResult();
+        return dataService.getData(requestData.getDataSessionId()).getAggregatedResult();
     }
 
     /**
@@ -109,7 +112,7 @@ final public class GepiWidgetLayout {
         widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI());
         widgetSettings.put("zoneElementId", widgetZone.getClientId());
         widgetSettings.put("useTapestryZoneUpdates", useTapestryZoneUpdates);
-        widgetSettings.put("dataSessionId", dataSessionId);
+        widgetSettings.put("dataSessionId", requestData.getDataSessionId());
         return widgetSettings;
     }
 
@@ -121,6 +124,9 @@ final public class GepiWidgetLayout {
     }
 
     public boolean isResultLoading() {
+        log.info("ESResult: {}", getEsResult());
+        if (getEsResult() != null)
+        log.info("ESResult done: {}", getEsResult().isDone());
         if (getEsResult() != null && !getEsResult().isDone()) {
             return true;
         }

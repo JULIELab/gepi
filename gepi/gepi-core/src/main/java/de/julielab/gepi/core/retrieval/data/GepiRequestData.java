@@ -14,6 +14,21 @@ public class GepiRequestData {
     private Future<IdConversionResult> listAGePiIds;
     private Future<IdConversionResult> listBGePiIds;
     private String sentenceFilterString;
+    private String paragraphFilterString;
+    private String filterFieldsConnectionOperator;
+    private EnumSet<InputMode> inputMode;
+    private long dataSessionId;
+
+    public GepiRequestData(List<String> eventTypes, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, EnumSet<InputMode> inputMode, long dataSessionId) {
+        this.eventTypes = eventTypes;
+        this.listAGePiIds = listAGePiIds;
+        this.listBGePiIds = listBGePiIds;
+        this.sentenceFilterString = sentenceFilterString;
+        this.paragraphFilterString = paragraphFilterString;
+        this.filterFieldsConnectionOperator = filterFieldsConnectionOperator;
+        this.inputMode = inputMode;
+        this.dataSessionId = dataSessionId;
+    }
 
     public EnumSet<InputMode> getInputMode() {
         return inputMode;
@@ -36,17 +51,6 @@ public class GepiRequestData {
     }
 
     public void setDataSessionId(long dataSessionId) {
-        this.dataSessionId = dataSessionId;
-    }
-
-    public GepiRequestData(List<String> eventTypes, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, EnumSet<InputMode> inputMode, long dataSessionId) {
-        this.eventTypes = eventTypes;
-        this.listAGePiIds = listAGePiIds;
-        this.listBGePiIds = listBGePiIds;
-        this.sentenceFilterString = sentenceFilterString;
-        this.paragraphFilterString = paragraphFilterString;
-        this.filterFieldsConnectionOperator = filterFieldsConnectionOperator;
-        this.inputMode = inputMode;
         this.dataSessionId = dataSessionId;
     }
 
@@ -98,8 +102,17 @@ public class GepiRequestData {
         this.paragraphFilterString = paragraphFilterString;
     }
 
-    private String paragraphFilterString;
-    private String filterFieldsConnectionOperator;
-    private EnumSet<InputMode> inputMode;
-    private long dataSessionId;
+    @Override
+    public String toString() {
+        return "GepiRequestData{" +
+                "eventTypes=" + eventTypes +
+                ", listAGePiIds=" + listAGePiIds +
+                ", listBGePiIds=" + listBGePiIds +
+                ", sentenceFilterString='" + sentenceFilterString + '\'' +
+                ", paragraphFilterString='" + paragraphFilterString + '\'' +
+                ", filterFieldsConnectionOperator='" + filterFieldsConnectionOperator + '\'' +
+                ", inputMode=" + inputMode +
+                ", dataSessionId=" + dataSessionId +
+                '}';
+    }
 }
