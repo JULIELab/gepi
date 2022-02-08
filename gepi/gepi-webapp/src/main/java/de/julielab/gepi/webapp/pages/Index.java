@@ -3,7 +3,6 @@ package de.julielab.gepi.webapp.pages;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
-import de.julielab.gepi.webapp.components.GepiInput;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
@@ -20,8 +19,6 @@ import org.slf4j.Logger;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Start page of application gepi-webapp.
@@ -198,6 +195,14 @@ public class Index {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @InjectPage
+    private GridTest gridTest;
+
+    Object onGoToGridTest() {
+        gridTest.setRequestData(requestData);
+        return gridTest;
     }
 
 }

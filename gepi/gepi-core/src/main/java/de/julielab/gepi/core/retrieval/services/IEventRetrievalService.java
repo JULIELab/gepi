@@ -14,7 +14,9 @@ import de.julielab.gepi.core.services.IGeneIdService.IdType;
 public interface IEventRetrievalService {
 	CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData);
 
-	/**
+    CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, int from, int numRows);
+
+    /**
 	 * Retrieves events between two lists of genes. The IDs may be of any
 	 * accepted type (see {@link IdType}) and will be converted automatically.
 	 * 
@@ -41,9 +43,15 @@ public interface IEventRetrievalService {
 	 */
 	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter);
 
+	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, int from, int numRows);
+
 	CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter);
 
 	SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter) throws ExecutionException, InterruptedException;
 
+	SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, int from, int numRows) throws ExecutionException, InterruptedException;
+
 	CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String filterFieldsConnectionOperator);
+
+    long getTotalNumberOfEvents();
 }

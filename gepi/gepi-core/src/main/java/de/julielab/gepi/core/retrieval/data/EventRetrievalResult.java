@@ -7,27 +7,37 @@ import java.util.stream.Stream;
 
 public class EventRetrievalResult {
 
-	public enum EventResultType {OUTSIDE, BIPARTITE, FULLTEXT_FILTERED}
-	private List<Event> eventList;
-	private EventResultType resultType;
+    private long numTotalRows;
+    private List<Event> eventList;
+    private EventResultType resultType;
 
-	public List<Event> getEventList() {
-		return Collections.unmodifiableList(eventList);
-	}
+    public long getNumTotalRows() {
+        return numTotalRows;
+    }
 
-	public void setEvents(Stream<Event> events) {
-		eventList = events.collect(Collectors.toList());
-	}
+    public void setNumTotalRows(long numTotalRows) {
+        this.numTotalRows = numTotalRows;
+    }
 
-	public void setEvents(List<Event> eventList) {
-		this.eventList = eventList;
-	}
+    public List<Event> getEventList() {
+        return Collections.unmodifiableList(eventList);
+    }
 
-	public EventResultType getResultType() {
-		return resultType;
-	}
+    public void setEvents(Stream<Event> events) {
+        eventList = events.collect(Collectors.toList());
+    }
 
-	public void setResultType(EventResultType resultType) {
-		this.resultType = resultType;
-	}
+    public void setEvents(List<Event> eventList) {
+        this.eventList = eventList;
+    }
+
+    public EventResultType getResultType() {
+        return resultType;
+    }
+
+    public void setResultType(EventResultType resultType) {
+        this.resultType = resultType;
+    }
+
+    public enum EventResultType {OUTSIDE, BIPARTITE, FULLTEXT_FILTERED}
 }

@@ -6,6 +6,7 @@ import de.julielab.jcore.consumer.es.FieldValueGenerator;
 import de.julielab.jcore.consumer.es.FilterRegistry;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
+import de.julielab.jcore.consumer.es.preanalyzed.RawToken;
 import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.types.pubmed.Header;
@@ -154,7 +155,10 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     document.addField("alleventtypes", Stream.of(rel.getRelations().toArray()).map(EventMention.class::cast).map(EventMention::getSpecificType).collect(Collectors.toSet()).toArray());
                     document.addField("ARGUMENT_FS", argPair);
 
-                    relDocs.add(document);
+                    // filter out reflexive events
+                    if (((ArrayFieldValue) document.get("argumenttophomoids")).stream().map(RawToken.class::cast).map(RawToken::getTokenValue).distinct().count() == 2) {
+                        relDocs.add(document);
+                    }
                 } catch (CASException e) {
                     throw new FieldGenerationException(e);
                 }

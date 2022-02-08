@@ -219,4 +219,12 @@ public class EventRetrievalServiceIntegrationTest {
         CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Arrays.asList("Binding"), "stress", null);
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(0);
     }
+
+    @Test
+    public void getTotalNumberOfEvents() {
+        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        long totalNumberOfEvents = eventRetrievalService.getTotalNumberOfEvents();
+        // the number of JSON files in the test index directory
+        assertThat(totalNumberOfEvents).isEqualTo(57);
+    }
 }

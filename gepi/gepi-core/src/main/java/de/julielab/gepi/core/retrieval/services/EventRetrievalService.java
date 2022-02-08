@@ -111,6 +111,19 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     @Override
     public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData) {
+        return getEvents(requestData, 0, Integer.MAX_VALUE);
+    }
+
+    /**
+     * If <tt>numRows</tt> is set to 0, only argument pairs are retrieved for the charts.
+     *
+     * @param requestData
+     * @param from
+     * @param numRows
+     * @return
+     */
+    @Override
+    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, int from, int numRows) {
         CompletableFuture<EventRetrievalResult> esResult;
         EnumSet<InputMode> inputMode = requestData.getInputMode();
         if (inputMode.contains(InputMode.AB)) {
@@ -118,7 +131,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             esResult = getBipartiteEvents(requestData.getListAGePiIds(), requestData.getListBGePiIds(), requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString());
         } else if (inputMode.contains(InputMode.A)) {
             log.debug("Calling EventRetrievalService for A search");
-            esResult = getOutsideEvents(requestData.getListAGePiIds(), requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString());
+            esResult = getOutsideEvents(requestData.getListAGePiIds(), requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), from, numRows);
         } else {
             // No IDs were entered
             log.debug("Calling EventRetrievalService for scope filtered events");
@@ -132,77 +145,14 @@ public class EventRetrievalService implements IEventRetrievalService {
                                                                       Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
         return CompletableFuture.supplyAsync(() -> {
             try {
+
                 Set<String> idSetA = idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet());
 
                 Set<String> idSetB = idStreamB.get().getConvertedItems().values().stream().collect(Collectors.toSet());
 
                 log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idSetA.size(), idSetB.size());
 
-                TermsQuery listA1Query = new TermsQuery(Collections.unmodifiableCollection(idSetA));
-                listA1Query.field = FIELD_EVENT_ARGUMENT1SEARCH;
-                TermsQuery listA2Query = new TermsQuery(Collections.unmodifiableCollection(idSetA));
-                listA2Query.field = FIELD_EVENT_ARGUMENT2SEARCH;
-
-                TermsQuery listB1Query = new TermsQuery(Collections.unmodifiableCollection(idSetB));
-                listB1Query.field = FIELD_EVENT_ARGUMENT1SEARCH;
-                TermsQuery listB2Query = new TermsQuery(Collections.unmodifiableCollection(idSetB));
-                listB2Query.field = FIELD_EVENT_ARGUMENT2SEARCH;
-
-                BoolClause a1b2Clause = new BoolClause();
-                a1b2Clause.addQuery(listA1Query);
-                a1b2Clause.addQuery(listB2Query);
-                a1b2Clause.occur = Occur.MUST;
-
-                BoolClause a2b1Clause = new BoolClause();
-                a2b1Clause.addQuery(listA2Query);
-                a2b1Clause.addQuery(listB1Query);
-                a2b1Clause.occur = Occur.MUST;
-
-                BoolQuery a1b2Query = new BoolQuery();
-                a1b2Query.addClause(a1b2Clause);
-
-                BoolQuery a2b1Query = new BoolQuery();
-                a2b1Query.addClause(a2b1Clause);
-
-                BoolClause argClause = new BoolClause();
-                argClause.addQuery(a1b2Query);
-                argClause.addQuery(a2b1Query);
-                argClause.occur = Occur.SHOULD;
-
-                BoolQuery mustQuery = new BoolQuery();
-                mustQuery.addClause(argClause);
-
-                BoolClause mustClause = new BoolClause();
-                mustClause.addQuery(mustQuery);
-                mustClause.occur = Occur.MUST;
-
-                BoolQuery eventQuery = new BoolQuery();
-                eventQuery.addClause(mustClause);
-
-                if (!eventTypes.isEmpty()) {
-                    TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
-                    eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
-                    BoolClause eventTypeClause = new BoolClause();
-                    eventTypeClause.addQuery(eventTypesQuery);
-                    eventTypeClause.occur = FILTER;
-                    eventQuery.addClause(eventTypeClause);
-                }
-
-                BoolQuery filterQuery = new BoolQuery();
-                if (!StringUtils.isBlank(sentenceFilter)) {
-                    // TODO should vs must should be adapted according to the user input
-                    addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, SHOULD, filterQuery);
-                }
-                if (!StringUtils.isBlank(paragraphFilter)) {
-                    // TODO should vs must should be adapted according to the user input
-                    addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, SHOULD, filterQuery);
-                }
-                if (filterQuery.clauses != null) {
-                    BoolClause fulltextFilterClause = new BoolClause();
-                    fulltextFilterClause.occur = FILTER;
-                    fulltextFilterClause.addQuery(filterQuery);
-                    eventQuery.addClause(fulltextFilterClause);
-                }
+                BoolQuery eventQuery = EventQueries.getBipartiteQuery(eventTypes, sentenceFilter, paragraphFilter, idSetA, idSetB);
 
                 SearchServerRequest serverCmd = new SearchServerRequest();
                 serverCmd.query = eventQuery;
@@ -262,25 +212,6 @@ public class EventRetrievalService implements IEventRetrievalService {
         });
     }
 
-    /**
-     * <p>Adds a filter clause to the given query that contains a simple query string query.</p>
-     * <p>The query allows boolean operators and quotes to mark phrases.</p>
-     *
-     * @param filterQuery The query string. May contain boolean operators and quoted phrases.
-     * @param field       The fulltext field to filter on.
-     * @param occur
-     * @param eventQuery  The top event query that is currently constructed.
-     */
-    private void addFulltextSearchQuery(String filterQuery, String field, Occur occur, BoolQuery eventQuery) {
-        final SimpleQueryStringQuery textFilterQuery = new SimpleQueryStringQuery();
-        textFilterQuery.flags = List.of(SimpleQueryStringQuery.Flag.ALL);
-        textFilterQuery.query = filterQuery;
-        textFilterQuery.fields = Arrays.asList(field);
-        final BoolClause textFilterClause = new BoolClause();
-        textFilterClause.addQuery(textFilterQuery);
-        textFilterClause.occur = occur;
-        eventQuery.addClause(textFilterClause);
-    }
 
     @Override
     public CompletableFuture<EventRetrievalResult> getBipartiteEvents(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
@@ -314,6 +245,11 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     @Override
     public CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter) {
+        return getOutsideEvents(idStreamA, eventTypes, sentenceFilter, paragraphFilter, 0, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, int from, int numRows) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -321,7 +257,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
                 log.debug("Retrieving outside events for {} A IDs", idSet.size());
                 log.trace("The A IDs are: {}", idSet);
-                SearchServerRequest serverCmd = getOutsideServerRequest(idStreamA, eventTypes, sentenceFilter, paragraphFilter);
+                SearchServerRequest serverCmd = getOutsideServerRequest(idStreamA, eventTypes, sentenceFilter, paragraphFilter, from, numRows);
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
                 carrier.addSearchServerRequest(serverCmd);
@@ -335,6 +271,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 log.debug("Retrieved {} outside events from ElasticSearch in {} seconds", eventResult.getEventList().size(), time / 1000);
                 eventResult.setResultType(EventResultType.OUTSIDE);
                 reorderOutsideEventResultsArguments(idSet, eventResult);
+                log.debug("After reordering, the event list has {} elements", eventResult.getEventList().size());
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
                 log.error("Could not retrieve the IDs for the query", e);
@@ -350,37 +287,22 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     @Override
     public SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter) throws ExecutionException, InterruptedException {
-        TermsQuery termsQuery = new TermsQuery(Collections.unmodifiableCollection(idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet())));
-        termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
+        return getOutsideServerRequest(idStreamA, eventTypes, sentenceFilter, paragraphFilter, 0, Integer.MAX_VALUE);
+    }
 
-        BoolClause termsClause = new BoolClause();
-        termsClause.addQuery(termsQuery);
-        termsClause.occur = Occur.MUST;
+    @Override
+    public SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, int from, int numRows) throws ExecutionException, InterruptedException {
+        BoolQuery eventQuery = EventQueries.getOutsideQuery(idStreamA, eventTypes, sentenceFilter, paragraphFilter);
 
-        BoolQuery eventQuery = new BoolQuery();
-        eventQuery.addClause(termsClause);
-
-        if (!eventTypes.isEmpty()) {
-            TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
-            eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
-            BoolClause eventTypeClause = new BoolClause();
-            eventTypeClause.addQuery(eventTypesQuery);
-            eventTypeClause.occur = FILTER;
-            eventQuery.addClause(eventTypeClause);
-        }
-
-        if (!StringUtils.isBlank(sentenceFilter)) {
-            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, Occur.FILTER, eventQuery);
-        }
-        if (!StringUtils.isBlank(paragraphFilter)) {
-            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, Occur.FILTER, eventQuery);
-        }
-
+        boolean downloadCompleteResults = numRows == 0 || numRows == Integer.MAX_VALUE;
 
         SearchServerRequest serverCmd = new SearchServerRequest();
         serverCmd.query = eventQuery;
         serverCmd.index = documentIndex;
-        serverCmd.rows = SCROLL_SIZE;
+        serverCmd.start = from;
+        serverCmd.rows = numRows;
+        if (downloadCompleteResults)
+            serverCmd.rows = SCROLL_SIZE;
         serverCmd.fieldsToReturn = Arrays.asList(
                 FIELD_PMID,
                 FIELD_PMCID,
@@ -395,52 +317,39 @@ public class EventRetrievalService implements IEventRetrievalService {
                 FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
                 FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
                 FIELD_EVENT_ARG_TEXT);
-        serverCmd.downloadCompleteResults = true;
+        if (numRows == 0)
+            serverCmd.fieldsToReturn = Arrays.asList(
+                    FIELD_EVENT_ARG_GENE_IDS,
+                    FIELD_EVENT_ARG_CONCEPT_IDS,
+                    FIELD_EVENT_ARG_PREFERRED_NAME,
+                    FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
+                    FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
+                    FIELD_EVENT_ARG_TEXT);
+        serverCmd.downloadCompleteResults = downloadCompleteResults;
         serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
-        HighlightCommand hlc = new HighlightCommand();
-        hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
-        hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
-        hlc.fields.forEach(f -> {
-            f.pre = "<b>";
-            f.post = "</b>";
-            TermQuery tq = new TermQuery();
-            tq.field = f.field;
-            tq.term = "xargumentx";
-            f.highlightQuery = tq;
-        });
-        serverCmd.addHighlightCmd(hlc);
+        if (numRows != 0) {
+            HighlightCommand hlc = new HighlightCommand();
+            hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
+            hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
+            hlc.fields.forEach(f -> {
+                f.pre = "<b>";
+                f.post = "</b>";
+                TermQuery tq = new TermQuery();
+                tq.field = f.field;
+                tq.term = "xargumentx";
+                f.highlightQuery = tq;
+            });
+            serverCmd.addHighlightCmd(hlc);
+        }
         return serverCmd;
     }
+
 
     @Override
     public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String filterFieldsConnectionOperator) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
-            BoolQuery eventQuery = new BoolQuery();
-
-            if (!eventTypes.isEmpty()) {
-                TermsQuery eventTypesQuery = new TermsQuery(eventTypes.stream().collect(Collectors.toList()));
-                eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
-                BoolClause eventTypeClause = new BoolClause();
-                eventTypeClause.addQuery(eventTypesQuery);
-                eventTypeClause.occur = FILTER;
-                eventQuery.addClause(eventTypeClause);
-            }
-
-            BoolQuery fulltextQuery = new BoolQuery();
-
-            Occur filterFieldsOccur = filterFieldsConnectionOperator.equalsIgnoreCase("and") ? Occur.MUST : Occur.SHOULD;
-            if (!StringUtils.isBlank(sentenceFilter)) {
-                addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, filterFieldsOccur, fulltextQuery);
-            }
-            if (!StringUtils.isBlank(paragraphFilter)) {
-                addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, filterFieldsOccur, fulltextQuery);
-            }
-
-            BoolClause fulltextClause = new BoolClause();
-            fulltextClause.addQuery(fulltextQuery);
-            fulltextClause.occur = Occur.MUST;
-            eventQuery.addClause(fulltextClause);
+            BoolQuery eventQuery = EventQueries.getFulltextQuery(eventTypes, sentenceFilter, paragraphFilter, filterFieldsConnectionOperator);
 
             SearchServerRequest serverCmd = new SearchServerRequest();
             serverCmd.query = eventQuery;
@@ -495,6 +404,23 @@ public class EventRetrievalService implements IEventRetrievalService {
         });
     }
 
+    @Override
+    public long getTotalNumberOfEvents() {
+        SearchServerRequest serverRqst = new SearchServerRequest();
+        serverRqst.query = new MatchAllQuery();
+        serverRqst.index = documentIndex;
+        serverRqst.rows = 0;
+        ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("EventCount");
+        carrier.addSearchServerRequest(serverRqst);
+        long time = System.currentTimeMillis();
+        searchServerComponent.process(carrier);
+        long numFound = carrier.getSingleSearchServerResponse().getNumFound();
+        time = System.currentTimeMillis() - time;
+        log.debug("Determined the number of {} in the index in {} seconds", numFound, time / 1000);
+        return numFound;
+    }
+
+
     /**
      * Reorder the arguments of the result events such that the first argument
      * always corresponds to an ID in the query ID list.
@@ -512,10 +438,10 @@ public class EventRetrievalService implements IEventRetrievalService {
             Event e = it.next();
             // remove events that do not have any other argument than the
             // input ID itself
-            if (e.getArguments().stream().map(a -> a.getTopHomologyId()).distinct().count() < 2) {
-                it.remove();
-                continue;
-            }
+//            if (e.getArguments().stream().map(a -> a.getTopHomologyId()).distinct().count() < 2) {
+//                it.remove();
+//                continue;
+//            }
             int inputIdPosition = -1;
             for (int i = 0; i < e.getNumArguments(); ++i) {
                 Argument g = e.getArgument(i);

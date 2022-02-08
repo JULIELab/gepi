@@ -44,6 +44,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
         Stream<Event> eventStream = resultDocuments2Events(response.getDocumentResults());
         EventRetrievalResult eventRetrievalResult = new EventRetrievalResult();
         eventRetrievalResult.setEvents(eventStream);
+        eventRetrievalResult.setNumTotalRows(response.getNumFound());
+        System.out.println(log.getName());
         log.trace("Size of the event retrieval result (number of events): {}", eventRetrievalResult.getEventList().size());
         // postprocess eventPreferred names first with given neo4j information
 //		eventPPService.setPreferredNameFromConceptId(eventRetrievalResult.getEventList());
@@ -91,7 +93,6 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                     // ID " + eventDocument.getId() + ":\n" + eventDocument;
                     assert geneId != null;
                     assert topHomologyId != null;
-                    assert text != null;
 
                     arguments.add(new Argument(geneId, conceptId, topHomologyId, text));
                 } else {
@@ -110,6 +111,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             event.setArguments(arguments);
             if (likelihood.isPresent())
                 event.setLikelihood(likelihood.get());
+            if (mainEventType.isPresent())
             event.setMainEventType(mainEventType.get());
             event.setAllEventTypes(allEventTypes.stream().map(String.class::cast).collect(Collectors.toList()));
             if (sentenceHl != null && !sentenceHl.isEmpty())

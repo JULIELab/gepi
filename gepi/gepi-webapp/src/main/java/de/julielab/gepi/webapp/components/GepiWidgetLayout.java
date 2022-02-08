@@ -51,6 +51,9 @@ final public class GepiWidgetLayout {
     @Parameter(value = "false")
     @Property
     private boolean useTapestryZoneUpdates;
+    @Parameter(value = "false")
+    @Property
+    private boolean waitForData;
     @Parameter
     @Property
     protected GepiRequestData requestData;
@@ -124,6 +127,8 @@ final public class GepiWidgetLayout {
     }
 
     public boolean isResultLoading() {
+        if (!waitForData)
+            return false;
         log.info("ESResult: {}", getEsResult());
         if (getEsResult() != null)
         log.info("ESResult done: {}", getEsResult().isDone());
