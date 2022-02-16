@@ -185,6 +185,15 @@
           "headings": {
             "type": "text",
             "norms": false,
+            "store": true,
+            "copy_to": "paragraph.headings_kw"
+          },
+          "headings_kw": {
+            "type": "keyword",
+            "store": true
+          },
+          "textscope": {
+            "type": "keyword",
             "store": true
           }
         }

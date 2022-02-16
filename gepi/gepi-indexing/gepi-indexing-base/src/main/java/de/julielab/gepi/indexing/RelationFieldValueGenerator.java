@@ -127,6 +127,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     String id = docId + "_" + rel.getId() + "_" + i + "_" + j;
                     document.setId(id);
                     document.addField("id", id);
+                    document.addField("source", docId.startsWith("PMC") ? "pmc" : "pubmed");
                     document.addField("arguments", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
                     document.addField("argumentgeneids", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId"));
                     document.addField("argumentconceptids", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.eg2tidReplaceFilter));
