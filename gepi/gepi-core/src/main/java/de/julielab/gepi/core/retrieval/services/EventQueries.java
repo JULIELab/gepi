@@ -86,7 +86,7 @@ public class EventQueries {
         return eventQuery;
     }
 
-    public static BoolQuery getOutsideQuery(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter) throws InterruptedException, ExecutionException {
+    public static BoolQuery getOutsideQuery(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter) throws InterruptedException, ExecutionException {
         TermsQuery termsQuery = new TermsQuery(Collections.unmodifiableCollection(new HashSet<>(idStreamA.get().getConvertedItems().values())));
         termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
@@ -97,7 +97,7 @@ public class EventQueries {
         BoolQuery eventQuery = new BoolQuery();
         eventQuery.addClause(termsClause);
 
-        if (!eventTypes.isEmpty()) {
+        if (eventTypes != null && !eventTypes.isEmpty()) {
             TermsQuery eventTypesQuery = new TermsQuery(new ArrayList<>(eventTypes));
             eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
             BoolClause eventTypeClause = new BoolClause();
@@ -111,6 +111,9 @@ public class EventQueries {
         }
         if (!StringUtils.isBlank(paragraphFilter)) {
             addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, BoolClause.Occur.FILTER, eventQuery);
+        }
+        if (!StringUtils.isBlank(sectionNameFilter)) {
+            addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, BoolClause.Occur.FILTER, eventQuery);
         }
         return eventQuery;
     }

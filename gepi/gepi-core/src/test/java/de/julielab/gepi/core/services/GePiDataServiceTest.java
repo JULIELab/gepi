@@ -73,7 +73,7 @@ public class GePiDataServiceTest {
 
 
         GePiDataService gePiDataService = new GePiDataService();
-        File outputFile = gePiDataService.getOverviewExcel(events, 1234, EnumSet.of(InputMode.A), null, null);
+        File outputFile = gePiDataService.getOverviewExcel(events, 1234, EnumSet.of(InputMode.A), null, null, null);
         assertThat(outputFile).exists();
     }
 

@@ -2,7 +2,7 @@
 set -eo pipefail
 # This script compiles excerpts from resource files required to build the Neo4j gene concept database.
 # The base resources are:
-# 1. gene_info.gz (also downloaded from https://ftp.ncbi.nlm.nih.gov/gene/DATA/)
+# 1. gene_info.gz (downloaded from https://ftp.ncbi.nlm.nih.gov/gene/DATA/)
 # 2. names.dmp (obtained from NCBI taxonomy via visiting https://ftp.ncbi.nih.gov/pub/taxonomy/ and downloading and extracting one of the taxdmp.* files)
 # 3. gene_orthologs.gz (this file was previously part of gene_groups; downloaded from https://ftp.ncbi.nlm.nih.gov/gene/DATA/)
 # 4. gene2summary (this must be compiled via the gene mapper resource creation; see the README.md of https://github.com/JULIELab/gene-name-mapping)

@@ -119,9 +119,6 @@ public class GepiInput {
     private List<EventTypes> selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
 
     @Property
-    private List<String> selectedDevSettings;
-
-    @Property
     @Parameter
     private String sentenceFilterString;
 
@@ -131,6 +128,9 @@ public class GepiInput {
 
     @Property
     private String filterFieldsConnectionOperator;
+
+    @Property
+    private String sectionNameFilterString;
 
     /**
      * This is not an ID for the servlet session but to the current data state.
@@ -177,14 +177,6 @@ public class GepiInput {
         return new EnumSelectModel(EventTypes.class, messages);
     }
 
-    public ValueEncoder getDevSettingsEncoder() {
-        return new StringValueEncoder();
-    }
-
-    public SelectModel getDevSettingsModel() {
-        return new SelectModelImpl(new OptionModelImpl("Always use ES"));
-    }
-
     void setupRender() {
         //listATextAreaValue = "2475\n196";
         log.warn("{}", inputMode);
@@ -216,7 +208,6 @@ public class GepiInput {
                 && listBTextAreaValue.trim().length() > 0;
         boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
         boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
-        System.out.println("dev settings: " + selectedDevSettings);
         Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
         Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, "listB");
         if (isABSearchRequest) {
@@ -230,8 +221,8 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, listAGePiIds, listBGePiIds, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, inputMode, dataSessionId);
-//        if ((filterString != null && !filterString.isBlank()) || selectedDevSettings.contains("Always use ES")) {
+        requestData = new GepiRequestData(selectedEventTypeNames, listAGePiIds, listBGePiIds, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+//        if ((filterString != null && !filterString.isBlank())) {
         fetchEventsFromElasticSearch(requestData);
 //        } else {
 //        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);

@@ -70,7 +70,8 @@ public interface IGePiDataService {
      * @param inputMode
      * @param sentenceFilterString
      * @param paragraphFilterString
+     * @param sectionNameFilterString
      * @return An InputStream of the created Excel file.
      */
-    File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString) throws IOException;
+    File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException;
 }

@@ -18,8 +18,10 @@ public class GepiRequestData {
     private String filterFieldsConnectionOperator;
     private EnumSet<InputMode> inputMode;
     private long dataSessionId;
+    private String sectionNameFilterString;
 
-    public GepiRequestData(List<String> eventTypes, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, EnumSet<InputMode> inputMode, long dataSessionId) {
+    public GepiRequestData(List<String> eventTypes, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, long dataSessionId) {
+        this.sectionNameFilterString = sectionNameFilterString;
         System.out.println("New RequestData with data session ID " + dataSessionId);
         this.eventTypes = eventTypes;
         this.listAGePiIds = listAGePiIds;
@@ -29,6 +31,10 @@ public class GepiRequestData {
         this.filterFieldsConnectionOperator = filterFieldsConnectionOperator;
         this.inputMode = inputMode;
         this.dataSessionId = dataSessionId;
+    }
+
+    public String getSectionNameFilterString() {
+        return sectionNameFilterString;
     }
 
     public EnumSet<InputMode> getInputMode() {

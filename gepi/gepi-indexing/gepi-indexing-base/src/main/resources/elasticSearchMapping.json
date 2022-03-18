@@ -186,11 +186,14 @@
             "type": "text",
             "norms": false,
             "store": true,
-            "copy_to": "paragraph.headings_kw"
+            "copy_to": ["paragraph.headings_completion", "paragraph.headings_kw"]
           },
           "headings_kw": {
             "type": "keyword",
             "store": true
+          },
+          "headings_completion": {
+            "type": "completion"
           },
           "textscope": {
             "type": "keyword",

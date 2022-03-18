@@ -20,13 +20,14 @@ public interface IEventRetrievalService {
 	 * Retrieves events between two lists of genes. The IDs may be of any
 	 * accepted type (see {@link IdType}) and will be converted automatically.
 	 * 
-	 * @param listAIds
-	 * @param listBIds
-	 * @param paragraphFilterString
+	 * @param idStreamA
+	 * @param idStreamB
+	 * @param paragraphFilter
+     * @param sectionNameFilterString
      * @return Events between the two streams of IDs.
 	 */
-	CompletableFuture<EventRetrievalResult> getBipartiteEvents(Future<IdConversionResult> listAIds, Future<IdConversionResult> listBIds, List<String> eventTypes, String sentenceFilter, String paragraphFilterString);
-	CompletableFuture<EventRetrievalResult> getBipartiteEvents(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter, String paragraphFilter);
+	CompletableFuture<EventRetrievalResult> getBipartiteEvents(Future<IdConversionResult> idStreamA, Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilterString);
+	CompletableFuture<EventRetrievalResult> getBipartiteEvents(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter);
 
 	/**
 	 * Retrieves events between the input genes and any genes not on the list.
@@ -38,20 +39,21 @@ public interface IEventRetrievalService {
 	 * @param eventTypes
 	 * @param sentenceFilter
 	 * @param paragraphFilter
+	 * @param sectionNameFilter
 	 * @return Events between genes identified by the input stream and other
 	 *         genes.
 	 */
-	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter);
+	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter);
 
-	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, int from, int numRows);
+	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilterString, int from, int numRows);
 
-	CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter);
+	CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter);
 
-	SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter) throws ExecutionException, InterruptedException;
+	SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter) throws ExecutionException, InterruptedException;
 
-	SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, int from, int numRows) throws ExecutionException, InterruptedException;
+	SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter, int from, int numRows) throws ExecutionException, InterruptedException;
 
-	CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String filterFieldsConnectionOperator);
+	CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String filterFieldsConnectionOperator, String sectionNameFilterString);
 
     long getTotalNumberOfEvents();
 }

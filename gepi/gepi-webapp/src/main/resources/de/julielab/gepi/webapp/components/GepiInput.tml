@@ -105,10 +105,9 @@
                 </div>
                 <div class="row mt-3">
                     <hr class=""/>
-                    <h3>Development settings</h3>
+                    <h5>Section name filter</h5>
                     <div class="col-12">
-                        <t:checklist t:id="devsettings" selected="selecteddevsettings" encoder="devsettingsencoder"
-                                     model="devsettingsmodel"/>
+                        <t:TextField t:id="sectionnamefilter" value="sectionnamefilterstring" />
                     </div>
                 </div>
                 <div class="row mt-3">

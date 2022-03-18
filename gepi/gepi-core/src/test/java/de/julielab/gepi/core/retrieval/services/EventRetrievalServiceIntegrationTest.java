@@ -134,7 +134,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testGetOutsideEvents() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("10243"), Collections.emptyList(), null, null);
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("10243"), Collections.emptyList(), null, null, null);
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(3);
 
         final List<String> eventTypes = outsideEvents.get().getEventList().stream().map(Event::getMainEventType).collect(Collectors.toList());
@@ -149,35 +149,35 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testGetOutsideEventsWithEventTypeFilter1() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("10243"), Arrays.asList("Positive_regulation"), null, null);
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("10243"), Arrays.asList("Positive_regulation"), null, null, null);
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(2);
     }
 
     @Test
     public void testGetOutsideEventsWithEventTypeFilter2() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("3930"), Arrays.asList("Negative_regulation"), null, null);
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("3930"), Arrays.asList("Negative_regulation"), null, null, null);
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(0);
     }
 
     @Test
     public void testGetOutsideEventsWithSentenceFilter1() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("10243"), Arrays.asList("Positive_regulation"), "essential", null);
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("10243"), Arrays.asList("Positive_regulation"), "essential", null, null);
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(2);
     }
 
     @Test
     public void testGetOutsideEventsWithSentenceFilter2() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("3930"), Arrays.asList("Positive_regulation"), "stress", null);
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("3930"), Arrays.asList("Positive_regulation"), "stress", null, null);
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(0);
     }
 
     @Test
     public void testGetBipartiteEvents() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Collections.emptyList(), null, null);
+        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Collections.emptyList(), null, null, null);
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(1);
 
         final List<String> eventTypes = bipartiteEventsEvents.get().getEventList().stream().map(Event::getMainEventType).collect(Collectors.toList());
@@ -194,21 +194,21 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testGetBipartiteEventsWithEventTypeFilter1() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Arrays.asList("Binding"), null, null);
+        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Arrays.asList("Binding"), null, null, null);
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(1);
     }
 
     @Test
     public void testGetBipartiteEventsWithEventTypeFilter2() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Arrays.asList("Negative_regulation"), null, null);
+        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Arrays.asList("Negative_regulation"), null, null, null);
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(0);
     }
 
     @Test
     public void testGetBipartiteEventsWithSentenceFilter1() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Arrays.asList("Binding"), "sequence", null);
+        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Arrays.asList("Binding"), "sequence", null, null);
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(1);
     }
 
@@ -216,7 +216,7 @@ public class EventRetrievalServiceIntegrationTest {
     public void testGetBipartiteEventsWithSentenceFilter2() throws Exception {
         // there should be 0 hits because the 'stress' keyword is not contained in the found event sentence
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Arrays.asList("Binding"), "stress", null);
+        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getBipartiteEvents(IdConversionResult.of("10243"), IdConversionResult.of("8870"), Arrays.asList("Binding"), "stress", null, null);
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(0);
     }
 
@@ -226,5 +226,17 @@ public class EventRetrievalServiceIntegrationTest {
         long totalNumberOfEvents = eventRetrievalService.getTotalNumberOfEvents();
         // the number of JSON files in the test index directory
         assertThat(totalNumberOfEvents).isEqualTo(57);
+    }
+
+    @Test
+    public void testGetOutsideEventWithSectionFilter() throws Exception {
+        // First, establish the baseline: For gene ID 3458 we should find 9 events without filters
+        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        CompletableFuture<EventRetrievalResult> outsideEventsWithoutRestriction = eventRetrievalService.getOutsideEvents(IdConversionResult.of("3458"), null, null, null, null);
+        assertThat(outsideEventsWithoutRestriction.get().getEventList().size()).isEqualTo(9);
+
+        // Filtering for "cytokine" on the headings should reduce the number of hits to 1
+        CompletableFuture<EventRetrievalResult> outsideEventsWithSectionFilter = eventRetrievalService.getOutsideEvents(IdConversionResult.of("3458"), null, null, null, "cytokine");
+        assertThat(outsideEventsWithSectionFilter.get().getEventList().size()).isEqualTo(1);
     }
 }
