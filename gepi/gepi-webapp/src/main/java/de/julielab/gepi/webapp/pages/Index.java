@@ -11,6 +11,7 @@ import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.http.services.Request;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.HttpError;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -169,7 +170,7 @@ public class Index {
         String datasource = request.getParameter("datasource");
         long dataSessionId = Long.parseLong(Optional.ofNullable(request.getParameter("dataSessionId")).orElse("0"));
         log.debug("Received data request for '{}' for dataSessionId {} from the client.", datasource, dataSessionId);
-        if (!datasource.equals("relationCounts"))
+        if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && datasource.equals("bcounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
         log.debug("Checked datasource name");
         GePiData data = dataService.getData(dataSessionId);
@@ -178,18 +179,28 @@ public class Index {
         log.debug("Checked if results are null.");
         try {
             log.debug("Creating JSON object from results.");
-            JSONObject jsonObject;
+            JSONObject jsonObject = null;
             if (data.getAggregatedResult() != null) {
                 AggregatedEventsRetrievalResult aggregatedEvents = data.getAggregatedResult().get();
                 log.debug("Obtained aggregated events retrieval result with {} events.", aggregatedEvents.size());
                 jsonObject = dataService.getPairedArgsCount(aggregatedEvents);
             }
             else {
-                List<Event> eventList = data.getUnrolledResult().get().getEventList();
-                log.debug("Obtained unrolled list of individual events of size {}.", eventList.size());
-                jsonObject = dataService.getPairedArgsCount(eventList);
+                if (datasource.equals("relationCounts")) {
+                    List<Event> eventList = data.getUnrolledResult().get().getEventList();
+                    log.debug("Obtained unrolled list of individual events of size {}.", eventList.size());
+                    jsonObject = dataService.getPairedArgsCount(eventList);
+                } else if (datasource.equals("acounts")) {
+                    JSONArray aCounts = dataService.getArgumentCount(data.getUnrolledResult().get().getEventList(), 0);
+                    jsonObject = new JSONObject();
+                    jsonObject.put("argumentcounts", aCounts);
+                } else if (datasource.equals("bcounts")) {
+                    JSONArray bCounts = dataService.getArgumentCount(data.getUnrolledResult().get().getEventList(), 1);
+                    jsonObject = new JSONObject();
+                    jsonObject.put("argumentcounts", bCounts);
+                }
             }
-            log.debug("Sending data of type {} with {} nodes and {} links to the client ", datasource, jsonObject.getJSONArray("nodes").size(), jsonObject.getJSONArray("links").size());
+            log.debug("Sending data of type {} to the client ", datasource);
             return jsonObject;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

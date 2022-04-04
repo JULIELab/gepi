@@ -21,8 +21,8 @@
                             <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
                             <t:sankeywidget class="col-4" requestData="requestData" elementId="sankeychart" commonPartners="false"/>
                             <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
-                            <t:circlewidget class="col-4" requestData="requestData" elementId="circlechart"/>
-                            <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
+<!--                            <t:circlewidget class="col-4" requestData="requestData" elementId="circlechart"/>-->
+                            <t:piechartwidget class="col-4" requestData="requestData" elementId="piechart" />
                             <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychart" commonPartners="false" />-->
                             <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
                             <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
