@@ -40,12 +40,13 @@ public interface IGePiDataService {
      */
     GePiData getData(long sessionId);
 
+
     /**
      * input structure for pie chart and bar chart
      *
      * @return JSONArray - json array of tuples (itself realised as an json array)
      */
-    JSONArray getTargetArgCount(List<Event> e);
+    JSONArray getArgumentCount(List<Event> e, int argumentPosition);
 
     /**
      * input structure required for sankey graph

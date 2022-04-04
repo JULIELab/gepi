@@ -23,8 +23,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class GePiDataService implements IGePiDataService {
 
+    public static final String SOURCE = "source";
+    public static final String TARGET = "target";
     private static final Logger log = LoggerFactory.getLogger(GePiDataService.class);
-
     private Cache<Long, GePiData> dataCache;
     /**
      * This string is the scripts itself, not a reference to a file.
@@ -65,21 +66,19 @@ public class GePiDataService implements IGePiDataService {
     }
 
     /**
-     * sets json formated input list for google charts that accept one entry
+     * sets json formatted input list for google charts that accept one entry
      * name + number (here target event gene + count of occurrences)
      * singleArgCountJson is array of arrays with [<gene name><count>]
      */
     @SuppressWarnings("unchecked")
     @Override
-    public JSONArray getTargetArgCount(List<Event> evtList) {
+    public JSONArray getArgumentCount(List<Event> evtList, int argumentPosition) {
         List<Argument> arguments = new ArrayList<>();
         // get those arguments that were not part of the input
         evtList.forEach(e -> {
-            for (int i = 1; i < e.getNumArguments(); ++i) {
-                Argument a = e.getArgument(i);
-                a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY);
-                arguments.add(a);
-            }
+            Argument a = e.getArgument(argumentPosition);
+            a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY);
+            arguments.add(a);
         });
 
         // get the counts of how often event arguments appear
