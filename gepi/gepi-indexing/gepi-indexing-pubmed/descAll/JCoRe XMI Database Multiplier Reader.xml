@@ -365,11 +365,9 @@
                                                 
                         <string>de.julielab.jcore.types.Token</string>
                                                 
-                        <string>de.julielab.jcore.types.ChunkNP</string>
+                        <string>gnormplus:de.julielab.jcore.types.Gene</string>
                                                 
-                        <string>de.julielab.jcore.types.PennBioIEPOSTag</string>
-                                                
-                        <string>de.julielab.jcore.types.Abbreviation</string>
+                        <string>gnormplusbiosem:de.julielab.jcore.types.EventMention</string>
                                             
                     </array>
                                     
