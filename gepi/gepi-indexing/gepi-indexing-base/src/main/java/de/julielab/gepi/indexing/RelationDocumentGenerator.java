@@ -52,7 +52,8 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         try {
             int i = 0;
             for (FlattenedRelation rel : jCas.<FlattenedRelation>getAnnotationIndex(FlattenedRelation.type)) {
-                if (rel.getArguments().size() > 1) {
+                // exclude events where arguments are FamilyNames for now; we don't have IDs for them yet
+                if (rel.getArguments().size() > 1 && noFamilies(rel.getArguments())) {
                     ArrayFieldValue relationPairDocuments = (ArrayFieldValue) relationFieldValueGenerator.generateFieldValue(rel);
                     for (IFieldValue fv : relationPairDocuments) {
                         Document relDoc = (Document) fv;
@@ -89,6 +90,19 @@ public class RelationDocumentGenerator extends DocumentGenerator {
             throw new FieldGenerationException(e);
         }
         return relDocs;
+    }
+
+    /**
+     * Filter method as long as we don't have handling for FamilyName gene mentions
+     * @param arguments
+     * @return
+     */
+    private boolean noFamilies(FSArray arguments) {
+        boolean noFamilies = true;
+        for (int i = 0; i < arguments.size(); ++i) {
+            noFamilies = noFamilies && !"FamilyName".equals(((Gene) ((ArgumentMention) arguments.get(i)).getRef()).getSpecificType());
+        }
+        return noFamilies;
     }
 
     private boolean argPairLiesWithinSentence(Collection<Sentence> overlappingSentences, FeatureStructure[] argPair) {
