@@ -1,20 +1,19 @@
 package de.julielab.gepi.webapp.components;
 
-import de.julielab.gepi.core.retrieval.data.Argument;
-import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.data.InputMode;
+import de.julielab.gepi.core.retrieval.data.*;
+import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.webapp.BeanModelEvent;
 import de.julielab.gepi.webapp.base.TabPersistentField;
+import de.julielab.gepi.webapp.EventPagesDataSource;
 import de.julielab.java.utilities.FileUtilities;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.StreamResponse;
-import org.apache.tapestry5.annotations.Log;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Persist;
-import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
 import org.apache.tapestry5.commons.Messages;
+import org.apache.tapestry5.corelib.components.Grid;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
@@ -28,39 +27,30 @@ import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 public class TableResultWidget extends GepiWidget {
 
-    @Inject
-    private Logger log;
-
-    @Property
-    private String viewMode;
-
-    @Property
-    private BeanModelEvent eventRow;
-
-    @Property
-    @Persist("tab")
-    private List<BeanModelEvent> beanEvents;
-
-    @Inject
-    private BeanModelSource beanModelSource;
-
-    @Inject
-    private Messages messages;
-
-    @Inject
-    private IGePiDataService dataService;
-
-    @Inject
-    private ComponentResources resources;
-
     @Parameter
     protected EnumSet<InputMode> inputMode;
-
+    @Inject
+    private Logger log;
+    @Property
+    private String viewMode;
+    @Property
+    private BeanModelEvent eventRow;
+//    @Property
+//    @Persist("tab")
+//    private List<BeanModelEvent> beanEvents;
+    @Inject
+    private BeanModelSource beanModelSource;
+    @Inject
+    private Messages messages;
+    @Property
+    private EventPagesDataSource eventSource;
+    @Inject
+    private IGePiDataService dataService;
+    @Inject
+    private ComponentResources resources;
     @Parameter
     private String sentenceFilterString;
 
@@ -75,7 +65,14 @@ public class TableResultWidget extends GepiWidget {
     @Persist(TabPersistentField.TAB)
     private Format contextFormat;
 
+    @Inject
+    private IEventRetrievalService eventRetrievalService;
+
+    @InjectComponent
+    private Grid grid;
+
     void setupRender() {
+        eventSource = new EventPagesDataSource(eventRetrievalService, requestData);
         List<String> availableColumns = new ArrayList<>(List.of("firstArgumentPreferredName",
                 "secondArgumentPreferredName",
                 "firstArgumentText",
@@ -121,19 +118,12 @@ public class TableResultWidget extends GepiWidget {
     }
 
     void onUpdateTableData() {
-        try {
-            log.debug("Waiting for table data.");
-            beanEvents = getEsResult().get().getEventList().stream()
-                    .map(e -> new BeanModelEvent(e))
-                    .collect(Collectors.toList());
-            log.debug("Table data was loaded.");
+        log.debug("Waiting for table data.");
+//            beanEvents = getEsResult().get().getEventList().stream()
+//                    .map(e -> new BeanModelEvent(e))
+//                    .collect(Collectors.toList());
+        log.debug("Table data was loaded.");
 
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("Exception occurred when trying to access ES event results.", e);
-        } catch (NullPointerException e) {
-            log.error("NPE occurred when trying to access ES event results. The persistentEsResult is: {}", getEsResult());
-            throw e;
-        }
     }
 
     public int getRowsPerPage() {
@@ -158,7 +148,7 @@ public class TableResultWidget extends GepiWidget {
      * Pressing the Download Link/Button for the Table View
      */
     @Log
-    StreamResponse onDownload(long dataSessionId) {
+    StreamResponse onDownload() {
         return new StreamResponse() {
 
             private File statisticsFile;
@@ -166,7 +156,7 @@ public class TableResultWidget extends GepiWidget {
             @Override
             public void prepareResponse(Response response) {
                 try {
-                    statisticsFile = dataService.getOverviewExcel(getEsResult().get().getEventList(), dataSessionId, inputMode, sentenceFilterString, paragraphFilterString);
+                    statisticsFile = dataService.getOverviewExcel(getEsResult().get().getEventList(), requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
 
                     response.setHeader("Content-Length", "" + statisticsFile.length()); // output into file
                     response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getName());
@@ -188,93 +178,4 @@ public class TableResultWidget extends GepiWidget {
         };
     }
 
-    public static class BeanModelEvent {
-
-        private Event event;
-
-        public BeanModelEvent(Event event) {
-            this.event = event;
-        }
-
-        public String getDocId() {
-            return event.getDocId();
-        }
-
-        public String getEventId() {
-            return event.getEventId();
-        }
-
-        public String getFirstArgumentText() {
-            return event.getFirstArgument().getText();
-        }
-
-        public String getFirstArgumentGeneId() {
-            return event.getFirstArgument().getGeneId();
-        }
-
-        public String getSecondArgumentText() {
-            return event.getSecondArgument().getText();
-        }
-
-        public String getSecondArgumentGeneId() {
-            return event.getSecondArgument().getGeneId();
-        }
-
-        public String getFirstArgumentPreferredName() {
-            return event.getFirstArgument().getPreferredName();
-        }
-
-        public String getSecondArgumentPreferredName() {
-            return event.getSecondArgument().getPreferredName();
-        }
-
-        public String getMainEventType() {
-            return event.getMainEventType();
-        }
-
-        public String getFirstArgumentMatchType() {
-            return event.getFirstArgument().getMatchType();
-        }
-
-        public String getSecondArgumentMatchType() {
-            return event.getSecondArgument().getMatchType();
-        }
-
-        public String getFirstArgumentTextWithPreferredName() {
-            Argument argument = event.getFirstArgument();
-            return argument.getText() + " (" + argument.getPreferredName() + ")";
-        }
-
-        public String getAllEventTypes() {
-            return String.join(", ", event.getAllEventTypes());
-        }
-
-        public String getContext() {
-            if (event.isParagraphMatchingFulltextQuery() && !event.isSentenceMatchingFulltextQuery())
-                return event.getSentence() + "<br>" + event.getHlParagraph();
-            if (event.isSentenceMatchingFulltextQuery())
-                return event.getSentence() + "<br>" + event.getHlSentence();
-            return event.getSentence();
-        }
-
-        public String getSecondArgumentTextWithPreferredName() {
-            Argument argument = event.getSecondArgument();
-            if (null != argument)
-                return argument.getText() + " (" + argument.getPreferredName() + ")";
-            return "";
-        }
-
-        public String getFulltextMatchSource() {
-            if (event.isSentenceMatchingFulltextQuery())
-                return "sentence";
-            if (event.isParagraphMatchingFulltextQuery())
-                return "paragraph";
-            System.out.println(event.getEventId());
-            System.out.println(event.getSentence());
-            System.out.println(event.getHlSentence());
-            System.out.println(event.getParagraph());
-            System.out.println(event.getHlParagraph());
-            throw new IllegalStateException("The full text match source of event " + event + " was requested but neither the sentence nor the paragraph have a match. Either this is not a fulltext query request or there is an result that actually doesn't match the query.");
-        }
-    }
 }

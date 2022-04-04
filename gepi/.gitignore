@@ -5,7 +5,7 @@ target/
 .idea/
 *.iml
 *.log
-gepi/build/
+build/
 gepi-indexing-pipeline/lib
 gepi-indexing-pipeline/resources
 gepi-indexing-pipeline/config/jcore-pipeline-config.jar

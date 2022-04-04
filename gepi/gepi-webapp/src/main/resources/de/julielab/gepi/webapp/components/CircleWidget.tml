@@ -2,7 +2,7 @@
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
      widgettitle="Circle Widget" t:clientId="${elementId}-outer" class="${classes}"
      sizeClass="small" esResult="esResult" neo4jResult="neo4jResult" useTapestryZoneUpdates="false"
-     dataSessionId="dataSessionId">
+     requestData="requestData" waitForData="true">
 
     <div class="row full-height">
         <div class="${chartAreaColumnSizeClass} text-center full-height">

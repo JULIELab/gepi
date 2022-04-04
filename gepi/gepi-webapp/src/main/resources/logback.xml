@@ -19,27 +19,15 @@
 			</pattern>
 		</encoder>
 	</appender>
-<!--
-	<logger name="tapestry.events" level="INFO" />
-	<logger name="tapestry.transformer" level="INFO" />
-	<logger name="org.apache.tapestry5" level="INFO" />
-
-	<logger name="de.julielab.gepi.webapp.components.GepiInput"
-		level="DEBUG" />
-	<logger
-		name="de.julielab.gepi.core.services.GepiCoreModule.IEventRetrievalService"
-		level="INFO" />
-	<logger
-		name="de.julielab.gepi.core.services.GepiCoreModule.IEventPostProcessingService"
-		level="INFO" />
--->
 	<logger name="de.julielab.elastic.query.components.data.ElasticServerResponse" level="INFO"/>
 	<logger
 		name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ISearchServerComponent"
 		level="TRACE" />
 	<logger name="de.julielab" level="DEBUG" />
-	<logger name="de.julielab.gepi.webapp.state.GePiSessionStateCreator" level="TRACE"/>
-	<logger name="de.julielab.gepi.webapp.state.GePiSessionState" level="TRACE"/>
+<!--	<logger name="de.julielab.gepi.webapp.state.GePiSessionStateCreator" level="TRACE"/>-->
+<!--	<logger name="de.julielab.gepi.webapp.state.GePiSessionState" level="TRACE"/>-->
+	<logger name="de.julielab.gepi.core.services.GepiCoreModule.IEventResponseProcessingService" level="TRACE"/>
+	<logger name="de.julielab.gepi.core.services.GepiCoreModule.IEventRetrievalService" level="TRACE"/>
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 <!--		<appender-ref ref="FILE" />-->

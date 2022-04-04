@@ -2,6 +2,7 @@ package de.julielab.gepi.webapp.components;
 
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.services.GePiDataService;
 import de.julielab.gepi.core.services.IGePiDataService;
@@ -31,18 +32,19 @@ public class GepiWidget {
 
     @Parameter
     @Property
-    protected long dataSessionId;
+    protected GepiRequestData requestData;
+//    protected long dataSessionId;
 
 
     @InjectPage
     private Index index;
 
     public Future<EventRetrievalResult> getEsResult() {
-        return dataService.getData(dataSessionId).getUnrolledResult();
+        return dataService.getData(requestData.getDataSessionId()).getUnrolledResult();
     }
 
     public Future<AggregatedEventsRetrievalResult> getNeo4jResult() {
-        return dataService.getData(dataSessionId).getAggregatedResult();
+        return dataService.getData(requestData.getDataSessionId()).getAggregatedResult();
     }
 
     public boolean isLargeView() {

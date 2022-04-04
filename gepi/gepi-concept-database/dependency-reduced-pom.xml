@@ -40,6 +40,7 @@
                 <transformer>
                   <resource>META-INF/services/org.apache.lucene.codecs.DocValuesFormat</resource>
                 </transformer>
+                <transformer />
               </transformers>
               <filters>
                 <filter>
@@ -58,7 +59,7 @@
     </plugins>
   </build>
   <properties>
-    <concept-db-version>1.1.1-SNAPSHOT</concept-db-version>
+    <concept-db-version>1.2.0-SNAPSHOT</concept-db-version>
   </properties>
 </project>
 

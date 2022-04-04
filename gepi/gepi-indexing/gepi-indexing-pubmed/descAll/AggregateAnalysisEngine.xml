@@ -7,9 +7,15 @@
         
     <delegateAnalysisEngineSpecifiers>
                 
-        <delegateAnalysisEngine key="Gene Mapping">
+        <delegateAnalysisEngine key="JCoRe Likelihood Detection AE">
                         
-            <import location="Gene Mapping.xml"/>
+            <import location="JCoRe Likelihood Detection AE.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="JCoRe Likelihood Assignment AE">
+                        
+            <import location="JCoRe Likelihood Assignment AE.xml"/>
                     
         </delegateAnalysisEngine>
                 
@@ -33,7 +39,9 @@
                         
             <fixedFlow>
                                 
-                <node>Gene Mapping</node>
+                <node>JCoRe Likelihood Detection AE</node>
+                                
+                <node>JCoRe Likelihood Assignment AE</node>
                                 
                 <node>de.julielab.jcore.ae.eventflattener.EventFlattener</node>
                             

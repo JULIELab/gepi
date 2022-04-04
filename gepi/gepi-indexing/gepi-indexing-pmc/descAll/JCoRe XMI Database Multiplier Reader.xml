@@ -283,7 +283,7 @@
                                 
                 <value>
                                         
-                    <boolean>true</boolean>
+                    <boolean>false</boolean>
                                     
                 </value>
                             
@@ -372,6 +372,18 @@
                         <string>de.julielab.jcore.types.Abbreviation</string>
                                             
                     </array>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>XercesAttributeBufferSize</name>
+                                
+                <value>
+                                        
+                    <integer>60000000</integer>
                                     
                 </value>
                             

@@ -2,23 +2,15 @@
 <databaseConnectorConfiguration>
     <DBSchemaInformation>
         <activePostgresSchema>erik</activePostgresSchema>
-        <activeTableSchema>pmc</activeTableSchema>
+        <activeTableSchema>pmc_bulk_gzip</activeTableSchema>
         <tableSchemas>
-            <tableSchema forEach="." name="pmc">
-                <field name="pmcid" primaryKey="true" retrieve="true" type="text"/>
-                <field gzip="true" name="xmi" retrieve="true" type="bytea"/>
-            </tableSchema>
-	 <tableSchema forEach="." name="xmi_anno_view">
-                <field name="pmcid" primaryKey="true" retrieve="true" type="text" xpath="PMID"/>
-                <field gzip="true" name="xmi" retrieve="true" returnXMLFragment="true" type="bytea" xpath="."/>
-            </tableSchema>     
-   </tableSchemas>
+        </tableSchemas>
     </DBSchemaInformation>
     <DBConnectionInformation>
-        <activeDBConnection>pmc</activeDBConnection>
+        <activeDBConnection>pmc_xml</activeDBConnection>
 	<maxActiveDBConnections>3</maxActiveDBConnections>
         <DBConnections>
-            <DBConnection name="pmc" url="jdbc:postgresql://192.168.1.15:5432/pmc"/>
+            <DBConnection name="pmc_xml" url="jdbc:postgresql://192.168.1.15:5432/pmc_xml"/>
         </DBConnections>
     </DBConnectionInformation>
 </databaseConnectorConfiguration>

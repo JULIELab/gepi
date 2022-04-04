@@ -2,6 +2,7 @@ package de.julielab.gepi.webapp.components;
 
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.pages.Index;
@@ -50,8 +51,12 @@ final public class GepiWidgetLayout {
     @Parameter(value = "false")
     @Property
     private boolean useTapestryZoneUpdates;
+    @Parameter(value = "false")
+    @Property
+    private boolean waitForData;
     @Parameter
-    private long dataSessionId;
+    @Property
+    protected GepiRequestData requestData;
 
     @InjectComponent
     private Zone widgetZone;
@@ -73,10 +78,11 @@ final public class GepiWidgetLayout {
             viewMode = null;
         if (viewMode == null)
             viewMode = ViewMode.SMALL.name().toLowerCase();
-    }
-
-    void afterRender() {
         if (useTapestryZoneUpdates) {
+            // normally, JavaScript is put into afterRender() to allow access to the rendered HTML elements of
+            // a component. Here, however, we need to add the widget to the WidgetManager before we render
+            // the component. During component rendering, the refreshContents() event handler is called
+            // for which the WidgetManager needs to have the widget already.
             JSONObject widgetSettings = getWidgetSettings();
             JSONObject widgetObject = new JSONObject("widgetSettings", widgetSettings);
             // Not called for sankey, circle and all other widgets managing their JS themselves.
@@ -86,11 +92,11 @@ final public class GepiWidgetLayout {
     }
 
     public Future<EventRetrievalResult> getEsResult() {
-        return dataService.getData(dataSessionId).getUnrolledResult();
+        return dataService.getData(requestData.getDataSessionId()).getUnrolledResult();
     }
 
     public Future<AggregatedEventsRetrievalResult> getNeo4jResult() {
-        return dataService.getData(dataSessionId).getAggregatedResult();
+        return dataService.getData(requestData.getDataSessionId()).getAggregatedResult();
     }
 
     /**
@@ -109,7 +115,7 @@ final public class GepiWidgetLayout {
         widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI());
         widgetSettings.put("zoneElementId", widgetZone.getClientId());
         widgetSettings.put("useTapestryZoneUpdates", useTapestryZoneUpdates);
-        widgetSettings.put("dataSessionId", dataSessionId);
+        widgetSettings.put("dataSessionId", requestData.getDataSessionId());
         return widgetSettings;
     }
 
@@ -121,6 +127,11 @@ final public class GepiWidgetLayout {
     }
 
     public boolean isResultLoading() {
+        if (!waitForData)
+            return false;
+        log.info("ESResult: {}", getEsResult());
+        if (getEsResult() != null)
+        log.info("ESResult done: {}", getEsResult().isDone());
         if (getEsResult() != null && !getEsResult().isDone()) {
             return true;
         }

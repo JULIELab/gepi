@@ -7,7 +7,7 @@
             <div id="inputfetcharea"/>
             <div id="inputcol" class="">
                 <t:zone t:id="inputzone" id="inputzone">
-                    <t:gepiinput dataSessionId="dataSessionId" inputMode="inputMode" sentenceFilterString="sentenceFilterString" paragraphFilterString="paragraphFilterString"/>
+                    <t:gepiinput dataSessionId="dataSessionId" requestData="requestData"/>
                 </t:zone>
             </div>
         </div>
@@ -15,20 +15,22 @@
         <div id="outputrow" class="row">
             <div id="outputcol" class="col-12 fade ${showOutputClass}">
                 <t:zone t:id="outputzone" id="outputzone">
-                    <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
-                    <div class="row">
-                        <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
-                        <t:sankeywidget class="col-4" dataSessionId="dataSessionId" elementId="sankeychart" commonPartners="false"/>
-                        <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
-                        <t:circlewidget class="col-4" dataSessionId="dataSessionId" elementId="circlechart" />
-                        <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
-                        <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychart" commonPartners="false" />-->
-                        <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
-                        <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
-                    </div>
-                    <div class="row mt-3">
-                        <t:tableresultwidget class="col-12" dataSessionId="dataSessionId" inputMode="inputMode" sentenceFilterString="sentenceFilterString" paragraphFilterString="paragraphFilterString"/>
-                    </div>
+                    <t:if test="requestData">
+                        <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
+                        <div class="row">
+                            <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
+                            <t:sankeywidget class="col-4" requestData="requestData" elementId="sankeychart" commonPartners="false"/>
+                            <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
+<!--                            <t:circlewidget class="col-4" requestData="requestData" elementId="circlechart"/>-->
+                            <t:piechartwidget class="col-4" requestData="requestData" elementId="piechart" />
+                            <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychart" commonPartners="false" />-->
+                            <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
+                            <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
+                        </div>
+                        <div class="row mt-3">
+                            <t:tableresultwidget class="col-12" requestData="requestData"/>
+                        </div>
+                    </t:if>
                 </t:zone>
             </div>
         </div>

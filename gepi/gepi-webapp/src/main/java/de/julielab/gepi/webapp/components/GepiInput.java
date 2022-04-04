@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.webapp.base.TabPersistentField;
-import de.julielab.gepi.webapp.state.GePiSessionState;
 import org.apache.tapestry5.*;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.commons.Messages;
@@ -119,9 +119,6 @@ public class GepiInput {
     private List<EventTypes> selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
 
     @Property
-    private List<String> selectedDevSettings;
-
-    @Property
     @Parameter
     private String sentenceFilterString;
 
@@ -131,6 +128,9 @@ public class GepiInput {
 
     @Property
     private String filterFieldsConnectionOperator;
+
+    @Property
+    private String sectionNameFilterString;
 
     /**
      * This is not an ID for the servlet session but to the current data state.
@@ -156,6 +156,11 @@ public class GepiInput {
      */
     @ActivationRequestParameter
     private boolean reset;
+    /**
+     * TODO This is here to allow for paging requests. It overlaps with {@link #data} which should be sorted out at some point.
+     */
+    @Parameter
+    private GepiRequestData requestData;
 
     void onActivate(EventContext eventContext) {
         if (reset) {
@@ -170,14 +175,6 @@ public class GepiInput {
 
     public SelectModel getEventTypeModel() {
         return new EnumSelectModel(EventTypes.class, messages);
-    }
-
-    public ValueEncoder getDevSettingsEncoder() {
-        return new StringValueEncoder();
-    }
-
-    public SelectModel getDevSettingsModel() {
-        return new SelectModelImpl(new OptionModelImpl("Always use ES"));
     }
 
     void setupRender() {
@@ -211,15 +208,8 @@ public class GepiInput {
                 && listBTextAreaValue.trim().length() > 0;
         boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
         boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
-        System.out.println("dev settings: " + selectedDevSettings);
         Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
         Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, "listB");
-//        if ((filterString != null && !filterString.isBlank()) || selectedDevSettings.contains("Always use ES")) {
-        fetchEventsFromElasticSearch(selectedEventTypeNames, isAListPresent, isABSearchRequest, listAGePiIds, listBGePiIds);
-//        } else {
-//        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
-//        }
-
         if (isABSearchRequest) {
             inputMode = EnumSet.of(InputMode.AB);
         } else if (isAListPresent){
@@ -231,6 +221,13 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
+        requestData = new GepiRequestData(selectedEventTypeNames, listAGePiIds, listBGePiIds, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+//        if ((filterString != null && !filterString.isBlank())) {
+        fetchEventsFromElasticSearch(requestData);
+//        } else {
+//        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
+//        }
+
 
         data = new GePiData(neo4jResult, esResult, listAGePiIds, listBGePiIds);
         log.debug("Setting newly retrieved data for dataSessionId: {}", dataSessionId);
@@ -252,21 +249,8 @@ public class GepiInput {
         }
     }
 
-    private void fetchEventsFromElasticSearch(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds) {
-        if (isABSearchRequest) {
-            log.debug("Calling EventRetrievalService for AB search");
-            esResult = eventRetrievalService.getBipartiteEvents(
-                    listAGePiIds,
-                    listBGePiIds, selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
-        } else if (isAListPresent) {
-            log.debug("Calling EventRetrievalService for A search");
-            esResult = eventRetrievalService.getOutsideEvents(listAGePiIds, selectedEventTypeNames, sentenceFilterString, paragraphFilterString);
-        } else {
-            // No IDs were entered
-            log.debug("Calling EventRetrievalService for scope filtered events");
-            esResult = eventRetrievalService.getFulltextFilteredEvents(selectedEventTypeNames, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator);
-        }
-
+    private void fetchEventsFromElasticSearch(GepiRequestData requestData) {
+        esResult = eventRetrievalService.getEvents(requestData);
         persistEsResult = esResult;
     }
 

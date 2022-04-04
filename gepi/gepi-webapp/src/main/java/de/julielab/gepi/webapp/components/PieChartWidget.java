@@ -1,5 +1,8 @@
 package de.julielab.gepi.webapp.components;
 
+import org.apache.tapestry5.BindingConstants;
+import org.apache.tapestry5.annotations.InjectComponent;
+import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
@@ -9,24 +12,24 @@ import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.services.IGePiDataService;
 
 public class PieChartWidget extends GepiWidget {
-	
-	@Property
-	private Event eventRow;
-	
-	@Inject
+
+    @Inject
     private JavaScriptSupport javaScriptSupport;
-	
-	@Inject
-	private IGePiDataService gChartMnger;
-		
-	@Property
-	private JSONArray eventsJSON;
-	
 
+    @Parameter(defaultPrefix = BindingConstants.LITERAL)
+    @Property
+    private String elementId;
 
-	void onDrawChart() {
+    @Property
+    private JSONArray eventsJSON;
 
-	}
-	
-	
+    @InjectComponent("gepiwidgetlayout")
+    private GepiWidgetLayout component;
+
+    void afterRender() {
+        if (component.isResultLoading() || component.isResultAvailable()) {
+            javaScriptSupport.require("gepi/charts/piechart").with(elementId, component.getWidgetSettings());
+        }
+    }
+
 }

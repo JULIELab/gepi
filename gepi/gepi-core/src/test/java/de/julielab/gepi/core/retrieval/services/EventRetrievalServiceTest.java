@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,9 @@ public class EventRetrievalServiceTest {
 		assertEquals("1", result.getEventList().get(0).getFirstArgument().getGeneId());
 		assertEquals("4", result.getEventList().get(0).getSecondArgument().getGeneId());
 	}
-	
+
+	// ignore because we decided to break all events down to two arguments
+	@Ignore
 	@Test
 	public void testReorderBipartiteEventResultArguments2() throws Exception {
 		EventRetrievalService retrievalService = new EventRetrievalService(null,
@@ -71,7 +74,9 @@ public class EventRetrievalServiceTest {
 		assertEquals("1", result.getEventList().get(1).getFirstArgument().getGeneId());
 		assertEquals("4", result.getEventList().get(1).getSecondArgument().getGeneId());
 	}
-	
+
+	// ignore because we decided to break all events down to two arguments
+	@Ignore
 	@Test
 	public void testReorderBipartiteEventResultArguments3() throws Exception {
 		EventRetrievalService retrievalService = new EventRetrievalService(null,

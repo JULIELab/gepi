@@ -53,10 +53,10 @@ public class FieldCreationUtils {
 
             // assertions are mostly not expressed explicitly but hold by the
             // absence of another likelihood indicator; technically, the
-            // LikelihoodAssignment component creates one assertion-likelihood
+            // LikelihoodAssignment component creates one assertion-likelihood annotation
             // and places it at begin=0, end=0. Thus, we check if some
             // ConceptMention in the sought text span refers to this specific
-            // out-of-bounds-likelihood, since all in-bounds-likelhoods have
+            // out-of-bounds-likelihood, since all in-bounds-likelihoods have
             // been covered by the loop above.
             it = annotation.getCAS().getJCas().getAnnotationIndex(ConceptMention.type).subiterator(annotation);
             while (it.hasNext()) {

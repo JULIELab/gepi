@@ -40,12 +40,13 @@ public interface IGePiDataService {
      */
     GePiData getData(long sessionId);
 
+
     /**
      * input structure for pie chart and bar chart
      *
      * @return JSONArray - json array of tuples (itself realised as an json array)
      */
-    JSONArray getTargetArgCount(List<Event> e);
+    JSONArray getArgumentCount(List<Event> e, int argumentPosition);
 
     /**
      * input structure required for sankey graph
@@ -70,7 +71,8 @@ public interface IGePiDataService {
      * @param inputMode
      * @param sentenceFilterString
      * @param paragraphFilterString
+     * @param sectionNameFilterString
      * @return An InputStream of the created Excel file.
      */
-    File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString) throws IOException;
+    File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException;
 }
