@@ -23,7 +23,7 @@ public class GePiRequestFilter implements RequestFilter {
     @Override
     public boolean service(Request request, Response response, RequestHandler handler) throws IOException {
         GePiSessionState sessionState = asm.getIfExists(GePiSessionState.class);
-        log.warn("sessionState: {}",sessionState);
+//        log.warn("sessionState: {}",sessionState);
         if (sessionState != null) {
             sessionState.setActiveTabFromRequest(request);
         }

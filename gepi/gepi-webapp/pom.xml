@@ -68,10 +68,10 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
         <!-- Provided by the servlet container, but sometimes referenced in the application
        code. -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
             <version>${servlet-api-release-version}</version>
-            <scope>provided</scope>
+<!--            <scope>provided</scope>-->
         </dependency>
 
         <!-- Provide dependency to the Tapestry javadoc taglet which replaces the Maven component report -->
@@ -148,7 +148,7 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
     </repositories>
 
     <properties>
-        <servlet-api-release-version>2.5</servlet-api-release-version>
+        <servlet-api-release-version>5.0.0</servlet-api-release-version>
         <testng-release-version>6.8.21</testng-release-version>
 
     </properties>

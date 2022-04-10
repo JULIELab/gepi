@@ -23,7 +23,16 @@ public class EventPagesDataSource implements GridDataSource {
 
     @Override
     public int getAvailableRows() {
-        return (int) eventRetrievalService.getTotalNumberOfEvents();
+        int availableRows = 0;
+        try {
+            availableRows = (int) eventRetrievalService.getEvents(requestData, 0, 0).get().getNumTotalRows();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+//        System.out.println("Available rows: " + availableRows);
+        return availableRows;
     }
 
     @Override
