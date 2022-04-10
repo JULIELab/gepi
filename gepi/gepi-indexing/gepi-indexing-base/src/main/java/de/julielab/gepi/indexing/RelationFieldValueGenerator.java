@@ -135,7 +135,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     document.addField("argumentcoveredtext", createRawFieldValueForAnnotations(argPair, "/:coveredText()"));
                     document.addField("argumentprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
                     document.addField("argumenthomoprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
-                    document.addField("argumentmatchtypes", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
+                    document.addField("argumentmatchtypes", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                     document.addField("argument1", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
                     document.addField("argument1geneid", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", null));
                     document.addField("argument1conceptid", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", geneFb.eg2tidReplaceFilter));
@@ -143,7 +143,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     document.addField("argument1coveredtext", createRawFieldValueForAnnotation(argPair[0], "/:coveredText()", null));
                     document.addField("argument1prefname", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
                     document.addField("argument1homoprefname", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
-                    document.addField("argument1matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
+                    document.addField("argument1matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                     document.addField("argument2", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
                     document.addField("argument2geneid", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", null));
                     document.addField("argument2conceptid", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", geneFb.eg2tidReplaceFilter));
@@ -151,7 +151,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     document.addField("argument2coveredtext", createRawFieldValueForAnnotation(argPair[1], "/:coveredText()", null));
                     document.addField("argument2prefname", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
                     document.addField("argument2homoprefname", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
-                    document.addField("argument2matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
+                    document.addField("argument2matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                     document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
                     document.addField("alleventtypes", Stream.of(rel.getRelations().toArray()).map(EventMention.class::cast).map(EventMention::getSpecificType).collect(Collectors.toSet()).toArray());
                     document.addField("ARGUMENT_FS", argPair);
