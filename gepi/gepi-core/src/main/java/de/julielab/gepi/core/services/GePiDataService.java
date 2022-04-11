@@ -94,8 +94,8 @@ public class GePiDataService implements IGePiDataService {
 
         singleArgCount.forEach((k, v) -> {
             JSONArray tmp = new JSONArray();
-            tmp.put(k.getPreferredName());
-            tmp.put(v);
+            tmp.add(k.getPreferredName());
+            tmp.add(v);
             singleArgCountJson.put(tmp);
         });
         return singleArgCountJson;

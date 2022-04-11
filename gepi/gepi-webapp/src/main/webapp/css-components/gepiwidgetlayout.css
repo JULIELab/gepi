@@ -30,6 +30,13 @@
     background-position: center;
 }
 
+.widget-download {
+    cursor: pointer;
+    background-image: url("../images/file_download_black_24dp.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 .widget-resize-to-small {
 	cursor: pointer;
     background-image: url("../images/close_fullscreen_black_24dp.svg");

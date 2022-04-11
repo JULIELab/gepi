@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter">
-	<div class="${classes}">
-		<div class="card ${viewmode} widget full-height" id="${clientId}">
-			<div class="card-header text-center">
-				${widgettitle}
-				<span id="${resizeHandleId}" class="float-right widget-resize-to-full widget-tool-symbol" />
-			</div>
-			<t:zone t:id="widgetZone" id="prop:${zoneid}" class="full-height">
-				<div class="card-body widget ${viewmode} full-height">
-					<!-- Note that is not if-else but two ifs. For JS-based charts, the body is always rendered
-					but manually hidden until data is available. In all cases, the waiting message is displayed
-					if no data is available at render time -->
-					<t:if test="resultloading">
-						<div class="text-center shine mt-2">
-							${message:loading}
-						</div>
-						<t:trigger event="load" />
-					</t:if>
-					<t:if test="renderbody">
-						<t:body />
-					</t:if>
-				</div>
-			</t:zone>
-		</div>
-	</div>
+    <div class="${classes}">
+        <div class="card ${viewmode} widget full-height" id="${clientId}">
+            <div class="card-header text-center">
+                ${widgettitle}
+                <span id="${resizeHandleId}" class="float-right widget-resize-to-full widget-tool-symbol ms-2"/>
+                <t:if test="downloadable">
+                    <t:eventlink event="download" role="button" class="float-right widget-tool-symbol widget-download"/>
+                </t:if>
+            </div>
+            <t:zone t:id="widgetZone" id="prop:${zoneid}" class="full-height">
+                <div class="card-body widget ${viewmode} full-height">
+                    <!-- Note that is not if-else but two ifs. For JS-based charts, the body is always rendered
+                    but manually hidden until data is available. In all cases, the waiting message is displayed
+                    if no data is available at render time -->
+                    <t:if test="resultloading">
+                        <div class="text-center shine mt-2">
+                            ${message:loading}
+                        </div>
+                        <t:trigger event="load"/>
+                    </t:if>
+                    <t:if test="renderbody">
+                        <t:body/>
+                    </t:if>
+                </div>
+            </t:zone>
+        </div>
+    </div>
 </t:container>
