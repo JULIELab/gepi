@@ -2,7 +2,6 @@ package de.julielab.gepi.webapp.components;
 
 import java.util.concurrent.ExecutionException;
 
-import com.sun.xml.bind.v2.TODO;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;

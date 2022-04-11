@@ -138,9 +138,9 @@ final public class GepiWidgetLayout {
     public boolean isResultLoading() {
         if (!waitForData)
             return false;
-        log.info("ESResult: {}", getEsResult());
+//        log.info("ESResult: {}", getEsResult());
         if (getEsResult() != null)
-        log.info("ESResult done: {}", getEsResult().isDone());
+//        log.info("ESResult done: {}", getEsResult().isDone());
         if (getEsResult() != null && !getEsResult().isDone()) {
             return true;
         }

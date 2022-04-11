@@ -27,7 +27,7 @@
         </dependencies>
     </dependencyManagement>
     <properties>
-        <tapestry-release-version>5.7.2</tapestry-release-version>
+        <tapestry-release-version>5.8.1</tapestry-release-version>
         <jcore-version>2.6.0-SNAPSHOT</jcore-version>
     </properties>
 </project>

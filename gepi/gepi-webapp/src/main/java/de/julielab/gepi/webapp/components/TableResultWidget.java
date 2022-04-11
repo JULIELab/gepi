@@ -38,15 +38,10 @@ public class TableResultWidget extends GepiWidget {
     private String viewMode;
     @Property
     private BeanModelEvent eventRow;
-//    @Property
-//    @Persist("tab")
-//    private List<BeanModelEvent> beanEvents;
     @Inject
     private BeanModelSource beanModelSource;
     @Inject
     private Messages messages;
-    @Property
-    private EventPagesDataSource eventSource;
     @Inject
     private IGePiDataService dataService;
     @Inject
@@ -72,7 +67,7 @@ public class TableResultWidget extends GepiWidget {
     private Grid grid;
 
     void setupRender() {
-        eventSource = new EventPagesDataSource(eventRetrievalService, requestData);
+        getEventSource();
         List<String> availableColumns = new ArrayList<>(List.of("firstArgumentPreferredName",
                 "secondArgumentPreferredName",
                 "firstArgumentText",
@@ -115,6 +110,10 @@ public class TableResultWidget extends GepiWidget {
                 return source;
             }
         };
+    }
+
+    public EventPagesDataSource getEventSource() {
+        return new EventPagesDataSource(eventRetrievalService, requestData);
     }
 
     void onUpdateTableData() {

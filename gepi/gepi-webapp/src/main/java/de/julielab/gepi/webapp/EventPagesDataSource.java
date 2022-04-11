@@ -31,7 +31,7 @@ public class EventPagesDataSource implements GridDataSource {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-//        System.out.println("Available rows: " + availableRows);
+        System.out.println("Available rows: " + availableRows);
         return availableRows;
     }
 
