@@ -3,6 +3,7 @@ package de.julielab.gepi.webapp;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
+import de.julielab.gepi.webapp.data.FilteredGepiRequestData;
 import org.apache.tapestry5.grid.GridDataSource;
 import org.apache.tapestry5.grid.SortConstraint;
 
@@ -12,11 +13,11 @@ import java.util.concurrent.ExecutionException;
 
 public class EventPagesDataSource implements GridDataSource {
     private final IEventRetrievalService eventRetrievalService;
-    private final GepiRequestData requestData;
+    private final FilteredGepiRequestData requestData;
     private CompletableFuture<EventRetrievalResult> events;
     private int start;
 
-    public EventPagesDataSource(IEventRetrievalService eventRetrievalService, GepiRequestData requestData) {
+    public EventPagesDataSource(IEventRetrievalService eventRetrievalService, FilteredGepiRequestData requestData) {
         this.eventRetrievalService = eventRetrievalService;
         this.requestData = requestData;
     }

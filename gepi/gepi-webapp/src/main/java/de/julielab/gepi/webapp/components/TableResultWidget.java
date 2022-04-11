@@ -6,6 +6,7 @@ import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.BeanModelEvent;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.EventPagesDataSource;
+import de.julielab.gepi.webapp.data.FilteredGepiRequestData;
 import de.julielab.java.utilities.FileUtilities;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.StreamResponse;
@@ -14,8 +15,11 @@ import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
 import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.corelib.components.Grid;
+import org.apache.tapestry5.corelib.components.Zone;
+import org.apache.tapestry5.http.services.Request;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -25,13 +29,31 @@ import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+@Import(stylesheet = {"context:css-components/tablewidget.css"})
 public class TableResultWidget extends GepiWidget {
 
     @Parameter
     protected EnumSet<InputMode> inputMode;
+    @Property
+    List<GepiInput.EventTypes> eventTypes = List.of(GepiInput.EventTypes.values());
+    @Property
+    GepiInput.EventTypes filterEventType;
+    @Property
+    String filterArg1Symbol;
+    @Property
+    String filterArg1Name;
+    @Property
+    String filterArg1Id;
+    @Property
+    String filterArg2Symbol;
+    @Property
+    String filterArg2Name;
+    @Property
+    String filterArg2Id;
     @Inject
     private Logger log;
     @Property
@@ -48,23 +70,26 @@ public class TableResultWidget extends GepiWidget {
     private ComponentResources resources;
     @Parameter
     private String sentenceFilterString;
-
     @Parameter
     private String paragraphFilterString;
-
     @Property
     @Persist(TabPersistentField.TAB)
     private BeanModel<BeanModelEvent> tableModel;
-
     @Property
     @Persist(TabPersistentField.TAB)
     private Format contextFormat;
-
+    @Inject
+    private Request request;
+    @InjectComponent
+    private Zone tableZone;
+    @Inject
+    private AjaxResponseRenderer ajaxResponseRenderer;
     @Inject
     private IEventRetrievalService eventRetrievalService;
 
     @InjectComponent
     private Grid grid;
+
 
     void setupRender() {
         getEventSource();
@@ -93,8 +118,8 @@ public class TableResultWidget extends GepiWidget {
         tableModel.get("secondArgumentText").label("gene B text");
         tableModel.get("firstArgumentGeneId").label("gene A gene ID");
         tableModel.get("secondArgumentGeneId").label("gene B gene ID");
-        tableModel.get("firstArgumentMatchType").label("gene A match type");
-        tableModel.get("secondArgumentMatchType").label("gene B match type");
+//        tableModel.get("firstArgumentMatchType").label("gene A match type");
+//        tableModel.get("secondArgumentMatchType").label("gene B match type");
         tableModel.get("allEventTypes").label("relation types");
         tableModel.get("docId").label("document id");
         tableModel.get("eventId").label("event id");
@@ -112,8 +137,19 @@ public class TableResultWidget extends GepiWidget {
         };
     }
 
+    /**
+     * When the form containing the filter elements is submitted, we want to re-render the table via AJAX
+     */
+    void onValidateFromFilterCriteria() {
+        if (request.isXHR()) {
+            ajaxResponseRenderer.addRender(tableZone);
+        }
+    }
+
     public EventPagesDataSource getEventSource() {
-        return new EventPagesDataSource(eventRetrievalService, requestData);
+        FilteredGepiRequestData filteredRequest = new FilteredGepiRequestData(requestData);
+        filteredRequest.setEventTypeFilter(filterEventType);
+        return new EventPagesDataSource(eventRetrievalService, filteredRequest);
     }
 
     void onUpdateTableData() {

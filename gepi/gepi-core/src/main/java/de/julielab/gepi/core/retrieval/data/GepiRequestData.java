@@ -2,6 +2,7 @@ package de.julielab.gepi.core.retrieval.data;
 
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -9,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class GepiRequestData {
+public class GepiRequestData implements Cloneable{
     private List<String> eventTypes;
     private Future<IdConversionResult> listAGePiIds;
     private Future<IdConversionResult> listBGePiIds;
@@ -22,7 +23,7 @@ public class GepiRequestData {
 
     public GepiRequestData(List<String> eventTypes, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, long dataSessionId) {
         this.sectionNameFilterString = sectionNameFilterString;
-        System.out.println("New RequestData with data session ID " + dataSessionId);
+//        System.out.println("New RequestData with data session ID " + dataSessionId);
         this.eventTypes = eventTypes;
         this.listAGePiIds = listAGePiIds;
         this.listBGePiIds = listBGePiIds;
@@ -72,6 +73,17 @@ public class GepiRequestData {
     public List<String> getEventTypes() {
         return eventTypes;
     }
+
+//    @Override
+//    public GepiRequestData clone()  {
+//        try {
+//            GepiRequestData clone = (GepiRequestData) super.clone();
+//            clone.eventTypes = new ArrayList<>(eventTypes);
+//            return clone;
+//        } catch (CloneNotSupportedException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public void setEventTypes(List<String> eventTypes) {
         this.eventTypes = eventTypes;

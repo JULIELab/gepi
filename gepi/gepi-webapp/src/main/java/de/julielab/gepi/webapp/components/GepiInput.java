@@ -285,7 +285,7 @@ public class GepiInput {
         return dataService.getData(dataSessionId) != GePiData.EMPTY;
     }
 
-    private enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
+    public enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
 
 
 }

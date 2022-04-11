@@ -208,12 +208,5 @@ public class Index {
         return null;
     }
 
-    @InjectPage
-    private GridTest gridTest;
-
-    Object onGoToGridTest() {
-        gridTest.setRequestData(requestData);
-        return gridTest;
-    }
 
 }
