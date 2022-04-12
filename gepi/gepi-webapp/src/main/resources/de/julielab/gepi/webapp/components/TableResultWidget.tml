@@ -6,32 +6,32 @@
 
     <div>${viewmode}</div>
 
-    <t:form t:id="filterCriteria" async="true" class="form-inline">
+<!--    <t:form t:id="filterCriteria" async="true" class="form-inline">-->
 
-        <!-- On change of a Select, we do an javascript click of an invisible submit button.
-            Note: do not use "this.form.performSubmit()" because on an AJAX Form it fails in Firefox. -->
+<!--        &lt;!&ndash; On change of a Select, we do an javascript click of an invisible submit button.-->
+<!--            Note: do not use "this.form.performSubmit()" because on an AJAX Form it fails in Firefox. &ndash;&gt;-->
 
-<!--        <div class="form-group">-->
-<!--            <t:label for="firstArgument"/>:-->
-<!--            <t:select t:id="firstArgument" model="firstArguments" onchange="document.getElementById('tableFilterSubmit').click()" secure="never"/>-->
+<!--&lt;!&ndash;        <div class="form-group">&ndash;&gt;-->
+<!--&lt;!&ndash;            <t:label for="firstArgument"/>:&ndash;&gt;-->
+<!--&lt;!&ndash;            <t:select t:id="firstArgument" model="firstArguments" onchange="document.getElementById('tableFilterSubmit').click()" secure="never"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <div class="form-group">&ndash;&gt;-->
+<!--&lt;!&ndash;            <t:label for="secondArgument"/>:&ndash;&gt;-->
+<!--&lt;!&ndash;            <t:select t:id="secondArgument" model="lastInitials" onchange="document.getElementById('tableFilterSubmit').click()" secure="never"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+
+<!--        <div class="form-group row mb-2">-->
+<!--            <t:label for="eventType" class="form-label col-form-label w-auto"/>-->
+<!--            <t:select t:id="eventType" model="eventTypes" value="filterEventType" onchange="document.getElementById('tableFilterSubmit').click()" secure="never" class="col-1"/>-->
 <!--        </div>-->
 
 <!--        <div class="form-group">-->
-<!--            <t:label for="secondArgument"/>:-->
-<!--            <t:select t:id="secondArgument" model="lastInitials" onchange="document.getElementById('tableFilterSubmit').click()" secure="never"/>-->
+<!--            <t:submit t:id="tableFilterSubmit" id="tableFilterSubmit" style="display: none;"/>-->
 <!--        </div>-->
+<!--    </t:form>-->
 
-        <div class="form-group row mb-2">
-            <t:label for="eventType" class="form-label col-form-label w-auto"/>
-            <t:select t:id="eventType" model="eventTypes" value="filterEventType" onchange="document.getElementById('tableFilterSubmit').click()" secure="never" class="col-1"/>
-        </div>
-
-        <div class="form-group">
-            <t:submit t:id="tableFilterSubmit" id="tableFilterSubmit" style="display: none;"/>
-        </div>
-    </t:form>
-
-    <t:zone t:id="tablezone" id="tablezone">
+<!--    <t:zone t:id="tablezone" id="tablezone">-->
         <t:grid source="eventSource" row="eventrow" model="tableModel" rowsPerPage="${rowsperpage}" pagerPosition="bottom" inplace="true">
             <p:firstArgumentPreferredNameCell>
                 <a href="https://www.ncbi.nlm.nih.gov/gene/${eventrow.firstargumentgeneid}" target="_blank" data-toggle="tooltip" data-placement="top" title="Open gene ID ${eventrow.firstargumentgeneid} in NCBI Gene">${eventrow.firstArgumentPreferredName}</a>
@@ -46,5 +46,5 @@
                 <t:output value="${eventrow.context}" filter="false" format="contextformat"/>
             </p:contextCell>
         </t:grid>
-    </t:zone>
+<!--    </t:zone>-->
 </div>

@@ -35,23 +35,17 @@ public interface IEventRetrievalService {
 	 * converted automatically.
 	 * 
 	 *
-	 * @param idStreamA
-	 * @param eventTypes
-	 * @param sentenceFilter
-	 * @param paragraphFilter
-	 * @param sectionNameFilter
+	 * @param requestData
 	 * @return Events between genes identified by the input stream and other
 	 *         genes.
 	 */
-	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter);
+	CompletableFuture<EventRetrievalResult> getOutsideEvents(GepiRequestData requestData);
 
-	CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilterString, int from, int numRows);
+	CompletableFuture<EventRetrievalResult> getOutsideEvents(GepiRequestData requestData, int from, int numRows);
 
-	CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter);
+	SearchServerRequest getOutsideServerRequest(GepiRequestData requestData) throws ExecutionException, InterruptedException;
 
-	SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter) throws ExecutionException, InterruptedException;
-
-	SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter, int from, int numRows) throws ExecutionException, InterruptedException;
+	SearchServerRequest getOutsideServerRequest(GepiRequestData requestData, int from, int numRows) throws ExecutionException, InterruptedException;
 
 	CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String filterFieldsConnectionOperator, String sectionNameFilterString);
 

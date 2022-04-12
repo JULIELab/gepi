@@ -78,17 +78,17 @@ public class TableResultWidget extends GepiWidget {
     @Property
     @Persist(TabPersistentField.TAB)
     private Format contextFormat;
-    @Inject
-    private Request request;
-    @InjectComponent
-    private Zone tableZone;
+//    @Inject
+//    private Request request;
+//    @InjectComponent
+//    private Zone tableZone;
     @Inject
     private AjaxResponseRenderer ajaxResponseRenderer;
     @Inject
     private IEventRetrievalService eventRetrievalService;
 
-    @InjectComponent
-    private Grid grid;
+//    @InjectComponent
+//    private Grid grid;
 
 
     void setupRender() {
@@ -140,11 +140,11 @@ public class TableResultWidget extends GepiWidget {
     /**
      * When the form containing the filter elements is submitted, we want to re-render the table via AJAX
      */
-    void onValidateFromFilterCriteria() {
-        if (request.isXHR()) {
-            ajaxResponseRenderer.addRender(tableZone);
-        }
-    }
+//    void onValidateFromFilterCriteria() {
+//        if (request.isXHR()) {
+//            ajaxResponseRenderer.addRender(tableZone);
+//        }
+//    }
 
     public EventPagesDataSource getEventSource() {
         FilteredGepiRequestData filteredRequest = new FilteredGepiRequestData(requestData);

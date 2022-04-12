@@ -4,13 +4,11 @@ import de.julielab.elastic.query.components.data.query.BoolClause;
 import de.julielab.elastic.query.components.data.query.BoolQuery;
 import de.julielab.elastic.query.components.data.query.SimpleQueryStringQuery;
 import de.julielab.elastic.query.components.data.query.TermsQuery;
-import de.julielab.gepi.core.retrieval.data.IdConversionResult;
+import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.FILTER;
 import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.SHOULD;
@@ -86,8 +84,13 @@ public class EventQueries {
         return eventQuery;
     }
 
-    public static BoolQuery getOutsideQuery(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter) throws InterruptedException, ExecutionException {
-        TermsQuery termsQuery = new TermsQuery(Collections.unmodifiableCollection(new HashSet<>(idStreamA.get().getConvertedItems().values())));
+    public static BoolQuery getOutsideQuery(GepiRequestData requestData) throws InterruptedException, ExecutionException {
+        List<String> eventTypes = requestData.getEventTypes();
+        String sentenceFilter = requestData.getSentenceFilterString();
+        String paragraphFilter = requestData.getParagraphFilterString();
+        String sectionNameFilter = requestData.getSectionNameFilterString();
+
+        TermsQuery termsQuery = new TermsQuery(Collections.unmodifiableCollection(requestData.getAListIdsAsSet()));
         termsQuery.field = FIELD_EVENT_ARGUMENTSEARCH;
 
         BoolClause termsClause = new BoolClause();
@@ -107,13 +110,13 @@ public class EventQueries {
         }
 
         if (!StringUtils.isBlank(sentenceFilter)) {
-            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, BoolClause.Occur.FILTER, eventQuery);
+            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, FILTER, eventQuery);
         }
         if (!StringUtils.isBlank(paragraphFilter)) {
-            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, BoolClause.Occur.FILTER, eventQuery);
+            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, FILTER, eventQuery);
         }
         if (!StringUtils.isBlank(sectionNameFilter)) {
-            addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, BoolClause.Occur.FILTER, eventQuery);
+            addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, FILTER, eventQuery);
         }
         return eventQuery;
     }

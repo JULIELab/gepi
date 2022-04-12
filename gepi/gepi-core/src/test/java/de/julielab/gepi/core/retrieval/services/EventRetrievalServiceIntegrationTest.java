@@ -1,10 +1,7 @@
 package de.julielab.gepi.core.retrieval.services;
 
 import de.julielab.elastic.query.ElasticQuerySymbolConstants;
-import de.julielab.gepi.core.retrieval.data.Argument;
-import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.IdConversionResult;
+import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.services.GePiCoreTestModule;
 import de.julielab.java.utilities.FileUtilities;
 import org.apache.commons.io.IOUtils;
@@ -134,7 +131,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testGetOutsideEvents() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("10243"), Collections.emptyList(), null, null, null);
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(new GepiRequestData().withListAGePiIds(IdConversionResult.of("10243")));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(3);
 
         final List<String> eventTypes = outsideEvents.get().getEventList().stream().map(Event::getMainEventType).collect(Collectors.toList());
@@ -149,28 +146,28 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testGetOutsideEventsWithEventTypeFilter1() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("10243"), Arrays.asList("Positive_regulation"), null, null, null);
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(new GepiRequestData().withListAGePiIds(IdConversionResult.of("10243")).withEventTypes("Positive_regulation"));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(2);
     }
 
     @Test
     public void testGetOutsideEventsWithEventTypeFilter2() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("3930"), Arrays.asList("Negative_regulation"), null, null, null);
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3930")).withEventTypes("Negative_regulation"));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(0);
     }
 
     @Test
     public void testGetOutsideEventsWithSentenceFilter1() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("10243"), Arrays.asList("Positive_regulation"), "essential", null, null);
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(new GepiRequestData().withListAGePiIds(IdConversionResult.of("10243")).withEventTypes("Positive_regulation").withSentenceFilterString("essential"));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(2);
     }
 
     @Test
     public void testGetOutsideEventsWithSentenceFilter2() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(IdConversionResult.of("3930"), Arrays.asList("Positive_regulation"), "stress", null, null);
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.getOutsideEvents(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3930")).withEventTypes("Positive_regulation").withSentenceFilterString( "stress"));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(0);
     }
 
@@ -232,11 +229,11 @@ public class EventRetrievalServiceIntegrationTest {
     public void testGetOutsideEventWithSectionFilter() throws Exception {
         // First, establish the baseline: For gene ID 3458 we should find 9 events without filters
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEventsWithoutRestriction = eventRetrievalService.getOutsideEvents(IdConversionResult.of("3458"), null, null, null, null);
+        CompletableFuture<EventRetrievalResult> outsideEventsWithoutRestriction = eventRetrievalService.getOutsideEvents(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3458")));
         assertThat(outsideEventsWithoutRestriction.get().getEventList().size()).isEqualTo(9);
 
         // Filtering for "cytokine" on the headings should reduce the number of hits to 1
-        CompletableFuture<EventRetrievalResult> outsideEventsWithSectionFilter = eventRetrievalService.getOutsideEvents(IdConversionResult.of("3458"), null, null, null, "cytokine");
+        CompletableFuture<EventRetrievalResult> outsideEventsWithSectionFilter = eventRetrievalService.getOutsideEvents(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3458")).withSectionNameFilterString("cytokine"));
         assertThat(outsideEventsWithSectionFilter.get().getEventList().size()).isEqualTo(1);
     }
 }

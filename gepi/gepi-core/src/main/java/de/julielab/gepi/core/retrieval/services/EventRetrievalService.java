@@ -129,7 +129,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             esResult = getBipartiteEvents(requestData.getListAGePiIds(), requestData.getListBGePiIds(), requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
         } else if (inputMode.contains(InputMode.A)) {
             log.debug("Calling EventRetrievalService for A search");
-            esResult = getOutsideEvents(requestData.getListAGePiIds(), requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString(), from, numRows);
+            esResult = getOutsideEvents(requestData, from, numRows);
         } else {
             // No IDs were entered
             log.debug("Calling EventRetrievalService for scope filtered events");
@@ -242,20 +242,23 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter) {
-        return getOutsideEvents(idStreamA, eventTypes, sentenceFilter, paragraphFilter, sectionNameFilter, 0, Integer.MAX_VALUE);
+    public CompletableFuture<EventRetrievalResult> getOutsideEvents(GepiRequestData requestData) {
+        return getOutsideEvents(requestData, 0, Integer.MAX_VALUE);
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilterString, int from, int numRows) {
+    public CompletableFuture<EventRetrievalResult> getOutsideEvents(GepiRequestData gepiRequestData, int from, int numRows) {
+        assert gepiRequestData.getListAGePiIds() != null : "No A-list IDs set.";
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
             try {
-                Set<String> idSet = idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet());
+//                Set<String> idSet = idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet());
+
+                Set<String> idSet = gepiRequestData.getAListIdsAsSet();
 
                 log.debug("Retrieving outside events for {} A IDs", idSet.size());
                 log.trace("The A IDs are: {}", idSet);
-                SearchServerRequest serverCmd = getOutsideServerRequest(idStreamA, eventTypes, sentenceFilter, paragraphFilter, sectionNameFilterString, from, numRows);
+                SearchServerRequest serverCmd = getOutsideServerRequest(gepiRequestData, from, numRows);
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
                 carrier.addSearchServerRequest(serverCmd);
@@ -279,18 +282,13 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(IdConversionResult idStream, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter) {
-        return getOutsideEvents(CompletableFuture.completedFuture(idStream), eventTypes, sentenceFilter, paragraphFilter, sectionNameFilter);
+    public SearchServerRequest getOutsideServerRequest(GepiRequestData requestData) throws ExecutionException, InterruptedException {
+        return getOutsideServerRequest(requestData, 0, Integer.MAX_VALUE);
     }
 
     @Override
-    public SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter) throws ExecutionException, InterruptedException {
-        return getOutsideServerRequest(idStreamA, eventTypes, sentenceFilter, paragraphFilter, sectionNameFilter, 0, Integer.MAX_VALUE);
-    }
-
-    @Override
-    public SearchServerRequest getOutsideServerRequest(Future<IdConversionResult> idStreamA, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter, int from, int numRows) throws ExecutionException, InterruptedException {
-        BoolQuery eventQuery = EventQueries.getOutsideQuery(idStreamA, eventTypes, sentenceFilter, paragraphFilter, sectionNameFilter);
+    public SearchServerRequest getOutsideServerRequest(GepiRequestData requestData, int from, int numRows) throws ExecutionException, InterruptedException {
+        BoolQuery eventQuery = EventQueries.getOutsideQuery(requestData);
 
         boolean downloadCompleteResults = numRows == 0 || numRows == Integer.MAX_VALUE;
 

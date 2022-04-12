@@ -1,16 +1,15 @@
 package de.julielab.gepi.core.retrieval.data;
 
-import de.julielab.gepi.core.retrieval.data.IdConversionResult;
-
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class GepiRequestData implements Cloneable{
+public class GepiRequestData implements Cloneable {
     private List<String> eventTypes;
     private Future<IdConversionResult> listAGePiIds;
     private Future<IdConversionResult> listBGePiIds;
@@ -34,6 +33,10 @@ public class GepiRequestData implements Cloneable{
         this.dataSessionId = dataSessionId;
     }
 
+    public GepiRequestData() {
+
+    }
+
     public String getSectionNameFilterString() {
         return sectionNameFilterString;
     }
@@ -42,24 +45,27 @@ public class GepiRequestData implements Cloneable{
         return inputMode;
     }
 
-    public void setInputMode(EnumSet<InputMode> inputMode) {
+    public GepiRequestData withInputMode(EnumSet<InputMode> inputMode) {
         this.inputMode = inputMode;
+        return this;
     }
 
     public String getFilterFieldsConnectionOperator() {
         return filterFieldsConnectionOperator;
     }
 
-    public void setFilterFieldsConnectionOperator(String filterFieldsConnectionOperator) {
+    public GepiRequestData withFilterFieldsConnectionOperator(String filterFieldsConnectionOperator) {
         this.filterFieldsConnectionOperator = filterFieldsConnectionOperator;
+        return this;
     }
 
     public long getDataSessionId() {
         return dataSessionId;
     }
 
-    public void setDataSessionId(long dataSessionId) {
+    public GepiRequestData withDataSessionId(long dataSessionId) {
         this.dataSessionId = dataSessionId;
+        return this;
     }
 
     public Set<String> getAListIdsAsSet() throws ExecutionException, InterruptedException {
@@ -85,40 +91,67 @@ public class GepiRequestData implements Cloneable{
 //        }
 //    }
 
-    public void setEventTypes(List<String> eventTypes) {
+    public GepiRequestData withEventTypes(List<String> eventTypes) {
         this.eventTypes = eventTypes;
+        return this;
+    }
+
+    public GepiRequestData withEventTypes(String... eventTypes) {
+        this.eventTypes = Arrays.asList(eventTypes);
+        return this;
     }
 
     public Future<IdConversionResult> getListAGePiIds() {
         return listAGePiIds;
     }
 
-    public void setListAGePiIds(Future<IdConversionResult> listAGePiIds) {
+    public GepiRequestData withListAGePiIds(Future<IdConversionResult> listAGePiIds) {
         this.listAGePiIds = listAGePiIds;
+        return this;
     }
+
+    public GepiRequestData withListAGePiIds(IdConversionResult listAGePiIds) {
+        this.listAGePiIds = CompletableFuture.supplyAsync(() -> listAGePiIds);
+        return this;
+    }
+
 
     public Future<IdConversionResult> getListBGePiIds() {
         return listBGePiIds;
     }
 
-    public void setListBGePiIds(Future<IdConversionResult> listBGePiIds) {
+    public GepiRequestData withListBGePiIds(Future<IdConversionResult> listBGePiIds) {
         this.listBGePiIds = listBGePiIds;
+        return this;
+    }
+
+
+    public GepiRequestData withListBGePiIds(IdConversionResult listBGePiIds) {
+        this.listBGePiIds = CompletableFuture.supplyAsync(() -> listBGePiIds);
+        return this;
     }
 
     public String getSentenceFilterString() {
         return sentenceFilterString;
     }
 
-    public void setSentenceFilterString(String sentenceFilterString) {
+    public GepiRequestData withSentenceFilterString(String sentenceFilterString) {
         this.sentenceFilterString = sentenceFilterString;
+        return this;
     }
 
     public String getParagraphFilterString() {
         return paragraphFilterString;
     }
 
-    public void setParagraphFilterString(String paragraphFilterString) {
+    public GepiRequestData withParagraphFilterString(String paragraphFilterString) {
         this.paragraphFilterString = paragraphFilterString;
+        return this;
+    }
+
+    public GepiRequestData withSectionNameFilterString(String sectionNameFilterString) {
+        this.sectionNameFilterString = sectionNameFilterString;
+        return this;
     }
 
     @Override
