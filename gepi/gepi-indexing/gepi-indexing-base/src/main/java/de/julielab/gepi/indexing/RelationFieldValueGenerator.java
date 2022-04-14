@@ -4,6 +4,7 @@ import de.julielab.jcore.consumer.es.ArrayFieldValue;
 import de.julielab.jcore.consumer.es.FieldGenerationException;
 import de.julielab.jcore.consumer.es.FieldValueGenerator;
 import de.julielab.jcore.consumer.es.FilterRegistry;
+import de.julielab.jcore.consumer.es.filter.Filter;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
 import de.julielab.jcore.consumer.es.preanalyzed.RawToken;
@@ -121,8 +122,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                 FSArray arg1ResourceEntries = ((Gene) ((ArgumentMention) argPair[0]).getRef()).getResourceEntryList();
                 FSArray arg2ResourceEntries = ((Gene) ((ArgumentMention) argPair[1]).getRef()).getResourceEntryList();
                 // iterate over all combinations of multiple IDs for the gene arguments
-                for (int k = 0; k < arg1ResourceEntries.size(); ++k) {
-                    for (int l = 0; l < arg2ResourceEntries.size(); ++l) {
+                for (int k = 0; k < arg1ResourceEntries.size() && arg1ResourceEntries.get(k) != null; ++k) {
+                    for (int l = 0; l < arg2ResourceEntries.size() && arg2ResourceEntries.get(l) != null; ++l) {
                         Document document = new Document();
                         try {
                             JCas jCas = rel.getCAS().getJCas();
@@ -136,13 +137,13 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("source", docId.startsWith("PMC") ? "pmc" : "pubmed");
                             String arg1EntryIdPath = "/ref/resourceEntryList["+k+"]/entryId";
                             String arg2EntryIdPath = "/ref/resourceEntryList["+l+"]/entryId";
-                            document.addField("arguments", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.gene2tid2atidAddonFilter));
-                            document.addField("argumentgeneids", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId"));
-                            document.addField("argumentconceptids", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.eg2tidReplaceFilter));
-                            document.addField("argumenttophomoids", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.eg2tophomoFilter));
+                            document.addField("arguments", createRawFieldValueForParallelAnnotations(argPair,  new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter}, null));
+                            document.addField("argumentgeneids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, null, null));
+                            document.addField("argumentconceptids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2tidReplaceFilter,geneFb.eg2tidReplaceFilter}, null));
+                            document.addField("argumenttophomoids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2tophomoFilter,geneFb.eg2tophomoFilter}, null));
                             document.addField("argumentcoveredtext", createRawFieldValueForAnnotations(argPair, "/:coveredText()"));
-                            document.addField("argumentprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2prefNameReplaceFilter));
-                            document.addField("argumenthomoprefnames", createRawFieldValueForAnnotations(argPair, "/ref/resourceEntryList/entryId", geneFb.egid2homoPrefNameReplaceFilter));
+                            document.addField("argumentprefnames", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.egid2prefNameReplaceFilter, geneFb.egid2prefNameReplaceFilter}, null));
+                            document.addField("argumenthomoprefnames", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.egid2homoPrefNameReplaceFilter,geneFb.egid2homoPrefNameReplaceFilter}, null));
                             document.addField("argumentmatchtypes", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                             document.addField("argument1", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.gene2tid2atidAddonFilter));
                             document.addField("argument1geneid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, null));
