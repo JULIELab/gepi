@@ -186,13 +186,13 @@
             "type": "text",
             "norms": false,
             "store": true,
-            "copy_to": ["paragraph.headings_completion", "paragraph.headings_kw"]
+            "copy_to": ["paragraph.headingscompletion", "paragraph.headingskw"]
           },
-          "headings_kw": {
+          "headingskw": {
             "type": "keyword",
             "store": true
           },
-          "headings_completion": {
+          "headingscompletion": {
             "type": "completion"
           },
           "textscope": {
@@ -201,19 +201,19 @@
           }
         }
       },
-      "contains_family": {
+      "containsfamily": {
         "type": "boolean",
         "store": true
       },
-      "relation_source": {
+      "relationsource": {
         "type": "keyword",
         "store": true
       },
-      "gene_source": {
+      "genesource": {
         "type": "keyword",
         "store": true
       },
-      "gene_mapping_source":{
+      "genemappingsource":{
         "type": "keyword",
         "store": true
       }

@@ -19,6 +19,7 @@ import org.testng.annotations.Test;
 import java.util.Collections;
 import java.util.List;
 
+import static de.julielab.gepi.indexing.TestUtils.createGeneArgument;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RelationFieldValueGeneratorTest {
@@ -152,18 +153,5 @@ public class RelationFieldValueGeneratorTest {
         assertThat(doc.get("maineventtype").toString()).isEqualTo("regulation");
     }
 
-    private ArgumentMention createGeneArgument(JCas jCas, int begin, int end, String... ids) {
-        Gene g = new Gene(jCas, begin, end);
-        for (String id : ids) {
-            ResourceEntry re = new ResourceEntry(jCas);
-            re.setEntryId(id);
-            FSArray resourceEntryList = JCoReTools.addToFSArray(g.getResourceEntryList(), re);
-            g.setResourceEntryList(resourceEntryList);
-        }
-        g.addToIndexes();
-        ArgumentMention am = new ArgumentMention(jCas, begin, end);
-        am.setRef(g);
-        am.addToIndexes();
-        return am;
-    }
+
 }

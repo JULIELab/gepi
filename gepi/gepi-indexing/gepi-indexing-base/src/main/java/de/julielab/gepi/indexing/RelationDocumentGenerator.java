@@ -59,7 +59,6 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                         Document relDoc = (Document) fv;
                         // Retrieve the argument pair of the current relation/event from the already created document for this relation
                         FeatureStructure[] argPair = ((ArrayFieldValue) relDoc.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
-                        relDoc.remove("ARGUMENT_FS");
                         // We create the sentence as a document of its own. In the mapping we then could add it as
                         // an object or as a nested document. There is no need to make it a nested document so we will
                         // use the object mapping which performs better.
@@ -89,9 +88,56 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         } catch (CASException e) {
             throw new FieldGenerationException(e);
         }
+        mergeEqualRelDocs(relDocs);
+        // remove the temporary field for the UIMA argument objects
+        relDocs.forEach(d -> d.remove("ARGUMENT_FS"));
         return relDocs;
     }
 
+    private void mergeEqualRelDocs(List<Document> relDocs) {
+        // create a key consisting of the argument offsets, the mapped argument IDs and the main relation type.
+        // We deem events to be equal that have those values in common (in this order).
+        Map<String, Document> key2doc = new HashMap<>();
+        Iterator<Document> docIt = relDocs.iterator();
+        while (docIt.hasNext()) {
+            Document document = docIt.next();
+            FeatureStructure[] argPair = ((ArrayFieldValue) document.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
+            StringBuilder keyBuilder = new StringBuilder();
+            for (FeatureStructure fs : argPair) {
+                ArgumentMention am = (ArgumentMention) fs;
+                Gene g = (Gene) am.getRef();
+                keyBuilder.append(g.getBegin());
+                keyBuilder.append(g.getEnd());
+                for (int i = 0; i < g.getResourceEntryList().size(); ++i) {
+                    keyBuilder.append(g.getResourceEntryList(i).getEntryId());
+                }
+            }
+            keyBuilder.append(((RawToken) document.get("maineventtype")).getTokenValue().toString());
+            String key = keyBuilder.toString();
+            // Now use the key to find relations that have been extracted from multiple combinations of gene tagger, gene mapper and event extractor
+            Document existingDoc = key2doc.get(key);
+            if (existingDoc != null) {
+                // merge the current document into the existing one
+                IFieldValue existingRelationsource = existingDoc.get("relationsource");
+                IFieldValue existingGenesource = existingDoc.get("genesource");
+                IFieldValue existingGenemappingsource = existingDoc.get("genemappingsource");
+
+                IFieldValue currentRelationsource = document.get("relationsource");
+                IFieldValue currentGenesource = document.get("genesource");
+                IFieldValue currentGenemappingsource = document.get("genemappingsource");
+
+                // merge the fields into the existing document
+                existingDoc.addField("relationsource", new ArrayFieldValue(List.of(existingRelationsource, currentRelationsource)));
+                existingDoc.addField("genesource", new ArrayFieldValue(List.of(existingGenesource, currentGenesource)));
+                existingDoc.addField("genemappingsource", new ArrayFieldValue(List.of(existingGenemappingsource, currentGenemappingsource)));
+
+                // discard the current document as it has been merged into the existing one
+                docIt.remove();
+            } else {
+                key2doc.put(key, document);
+            }
+        }
+    }
 
 
     /**
