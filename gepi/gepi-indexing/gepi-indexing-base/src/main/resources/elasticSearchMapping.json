@@ -200,6 +200,22 @@
             "store": true
           }
         }
+      },
+      "contains_family": {
+        "type": "boolean",
+        "store": true
+      },
+      "relation_source": {
+        "type": "keyword",
+        "store": true
+      },
+      "gene_source": {
+        "type": "keyword",
+        "store": true
+      },
+      "gene_mapping_source":{
+        "type": "keyword",
+        "store": true
       }
     }
   }

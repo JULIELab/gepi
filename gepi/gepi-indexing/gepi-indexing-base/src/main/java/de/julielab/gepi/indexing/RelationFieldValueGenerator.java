@@ -90,6 +90,9 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
         FlattenedRelation rel = (FlattenedRelation) fs;
         FSArray allArguments = rel.getArguments();
         LikelihoodIndicator likelihood = rel.getRootRelation().getLikelihood();
+        // Only a temporary solution: Set some rather arbitrary ID to family names so we can create relation documents from them
+        // without causing exceptions. Family event partners can then be found in A-searches, at least
+        setMockIdToFamilies(rel);
         for (int i = 0; i < allArguments.size() - 1; ++i) {
             for (int j = i + 1; j < allArguments.size(); ++j) {
                 FeatureStructure[] argPair = new FeatureStructure[]{allArguments.get(i), allArguments.get(j)};
@@ -163,6 +166,9 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argument2matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                             document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
                             document.addField("alleventtypes", Stream.of(rel.getRelations().toArray()).map(EventMention.class::cast).map(EventMention::getSpecificType).collect(Collectors.toSet()).toArray());
+                            document.addField("relation_source", rel.getRootRelation().getComponentId());
+                            document.addField("gene_source", ((ArgumentMention) argPair[0]).getRef().getComponentId());
+                            document.addField("gene_mapping_source", ((Gene) ((ArgumentMention) argPair[0]).getRef()).getResourceEntryList(0).getComponentId());
                             document.addField("ARGUMENT_FS", argPair);
 
                             // filter out reflexive events
@@ -178,7 +184,29 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
         }
         return relDocs;
     }
-
+    /**
+     * temporary method to integrate family names into event documents as long as we don't have an actual family name mapping
+     * @param rel
+     * @throws CASException
+     */
+    private void setMockIdToFamilies(FlattenedRelation rel) throws FieldGenerationException {
+        try {
+            for (FeatureStructure fs : rel.getArguments()) {
+                ArgumentMention am = (ArgumentMention) fs;
+                Gene gene = (Gene) am.getRef();
+                if ("FamilyName".equals(gene.getSpecificType()) || "protein_familiy_or_group".equals(gene.getSpecificType())) {
+                    FSArray resourceEntryList = new FSArray(rel.getCAS().getJCas(), 1);
+                    ResourceEntry resourceEntry = new ResourceEntry(rel.getCAS().getJCas(), gene.getBegin(), gene.getEnd());
+                    // in lack of something better at the moment
+                    resourceEntry.setEntryId(gene.getCoveredText());
+                    resourceEntryList.set(0, resourceEntry);
+                    gene.setResourceEntryList(resourceEntryList);
+                }
+            }
+        } catch (CASException e) {
+            throw new FieldGenerationException(e);
+        }
+    }
     private String getDocumentId(JCas jCas) {
         Header header = JCasUtil.selectSingle(jCas, Header.class);
         boolean ispmcDocument = false;
