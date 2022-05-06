@@ -24,6 +24,12 @@
             <import location="JCore ElasticSearch Consumer.xml"/>
                     
         </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="JCoRe ElasticSearch Consumer Localhost">
+                        
+            <import location="JCoRe ElasticSearch Consumer Localhost.xml"/>
+                    
+        </delegateAnalysisEngine>
             
     </delegateAnalysisEngineSpecifiers>
         
@@ -44,6 +50,8 @@
                 <node>JCoRe Neo4j Relations Consumer</node>
                                 
                 <node>JCore ElasticSearch Consumer</node>
+                                
+                <node>JCoRe ElasticSearch Consumer Localhost</node>
                             
             </fixedFlow>
                     

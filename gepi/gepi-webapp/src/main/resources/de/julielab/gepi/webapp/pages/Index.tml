@@ -28,8 +28,8 @@
                             <!--                        <t:sankeywidget result="result" class="col-md-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->
                             <!--                        <t:circlewidget result="result" class="col-md-4" elementId="circlechart" />-->
                         </div>
-                        <div class="row">
-                            <t:stats class="col-12" requestData="requestData"/>
+                        <div class="row mt-3">
+                            <t:statswidget class="col-12" requestData="requestData"/>
                         </div>
                         <div class="row mt-3">
                             <t:tableresultwidget class="col-12" requestData="requestData"/>

@@ -319,7 +319,7 @@
                                 
                 <value>
                                         
-                    <string>gepi.reldocs</string>
+                    <string>gepi.rlmgids</string>
                                     
                 </value>
                             
@@ -357,10 +357,6 @@
                                         
                     <array>
                                                 
-                        <string>bannerbiosem:de.julielab.jcore.types.EventMention</string>
-                                                
-                        <string>banner:de.julielab.jcore.types.Gene</string>
-                                                
                         <string>de.julielab.jcore.types.Sentence</string>
                                                 
                         <string>de.julielab.jcore.types.Token</string>
@@ -368,6 +364,16 @@
                         <string>gnormplus:de.julielab.jcore.types.Gene</string>
                                                 
                         <string>gnormplusbiosem:de.julielab.jcore.types.EventMention</string>
+                                                
+                        <string>gnormplusbiosem:de.julielab.jcore.types.EventTrigger</string>
+                                                
+                        <string>de.julielab.jcore.types.PennBioIEPosTag</string>
+                                                
+                        <string>banner:de.julielab.jcore.types.Gene</string>
+                                                
+                        <string>bannerbiosem:de.julielab.jcore.types.EventMention</string>
+                                                
+                        <string>bannerbiosem:de.julielab.jcore.types.EventTrigger</string>
                                             
                     </array>
                                     

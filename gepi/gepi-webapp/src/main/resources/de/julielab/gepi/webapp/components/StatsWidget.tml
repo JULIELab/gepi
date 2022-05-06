@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
-     widgettitle="Query Statistics" t:clientId="tableresult_widget" class="${classes}" sizeClass="widget-large" esResult="esResult"
+     widgettitle="Query Statistics" t:clientId="stats_widget" class="${classes}" sizeClass="widget-large" esResult="esResult"
      viewMode="viewMode" useTapestryZoneUpdates="false" requestData="requestData" downloadable="true"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
 

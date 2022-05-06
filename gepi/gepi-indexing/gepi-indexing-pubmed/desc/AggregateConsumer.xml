@@ -13,15 +13,9 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="JCoRe Neo4j Relations Consumer">
+        <delegateAnalysisEngine key="JCoRe ElasticSearch Consumer Localhost">
                         
-            <import location="JCoRe Neo4j Relations Consumer.xml"/>
-                    
-        </delegateAnalysisEngine>
-                
-        <delegateAnalysisEngine key="JCore ElasticSearch Consumer">
-                        
-            <import location="JCore ElasticSearch Consumer.xml"/>
+            <import location="JCoRe ElasticSearch Consumer Localhost.xml"/>
                     
         </delegateAnalysisEngine>
             
@@ -43,9 +37,7 @@
                                 
                 <node>JCoRe Database Checkpoint Writer</node>
                                 
-                <node>JCoRe Neo4j Relations Consumer</node>
-                                
-                <node>JCore ElasticSearch Consumer</node>
+                <node>JCoRe ElasticSearch Consumer Localhost</node>
                             
             </fixedFlow>
                     

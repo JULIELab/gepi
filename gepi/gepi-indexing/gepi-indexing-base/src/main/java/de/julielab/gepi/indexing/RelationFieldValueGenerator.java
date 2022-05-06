@@ -19,6 +19,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -145,6 +146,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argumentgeneids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, null, null));
                             document.addField("argumentconceptids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2tidReplaceFilter, geneFb.eg2tidReplaceFilter}, null));
                             document.addField("argumenttophomoids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2tophomoFilter, geneFb.eg2tophomoFilter}, null));
+                            document.addField("argumentfamplexids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2famplexFilter, geneFb.eg2famplexFilter}, null));
+                            document.addField("argumenthgncgroupids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2hgncFilter, geneFb.eg2hgncFilter}, null));
                             document.addField("argumentcoveredtext", createRawFieldValueForAnnotations(argPair, "/:coveredText()"));
                             document.addField("argumentprefnames", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.egid2prefNameReplaceFilter, geneFb.egid2prefNameReplaceFilter}, null));
                             document.addField("argumenthomoprefnames", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.egid2homoPrefNameReplaceFilter, geneFb.egid2homoPrefNameReplaceFilter}, null));
@@ -153,6 +156,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argument1geneid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, null));
                             document.addField("argument1conceptid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2tidReplaceFilter));
                             document.addField("argument1tophomoid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2tophomoFilter));
+                            document.addField("argument1famplexid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2famplexFilter));
+                            document.addField("argument1hgncgroupid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2hgncFilter));
                             document.addField("argument1coveredtext", createRawFieldValueForAnnotation(argPair[0], "/:coveredText()", null));
                             document.addField("argument1prefname", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2prefNameReplaceFilter));
                             document.addField("argument1homoprefname", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter));
@@ -161,6 +166,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argument2geneid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, null));
                             document.addField("argument2conceptid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tidReplaceFilter));
                             document.addField("argument2tophomoid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tophomoFilter));
+                            document.addField("argument2famplexid", createRawFieldValueForAnnotation(argPair[1], arg1EntryIdPath, geneFb.eg2famplexFilter));
+                            document.addField("argument2hgncgroupid", createRawFieldValueForAnnotation(argPair[1], arg1EntryIdPath, geneFb.eg2hgncFilter));
                             document.addField("argument2coveredtext", createRawFieldValueForAnnotation(argPair[1], "/:coveredText()", null));
                             document.addField("argument2prefname", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2prefNameReplaceFilter));
                             document.addField("argument2homoprefname", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter));
@@ -170,8 +177,10 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("containsfamily", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(ConceptMention::getSpecificType).anyMatch(st -> "FamilyName".equals(st) || "protein_familiy_or_group".equals(st)));
                             // reduce the short to the last element to make things a bit shorter (often, the component IDs are the fully qualified Java class name)
                             document.addField("relationsource", reduceToLastDottedPathElement(rel.getRootRelation().getComponentId()));
-                            document.addField("genesource", reduceToLastDottedPathElement(((ArgumentMention) argPair[0]).getRef().getComponentId()));
                             document.addField("genemappingsource", reduceToLastDottedPathElement(((Gene) ((ArgumentMention) argPair[0]).getRef()).getResourceEntryList(0).getComponentId()));
+                            // An older version of the GNormPlus BioC Format reader did not set the Gene#componentId feature, so fall back to the resource entry, if necessary
+                            document.addField("genesource", Optional.ofNullable(reduceToLastDottedPathElement(((ArgumentMention) argPair[0]).getRef().getComponentId()))
+                                    .orElse(document.get("genemappingsource") != null ? document.get("genemappingsource").toString() : null));
                             document.addField("ARGUMENT_FS", argPair);
 
                             // filter out reflexive events

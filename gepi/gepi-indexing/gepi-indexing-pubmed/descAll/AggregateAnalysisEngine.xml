@@ -24,6 +24,12 @@
             <import location="de.julielab.jcore.ae.eventflattener.EventFlattener.xml"/>
                     
         </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="Gene Mapping">
+                        
+            <import location="Gene Mapping.xml"/>
+                    
+        </delegateAnalysisEngine>
             
     </delegateAnalysisEngineSpecifiers>
         
@@ -44,6 +50,8 @@
                 <node>JCoRe Likelihood Assignment AE</node>
                                 
                 <node>de.julielab.jcore.ae.eventflattener.EventFlattener</node>
+                                
+                <node>Gene Mapping</node>
                             
             </fixedFlow>
                     
