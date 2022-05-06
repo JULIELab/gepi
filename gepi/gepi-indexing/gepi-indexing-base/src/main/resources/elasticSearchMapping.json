@@ -62,6 +62,14 @@
         "type": "keyword",
         "store": true
       },
+      "argumentfamplexids": {
+        "type": "keyword",
+        "store": true
+      },
+      "argumenthgncgroupids": {
+        "type": "keyword",
+        "store": true
+      },
       "argumentmatchtypes": {
         "type": "keyword",
         "store": true
@@ -94,6 +102,14 @@
         "type": "keyword",
         "store": true
       },
+      "argument1famplexid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument1hgncgroupid": {
+        "type": "keyword",
+        "store": true
+      },
       "argument1matchtype": {
         "type": "keyword",
         "store": true
@@ -123,6 +139,14 @@
         "store": true
       },
       "argument2tophomoid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2famplexid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2hgncgroupid": {
         "type": "keyword",
         "store": true
       },
