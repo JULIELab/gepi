@@ -77,6 +77,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             Optional<String> paragraph = eventDocument.get(FIELD_EVENT_PARAGRAPH);
             List<String> sentenceHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE);
             List<String> paragraphHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH);
+            List<String> geneMappingSources = eventDocument.getFieldValues(FIELD_GENE_MAPPING_SOURCE).orElse(Collections.emptyList()).stream().map(Object::toString).collect(Collectors.toList());
             String eventId = eventDocument.getId();
 
             int numArguments = geneIds.size();
@@ -139,6 +140,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                 if (fulltextQueryHighlightedMatcher.find())
                     event.setParagraphMatchingFulltextQuery(true);
             }
+            event.setGeneMappingSources(geneMappingSources);
             return event;
         }).filter(Objects::nonNull);
     }

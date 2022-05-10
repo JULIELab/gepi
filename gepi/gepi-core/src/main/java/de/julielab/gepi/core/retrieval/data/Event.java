@@ -29,6 +29,7 @@ public class Event {
     String hlSentence;
     private String paragraph;
     private String hlParagraph;
+    private List<String> geneMappingSources;
 
     public String getHlParagraph() {
         return hlParagraph;
@@ -211,5 +212,13 @@ public class Event {
 
     public void setParagraph(String paragraph) {
         this.paragraph = paragraph;
+    }
+
+    public void setGeneMappingSources(List<String> geneMappingSources) {
+        this.geneMappingSources = geneMappingSources;
+    }
+
+    public List<String> getGeneMappingSources() {
+        return geneMappingSources;
     }
 }
