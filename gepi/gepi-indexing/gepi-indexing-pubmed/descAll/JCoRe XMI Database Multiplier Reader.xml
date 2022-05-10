@@ -319,7 +319,7 @@
                                 
                 <value>
                                         
-                    <string>gepi.rlmgids</string>
+                    <string>gepi.testdoc</string>
                                     
                 </value>
                             
@@ -363,17 +363,9 @@
                                                 
                         <string>gnormplus:de.julielab.jcore.types.Gene</string>
                                                 
-                        <string>gnormplusbiosem:de.julielab.jcore.types.EventMention</string>
-                                                
-                        <string>gnormplusbiosem:de.julielab.jcore.types.EventTrigger</string>
-                                                
                         <string>de.julielab.jcore.types.PennBioIEPosTag</string>
                                                 
                         <string>banner:de.julielab.jcore.types.Gene</string>
-                                                
-                        <string>bannerbiosem:de.julielab.jcore.types.EventMention</string>
-                                                
-                        <string>bannerbiosem:de.julielab.jcore.types.EventTrigger</string>
                                             
                     </array>
                                     

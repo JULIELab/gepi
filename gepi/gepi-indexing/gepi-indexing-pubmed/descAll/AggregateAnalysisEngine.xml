@@ -7,6 +7,18 @@
         
     <delegateAnalysisEngineSpecifiers>
                 
+        <delegateAnalysisEngine key="GePi Gene Merger">
+                        
+            <import location="GePi Gene Merger.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="JCoRe BioSEM Event Annotator">
+                        
+            <import location="JCoRe BioSEM Event Annotator.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
         <delegateAnalysisEngine key="JCoRe Likelihood Detection AE">
                         
             <import location="JCoRe Likelihood Detection AE.xml"/>
@@ -44,6 +56,10 @@
         <flowConstraints>
                         
             <fixedFlow>
+                                
+                <node>GePi Gene Merger</node>
+                                
+                <node>JCoRe BioSEM Event Annotator</node>
                                 
                 <node>JCoRe Likelihood Detection AE</node>
                                 

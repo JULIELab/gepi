@@ -30,6 +30,12 @@
             <import location="JCoRe ElasticSearch Consumer Localhost.xml"/>
                     
         </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="XMIWriter">
+                        
+            <import location="XMIWriter.xml"/>
+                    
+        </delegateAnalysisEngine>
             
     </delegateAnalysisEngineSpecifiers>
         
@@ -52,6 +58,8 @@
                 <node>JCore ElasticSearch Consumer</node>
                                 
                 <node>JCoRe ElasticSearch Consumer Localhost</node>
+                                
+                <node>XMIWriter</node>
                             
             </fixedFlow>
                     
