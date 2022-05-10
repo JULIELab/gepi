@@ -112,6 +112,51 @@ public class RelationFieldValueGeneratorTest {
     }
 
     @Test
+    public void generateFieldValueMergedGenes() throws Exception {
+        // The GepiGeneMerger creates componentIds that are actually multiple, comma separated IDs
+        GeneFilterBoard gfb = new GeneFilterBoard();
+        gfb.eg2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.eg2tophomoFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.egid2homoPrefNameReplaceFilter = new FilterChain();
+        gfb.egid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.gene2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        TextFilterBoard tfb = new TextFilterBoard();
+        FilterRegistry fr = Mockito.mock(FilterRegistry.class);
+        Mockito.when(fr.getFilterBoard(GeneFilterBoard.class)).thenReturn(gfb);
+        Mockito.when(fr.getFilterBoard(TextFilterBoard.class)).thenReturn(tfb);
+        RelationFieldValueGenerator generator = new RelationFieldValueGenerator(fr);
+
+        JCas jCas = JCasFactory.createJCas("de.julielab.jcore.types.jcore-document-meta-pubmed-types", "de.julielab.jcore.types.jcore-semantics-biology-types", "de.julielab.jcore.types.extensions.jcore-semantics-mention-extension-types");
+        Header header = new Header(jCas);
+        header.setDocId("doc1");
+        header.addToIndexes();
+        jCas.setDocumentText("Gene1 regulates gene2.");
+        ArgumentMention a1 = createGeneArgument(jCas, 0, 5, "GeneTagger1,GeneTagger2", List.of("id1", "id2"), List.of("Normalizer1", "Normalizer2"));
+        ArgumentMention a2 = createGeneArgument(jCas, 16, 21, "id3");
+
+        FlattenedRelation rel = new FlattenedRelation(jCas);
+        rel.setArguments(JCoReTools.addToFSArray(null, List.of(a1, a2)));
+        GeneralEventMention em = new EventMention(jCas);
+        em.setSpecificType("regulation");
+        rel.setRootRelation(em);
+        rel.setRelations(JCoReTools.addToFSArray(null, em));
+        rel.addToIndexes();
+
+        ArrayFieldValue docs = (ArrayFieldValue) generator.generateFieldValue(rel);
+        docs.stream().map(Document.class::cast).forEach(d -> d.remove("ARGUMENT_FS"));
+        assertThat(docs).hasSize(2);
+        Document doc = (Document) docs.get(0);
+
+        assertThat(doc.get("genesource").toString()).isEqualTo("[GeneTagger1, GeneTagger2, SomeGeneTagger]");
+        assertThat(doc.get("genemappingsource").toString()).isEqualTo("[Normalizer1, SomeNormalizer]");
+
+        doc = (Document) docs.get(1);
+
+        assertThat(doc.get("genesource").toString()).isEqualTo("[GeneTagger1, GeneTagger2, SomeGeneTagger]");
+        assertThat(doc.get("genemappingsource").toString()).isEqualTo("[Normalizer2, SomeNormalizer]");
+    }
+
+    @Test
     public void generateFieldValueWithFamily() throws Exception {
         GeneFilterBoard gfb = new GeneFilterBoard();
         gfb.eg2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());

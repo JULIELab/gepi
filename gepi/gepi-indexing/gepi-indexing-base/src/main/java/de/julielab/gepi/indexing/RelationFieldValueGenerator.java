@@ -4,7 +4,7 @@ import de.julielab.jcore.consumer.es.ArrayFieldValue;
 import de.julielab.jcore.consumer.es.FieldGenerationException;
 import de.julielab.jcore.consumer.es.FieldValueGenerator;
 import de.julielab.jcore.consumer.es.FilterRegistry;
-import de.julielab.jcore.consumer.es.filter.Filter;
+import de.julielab.jcore.consumer.es.filter.*;
 import de.julielab.jcore.consumer.es.preanalyzed.Document;
 import de.julielab.jcore.consumer.es.preanalyzed.IFieldValue;
 import de.julielab.jcore.consumer.es.preanalyzed.RawToken;
@@ -19,6 +19,8 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,11 +74,15 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
 
     private final TextFilterBoard textFb;
     private final GeneFilterBoard geneFb;
+    private final Filter geneComponentIdProcessingfilter;
 
     public RelationFieldValueGenerator(FilterRegistry filterRegistry) {
         super(filterRegistry);
         textFb = filterRegistry.getFilterBoard(TextFilterBoard.class);
         geneFb = filterRegistry.getFilterBoard(GeneFilterBoard.class);
+        Map<String, String> replaceMap = new HashMap<>();
+        replaceMap.put(null, "GNormPlus");
+        geneComponentIdProcessingfilter = new FilterChain(new RegExSplitFilter(","), new ReplaceFilter(replaceMap));
     }
 
     /**
@@ -124,8 +130,17 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                 if (argumentWithoutId)
                     continue;
 
-                FSArray arg1ResourceEntries = ((Gene) ((ArgumentMention) argPair[0]).getRef()).getResourceEntryList();
-                FSArray arg2ResourceEntries = ((Gene) ((ArgumentMention) argPair[1]).getRef()).getResourceEntryList();
+
+
+                final Gene arg1Gene = (Gene) ((ArgumentMention) argPair[0]).getRef();
+                final Gene arg2Gene = (Gene) ((ArgumentMention) argPair[1]).getRef();
+                // An older version of the GNormPlus BioC Format reader did not set the Gene#componentId feature, so fall back to the resource entry, if necessary
+                if (arg1Gene.getComponentId() == null)
+                    arg1Gene.setComponentId("GNormPlus");
+                if (arg2Gene.getComponentId() == null)
+                    arg2Gene.setComponentId("GNormPlus");
+                FSArray arg1ResourceEntries = arg1Gene.getResourceEntryList();
+                FSArray arg2ResourceEntries = arg2Gene.getResourceEntryList();
                 // iterate over all combinations of multiple IDs for the gene arguments
                 for (int k = 0; k < arg1ResourceEntries.size() && arg1ResourceEntries.get(k) != null; ++k) {
                     for (int l = 0; l < arg2ResourceEntries.size() && arg2ResourceEntries.get(l) != null; ++l) {
@@ -176,11 +191,9 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("alleventtypes", Stream.of(rel.getRelations().toArray()).map(EventMention.class::cast).map(EventMention::getSpecificType).collect(Collectors.toSet()).toArray());
                             document.addField("containsfamily", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(ConceptMention::getSpecificType).anyMatch(st -> "FamilyName".equals(st) || "protein_familiy_or_group".equals(st)));
                             // reduce the short to the last element to make things a bit shorter (often, the component IDs are the fully qualified Java class name)
-                            document.addField("relationsource", reduceToLastDottedPathElement(rel.getRootRelation().getComponentId()));
-                            document.addField("genemappingsource", reduceToLastDottedPathElement(((Gene) ((ArgumentMention) argPair[0]).getRef()).getResourceEntryList(0).getComponentId()));
-                            // An older version of the GNormPlus BioC Format reader did not set the Gene#componentId feature, so fall back to the resource entry, if necessary
-                            document.addField("genesource", Optional.ofNullable(reduceToLastDottedPathElement(((ArgumentMention) argPair[0]).getRef().getComponentId()))
-                                    .orElse(document.get("genemappingsource") != null ? document.get("genemappingsource").toString() : null));
+                            document.addField("relationsource", rel.getRootRelation().getComponentId());
+                            document.addField("genemappingsource", createRawFieldValueForParallelAnnotations(argPair, new String[]{"/ref/resourceEntryList["+k+"]/componentId", "/ref/resourceEntryList["+l+"]/componentId"}, null, null));
+                            document.addField("genesource", createRawFieldValueForAnnotations(argPair, new String[]{"/ref/componentId"}, null, geneComponentIdProcessingfilter));
                             document.addField("ARGUMENT_FS", argPair);
 
                             // filter out reflexive events
