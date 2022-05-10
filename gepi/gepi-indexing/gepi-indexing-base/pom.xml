@@ -22,7 +22,13 @@
             <version>3.12.4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>jcore-descriptor-creator</artifactId>
+            <version>2.6.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
-
+    <name>GePi Indexing</name>
 
 </project>
