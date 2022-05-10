@@ -3,6 +3,9 @@ package de.julielab.gepi.webapp;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class BeanModelEvent {
 
     private Event event;
@@ -54,6 +57,8 @@ public class BeanModelEvent {
     public String getSecondArgumentMatchType() {
         return event.getSecondArgument().getMatchType();
     }
+
+    public String getGeneMappingSources() { return event.getGeneMappingSources().stream().collect(Collectors.joining(", "));}
 
     public String getFirstArgumentTextWithPreferredName() {
         Argument argument = event.getFirstArgument();
