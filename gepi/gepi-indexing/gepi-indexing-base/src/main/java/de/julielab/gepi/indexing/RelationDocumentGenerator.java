@@ -108,9 +108,8 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                 Gene g = (Gene) am.getRef();
                 keyBuilder.append(g.getBegin());
                 keyBuilder.append(g.getEnd());
-                for (int i = 0; i < g.getResourceEntryList().size(); ++i) {
-                    keyBuilder.append(g.getResourceEntryList(i).getEntryId());
-                }
+                keyBuilder.append(document.get("argument1geneid").toString());
+                keyBuilder.append(document.get("argument2geneid").toString());
             }
             keyBuilder.append(((RawToken) document.get("maineventtype")).getTokenValue().toString());
             String key = keyBuilder.toString();

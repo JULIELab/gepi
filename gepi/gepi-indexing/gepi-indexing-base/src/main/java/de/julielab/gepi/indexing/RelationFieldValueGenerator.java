@@ -166,8 +166,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argument2geneid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, null));
                             document.addField("argument2conceptid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tidReplaceFilter));
                             document.addField("argument2tophomoid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tophomoFilter));
-                            document.addField("argument2famplexid", createRawFieldValueForAnnotation(argPair[1], arg1EntryIdPath, geneFb.eg2famplexFilter));
-                            document.addField("argument2hgncgroupid", createRawFieldValueForAnnotation(argPair[1], arg1EntryIdPath, geneFb.eg2hgncFilter));
+                            document.addField("argument2famplexid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2famplexFilter));
+                            document.addField("argument2hgncgroupid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2hgncFilter));
                             document.addField("argument2coveredtext", createRawFieldValueForAnnotation(argPair[1], "/:coveredText()", null));
                             document.addField("argument2prefname", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2prefNameReplaceFilter));
                             document.addField("argument2homoprefname", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter));
@@ -210,6 +210,10 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
      * @param rel
      * @throws CASException
      */
+    // TODO after the mapping is available, merge this with existing mappings.
+    // Most family names won't actually have a mapping, for those continue to use the covered text; but we should
+    // normalize it a bit (lowercase, remove punctuation) and do the same thing when we search for names
+    // in GePi
     private void setMockIdToFamilies(FlattenedRelation rel) throws FieldGenerationException {
         try {
             for (FeatureStructure fs : rel.getArguments()) {
