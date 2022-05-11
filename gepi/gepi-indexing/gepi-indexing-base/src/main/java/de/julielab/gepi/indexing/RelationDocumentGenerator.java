@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -125,10 +126,28 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                 IFieldValue currentGenesource = document.get("genesource");
                 IFieldValue currentGenemappingsource = document.get("genemappingsource");
 
-                // merge the fields into the existing document
-                existingDoc.addField("relationsource", new ArrayFieldValue(List.of(existingRelationsource, currentRelationsource)));
-                existingDoc.addField("genesource", new ArrayFieldValue(List.of(existingGenesource, currentGenesource)));
-                existingDoc.addField("genemappingsource", new ArrayFieldValue(List.of(existingGenemappingsource, currentGenemappingsource)));
+                // merge the fields into the existing document while avoiding duplicates
+                ArrayFieldValue relationSourceValues = new ArrayFieldValue();
+                relationSourceValues.addFlattened(existingRelationsource);
+                relationSourceValues.addFlattened(currentRelationsource);
+                final TreeSet<RawToken> relationSourceSet = relationSourceValues.stream().map(RawToken.class::cast).collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(t -> t.getTokenValue().toString()))));
+                relationSourceValues = new ArrayFieldValue(new ArrayList<>(relationSourceSet));
+
+                ArrayFieldValue geneSourceValues = new ArrayFieldValue();
+                geneSourceValues.addFlattened(existingGenesource);
+                geneSourceValues.addFlattened(currentGenesource);
+                final TreeSet<RawToken> geneSourceSet = geneSourceValues.stream().map(RawToken.class::cast).collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(t -> t.getTokenValue().toString()))));
+                geneSourceValues = new ArrayFieldValue(new ArrayList<>(geneSourceSet));
+
+                ArrayFieldValue geneMappingSourceValues = new ArrayFieldValue();
+                geneMappingSourceValues.addFlattened(existingGenemappingsource);
+                geneMappingSourceValues.addFlattened(currentGenemappingsource);
+                final TreeSet<RawToken> geneMappingSourceSet = geneMappingSourceValues.stream().map(RawToken.class::cast).collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(t -> t.getTokenValue().toString()))));
+                geneMappingSourceValues = new ArrayFieldValue(new ArrayList<>(geneMappingSourceSet));
+
+                existingDoc.addField("relationsource", relationSourceValues);
+                existingDoc.addField("genesource", geneSourceValues);
+                existingDoc.addField("genemappingsource", geneMappingSourceValues);
 
                 // discard the current document as it has been merged into the existing one
                 docIt.remove();

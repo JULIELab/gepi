@@ -114,6 +114,14 @@
         "type": "keyword",
         "store": true
       },
+      "argument1genesource": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument1genemappingsource": {
+        "type": "keyword",
+        "store": true
+      },
       "argument2": {
         "type": "keyword",
         "store": true
@@ -151,6 +159,14 @@
         "store": true
       },
       "argument2matchtype": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2genesource": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2genemappingsource": {
         "type": "keyword",
         "store": true
       },
@@ -239,6 +255,14 @@
       },
       "genemappingsource":{
         "type": "keyword",
+        "store": true
+      },
+      "mixedgenesource": {
+        "type": "boolean",
+        "store": true
+      },
+      "mixedgenemappingsource": {
+        "type": "boolean",
         "store": true
       }
     }

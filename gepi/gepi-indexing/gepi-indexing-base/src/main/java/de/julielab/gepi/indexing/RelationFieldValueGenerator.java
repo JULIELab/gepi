@@ -75,14 +75,18 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
     private final TextFilterBoard textFb;
     private final GeneFilterBoard geneFb;
     private final Filter geneComponentIdProcessingfilter;
+    private final Filter lastDottedPathElementFilter;
 
     public RelationFieldValueGenerator(FilterRegistry filterRegistry) {
         super(filterRegistry);
         textFb = filterRegistry.getFilterBoard(TextFilterBoard.class);
         geneFb = filterRegistry.getFilterBoard(GeneFilterBoard.class);
+        lastDottedPathElementFilter = new RegExReplaceFilter(".*\\.", "", false);
         Map<String, String> replaceMap = new HashMap<>();
+        // In an older version of the GNormPlusFormatMultiplier, the GNormPlus genes were not given any componentId
         replaceMap.put(null, "GNormPlus");
-        geneComponentIdProcessingfilter = new FilterChain(new RegExSplitFilter(","), new ReplaceFilter(replaceMap));
+        replaceMap.put("null", "GNormPlus");
+        geneComponentIdProcessingfilter = new FilterChain(new RegExSplitFilter(","), lastDottedPathElementFilter, new ReplaceFilter(replaceMap), new UniqueFilter());
     }
 
     /**
@@ -177,6 +181,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argument1prefname", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2prefNameReplaceFilter));
                             document.addField("argument1homoprefname", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter));
                             document.addField("argument1matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
+                            document.addField("argument1genesource", createRawFieldValueForAnnotation(argPair[0], "/ref/componentId", geneComponentIdProcessingfilter));
+                            document.addField("argument1genemappingsource", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList["+k+"]/componentId", geneComponentIdProcessingfilter));
                             document.addField("argument2", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.gene2tid2atidAddonFilter));
                             document.addField("argument2geneid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, null));
                             document.addField("argument2conceptid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tidReplaceFilter));
@@ -187,13 +193,17 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argument2prefname", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2prefNameReplaceFilter));
                             document.addField("argument2homoprefname", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter));
                             document.addField("argument2matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
+                            document.addField("argument2genesource", createRawFieldValueForAnnotation(argPair[1], "/ref/componentId", geneComponentIdProcessingfilter));
+                            document.addField("argument2genemappingsource", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList["+k+"]/componentId", geneComponentIdProcessingfilter));
                             document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
                             document.addField("alleventtypes", Stream.of(rel.getRelations().toArray()).map(EventMention.class::cast).map(EventMention::getSpecificType).collect(Collectors.toSet()).toArray());
                             document.addField("containsfamily", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(ConceptMention::getSpecificType).anyMatch(st -> "FamilyName".equals(st) || "protein_familiy_or_group".equals(st)));
                             // reduce the short to the last element to make things a bit shorter (often, the component IDs are the fully qualified Java class name)
                             document.addField("relationsource", rel.getRootRelation().getComponentId());
-                            document.addField("genemappingsource", createRawFieldValueForParallelAnnotations(argPair, new String[]{"/ref/resourceEntryList["+k+"]/componentId", "/ref/resourceEntryList["+l+"]/componentId"}, null, null));
+                            document.addField("genemappingsource", createRawFieldValueForParallelAnnotations(argPair, new String[]{"/ref/resourceEntryList["+k+"]/componentId", "/ref/resourceEntryList["+l+"]/componentId"}, null, geneComponentIdProcessingfilter));
                             document.addField("genesource", createRawFieldValueForAnnotations(argPair, new String[]{"/ref/componentId"}, null, geneComponentIdProcessingfilter));
+//                            document.addField("mixedgenesource", !arg1Gene.getComponentId().equals(arg2Gene.getComponentId()));
+//                            document.addField("mixedgenemappingsource", !arg1Gene.getResourceEntryList(k).getComponentId().equals(arg2Gene.getResourceEntryList(l).getComponentId()));
                             document.addField("ARGUMENT_FS", argPair);
 
                             // filter out reflexive events

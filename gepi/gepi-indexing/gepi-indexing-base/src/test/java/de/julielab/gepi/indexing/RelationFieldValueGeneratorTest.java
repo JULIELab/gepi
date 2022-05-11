@@ -13,8 +13,8 @@ import de.julielab.jcore.utility.JCoReTools;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+import org.junit.Test;
 import org.mockito.Mockito;
-import org.testng.annotations.Test;
 
 import java.util.Collections;
 import java.util.List;
