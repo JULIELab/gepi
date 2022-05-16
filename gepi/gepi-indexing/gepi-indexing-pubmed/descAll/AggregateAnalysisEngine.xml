@@ -13,6 +13,12 @@
                     
         </delegateAnalysisEngine>
                 
+        <delegateAnalysisEngine key="Gazetteer FamPlex Dictionary">
+                        
+            <import location="Gazetteer FamPlex Dictionary.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
         <delegateAnalysisEngine key="JCoRe BioSEM Event Annotator">
                         
             <import location="JCoRe BioSEM Event Annotator.xml"/>
@@ -58,6 +64,8 @@
             <fixedFlow>
                                 
                 <node>GePi Gene Merger</node>
+                                
+                <node>Gazetteer FamPlex Dictionary</node>
                                 
                 <node>JCoRe BioSEM Event Annotator</node>
                                 
