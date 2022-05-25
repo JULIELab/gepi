@@ -10,8 +10,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import static org.junit.Assert.*;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 public class GePiFamplexIdAssignerTest {
     @Test
     public void process() throws Exception {

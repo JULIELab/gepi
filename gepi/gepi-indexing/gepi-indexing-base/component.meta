@@ -7,6 +7,10 @@
         {
             "category": "ae",
             "location": "de.julielab.jcore.ae.genemerge.desc.gepi-gene-merger"
+        },
+        {
+            "category": "ae",
+            "location": "de.julielab.jcore.ae.genemerge.desc.gepi-famplex-id-assigner"
         }
     ],
     "exposable": true,

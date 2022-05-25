@@ -19,6 +19,12 @@
                     
         </delegateAnalysisEngine>
                 
+        <delegateAnalysisEngine key="GePi Famplex ID Assigner">
+                        
+            <import location="GePi Famplex ID Assigner.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
         <delegateAnalysisEngine key="JCoRe BioSEM Event Annotator">
                         
             <import location="JCoRe BioSEM Event Annotator.xml"/>
@@ -66,6 +72,8 @@
                 <node>GePi Gene Merger</node>
                                 
                 <node>Gazetteer FamPlex Dictionary</node>
+                                
+                <node>GePi Famplex ID Assigner</node>
                                 
                 <node>JCoRe BioSEM Event Annotator</node>
                                 

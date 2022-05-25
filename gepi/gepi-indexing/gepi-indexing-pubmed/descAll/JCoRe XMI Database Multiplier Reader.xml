@@ -319,7 +319,7 @@
                                 
                 <value>
                                         
-                    <string>gepi.testdoc</string>
+                    <string>gepi.bc2gn</string>
                                     
                 </value>
                             
@@ -366,6 +366,8 @@
                         <string>de.julielab.jcore.types.PennBioIEPosTag</string>
                                                 
                         <string>banner:de.julielab.jcore.types.Gene</string>
+                                                
+                        <string>flair:de.julielab.jcore.types.Gene</string>
                                             
                     </array>
                                     

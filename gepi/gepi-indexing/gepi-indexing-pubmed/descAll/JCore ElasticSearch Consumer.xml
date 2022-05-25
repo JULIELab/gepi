@@ -17,6 +17,34 @@
                         
             <configurationParameter>
                                 
+                <name>deleteDocumentsBeforeIndexing</name>
+                                
+                <description>Whether or not to delete documents with the docId of the UIMA CASes in ElasticSearch prior to indexing. This is useful when parts of the document are indexed whose IDs are not stable or that might change after document updates and would not just be overwritten when indexing anew. Defaults to false.</description>
+                                
+                <type>Boolean</type>
+                                
+                <multiValued>false</multiValued>
+                                
+                <mandatory>false</mandatory>
+                            
+            </configurationParameter>
+                        
+            <configurationParameter>
+                                
+                <name>documentIdField</name>
+                                
+                <description>Required when deleteDocumentsBeforeIndexing is set to true. This should be an existing index field that contains the document ID of each CAS. It is used to remove existing index documents related to the CAS document ID prior to indexing.</description>
+                                
+                <type>String</type>
+                                
+                <multiValued>false</multiValued>
+                                
+                <mandatory>false</mandatory>
+                            
+            </configurationParameter>
+                        
+            <configurationParameter>
+                                
                 <name>urls</name>
                                 
                 <description>A list of URLs pointing to different nodes of the ElasticSearch cluster, e.g. http://localhost:9300/. Documents will be sent bulk-wise to the nodes in a round-robin fashion.</description>
@@ -204,6 +232,30 @@
                         <string>de.julielab.gepi.indexing.GeneFilterBoard</string>
                                             
                     </array>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>documentIdField</name>
+                                
+                <value>
+                                        
+                    <string>pmid</string>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>deleteDocumentsBeforeIndexing</name>
+                                
+                <value>
+                                        
+                    <boolean>true</boolean>
                                     
                 </value>
                             

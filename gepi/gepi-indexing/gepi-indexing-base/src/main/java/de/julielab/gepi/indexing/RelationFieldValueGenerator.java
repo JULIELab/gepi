@@ -86,6 +86,10 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
         // In an older version of the GNormPlusFormatMultiplier, the GNormPlus genes were not given any componentId
         replaceMap.put(null, "GNormPlus");
         replaceMap.put("null", "GNormPlus");
+        replaceMap.put("ExtendedProteinsMerger", "FlairNerAnnotator");
+        replaceMap.put("ProteinConsistencyTagger", "FlairNerAnnotator");
+        replaceMap.put("GeneMapper / QuercusMappingCore", "GeNo");
+        replaceMap.put("GNormPlusFormatMultiplierReader", "GNormPlus");
         geneComponentIdProcessingfilter = new FilterChain(new RegExSplitFilter(","), lastDottedPathElementFilter, new ReplaceFilter(replaceMap), new UniqueFilter());
     }
 
@@ -156,6 +160,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             if (likelihood != null)
                                 document.addField("likelihood", FieldCreationUtils.likelihoodValues.get(likelihood.getLikelihood()));
                             String id = docId + "_" + rel.getId() + "_" + i + "." + k + "_" + j + "." + l;
+                            System.out.println("ID: " + id);
                             document.setId(id);
                             document.addField("id", id);
                             document.addField("source", docId.startsWith("PMC") ? "pmc" : "pubmed");
@@ -228,24 +233,24 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
     }
 
     /**
-     * temporary method to integrate family names into event documents as long as we don't have an actual family name mapping
+     * We want to offer relations with gene families. Some of those get concept IDs assigned in the GePi indexing pipeline.
+     * Most, however, will not be recognized or even not have a specific database entry at all. For those, we just
+     * add their covered as ID. This won't be used for search but just be a placeholder that still allows seeing to which
+     * part of text it refers.
      *
      * @param rel
      * @throws CASException
      */
-    // TODO after the mapping is available, merge this with existing mappings.
-    // Most family names won't actually have a mapping, for those continue to use the covered text; but we should
-    // normalize it a bit (lowercase, remove punctuation) and do the same thing when we search for names
-    // in GePi
     private void setMockIdToFamilies(FlattenedRelation rel) throws FieldGenerationException {
         try {
             for (FeatureStructure fs : rel.getArguments()) {
                 ArgumentMention am = (ArgumentMention) fs;
                 Gene gene = (Gene) am.getRef();
-                if ("FamilyName".equals(gene.getSpecificType()) || "protein_familiy_or_group".equals(gene.getSpecificType())) {
+                // only assign a mock ID if there is not already one given
+                if (gene.getResourceEntryList() == null && ("FamilyName".equals(gene.getSpecificType()) || "protein_familiy_or_group".equals(gene.getSpecificType()))) {
                     FSArray resourceEntryList = new FSArray(rel.getCAS().getJCas(), 1);
                     ResourceEntry resourceEntry = new ResourceEntry(rel.getCAS().getJCas(), gene.getBegin(), gene.getEnd());
-                    // in lack of something better at the moment
+                    // in lack of something better
                     resourceEntry.setEntryId(gene.getCoveredText());
                     resourceEntryList.set(0, resourceEntry);
                     gene.setResourceEntryList(resourceEntryList);
