@@ -24,13 +24,12 @@ import static org.neo4j.driver.Values.parameters;
 public class GeneIdService implements IGeneIdService {
 
 
+    private final Driver driver;
     private Logger log;
-    private String boltUrl;
 
     public GeneIdService(Logger log, @Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
         this.log = log;
-
-        this.boltUrl = boltUrl;
+        driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
     }
 
     @Override
@@ -74,8 +73,6 @@ public class GeneIdService implements IGeneIdService {
 
     private CompletableFuture<Multimap<String, String>> convertGeneNames2GeneIds(Stream<String> geneNames) {
         return CompletableFuture.supplyAsync(() -> {
-            Driver driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
-
             try (Session session = driver.session()) {
 
                 return session.readTransaction(tx -> {
@@ -115,8 +112,6 @@ public class GeneIdService implements IGeneIdService {
     @Override
     public CompletableFuture<Multimap<String, String>> convertGeneNames2AggregateIds(Stream<String> geneNames) {
         return CompletableFuture.supplyAsync(() -> {
-            Driver driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
-
             try (Session session = driver.session()) {
 
                 return session.readTransaction(tx -> {
@@ -124,10 +119,8 @@ public class GeneIdService implements IGeneIdService {
                     Multimap<String, String> topAtids = HashMultimap.create();
 
                     String[] searchInput = geneNames.map(String::toLowerCase).toArray(String[]::new);
-                    String cypher = "MATCH (a:AGGREGATE_GENEGROUP) WHERE a.preferredName_lc IN $geneNames RETURN a.preferredName_lc AS SOURCE_ID,a.id AS SEARCH_ID\n" +
-                            "UNION\n" +
-                            "MATCH (c:CONCEPT)<-[:HAS_ROOT_CONCEPT]-(f:FACET) WHERE c:ID_MAP_NCBI_GENES AND c.preferredName_lc IN $geneNames RETURN c.preferredName_lc AS SOURCE_ID,c.id AS SEARCH_ID";
-                    log.debug("Running query to map gene names to aggregate IDs.");
+                    // get the highest element in the aggregation-hierarchy; the roots are those that are not elements of another aggregate
+                    String cypher = "MATCH (c:CONCEPT) WHERE c.preferredName_lc IN $geneNames AND NOT ()-[:HAS_ELEMENT]->(c) RETURN c.preferredName_lc AS SOURCE_ID, c.id AS SEARCH_ID";
                     Result result = tx.run(
                             cypher,
                             parameters("geneNames", searchInput));
@@ -185,8 +178,6 @@ public class GeneIdService implements IGeneIdService {
     @Override
     public CompletableFuture<Multimap<String, String>> convertGene2AggregateIds(Stream<String> input) {
         return CompletableFuture.supplyAsync(() -> {
-            Driver driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
-
             try (Session session = driver.session()) {
 
                 return session.readTransaction(tx -> {
@@ -194,14 +185,16 @@ public class GeneIdService implements IGeneIdService {
                     Multimap<String, String> topAtids = HashMultimap.create();
 
                     String[] searchInput = input.toArray(String[]::new);
-                    log.debug("Running query to map gene IDs to aggregate IDs.");
+//                    final String query = "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.originalId IN $originalIds " +
+//                            "OPTIONAL MATCH (n)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) " +
+//                            "WITH n,a " +
+//                            "OPTIONAL MATCH (a)<-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) " +
+//                            "RETURN DISTINCT n.originalId AS SOURCE_ID, COALESCE(top.id,a.id) AS SEARCH_ID";
+                    final String query = "MATCH (c:CONCEPT:ID_MAP_NCBI_GENES) WHERE c.originalId IN $originalIds WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c.originalId AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
+                    final Value parameters = parameters("originalIds", searchInput);
                     Result result = tx.run(
-                            "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.originalId IN $originalIds " +
-                                    "OPTIONAL MATCH (n)<-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) " +
-                                    "WITH n,a " +
-                                    "OPTIONAL MATCH (a)<-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) " +
-                                    "RETURN DISTINCT n.originalId AS SOURCE_ID, COALESCE(top.id,a.id) AS SEARCH_ID",
-                            parameters("originalIds", searchInput));
+                            query,
+                            parameters);
 
                     while (result.hasNext()) {
                         record = result.next();

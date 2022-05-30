@@ -160,7 +160,6 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             if (likelihood != null)
                                 document.addField("likelihood", FieldCreationUtils.likelihoodValues.get(likelihood.getLikelihood()));
                             String id = docId + "_" + rel.getId() + "_" + i + "." + k + "_" + j + "." + l;
-                            System.out.println("ID: " + id);
                             document.setId(id);
                             document.addField("id", id);
                             document.addField("source", docId.startsWith("PMC") ? "pmc" : "pubmed");
