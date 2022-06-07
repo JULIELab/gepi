@@ -5,6 +5,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
+import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.*;
@@ -13,7 +14,6 @@ import org.slf4j.Logger;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,10 +33,12 @@ public class GeneIdService implements IGeneIdService {
     }
 
     @Override
-    public Future<IdConversionResult> convert(Stream<String> stream, IdType from, IdType to) {
+    public Future<IdConversionResult> convert(Stream<String> stream, IdType from, IdType to, Collection<String> taxIds) {
         List<String> sourceIds = stream.collect(Collectors.toList());
         CompletableFuture<Multimap<String, String>> convertedIds;
         if (to == IdType.GEPI_AGGREGATE) {
+            if (taxIds != null && !taxIds.isEmpty())
+                throw new IllegalArgumentException("Input IDs should be converted to aggregates but there are also taxonomy IDs specified.");
             if (from == IdType.GENE_NAME) {
                 convertedIds = convertGeneNames2AggregateIds(sourceIds.stream());
             } else if (from == IdType.GENE) {
@@ -46,7 +48,10 @@ public class GeneIdService implements IGeneIdService {
             }
         } else if (to == IdType.GENE) {
             if (from == IdType.GENE_NAME) {
-                convertedIds = convertGeneNames2GeneIds(sourceIds.stream());
+                if (taxIds != null && !taxIds.isEmpty())
+                    convertedIds = convertGeneNames2GeneIds(sourceIds.stream(), taxIds);
+                else
+                    convertedIds = convertGeneNames2GeneIds(sourceIds.stream());
             } else if (from == IdType.GENE) {
                 HashMultimap<String, String> map = HashMultimap.create();
                 sourceIds.forEach(id -> map.put(id, id));
@@ -67,6 +72,32 @@ public class GeneIdService implements IGeneIdService {
             } catch (Exception e) {
                 log.error("Could not create an IdConversionResult instance", e);
                 throw new IllegalStateException(e);
+            }
+        });
+    }
+
+    private CompletableFuture<Multimap<String, String>> convertGeneNames2GeneIds(Stream<String> geneNames, Collection<String> taxIds) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (Session session = driver.session()) {
+
+                return session.readTransaction(tx -> {
+                    Record record;
+                    Multimap<String, String> topAtids = HashMultimap.create();
+
+                    String[] searchInput = geneNames.map(String::toLowerCase).toArray(String[]::new);
+                    log.debug("Running query to map gene names to NCBI gene IDs.");
+                    String cypher = "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.preferredName_lc IN $geneNames AND n.taxId in $taxIds " +
+                            "RETURN DISTINCT n.preferredName_lc AS SOURCE_ID,n.originalId AS SEARCH_ID";
+                    Result result = tx.run(
+                            cypher,
+                            parameters("geneNames", searchInput, "taxIds", taxIds));
+
+                    while (result.hasNext()) {
+                        record = result.next();
+                        topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
+                    }
+                    return topAtids;
+                });
             }
         });
     }
@@ -205,6 +236,30 @@ public class GeneIdService implements IGeneIdService {
 
             }
         });
+    }
+
+    @Override
+    public Map<String, GepiGeneInfo> getGeneInfo(List<String> conceptIds) {
+        Map<String, GepiGeneInfo> geneInfo = new HashMap<>();
+        try (Session session = driver.session()) {
+            session.readTransaction(tx -> {
+                Record record;
+                Multimap<String, String> topAtids = HashMultimap.create();
+
+                final String query = "MATCH (c:CONCEPT:ID_MAP_NCBI_GENES) WHERE c.originalId IN $originalIds WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c.originalId AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
+                final Value parameters = parameters("originalIds", conceptIds);
+                Result result = tx.run(
+                        query,
+                        parameters);
+
+                while (result.hasNext()) {
+                    record = result.next();
+                    topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
+                }
+                return topAtids;
+            });
+        }
+        return null;
     }
 
 }

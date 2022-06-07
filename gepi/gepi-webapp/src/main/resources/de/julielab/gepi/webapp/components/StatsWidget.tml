@@ -1,7 +1,70 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
-     widgettitle="Query Statistics" t:clientId="stats_widget" class="${classes}" sizeClass="widget-large" esResult="esResult"
+     widgettitle="Query Statistics" t:clientId="stats_widget" class="${classes}" sizeClass="widget-large"
+     esResult="esResult"
      viewMode="viewMode" useTapestryZoneUpdates="false" requestData="requestData" downloadable="true"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
-
+    <div class="row">
+        <div class="col-1">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Result statistics</h5>
+                    <table class="table">
+                        <tr>
+                            <th>Number unique A-genes</th>
+                            <td>${numberUniqueASymbols}</td>
+                        </tr>
+                        <tr>
+                            <th>Number unique B-genes</th>
+                            <td>${numberUniqueBSymbols}</td>
+                        </tr>
+                        <tr>
+                            <th>Number unique A-B gene pairs</th>
+                            <td>${numberUniqueABPairs}</td>
+                        </tr>
+                        <tr>
+                            <th>Total number of events</th>
+                            <td>${numEvents}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Top Interactions</h5>
+                    <table class="table">
+                        <tr>
+                            <th>A-argument</th>
+                            <th>B-argument</th>
+                            <th>count</th>
+                        </tr>
+                        <t:loop t:source="topInteractions" t:value="topInteractionsLoopItem">
+                            <tr>
+                                <td>${topInteractionsLoopItem.left}</td>
+                                <td>${topInteractionsLoopItem.middle}</td>
+                                <td>${topInteractionsLoopItem.right}</td>
+                            </tr>
+                        </t:loop>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">A-list mapping</h5>
+                    <table class="table">
+                        <t:loop t:source="aInputMapping" value="inputMappingLoopItem">
+                            <tr>
+                                <th>${inputMappingLoopItem.left}</th>
+                                <td>${inputMappingLoopItem.right}</td>
+                            </tr>
+                        </t:loop>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

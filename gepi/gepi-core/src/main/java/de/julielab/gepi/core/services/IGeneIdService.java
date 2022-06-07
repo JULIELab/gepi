@@ -1,13 +1,17 @@
 package de.julielab.gepi.core.services;
 
 import com.google.common.collect.Multimap;
+import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 public interface IGeneIdService {
-	Future<IdConversionResult> convert(Stream<String> stream, IdType from, IdType to);
+	Future<IdConversionResult> convert(Stream<String> stream, IdType from, IdType to, Collection<String> taxIds);
 
 	/**
 	 * This enumeration lists the kinds of IDs that GePi can work with.
@@ -15,7 +19,7 @@ public interface IGeneIdService {
 	 * @author faessler
 	 *
 	 */
-	public enum IdType {
+	enum IdType {
 		/**
 		 * UniProt / SwissProt accession IDs
 		 * 
@@ -64,5 +68,6 @@ public interface IGeneIdService {
 	 */
 	CompletableFuture<Multimap<String, String>> convertGene2AggregateIds(Stream<String> input);
 
+	Map<String, GepiGeneInfo> getGeneInfo(List<String> conceptIds);
 
 }

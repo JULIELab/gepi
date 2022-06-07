@@ -1,6 +1,7 @@
 package de.julielab.gepi.webapp.components;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,9 +22,6 @@ import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.TextArea;
 import org.apache.tapestry5.corelib.components.TextField;
 import org.apache.tapestry5.http.services.Request;
-import org.apache.tapestry5.internal.OptionModelImpl;
-import org.apache.tapestry5.internal.SelectModelImpl;
-import org.apache.tapestry5.internal.services.StringValueEncoder;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
@@ -79,6 +77,10 @@ public class GepiInput {
     @Property
     @Persist(TabPersistentField.TAB)
     private String listBTextAreaValue;
+
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private String taxId;
 
     @Inject
     private ComponentResources resources;
@@ -208,8 +210,8 @@ public class GepiInput {
                 && listBTextAreaValue.trim().length() > 0;
         boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
         boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
-        Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
-        Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, "listB");
+        Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, taxId, "listA");
+        Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, taxId, "listB");
         if (isABSearchRequest) {
             inputMode = EnumSet.of(InputMode.AB);
         } else if (isAListPresent){
@@ -221,7 +223,7 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, listAGePiIds, listBGePiIds, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+        requestData = new GepiRequestData(selectedEventTypeNames, listAGePiIds, listBGePiIds, taxId, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
 //        if ((filterString != null && !filterString.isBlank())) {
         fetchEventsFromElasticSearch(requestData);
 //        } else {
@@ -270,13 +272,13 @@ public class GepiInput {
         }
     }
 
-    private Future<IdConversionResult> convertToAggregateIds(String input, String listName) {
+    private Future<IdConversionResult> convertToAggregateIds(String input, String taxId, String listName) {
         if (input != null) {
             List<String> inputList = Stream.of(input.split("\n")).map(String::trim).collect(Collectors.toList());
             log.debug("Got {} input IDs from {}", inputList.size(), listName);
             IGeneIdService.IdType idType = geneIdService.determineIdType(inputList.stream());
             log.debug("Identified input IDs of {} as: {}", listName, idType);
-            return geneIdService.convert(inputList.stream(), idType, IGeneIdService.IdType.GEPI_AGGREGATE);
+            return geneIdService.convert(inputList.stream(), idType, IGeneIdService.IdType.GEPI_AGGREGATE, taxId.isBlank() ? Collections.emptyList() : List.of(taxId));
         }
         return null;
     }

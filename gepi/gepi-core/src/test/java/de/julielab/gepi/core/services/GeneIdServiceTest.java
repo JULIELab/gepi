@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.services;
 
 import com.google.common.collect.Multimap;
+import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.junit.Rule;
 import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -8,6 +9,7 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.harness.junit.rule.Neo4jRule;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +35,34 @@ public class GeneIdServiceTest {
         assertThat(idMap.get("2475")).containsExactlyInAnyOrder("atid2");
         assertThat(idMap.get("207")).containsExactly("atid3");
         assertThat(idMap.get("56718")).containsExactly("tid2");
+    }
+
+    @Test
+    public void convertGeneNames2GeneIds() throws Exception {
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GENE, null).get();
+        final Multimap<String, String> idMap = conversionResult.getConvertedItems();
+        assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("2475", "56717", "324254", "56718");
+        assertThat(idMap.get("akt1")).containsExactly("207", "11651");
+    }
+
+    @Test
+    public void convertGeneNames2GeneIdsWithTaxIds() throws Exception {
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GENE, List.of("9606")).get();
+        final Multimap<String, String> idMap = conversionResult.getConvertedItems();
+        assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("2475");
+        assertThat(idMap.get("akt1")).containsExactly("207");
+    }
+
+    @Test
+    public void convertUnkownGeneNames() throws Exception {
+        // akt1 should be "unknown" because we restrict the search to taxId 7955 (Danio Rerio)
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GENE, List.of("7955")).get();
+        final Multimap<String, String> idMap = conversionResult.getConvertedItems();
+        assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("324254");
+        assertThat(conversionResult.getUnconvertedItems()).containsExactly("akt1");
     }
 
     private void setupDB(GraphDatabaseService graphDatabaseService) {
