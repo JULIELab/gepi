@@ -276,9 +276,10 @@ public class GepiInput {
         if (input != null) {
             List<String> inputList = Stream.of(input.split("\n")).map(String::trim).collect(Collectors.toList());
             log.debug("Got {} input IDs from {}", inputList.size(), listName);
-            IGeneIdService.IdType idType = geneIdService.determineIdType(inputList.stream());
-            log.debug("Identified input IDs of {} as: {}", listName, idType);
-            return geneIdService.convert(inputList.stream(), idType, IGeneIdService.IdType.GEPI_AGGREGATE, taxId.isBlank() ? Collections.emptyList() : List.of(taxId));
+            IGeneIdService.IdType fromIdType = geneIdService.determineIdType(inputList.stream());
+            log.debug("Identified input IDs of {} as: {}", listName, fromIdType);
+            IGeneIdService.IdType toIdType = taxId == null || taxId.isBlank() ? IGeneIdService.IdType.GEPI_AGGREGATE : IGeneIdService.IdType.GENE;
+            return geneIdService.convert(inputList.stream(), fromIdType, toIdType, taxId == null || taxId.isBlank() ? Collections.emptyList() : List.of(taxId.split("\\s*,\\s*")));
         }
         return null;
     }

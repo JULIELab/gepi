@@ -9,6 +9,7 @@ import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.*;
+import org.neo4j.driver.Record;
 import org.slf4j.Logger;
 
 import java.util.*;

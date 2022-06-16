@@ -1,6 +1,5 @@
 package de.julielab.gepi.indexing;
 
-import com.sun.istack.NotNull;
 import de.julielab.jcore.consumer.es.*;
 import de.julielab.jcore.consumer.es.filter.ConstantOutputFilter;
 import de.julielab.jcore.consumer.es.filter.FilterChain;
@@ -16,12 +15,12 @@ import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
 import java.util.List;
-import java.util.function.Function;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;

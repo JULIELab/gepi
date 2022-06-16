@@ -158,6 +158,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
 
         function observeFormSubmit() {
             form = $("form[id^='input']");
+            console.log("Adding submit listener")
             form.on("submit", form => {console.log("Search form was submitted, clearing data chache."); data.clearData();});
         }
 

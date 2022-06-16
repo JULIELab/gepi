@@ -96,6 +96,7 @@ public class Index {
         return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
     }
 
+    @Log
     void afterRender() {
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI());
