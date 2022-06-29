@@ -271,7 +271,7 @@
                                 
                 <value>
                                         
-                    <boolean>false</boolean>
+                    <boolean>true</boolean>
                                     
                 </value>
                             
@@ -319,7 +319,7 @@
                                 
                 <value>
                                         
-                    <string>gepi.bc2gn</string>
+                    <string>gepi.dev</string>
                                     
                 </value>
                             

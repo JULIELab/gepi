@@ -1,8 +1,8 @@
 # This configuration file is used by the Docker container.
 # The Docker image is derived from a Jetty image where the user is named 'jetty' (thus the name of this file).
-elasticquery.clustername=julielab-es
-elasticquery.url=localhost
+elasticquery.clustername=es-docker-cluster
+elasticquery.url=es01
 elasticquery.port=9200
 
 gepi.documents.index.name=gepi_0.2
-gepi.neo4j.bolt.url=bolt://localhost:7788
+gepi.neo4j.bolt.url=bolt://darwin:7788

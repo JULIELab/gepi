@@ -25,9 +25,9 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="JCoRe ElasticSearch Consumer Localhost">
+        <delegateAnalysisEngine key="JCoRe ElasticSearch Consumer Dev">
                         
-            <import location="JCoRe ElasticSearch Consumer Localhost.xml"/>
+            <import location="JCoRe ElasticSearch Consumer Dev.xml"/>
                     
         </delegateAnalysisEngine>
                 
@@ -57,7 +57,7 @@
                                 
                 <node>JCore ElasticSearch Consumer</node>
                                 
-                <node>JCoRe ElasticSearch Consumer Localhost</node>
+                <node>JCoRe ElasticSearch Consumer Dev</node>
                                 
                 <node>XMIWriter</node>
                             

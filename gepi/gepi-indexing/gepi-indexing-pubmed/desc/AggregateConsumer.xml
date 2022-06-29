@@ -13,15 +13,9 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="JCoRe ElasticSearch Consumer Localhost">
+        <delegateAnalysisEngine key="JCore ElasticSearch Consumer">
                         
-            <import location="JCoRe ElasticSearch Consumer Localhost.xml"/>
-                    
-        </delegateAnalysisEngine>
-                
-        <delegateAnalysisEngine key="XMIWriter">
-                        
-            <import location="XMIWriter.xml"/>
+            <import location="JCore ElasticSearch Consumer.xml"/>
                     
         </delegateAnalysisEngine>
             
@@ -43,9 +37,7 @@
                                 
                 <node>JCoRe Database Checkpoint Writer</node>
                                 
-                <node>JCoRe ElasticSearch Consumer Localhost</node>
-                                
-                <node>XMIWriter</node>
+                <node>JCore ElasticSearch Consumer</node>
                             
             </fixedFlow>
                     
