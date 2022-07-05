@@ -15,7 +15,7 @@
         </tableSchemas>
     </DBSchemaInformation>
     <DBConnectionInformation>
-        <activeDBConnection>pmlocalhost</activeDBConnection>
+        <activeDBConnection>pubmed</activeDBConnection>
 	<maxActiveDBConnections>2</maxActiveDBConnections>
         <DBConnections>
             <DBConnection name="pubmed" url="jdbc:postgresql://192.168.1.15:5432/pubmed"/>

@@ -17,6 +17,34 @@
                         
             <configurationParameter>
                                 
+                <name>deleteDocumentsBeforeIndexing</name>
+                                
+                <description>Whether or not to delete documents with the docId of the UIMA CASes in ElasticSearch prior to indexing. This is useful when parts of the document are indexed whose IDs are not stable or that might change after document updates and would not just be overwritten when indexing anew. Defaults to false.</description>
+                                
+                <type>Boolean</type>
+                                
+                <multiValued>false</multiValued>
+                                
+                <mandatory>false</mandatory>
+                            
+            </configurationParameter>
+                        
+            <configurationParameter>
+                                
+                <name>documentIdField</name>
+                                
+                <description>Required when deleteDocumentsBeforeIndexing is set to true. This should be an existing index field that contains the document ID of each CAS. It is used to remove existing index documents related to the CAS document ID prior to indexing.</description>
+                                
+                <type>String</type>
+                                
+                <multiValued>false</multiValued>
+                                
+                <mandatory>false</mandatory>
+                            
+            </configurationParameter>
+                        
+            <configurationParameter>
+                                
                 <name>urls</name>
                                 
                 <description>A list of URLs pointing to different nodes of the ElasticSearch cluster, e.g. http://localhost:9300/. Documents will be sent bulk-wise to the nodes in a round-robin fashion.</description>
@@ -208,6 +236,30 @@
                 </value>
                             
             </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>documentIdField</name>
+                                
+                <value>
+                                        
+                    <string>pmid</string>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>deleteDocumentsBeforeIndexing</name>
+                                
+                <value>
+                                        
+                    <boolean>true</boolean>
+                                    
+                </value>
+                            
+            </nameValuePair>
                     
         </configurationParameterSettings>
                 
@@ -298,6 +350,30 @@
             <description>stopwords</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IListProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>tid2famplex</key>
+                        
+            <description>tid2famplx</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>tid2hgncgroups</key>
+                        
+            <description>tid2hgncgroups</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
                         
             <optional>false</optional>
                     
@@ -464,6 +540,58 @@
                 <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
                             
             </externalResource>
+                        
+            <externalResource>
+                                
+                <name>tid2famplex</name>
+                                
+                <description>tid2famplex</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2famplex.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>tid2hgncgroups</name>
+                                
+                <description>tid2hgncgroups</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2hgncgroups.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
+                            
+            </externalResource>
                     
         </externalResources>
                 
@@ -506,6 +634,22 @@
                 <key>tid2prefName</key>
                                 
                 <resourceName>tid2prefName</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2hgncgroups</key>
+                                
+                <resourceName>tid2hgncgroups</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2famplex</key>
+                                
+                <resourceName>tid2famplex</resourceName>
                             
             </externalResourceBinding>
                         

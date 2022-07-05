@@ -10,6 +10,22 @@
             <artifactId>gepi-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.julielab</groupId>
+            <artifactId>gepi-core</artifactId>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
         <!-- To set up an application with a database, change the artifactId below to
              tapestry-hibernate, and add a dependency on your JDBC driver. You'll also
              need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
@@ -102,19 +118,27 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
             <artifactId>poi</artifactId>
             <version>3.15</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gepi-test-data</artifactId>
+            <version>${project.parent.version}</version>
+            <classifier>resources</classifier>
+            <type>zip</type>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>gepi-webapp</finalName>
-<!--        <resources>-->
-<!--            <resource>-->
-<!--                <directory>.</directory>-->
-<!--                <includes>-->
-<!--                    <include>readme-raw.md</include>-->
-<!--                </includes>-->
-<!--                <filtering>true</filtering>-->
-<!--                <targetPath>README.md</targetPath>-->
-<!--            </resource>-->
-<!--        </resources>-->
+        <!--        <resources>-->
+        <!--            <resource>-->
+        <!--                <directory>.</directory>-->
+        <!--                <includes>-->
+        <!--                    <include>readme-raw.md</include>-->
+        <!--                </includes>-->
+        <!--                <filtering>true</filtering>-->
+        <!--                <targetPath>README.md</targetPath>-->
+        <!--            </resource>-->
+        <!--        </resources>-->
         <plugins>
             <plugin>
                 <!-- automatically fill in the current app version to the README.md file. For this purpose, we
@@ -142,7 +166,28 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
                 </executions>
             </plugin>
             <plugin>
-            <!-- Run the application using "mvn jetty:run" -->
+                <!-- Unpack the test data from the respective Maven module so we can use it in our tests -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-test-data</id>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
+                            <includeGroupIds>${project.groupId}</includeGroupIds>
+                            <includeArtifactIds>gepi-test-data</includeArtifactIds>
+                            <excludeTransitive>true</excludeTransitive>
+                            <!--use as much as needed to be specific...also scope,type,classifier etc-->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- Run the application using "mvn jetty:run" -->
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
                 <version>6.1.16</version>

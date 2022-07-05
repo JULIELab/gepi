@@ -27,7 +27,7 @@
                     
             <errorHandling>
                             
-                <errorRateThreshold action="terminate" value="100/1000"/>
+                <errorRateThreshold action="terminate" value="0/1"/>
                             
                 <maxConsecutiveRestarts action="terminate" value="30"/>
                             

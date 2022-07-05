@@ -24,6 +24,12 @@
             <import location="JCoRe Database Checkpoint Writer.xml"/>
                     
         </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="JCoRe ElasticSearch Consumer Localhost">
+                        
+            <import location="JCoRe ElasticSearch Consumer Localhost.xml"/>
+                    
+        </delegateAnalysisEngine>
             
     </delegateAnalysisEngineSpecifiers>
         
@@ -44,6 +50,8 @@
                 <node>JCore ElasticSearch Consumer</node>
                                 
                 <node>JCoRe Database Checkpoint Writer</node>
+                                
+                <node>JCoRe ElasticSearch Consumer Localhost</node>
                             
             </fixedFlow>
                     

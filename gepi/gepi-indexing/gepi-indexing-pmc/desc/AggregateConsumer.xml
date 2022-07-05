@@ -7,12 +7,6 @@
         
     <delegateAnalysisEngineSpecifiers>
                 
-        <delegateAnalysisEngine key="JCoRe Neo4j Relations Consumer">
-                        
-            <import location="JCoRe Neo4j Relations Consumer.xml"/>
-                    
-        </delegateAnalysisEngine>
-                
         <delegateAnalysisEngine key="JCore ElasticSearch Consumer">
                         
             <import location="JCore ElasticSearch Consumer.xml"/>
@@ -40,8 +34,6 @@
         <flowConstraints>
                         
             <fixedFlow>
-                                
-                <node>JCoRe Neo4j Relations Consumer</node>
                                 
                 <node>JCore ElasticSearch Consumer</node>
                                 

@@ -223,7 +223,7 @@
                                                 
                         <externalResource>
                                                         
-                            <name>ConfigurableDictionaryChunkerProvider</name>
+                            <name>FamPlex productive</name>
                                                         
                             <description>Employs the configurable alternative chunker implementation. This alternative
                 implementation is primarily meant for approximate matching and should be used in this intent.
@@ -232,7 +232,7 @@
                                                         
                             <configurableDataResourceSpecifier>
                                                                 
-                                <url>file:/Users/faessler/Research/gepi/processing-dictionaries/famplex.dict</url>
+                                <url>file:/var/data/gepi/processing-dictionaries/famplex.dict</url>
                                                                 
                                 <resourceMetaData>
                                                                         
@@ -430,7 +430,7 @@
                                                         
                             <key>DictionaryChunkerProvider</key>
                                                         
-                            <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
+                            <resourceName>FamPlex productive</resourceName>
                                                     
                         </externalResourceBinding>
                                             
