@@ -3,10 +3,12 @@ package de.julielab.jcore.ae.genemerge;
 import de.julielab.jcore.types.Annotation;
 import de.julielab.jcore.types.Gene;
 import de.julielab.jcore.types.ResourceEntry;
+import de.julielab.jcore.utility.JCoReTools;
 import de.julielab.jcore.utility.index.JCoReAnnotationIndex;
 import de.julielab.jcore.utility.index.JCoReOverlapAnnotationIndex;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.fit.descriptor.ResourceMetaData;
 import org.apache.uima.fit.descriptor.TypeCapability;
 import org.apache.uima.jcas.JCas;
@@ -21,23 +23,28 @@ public class GepiGeneMerger extends JCasAnnotator_ImplBase {
 
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
-        JCoReOverlapAnnotationIndex<Gene> geneIndex = new JCoReOverlapAnnotationIndex<>(jCas, Gene.type);
-        List<Gene> toRemove = new ArrayList<>();
-        Set<Gene> alreadyHandled = new HashSet<>();
-        for (Gene g : jCas.<Gene>getAnnotationIndex(Gene.type)) {
-            // Get the overlapping genes and filter out those we have already seen (which will happen with overlapping genes)
-            final List<Gene> overlappingGenes = geneIndex.search(g).stream().filter(alreadyHandled::add).collect(Collectors.toList());
-            if (!overlappingGenes.isEmpty()) {
-                final Gene largestGene = getLargestGene(overlappingGenes);
-                assert largestGene != null : "There was no largest gene determined.";
-                mergeOverlappingGenes(largestGene, overlappingGenes, jCas);
-                // Mark all but the longest annotation for removal
-                // We can use != here instead of equals, that's not a glitch
-                overlappingGenes.stream().filter(x -> x != largestGene).forEach(toRemove::add);
+        try {
+            JCoReOverlapAnnotationIndex<Gene> geneIndex = new JCoReOverlapAnnotationIndex<>(jCas, Gene.type);
+            List<Gene> toRemove = new ArrayList<>();
+            Set<Gene> alreadyHandled = new HashSet<>();
+            for (Gene g : jCas.<Gene>getAnnotationIndex(Gene.type)) {
+                // Get the overlapping genes and filter out those we have already seen (which will happen with overlapping genes)
+                final List<Gene> overlappingGenes = geneIndex.search(g).stream().filter(alreadyHandled::add).collect(Collectors.toList());
+                if (!overlappingGenes.isEmpty()) {
+                    final Gene largestGene = getLargestGene(overlappingGenes);
+                    assert largestGene != null : "There was no largest gene determined.";
+                    mergeOverlappingGenes(largestGene, overlappingGenes, jCas);
+                    // Mark all but the longest annotation for removal
+                    // We can use != here instead of equals, that's not a glitch
+                    overlappingGenes.stream().filter(x -> x != largestGene).forEach(toRemove::add);
+                }
             }
+            // Remove smaller overlapped genes.
+            toRemove.forEach(Annotation::removeFromIndexes);
+        } catch (Throwable e) {
+            String docId = JCoReTools.getDocId(jCas);
+            throw new AnalysisEngineProcessException(new IllegalStateException("Gene merging error in document " + docId, e));
         }
-        // Remove smaller overlapped genes.
-        toRemove.forEach(Annotation::removeFromIndexes);
     }
 
     /**
