@@ -66,6 +66,9 @@ final public class GepiWidgetLayout {
     @Parameter(value="false")
     @Property
     protected boolean downloadable;
+    @Parameter(value="false")
+    @Property
+    protected boolean resizable;
 
     @InjectComponent
     private Zone widgetZone;

@@ -128,6 +128,7 @@ public class GepiInput {
     @Parameter
     private String paragraphFilterString;
 
+    @Persist
     @Property
     private String filterFieldsConnectionOperator;
 
@@ -182,6 +183,7 @@ public class GepiInput {
     void setupRender() {
         //listATextAreaValue = "2475\n196";
         log.warn("{}", inputMode);
+        filterFieldsConnectionOperator = "AND";
     }
 
     void onValidateFromInputForm() {

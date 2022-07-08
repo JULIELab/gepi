@@ -53,11 +53,11 @@ public class AppModule {
 
         // The application version is primarily useful as it appears in
         // any exception reports (HTML or textual).
-        configuration.override(SymbolConstants.APPLICATION_VERSION, "1.0.0-SNAPSHOT");
+        configuration.override(SymbolConstants.APPLICATION_VERSION, "0.8-beta");
 
         // This is something that should be removed when going to production, but is useful
         // in the early stages of development.
-        configuration.override(SymbolConstants.PRODUCTION_MODE, false);
+        configuration.override(SymbolConstants.PRODUCTION_MODE, true);
     }
 
     public static void contributeApplicationDefaults(

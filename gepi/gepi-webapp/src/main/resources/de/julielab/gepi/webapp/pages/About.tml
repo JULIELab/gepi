@@ -1,11 +1,15 @@
 <html t:type="layout" title="About GePI"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter">
 
-	<div class="row">
-		<div class="span12">
-			<p>About GePI application ...</p>
-		</div>
-	</div>
+	<div class="container">
+<h1>About GePI</h1>
+		<p>
+		GePI (short for Gene and Protein Interactions) is developed at <a href="https://julielab.de/" title="Link to the JULIE Lab web page" class="link-dark">JULIE Lab</a>, the department for computational linguistics at the <a href="http://uni-jena.de/" class="link-dark">University of Jena</a>.
+		</p>
+		<p>This application scans the biomedical literature from PubMed and the PubMed Central open access subset for molecular interactions involving genes or gene products from the document texts. The interactions are structured into strictly binary relation pairs.
+			Through GePI's query interface, interactions that involve the input genes or proteins can be searched. The results are vizualized in several ways and can be download in Excel format.
+		</p>
+		<p>The main developer is Erik Faessler. Dr. Sascha Schäuble and Prof. Dr. Udo Hahn supervise the project.</p>
 
 	<t:if test="learn">
 		<div class="row">
@@ -18,5 +22,5 @@
 			</div>
 		</div>
 	</t:if>
-
+	</div>
 </html>

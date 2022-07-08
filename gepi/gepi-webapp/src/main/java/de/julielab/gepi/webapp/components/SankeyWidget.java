@@ -29,7 +29,6 @@ public class SankeyWidget extends GepiWidget {
     private GepiWidgetLayout component;
 
     void afterRender() {
-        System.out.println("HIER: " + commonPartners);
         if (component.isResultLoading() || component.isResultAvailable()) {
             if (commonPartners) {
                 javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "commonPartnersHarmonicMean", component.getWidgetSettings());
@@ -37,5 +36,9 @@ public class SankeyWidget extends GepiWidget {
                 javaScriptSupport.require("gepi/charts/sankeychart").with(elementId, "frequency", component.getWidgetSettings());
             }
         }
+    }
+
+    public String getWidgetTitle() {
+        return commonPartners ? "Interactions with Common Partners" : "Most Frequent Interactions";
     }
 }

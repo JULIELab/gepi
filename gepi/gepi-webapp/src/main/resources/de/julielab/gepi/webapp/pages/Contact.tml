@@ -2,6 +2,9 @@
       xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
       xmlns:p="tapestry:parameter">
 
-    <p>Contact de.julielab ...</p>
+    <div class="container-md">
+        <h1>Contact</h1>
+        <p>For questions and comments please write to Erik Faessler at firstname.lastname at uni dash jena dot de.</p>
+    </div>
 
 </html>
