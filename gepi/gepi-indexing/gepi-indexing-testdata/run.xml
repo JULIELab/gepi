@@ -4,9 +4,9 @@
         <runner>
             <name>CPERunner</name>
             <pipelinepath>.</pipelinepath>
-            <numthreads>1</numthreads>
-            <heapsize>8G</heapsize>
-            <jvmoptions/>
+            <numthreads>7</numthreads>
+	    <heapsize>13g</heapsize>
+	    <jvmoptions></jvmoptions>
         </runner>
     </runners>
 </configuration>
