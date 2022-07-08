@@ -21,7 +21,7 @@ GENE2SUMMARY=$4
 GENES_DIR=src/test/resources/geneconcepts/genes
 ORGS_DIR=src/test/resources/geneconcepts/organisms
 
-TEST_GENE_IDS_LIST=../gepi-core/src/test/resources/test-index-input/testEventGeneIds.txt
+TEST_GENE_IDS_LIST=../gepi-test-data/src/main/resources/test-index-input/testEventGeneIds.txt
 
 echo "Extracting gene_info_test from $GENE_INFO to $GENES_DIR/gene_info_test"
 mkdir -p $GENES_DIR

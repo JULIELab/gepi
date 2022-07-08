@@ -3,7 +3,8 @@
                  xmlns="http://www.julielab.de/conceptdb"
                  xsi:schemaLocation="http://www.julielab.de/conceptdb http://www.julielab.de/conceptdb/conceptdb-1.1.0.xsd http://www.julielab.de/conceptdb/concepts/ncbigene
                  http://www.julielab.de/conceptdb/concepts/ncbigeneconcepts-1.1.0.xsd
-                 http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd">
+                 http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd
+                 http://www.julielab.de/conceptdb/exporter-1.1.0.xsd">
     <versioning>
         <version>0.2</version>
     </versioning>
@@ -35,6 +36,69 @@
                         <sourcetype>hierarchical</sourcetype>
                         <facetgroup>
                             <name>Genes</name>
+                        </facetgroup>
+                    </configuration>
+                </creator>
+            </facet>
+        </import>
+        <import name="famplex_import">
+            <concepts>
+                <creator>
+                    <name>FamPlexConceptCreator</name>
+                    <configuration>
+                        <relationsfile>
+                            src/test/resources/famplex-import-files/relations_egids.tsv
+                        </relationsfile>
+                        <groundingmap>
+                            src/test/resources/famplex-import-files/grounding_map.tsv
+                        </groundingmap>
+                        <nameextensionrecords>
+                            src/test/resources/famplex-import-files/expanded.dict
+                        </nameextensionrecords>
+                    </configuration>
+                </creator>
+            </concepts>
+            <facet>
+                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
+                    <name>DefaultFacetCreator</name>
+                    <configuration>
+                        <name>FamPlex</name>
+                        <sourcetype>hierarchical</sourcetype>
+                        <facetgroup>
+                            <name>BioMed</name>
+                        </facetgroup>
+                    </configuration>
+                </creator>
+            </facet>
+        </import>
+        <import name="hgnc_groups_import">
+            <concepts>
+                <creator>
+                    <name>HgncGroupsConceptCreator</name>
+                    <configuration>
+                        <familyfile>
+                            src/test/resources/hgnc-groups-import-files/family.csv
+                        </familyfile>
+                        <familyaliasfile>
+                            src/test/resources/hgnc-groups-import-files/family_alias.csv
+                        </familyaliasfile>
+                        <hierarchyfile>
+                            src/test/resources/hgnc-groups-import-files/hierarchy.csv
+                        </hierarchyfile>
+                        <genetogroupmap>
+                            src/test/resources/hgnc-groups-import-files/gene_group_ncbi_map.tsv
+                        </genetogroupmap>
+                    </configuration>
+                </creator>
+            </concepts>
+            <facet>
+                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
+                    <name>DefaultFacetCreator</name>
+                    <configuration>
+                        <name>HGNC</name>
+                        <sourcetype>hierarchical</sourcetype>
+                        <facetgroup>
+                            <name>BioMed</name>
                         </facetgroup>
                     </configuration>
                 </creator>
@@ -99,6 +163,43 @@
                 </cypherquery>
             </request>
             <outputfile>es-consumer-resources/tid2topHomologyPrefName.map</outputfile>
+        </export>
+        <!-- Export a map from NCBI Gene tids to all the FamPlex concept tids it is directly or indirectly connected with -->
+        <export name="tid2famplex">
+            <request>
+                <cypherquery>MATCH p=(f:FPLX)&lt;-[:isa|partof*]-(c:ID_MAP_NCBI_GENES) WITH reverse([x IN nodes(p) |
+                    x.id]) AS idlist RETURN head(idlist),reduce(acc=head(tail(idlist)), fplxid IN tail(tail(idlist)) |
+                    acc + "|" + fplxid)
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/tid2famplex.map</outputfile>
+        </export>
+        <export name="tid2hgncgroups">
+            <request>
+                <!-- The 'not' clause is there to ensure that only paths from the highest HGNC group are returned; this avoids partial paths that are just subpaths of the longest one. -->
+                <cypherquery>MATCH p=(h:HGNC_GROUP)-[:IS_BROADER_THAN*]->(c:ID_MAP_NCBI_GENES) WHERE
+                    not((:HGNC_GROUP)-[:IS_BROADER_THAN]->(h)) WITH reverse([x IN nodes(p) | x.id]) AS idlist RETURN
+                    head(idlist),reduce(acc=head(tail(idlist)),hgncid in tail(tail(idlist)) | acc + "|" + hgncid)
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/tid2hgncgroups.map</outputfile>
+        </export>
+        <export name="tid2famplexnames">
+            <request>
+                <class>de.julielab.neo4j.plugins.Export</class>
+                <method>exportLingpipeDictionary</method>
+<!--                 (@QueryParam("label") String labelString, @QueryParam("exclusion_label") String exclusionLabelString, @QueryParam("source_id_property") String nodeCategories) throws IOException {-->
+                <parameters>
+                    <parameter name="label" javatype="java.lang.String">FPLX</parameter>
+                    <parameter name="exclusion_label" javatype="java.lang.String"></parameter>
+                    <parameter name="nodeCategories" javatype="java.lang.String"></parameter>
+                </parameters>
+            </request>
+            <decoding>
+                <base64>true</base64>
+                <gzip>true</gzip>
+            </decoding>
+            <outputfile>processing-dictionaries/famplex.dict</outputfile>
         </export>
     </exports>
 </conceptdatabase>
