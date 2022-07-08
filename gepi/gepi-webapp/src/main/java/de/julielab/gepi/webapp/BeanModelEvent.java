@@ -89,11 +89,12 @@ public class BeanModelEvent {
             return "sentence";
         if (event.isParagraphMatchingFulltextQuery())
             return "paragraph";
-        System.out.println(event.getEventId());
-        System.out.println(event.getSentence());
-        System.out.println(event.getHlSentence());
-        System.out.println(event.getParagraph());
-        System.out.println(event.getHlParagraph());
-        throw new IllegalStateException("The full text match source of event " + event + " was requested but neither the sentence nor the paragraph have a match. Either this is not a fulltext query request or there is an result that actually doesn't match the query.");
+        return "none";
+//        System.out.println(event.getEventId());
+//        System.out.println(event.getSentence());
+//        System.out.println(event.getHlSentence());
+//        System.out.println(event.getParagraph());
+//        System.out.println(event.getHlParagraph());
+//        throw new IllegalStateException("The full text match source of event " + event + " was requested but neither the sentence nor the paragraph have a match. Either this is not a fulltext query request or there is an result that actually doesn't match the query.");
     }
 }

@@ -90,7 +90,7 @@ public class AppModule {
     @Core
     @Contribute(JavaScriptStack.class)
     public static void overrideJquery(OrderedConfiguration<StackExtension> conf) {
-        conf.override("jquery-library", StackExtension.library("classpath:META-INF/assets/jquery/jquery-3.6.0.min.js"));
+        conf.override("jquery-library", StackExtension.library("classpath:META-INF/assets/jquery-3.6.0.min.js"));
     }
 
     @Contribute(RequestHandler.class)

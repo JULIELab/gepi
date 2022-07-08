@@ -173,11 +173,9 @@ public class Index {
         log.debug("Received data request for '{}' for dataSessionId {} from the client.", datasource, dataSessionId);
         if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && datasource.equals("bcounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
-        log.debug("Checked datasource name");
         GePiData data = dataService.getData(dataSessionId);
         if (data.getUnrolledResult() == null && data.getAggregatedResult() == null)
             throw new IllegalStateException("The ES result and the Neo4j result for dataSessionId " + dataSessionId + " are both null.");
-        log.debug("Checked if results are null.");
         try {
             log.debug("Creating JSON object from results.");
             JSONObject jsonObject = null;

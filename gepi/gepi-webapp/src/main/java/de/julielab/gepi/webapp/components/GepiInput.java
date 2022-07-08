@@ -210,6 +210,7 @@ public class GepiInput {
                 && listBTextAreaValue.trim().length() > 0;
         boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
         boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
+        log.debug("Converting input to GePi IDs");
         Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, taxId, "listA");
         Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, taxId, "listB");
         if (isABSearchRequest) {
@@ -217,6 +218,7 @@ public class GepiInput {
         } else if (isAListPresent){
             inputMode = EnumSet.of(InputMode.A);
         }
+        log.info("InputMode {}", inputMode);
         if (isSentenceFilterPresent || isParagraphFilterPresent) {
             if (inputMode != null)
                 inputMode.add(InputMode.FULLTEXT_QUERY);
@@ -224,6 +226,7 @@ public class GepiInput {
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
         requestData = new GepiRequestData(selectedEventTypeNames, listAGePiIds, listBGePiIds, taxId, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+        log.debug("Fetching events from ElasticSearch");
 //        if ((filterString != null && !filterString.isBlank())) {
         fetchEventsFromElasticSearch(requestData);
 //        } else {
@@ -236,7 +239,7 @@ public class GepiInput {
         dataService.putData(dataSessionId, data);
         Index indexPage = (Index) resources.getContainer();
         ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
-        log.debug("Ajax rendering commands sent, entering the output display mode");
+        log.trace("Ajax rendering commands sent, entering the output display mode");
     }
 
     private void fetchEventsFromNeo4j(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest) {
