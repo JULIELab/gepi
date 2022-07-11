@@ -45,7 +45,6 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
         EventRetrievalResult eventRetrievalResult = new EventRetrievalResult();
         eventRetrievalResult.setEvents(eventStream);
         eventRetrievalResult.setNumTotalRows(response.getNumFound());
-        System.out.println(log.getName());
         log.trace("Size of the event retrieval result (number of events): {}", eventRetrievalResult.getEventList().size());
         // postprocess eventPreferred names first with given neo4j information
 //		eventPPService.setPreferredNameFromConceptId(eventRetrievalResult.getEventList());

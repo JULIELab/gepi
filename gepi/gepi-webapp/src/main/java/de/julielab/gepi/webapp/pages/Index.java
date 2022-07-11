@@ -3,6 +3,7 @@ package de.julielab.gepi.webapp.pages;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
+import de.julielab.gepi.webapp.components.GepiInput;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
@@ -71,6 +72,8 @@ public class Index {
     @Inject
     private IGePiDataService dataService;
 
+    @InjectComponent
+    private GepiInput gepiInput;
 
     public Zone getOutputZone() {
         return outputZone;
@@ -96,7 +99,6 @@ public class Index {
         return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
     }
 
-    @Log
     void afterRender() {
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI());
@@ -141,8 +143,7 @@ public class Index {
     public Object onReset() {
         log.debug("Reset!");
         requestData = null;
-//        dataSessionId = 0;
-//        dataSessionIdParameter = 0;
+        gepiInput.reset();
         return this;
     }
 

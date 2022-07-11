@@ -172,6 +172,16 @@ public class GepiInput {
         }
     }
 
+    public void reset() {
+        listATextAreaValue = "";
+        listBTextAreaValue = "";
+        filterFieldsConnectionOperator = "AND";
+        sentenceFilterString = "";
+        paragraphFilterString = "";
+        sectionNameFilterString = "";
+        taxId = "";
+    }
+
     public ValueEncoder getEventTypeEncoder() {
         return new EnumValueEncoder(typeCoercer, EventTypes.class);
     }
@@ -212,7 +222,6 @@ public class GepiInput {
                 && listBTextAreaValue.trim().length() > 0;
         boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
         boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
-        log.debug("Converting input to GePi IDs");
         Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, taxId, "listA");
         Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, taxId, "listB");
         if (isABSearchRequest) {

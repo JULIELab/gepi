@@ -204,7 +204,7 @@ public class AppModule {
 
     @Startup
     public static void scheduleJobs(ParallelExecutor pExecutor, PeriodicExecutor executor, IStatisticsCollector statisticsCollector) {
-         executor.addJob(new IntervalSchedule(3000),
+         executor.addJob(new IntervalSchedule(60000),
          "Event Statistics Calculation Job",
          statisticsCollector);
     }

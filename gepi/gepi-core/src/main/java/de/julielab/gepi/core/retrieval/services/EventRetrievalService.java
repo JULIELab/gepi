@@ -255,8 +255,6 @@ public class EventRetrievalService implements IEventRetrievalService {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
             try {
-//                Set<String> idSet = idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet());
-
                 Set<String> idSet = gepiRequestData.getAListIdsAsSet();
 
                 log.debug("Retrieving outside events for {} A IDs", idSet.size());
@@ -266,7 +264,9 @@ public class EventRetrievalService implements IEventRetrievalService {
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
                 carrier.addSearchServerRequest(serverCmd);
                 long time = System.currentTimeMillis();
+                log.debug("Sent server request");
                 searchServerComponent.process(carrier);
+                log.debug("Server answered. Reading results.");
 
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
