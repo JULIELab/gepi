@@ -271,6 +271,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
                         .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
+                eventResult.setStartRow(from);
+                eventResult.setEndRow(from+numRows-1);
                 time = System.currentTimeMillis() - time;
                 log.debug("Retrieved {} outside events from ElasticSearch in {} seconds", eventResult.getEventList().size(), time / 1000);
                 eventResult.setResultType(EventResultType.OUTSIDE);
@@ -398,6 +400,9 @@ public class EventRetrievalService implements IEventRetrievalService {
 
             EventRetrievalResult eventResult = eventResponseProcessingService
                     .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
+            // TODO as soon as implemented
+//            eventResult.setStartRow(from);
+//            eventResult.setEndRow(from+numRows-1);
             time = System.currentTimeMillis() - time;
             log.debug("Retrieved {} fulltext-filtered events in {} seconds", eventResult.getEventList().size(), time / 1000);
             eventResult.setResultType(EventResultType.FULLTEXT_FILTERED);

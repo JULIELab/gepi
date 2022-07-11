@@ -266,7 +266,7 @@ public class GepiInput {
     }
 
     private void fetchEventsFromElasticSearch(GepiRequestData requestData) {
-        esResult = eventRetrievalService.getEvents(requestData);
+        esResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE);
         persistEsResult = esResult;
     }
 

@@ -6,18 +6,23 @@ import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.webapp.data.FilteredGepiRequestData;
 import org.apache.tapestry5.grid.GridDataSource;
 import org.apache.tapestry5.grid.SortConstraint;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class EventPagesDataSource implements GridDataSource {
     private final IEventRetrievalService eventRetrievalService;
     private final FilteredGepiRequestData requestData;
-    private CompletableFuture<EventRetrievalResult> events;
+    private Logger log;
+    private Future<EventRetrievalResult> events;
     private int start;
 
-    public EventPagesDataSource(IEventRetrievalService eventRetrievalService, FilteredGepiRequestData requestData) {
+    public EventPagesDataSource(Logger log, Future<EventRetrievalResult> events, IEventRetrievalService eventRetrievalService, FilteredGepiRequestData requestData) {
+        this.log = log;
+        this.events = events;
         this.eventRetrievalService = eventRetrievalService;
         this.requestData = requestData;
     }
@@ -26,22 +31,27 @@ public class EventPagesDataSource implements GridDataSource {
     public int getAvailableRows() {
         int availableRows = 0;
         try {
-            availableRows = (int) eventRetrievalService.getEvents(requestData, 0, 0).get().getNumTotalRows();
+            availableRows = (int) events.get().getNumTotalRows();
+//            availableRows = (int) eventRetrievalService.getEvents(requestData, 0, 0).get().getNumTotalRows();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        System.out.println("Available rows: " + availableRows);
+        log.debug("Available rows: " + availableRows);
         return availableRows;
     }
 
     @Override
     public void prepare(int i, int i1, List<SortConstraint> list) {
         // TODO support the sort constraints
-        events = eventRetrievalService.getEvents(requestData, i, i1-i+1);
         try {
-            System.out.println("Received " + events.get().getEventList().size() + " events where " + (i1-i+1) + " events were requested.");
+            if (events.get().getStartRow() != i || events.get().getEndRow() != i1) {
+                events = eventRetrievalService.getEvents(requestData, i, i1 - i + 1);
+                log.debug("Received {} events where {} events were requested.", events.get().getEventList().size(), i1 - i + 1);
+            } else {
+                log.debug("Used {} events from the existing result where {} events were requested.", events.get().getEventList().size(), i1 - i + 1);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -54,7 +64,7 @@ public class EventPagesDataSource implements GridDataSource {
     public Object getRowValue(int i) {
         try {
             System.out.println("Get row value " + i + " in list of size " + events.get().getEventList().size());
-            return new BeanModelEvent(events.get().getEventList().get(i-start));
+            return new BeanModelEvent(events.get().getEventList().get(i - start));
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException(e);
         }

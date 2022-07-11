@@ -2,6 +2,7 @@ package de.julielab.gepi.webapp.components;
 
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
+import de.julielab.gepi.core.services.GePiDataService;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.BeanModelEvent;
 import de.julielab.gepi.webapp.base.TabPersistentField;
@@ -18,6 +19,7 @@ import org.apache.tapestry5.corelib.components.Grid;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.http.services.Request;
 import org.apache.tapestry5.http.services.Response;
+import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.slf4j.Logger;
@@ -35,7 +37,7 @@ import java.util.List;
 
 @Import(stylesheet = {"context:css-components/tablewidget.css"})
 public class TableResultWidget extends GepiWidget {
-
+    public static final int ROWS_PER_PAGE = 10;
     @Parameter
     protected EnumSet<InputMode> inputMode;
     @Property
@@ -78,7 +80,7 @@ public class TableResultWidget extends GepiWidget {
     @Property
     @Persist(TabPersistentField.TAB)
     private Format contextFormat;
-//    @Inject
+    //    @Inject
 //    private Request request;
 //    @InjectComponent
 //    private Zone tableZone;
@@ -87,6 +89,8 @@ public class TableResultWidget extends GepiWidget {
     @Inject
     private IEventRetrievalService eventRetrievalService;
 
+    @Inject
+    private LoggerSource loggerSource;
 //    @InjectComponent
 //    private Grid grid;
 
@@ -147,11 +151,10 @@ public class TableResultWidget extends GepiWidget {
 //            ajaxResponseRenderer.addRender(tableZone);
 //        }
 //    }
-
     public EventPagesDataSource getEventSource() {
         FilteredGepiRequestData filteredRequest = new FilteredGepiRequestData(requestData);
         filteredRequest.setEventTypeFilter(filterEventType);
-        return new EventPagesDataSource(eventRetrievalService, filteredRequest);
+        return new EventPagesDataSource(loggerSource.getLogger(EventPagesDataSource.class), dataService.getData(requestData.getDataSessionId()).getUnrolledResult(), eventRetrievalService, filteredRequest);
     }
 
     void onUpdateTableData() {
