@@ -6,6 +6,7 @@ import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.*;
+import org.neo4j.driver.Record;
 import org.slf4j.Logger;
 
 import java.util.HashMap;

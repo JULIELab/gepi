@@ -129,67 +129,7 @@
                     
         </configurationParameters>
                 
-        <configurationParameterSettings>
-                        
-            <nameValuePair>
-                                
-                <name>DocumentGenerators</name>
-                                
-                <value>
-                                        
-                    <array>
-                                                
-                        <string>de.julielab.gepi.indexing.RelationDocumentGenerator</string>
-                                            
-                    </array>
-                                    
-                </value>
-                            
-            </nameValuePair>
-                        
-            <nameValuePair>
-                                
-                <name>FilterBoards</name>
-                                
-                <value>
-                                        
-                    <array>
-                                                
-                        <string>de.julielab.gepi.indexing.TextFilterBoard</string>
-                                                
-                        <string>de.julielab.gepi.indexing.GeneFilterBoard</string>
-                                            
-                    </array>
-                                    
-                </value>
-                            
-            </nameValuePair>
-                        
-            <nameValuePair>
-                                
-                <name>FileOutput</name>
-                                
-                <value>
-                                        
-                    <boolean>false</boolean>
-                                    
-                </value>
-                            
-            </nameValuePair>
-                        
-            <nameValuePair>
-                                
-                <name>OutputDestination</name>
-                                
-                <value>
-                                        
-                    <string>output-json</string>
-                                    
-                </value>
-                            
-            </nameValuePair>
-                    
-        </configurationParameterSettings>
+        <configurationParameterSettings/>
                 
         <typeSystemDescription/>
                 
@@ -282,6 +222,30 @@
             <optional>false</optional>
                     
         </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>tid2famplex</key>
+                        
+            <description>tid2famplx</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>tid2hgncgroups</key>
+                        
+            <description>tid2hgncgroups</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
             
     </externalResourceDependencies>
         
@@ -323,7 +287,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:resources/es-consumer-resources/tid2topHomologyPrefName.map.gz</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2topHomologyPrefName.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -349,7 +313,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:resources/es-consumer-resources/tid2tophomo.map.gz</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2tophomo.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -375,7 +339,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:resources/es-consumer-resources/tid2atid.map.gz</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2atid.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -401,7 +365,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:resources/es-consumer-resources/tid2prefName.map.gz</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2prefName.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -427,7 +391,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:resources/es-consumer-resources/egid2tid.map.gz</url>
+                    <url>file:/var/data/gepi/es-consumer-resources/egid2tid.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -442,6 +406,58 @@
                 </configurableDataResourceSpecifier>
                                 
                 <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>tid2famplex</name>
+                                
+                <description>tid2famplex</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2famplex.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>tid2hgncgroups</name>
+                                
+                <description>tid2hgncgroups</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/var/data/gepi/es-consumer-resources/tid2hgncgroups.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
                             
             </externalResource>
                     
@@ -486,6 +502,22 @@
                 <key>tid2prefName</key>
                                 
                 <resourceName>tid2prefName</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2hgncgroups</key>
+                                
+                <resourceName>tid2hgncgroups</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2famplex</key>
+                                
+                <resourceName>tid2famplex</resourceName>
                             
             </externalResourceBinding>
                         

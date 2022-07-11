@@ -76,7 +76,7 @@
 
             let color = "";
             if (type) {
-                color = "red";
+                color = "gray";
 
                 link.color = color;
             }

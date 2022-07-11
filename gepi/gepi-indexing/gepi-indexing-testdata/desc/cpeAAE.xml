@@ -7,9 +7,9 @@
         
     <delegateAnalysisEngineSpecifiers>
                 
-        <delegateAnalysisEngine key="JCoRe PubMed ArticleSet Multiplier">
+        <delegateAnalysisEngine key="JCoRe Abstract Database Multiplier">
                         
-            <import location="JCoRe PubMed ArticleSet Multiplier.xml"/>
+            <import location="JCoRe Abstract Database Multiplier.xml"/>
                     
         </delegateAnalysisEngine>
                 
@@ -39,7 +39,7 @@
                         
             <fixedFlow>
                                 
-                <node>JCoRe PubMed ArticleSet Multiplier</node>
+                <node>JCoRe Abstract Database Multiplier</node>
                                 
                 <node>JCoRe Pipeline AAE</node>
                                 

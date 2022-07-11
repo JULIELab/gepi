@@ -1,0 +1,955 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+        
+    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+        
+    <primitive>false</primitive>
+        
+    <delegateAnalysisEngineSpecifiers>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.genemerge.GepiGeneMerger-0">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.genemerge.GepiGeneMerger</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>GePi Gene Merger</name>
+                                        
+                    <description>Merges gene annotations from multiple sources/taggers. All overlapping gene mentions are fused into the longest one. The component IDs are concatenated. Resource entries are collected into a single list.</description>
+                                        
+                    <configurationParameters/>
+                                        
+                    <configurationParameterSettings/>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-semantics-biology-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type>de.julielab.jcore.types.GeneMention</type>
+                                                                
+                                <type>de.julielab.jcore.types.ResourceEntry</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs>
+                                                                
+                                <type>de.julielab.jcore.types.GeneMention</type>
+                                                                
+                                <type>de.julielab.jcore.types.ResourceEntry</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-1">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>Gazetteer FamPlex Dictionary</name>
+                                        
+                    <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
+            It must be set which exact annotation type should be created for recognized dictionary entries and
+            a chunker configuration must be provided as an
+            external resource and bound to the 'DictionaryChunkerProvider' resource dependency.
+            In this descriptor, the external resource is configurable. That is, it points directly to the
+            dictionary file and has a set of parameters for dictionary processing and tagging directly
+            embedded into the descriptor. The current parameter settings will work but may be changed. Refer to
+            https://github.com/JULIELab/jcore-base/tree/master/jcore-lingpipegazetteer-ae for more information.</description>
+                                        
+                    <version>2.6.0-SNAPSHOT</version>
+                                        
+                    <vendor>julielab</vendor>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>CheckAcronyms</name>
+                                                        
+                            <description>Checks whether an acronym match in dictionary has a respective full form with the same
+                    label (=specificType). If a matched text passage is an acronym but the long form is not a
+                    ConceptMention (or a sub type) with the same specificType value, the original match will be
+                    rejected.</description>
+                                                        
+                            <type>Boolean</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>OutputType</name>
+                                                        
+                            <description>The UIMA annotation type that should be generated for text passages matching a dictionary
+                    entry. The given type must be a sub type of de.julielab.jules.types.ConceptMention. The label given
+                    for the dictionary entry will be used for the annotation's 'specific type' feature.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>CheckAcronyms</name>
+                                                        
+                            <value>
+                                                                
+                                <boolean>true</boolean>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>OutputType</name>
+                                                        
+                            <value>
+                                                                
+                                <string>de.julielab.jcore.types.Gene</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-semantics-mention-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <typePriorities/>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities/>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                                
+                <externalResourceDependencies>
+                                        
+                    <externalResourceDependency>
+                                                
+                        <key>DictionaryChunkerProvider</key>
+                                                
+                        <description>An implementation providing the actual Lingpipe Chunker class for dictionary tagging.</description>
+                                                
+                        <interfaceName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ChunkerProvider</interfaceName>
+                                                
+                        <optional>false</optional>
+                                            
+                    </externalResourceDependency>
+                                    
+                </externalResourceDependencies>
+                                
+                <resourceManagerConfiguration>
+                                        
+                    <externalResources>
+                                                
+                        <externalResource>
+                                                        
+                            <name>FamPlex productive</name>
+                                                        
+                            <description>Employs the configurable alternative chunker implementation. This alternative
+                implementation is primarily meant for approximate matching and should be used in this intent.
+                It offers text normalization for better dictionary matching and the removal of accents (transliteration).
+                It is configured in the component descriptor and directly references the dictionary URL.</description>
+                                                        
+                            <configurableDataResourceSpecifier>
+                                                                
+                                <url>file:/var/data/gepi/processing-dictionaries/famplex.dict</url>
+                                                                
+                                <resourceMetaData>
+                                                                        
+                                    <name/>
+                                                                        
+                                    <configurationParameters>
+                                                                                
+                                        <configurationParameter>
+                                                                                        
+                                            <name>UseApproximateMatching</name>
+                                                                                        
+                                            <type>Boolean</type>
+                                                                                        
+                                            <multiValued>false</multiValued>
+                                                                                        
+                                            <mandatory>true</mandatory>
+                                                                                    
+                                        </configurationParameter>
+                                                                                
+                                        <configurationParameter>
+                                                                                        
+                                            <name>CaseSensitive</name>
+                                                                                        
+                                            <type>Boolean</type>
+                                                                                        
+                                            <multiValued>false</multiValued>
+                                                                                        
+                                            <mandatory>true</mandatory>
+                                                                                    
+                                        </configurationParameter>
+                                                                                
+                                        <configurationParameter>
+                                                                                        
+                                            <name>MakeVariants</name>
+                                                                                        
+                                            <type>Boolean</type>
+                                                                                        
+                                            <multiValued>false</multiValued>
+                                                                                        
+                                            <mandatory>true</mandatory>
+                                                                                    
+                                        </configurationParameter>
+                                                                                
+                                        <configurationParameter>
+                                                                                        
+                                            <name>NormalizeText</name>
+                                                                                        
+                                            <type>Boolean</type>
+                                                                                        
+                                            <multiValued>false</multiValued>
+                                                                                        
+                                            <mandatory>true</mandatory>
+                                                                                    
+                                        </configurationParameter>
+                                                                                
+                                        <configurationParameter>
+                                                                                        
+                                            <name>NormalizePlural</name>
+                                                                                        
+                                            <type>Boolean</type>
+                                                                                        
+                                            <multiValued>false</multiValued>
+                                                                                        
+                                            <mandatory>true</mandatory>
+                                                                                    
+                                        </configurationParameter>
+                                                                                
+                                        <configurationParameter>
+                                                                                        
+                                            <name>TransliterateText</name>
+                                                                                        
+                                            <type>Boolean</type>
+                                                                                        
+                                            <multiValued>false</multiValued>
+                                                                                        
+                                            <mandatory>true</mandatory>
+                                                                                    
+                                        </configurationParameter>
+                                                                                
+                                        <configurationParameter>
+                                                                                        
+                                            <name>StopWordFile</name>
+                                                                                        
+                                            <type>String</type>
+                                                                                        
+                                            <multiValued>false</multiValued>
+                                                                                        
+                                            <mandatory>true</mandatory>
+                                                                                    
+                                        </configurationParameter>
+                                                                            
+                                    </configurationParameters>
+                                                                        
+                                    <configurationParameterSettings>
+                                                                                
+                                        <nameValuePair>
+                                                                                        
+                                            <name>UseApproximateMatching</name>
+                                                                                        
+                                            <value>
+                                                                                                
+                                                <boolean>true</boolean>
+                                                                                            
+                                            </value>
+                                                                                    
+                                        </nameValuePair>
+                                                                                
+                                        <nameValuePair>
+                                                                                        
+                                            <name>CaseSensitive</name>
+                                                                                        
+                                            <value>
+                                                                                                
+                                                <boolean>false</boolean>
+                                                                                            
+                                            </value>
+                                                                                    
+                                        </nameValuePair>
+                                                                                
+                                        <nameValuePair>
+                                                                                        
+                                            <name>MakeVariants</name>
+                                                                                        
+                                            <value>
+                                                                                                
+                                                <boolean>false</boolean>
+                                                                                            
+                                            </value>
+                                                                                    
+                                        </nameValuePair>
+                                                                                
+                                        <nameValuePair>
+                                                                                        
+                                            <name>StopWordFile</name>
+                                                                                        
+                                            <value>
+                                                                                                
+                                                <string>de/julielab/jcore/ae/lingpipegazetteer/stopwords/general_english_words</string>
+                                                                                            
+                                            </value>
+                                                                                    
+                                        </nameValuePair>
+                                                                                
+                                        <nameValuePair>
+                                                                                        
+                                            <name>NormalizeText</name>
+                                                                                        
+                                            <value>
+                                                                                                
+                                                <boolean>true</boolean>
+                                                                                            
+                                            </value>
+                                                                                    
+                                        </nameValuePair>
+                                                                                
+                                        <nameValuePair>
+                                                                                        
+                                            <name>NormalizePlural</name>
+                                                                                        
+                                            <value>
+                                                                                                
+                                                <boolean>false</boolean>
+                                                                                            
+                                            </value>
+                                                                                    
+                                        </nameValuePair>
+                                                                                
+                                        <nameValuePair>
+                                                                                        
+                                            <name>TransliterateText</name>
+                                                                                        
+                                            <value>
+                                                                                                
+                                                <boolean>false</boolean>
+                                                                                            
+                                            </value>
+                                                                                    
+                                        </nameValuePair>
+                                                                            
+                                    </configurationParameterSettings>
+                                                                    
+                                </resourceMetaData>
+                                                            
+                            </configurableDataResourceSpecifier>
+                                                        
+                            <implementationName>de.julielab.jcore.ae.lingpipegazetteer.chunking.ConfigurableChunkerProviderImplAlt</implementationName>
+                                                    
+                        </externalResource>
+                                            
+                    </externalResources>
+                                        
+                    <externalResourceBindings>
+                                                
+                        <externalResourceBinding>
+                                                        
+                            <key>DictionaryChunkerProvider</key>
+                                                        
+                            <resourceName>FamPlex productive</resourceName>
+                                                    
+                        </externalResourceBinding>
+                                            
+                    </externalResourceBindings>
+                                    
+                </resourceManagerConfiguration>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.genemerge.GePiFamplexIdAssigner-2">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.genemerge.GePiFamplexIdAssigner</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>GePi Famplex ID Assigner</name>
+                                        
+                    <description>Expects GNormPlus or ProGene-style gene annotations and Gazetteer annotations with Neo4j tid concept IDs. Then, for family gene annotations overlapping with gazetteer annotations, the tid of the gazetteer annotation will be transferred as a resource entry to the family gene.</description>
+                                        
+                    <version>unknown</version>
+                                        
+                    <vendor>de.julielab.jcore.ae.genemerge</vendor>
+                                        
+                    <configurationParameters/>
+                                        
+                    <configurationParameterSettings/>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-semantics-biology-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities/>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.biosem.BioSemEventAnnotator-3">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.biosem.BioSemEventAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>JCoRe BioSEM Event Annotator</name>
+                                        
+                    <description/>
+                                        
+                    <version>2.6.0-SNAPSHOT</version>
+                                        
+                    <vendor/>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>ComponentId</name>
+                                                        
+                            <description>Optional. If set, the 'componentId' feature of the created annotations will be set to the value of this parameter.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>ComponentId</name>
+                                                        
+                            <value>
+                                                                
+                                <string>BioSemEventAnnotatorST11</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-semantics-biology-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <typePriorities/>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Gene</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.EventTrigger</type>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.EventMention</type>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.ArgumentMention</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                                
+                <externalResourceDependencies>
+                                        
+                    <externalResourceDependency>
+                                                
+                        <key>TrainedDB</key>
+                                                
+                        <description>The BioSem database in which triggers and event rules have been learned. New predictions are mode based on the rules in this database.</description>
+                                                
+                        <interfaceName>de.julielab.jcore.ae.biosem.DBUtilsProvider</interfaceName>
+                                                
+                        <optional>false</optional>
+                                            
+                    </externalResourceDependency>
+                                    
+                </externalResourceDependencies>
+                                
+                <resourceManagerConfiguration>
+                                        
+                    <externalResources>
+                                                
+                        <externalResource>
+                                                        
+                            <name>TrainedDB</name>
+                                                        
+                            <description/>
+                                                        
+                            <fileResourceSpecifier>
+                                                                
+                                <fileUrl>file:de/julielab/jcore/ae/biosem/conf/biosemannotator-st11.properties</fileUrl>
+                                                            
+                            </fileResourceSpecifier>
+                                                        
+                            <implementationName>de.julielab.jcore.ae.biosem.DBUtilsProviderImpl</implementationName>
+                                                    
+                        </externalResource>
+                                            
+                    </externalResources>
+                                        
+                    <externalResourceBindings>
+                                                
+                        <externalResourceBinding>
+                                                        
+                            <key>TrainedDB</key>
+                                                        
+                            <resourceName>TrainedDB</resourceName>
+                                                    
+                        </externalResourceBinding>
+                                            
+                    </externalResourceBindings>
+                                    
+                </resourceManagerConfiguration>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.likelihooddetection.LikelihoodDetectionAnnotator-4">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.likelihooddetection.LikelihoodDetectionAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>JCoRe Likelihood Detection AE</name>
+                                        
+                    <description>Analysis Engine to detect epistemic modal expressions and assign the appropriate likelihood category.</description>
+                                        
+                    <version>2.6.0-SNAPSHOT</version>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>LikelihoodDict</name>
+                                                        
+                            <description>String parameter indicating path to likelihood dictionary (One entry per line; Entries consist of tab-separated lemmatized likelihood indicators and assigned likelihood category)</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>LikelihoodDict</name>
+                                                        
+                            <value>
+                                                                
+                                <string>de/julielab/jcore/ae/likelihooddetection/resources/likelihood_neg_invest_dict</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-semantics-mention-types"/>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-morpho-syntax-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type>de.julielab.jcore.types.Token</type>
+                                                                
+                                <type>de.julielab.jcore.types.Lemma</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs>
+                                                                
+                                <type>de.julielab.jcore.types.LikelihoodIndicator</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.likelihoodassignment.LikelihoodAssignmentAnnotator-5">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.likelihoodassignment.LikelihoodAssignmentAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>JCoRe Likelihood Assignment AE</name>
+                                        
+                    <description>Analysis Engine to assign likelihood indicators to their corresponding entities and events.</description>
+                                        
+                    <version>2.6.0-SNAPSHOT</version>
+                                        
+                    <configurationParameters/>
+                                        
+                    <configurationParameterSettings/>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-semantics-mention-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type>de.julielab.jcore.types.LikelihoodIndicator</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs/>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.eventflattener.EventFlattener-6">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.eventflattener.EventFlattener</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>de.julielab.jcore.ae.eventflattener.EventFlattener</name>
+                                        
+                    <description>Descriptor automatically generated by uimaFIT</description>
+                                        
+                    <version>2.6.0-SNAPSHOT</version>
+                                        
+                    <vendor>de.julielab.jcore.ae.eventflattener</vendor>
+                                        
+                    <configurationParameters/>
+                                        
+                    <configurationParameterSettings/>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-semantics-biology-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type>de.julielab.jcore.types.EventMention</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs>
+                                                                
+                                <type>de.julielab.jcore.types.ext.FlattenedRelation</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+            
+    </delegateAnalysisEngineSpecifiers>
+        
+    <analysisEngineMetaData>
+                
+        <name>AggregateAnalysisEngineWithIntegratedDelegateDescriptors</name>
+                
+        <configurationParameters/>
+                
+        <configurationParameterSettings/>
+                
+        <flowConstraints>
+                        
+            <fixedFlow>
+                                
+                <node>de.julielab.jcore.ae.genemerge.GepiGeneMerger-0</node>
+                                
+                <node>de.julielab.jcore.ae.lingpipegazetteer.uima.GazetteerAnnotator-1</node>
+                                
+                <node>de.julielab.jcore.ae.genemerge.GePiFamplexIdAssigner-2</node>
+                                
+                <node>de.julielab.jcore.ae.biosem.BioSemEventAnnotator-3</node>
+                                
+                <node>de.julielab.jcore.ae.likelihooddetection.LikelihoodDetectionAnnotator-4</node>
+                                
+                <node>de.julielab.jcore.ae.likelihoodassignment.LikelihoodAssignmentAnnotator-5</node>
+                                
+                <node>de.julielab.jcore.ae.eventflattener.EventFlattener-6</node>
+                            
+            </fixedFlow>
+                    
+        </flowConstraints>
+                
+        <capabilities/>
+                
+        <operationalProperties>
+                        
+            <modifiesCas>true</modifiesCas>
+                        
+            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                        
+            <outputsNewCASes>false</outputsNewCASes>
+                    
+        </operationalProperties>
+            
+    </analysisEngineMetaData>
+    
+</analysisEngineDescription>

@@ -1,6 +1,7 @@
 package de.julielab.gepi.webapp.components;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,9 +22,6 @@ import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.corelib.components.TextArea;
 import org.apache.tapestry5.corelib.components.TextField;
 import org.apache.tapestry5.http.services.Request;
-import org.apache.tapestry5.internal.OptionModelImpl;
-import org.apache.tapestry5.internal.SelectModelImpl;
-import org.apache.tapestry5.internal.services.StringValueEncoder;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
@@ -80,6 +78,10 @@ public class GepiInput {
     @Persist(TabPersistentField.TAB)
     private String listBTextAreaValue;
 
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private String taxId;
+
     @Inject
     private ComponentResources resources;
 
@@ -126,6 +128,7 @@ public class GepiInput {
     @Parameter
     private String paragraphFilterString;
 
+    @Persist
     @Property
     private String filterFieldsConnectionOperator;
 
@@ -169,6 +172,16 @@ public class GepiInput {
         }
     }
 
+    public void reset() {
+        listATextAreaValue = "";
+        listBTextAreaValue = "";
+        filterFieldsConnectionOperator = "AND";
+        sentenceFilterString = "";
+        paragraphFilterString = "";
+        sectionNameFilterString = "";
+        taxId = "";
+    }
+
     public ValueEncoder getEventTypeEncoder() {
         return new EnumValueEncoder(typeCoercer, EventTypes.class);
     }
@@ -180,6 +193,7 @@ public class GepiInput {
     void setupRender() {
         //listATextAreaValue = "2475\n196";
         log.warn("{}", inputMode);
+        filterFieldsConnectionOperator = "AND";
     }
 
     void onValidateFromInputForm() {
@@ -208,20 +222,22 @@ public class GepiInput {
                 && listBTextAreaValue.trim().length() > 0;
         boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
         boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
-        Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
-        Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, "listB");
+        Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, taxId, "listA");
+        Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, taxId, "listB");
         if (isABSearchRequest) {
             inputMode = EnumSet.of(InputMode.AB);
         } else if (isAListPresent){
             inputMode = EnumSet.of(InputMode.A);
         }
+        log.info("InputMode {}", inputMode);
         if (isSentenceFilterPresent || isParagraphFilterPresent) {
             if (inputMode != null)
                 inputMode.add(InputMode.FULLTEXT_QUERY);
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, listAGePiIds, listBGePiIds, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+        requestData = new GepiRequestData(selectedEventTypeNames, listAGePiIds, listBGePiIds, taxId, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+        log.debug("Fetching events from ElasticSearch");
 //        if ((filterString != null && !filterString.isBlank())) {
         fetchEventsFromElasticSearch(requestData);
 //        } else {
@@ -234,7 +250,7 @@ public class GepiInput {
         dataService.putData(dataSessionId, data);
         Index indexPage = (Index) resources.getContainer();
         ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
-        log.debug("Ajax rendering commands sent, entering the output display mode");
+        log.trace("Ajax rendering commands sent, entering the output display mode");
     }
 
     private void fetchEventsFromNeo4j(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest) {
@@ -270,13 +286,14 @@ public class GepiInput {
         }
     }
 
-    private Future<IdConversionResult> convertToAggregateIds(String input, String listName) {
+    private Future<IdConversionResult> convertToAggregateIds(String input, String taxId, String listName) {
         if (input != null) {
             List<String> inputList = Stream.of(input.split("\n")).map(String::trim).collect(Collectors.toList());
             log.debug("Got {} input IDs from {}", inputList.size(), listName);
-            IGeneIdService.IdType idType = geneIdService.determineIdType(inputList.stream());
-            log.debug("Identified input IDs of {} as: {}", listName, idType);
-            return geneIdService.convert(inputList.stream(), idType, IGeneIdService.IdType.GEPI_AGGREGATE);
+            IGeneIdService.IdType fromIdType = geneIdService.determineIdType(inputList.stream());
+            log.debug("Identified input IDs of {} as: {}", listName, fromIdType);
+            IGeneIdService.IdType toIdType = taxId == null || taxId.isBlank() ? IGeneIdService.IdType.GEPI_AGGREGATE : IGeneIdService.IdType.GENE;
+            return geneIdService.convert(inputList.stream(), fromIdType, toIdType, taxId == null || taxId.isBlank() ? Collections.emptyList() : List.of(taxId.split("\\s*,\\s*")));
         }
         return null;
     }

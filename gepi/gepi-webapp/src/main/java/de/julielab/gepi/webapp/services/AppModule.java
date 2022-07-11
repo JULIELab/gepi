@@ -13,7 +13,11 @@ import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.*;
 import org.apache.tapestry5.ioc.services.ApplicationDefaults;
+import org.apache.tapestry5.ioc.services.ParallelExecutor;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
+import org.apache.tapestry5.ioc.services.cron.CronSchedule;
+import org.apache.tapestry5.ioc.services.cron.IntervalSchedule;
+import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.services.*;
 import org.apache.tapestry5.services.javascript.JavaScriptStack;
 import org.apache.tapestry5.services.javascript.StackExtension;
@@ -39,6 +43,7 @@ public class AppModule {
         // Use service builder methods (example below) when the implementation
         // is provided inline, or requires more initialization than simply
         // invoking the constructor.
+        binder.bind(IStatisticsCollector.class, StatisticsCollector.class);
     }
 
     public static void contributeFactoryDefaults(
@@ -48,11 +53,11 @@ public class AppModule {
 
         // The application version is primarily useful as it appears in
         // any exception reports (HTML or textual).
-        configuration.override(SymbolConstants.APPLICATION_VERSION, "1.0.0-SNAPSHOT");
+        configuration.override(SymbolConstants.APPLICATION_VERSION, "0.8-beta");
 
         // This is something that should be removed when going to production, but is useful
         // in the early stages of development.
-        configuration.override(SymbolConstants.PRODUCTION_MODE, false);
+        configuration.override(SymbolConstants.PRODUCTION_MODE, true);
     }
 
     public static void contributeApplicationDefaults(
@@ -78,14 +83,14 @@ public class AppModule {
         // Support for jQuery is new in Tapestry 5.4 and will become the only supported
         // option in 5.5.
         configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
-        configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "context:bootstrap-5.0.0-beta3-dist");
+        configuration.add(SymbolConstants.BOOTSTRAP_ROOT, "context:bootstrap-5.1.3-dist");
         configuration.add(SymbolConstants.MINIFICATION_ENABLED, false);
     }
 
     @Core
     @Contribute(JavaScriptStack.class)
     public static void overrideJquery(OrderedConfiguration<StackExtension> conf) {
-        conf.override("jquery-library", StackExtension.library("classpath:META-INF/assets/jquery/jquery-3.6.0.min.js"));
+        conf.override("jquery-library", StackExtension.library("classpath:META-INF/assets/jquery-3.6.0.min.js"));
     }
 
     @Contribute(RequestHandler.class)
@@ -197,5 +202,10 @@ public class AppModule {
         configuration.add(GePiSessionState.class, new ApplicationStateContribution("session", sessionStateCreator));
     }
 
-
+    @Startup
+    public static void scheduleJobs(ParallelExecutor pExecutor, PeriodicExecutor executor, IStatisticsCollector statisticsCollector) {
+         executor.addJob(new IntervalSchedule(60000),
+         "Event Statistics Calculation Job",
+         statisticsCollector);
+    }
 }

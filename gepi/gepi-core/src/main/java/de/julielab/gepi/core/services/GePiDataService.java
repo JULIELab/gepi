@@ -121,7 +121,7 @@ public class GePiDataService implements IGePiDataService {
         JSONArray nodes = new JSONArray();
         JSONArray links = new JSONArray();
         Set<String> nodeIdAlreadySeen = new HashSet<>();
-        pairedArgCount.entrySet().stream().limit(10).forEach(e -> {
+        pairedArgCount.entrySet().stream().forEach(e -> {
             final Event k = e.getKey();
             final Integer v = e.getValue();
             JSONObject link = new JSONObject();

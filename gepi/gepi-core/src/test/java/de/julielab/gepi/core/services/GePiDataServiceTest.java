@@ -5,7 +5,7 @@ import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.InputMode;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;

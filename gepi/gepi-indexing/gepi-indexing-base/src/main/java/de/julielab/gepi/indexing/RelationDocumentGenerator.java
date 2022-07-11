@@ -1,6 +1,5 @@
 package de.julielab.gepi.indexing;
 
-import com.sun.istack.NotNull;
 import de.julielab.jcore.consumer.es.*;
 import de.julielab.jcore.consumer.es.filter.ConstantOutputFilter;
 import de.julielab.jcore.consumer.es.filter.FilterChain;
@@ -16,11 +15,12 @@ import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -53,13 +53,12 @@ public class RelationDocumentGenerator extends DocumentGenerator {
             int i = 0;
             for (FlattenedRelation rel : jCas.<FlattenedRelation>getAnnotationIndex(FlattenedRelation.type)) {
                 // exclude events where arguments are FamilyNames for now; we don't have IDs for them yet
-                if (rel.getArguments().size() > 1 && noFamilies(rel.getArguments())) {
+                if (rel.getArguments().size() > 1) {
                     ArrayFieldValue relationPairDocuments = (ArrayFieldValue) relationFieldValueGenerator.generateFieldValue(rel);
                     for (IFieldValue fv : relationPairDocuments) {
                         Document relDoc = (Document) fv;
                         // Retrieve the argument pair of the current relation/event from the already created document for this relation
                         FeatureStructure[] argPair = ((ArrayFieldValue) relDoc.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
-                        relDoc.remove("ARGUMENT_FS");
                         // We create the sentence as a document of its own. In the mapping we then could add it as
                         // an object or as a nested document. There is no need to make it a nested document so we will
                         // use the object mapping which performs better.
@@ -89,8 +88,74 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         } catch (CASException e) {
             throw new FieldGenerationException(e);
         }
+        mergeEqualRelDocs(relDocs);
+        // remove the temporary field for the UIMA argument objects
+        relDocs.forEach(d -> d.remove("ARGUMENT_FS"));
         return relDocs;
     }
+
+    private void mergeEqualRelDocs(List<Document> relDocs) {
+        // create a key consisting of the argument offsets, the mapped argument IDs and the main relation type.
+        // We deem events to be equal that have those values in common (in this order).
+        Map<String, Document> key2doc = new HashMap<>();
+        Iterator<Document> docIt = relDocs.iterator();
+        while (docIt.hasNext()) {
+            Document document = docIt.next();
+            FeatureStructure[] argPair = ((ArrayFieldValue) document.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
+            StringBuilder keyBuilder = new StringBuilder();
+            for (FeatureStructure fs : argPair) {
+                ArgumentMention am = (ArgumentMention) fs;
+                Gene g = (Gene) am.getRef();
+                keyBuilder.append(g.getBegin());
+                keyBuilder.append(g.getEnd());
+                keyBuilder.append(document.get("argument1geneid").toString());
+                keyBuilder.append(document.get("argument2geneid").toString());
+            }
+            keyBuilder.append(((RawToken) document.get("maineventtype")).getTokenValue().toString());
+            String key = keyBuilder.toString();
+            // Now use the key to find relations that have been extracted from multiple combinations of gene tagger, gene mapper and event extractor
+            Document existingDoc = key2doc.get(key);
+            if (existingDoc != null) {
+                // merge the current document into the existing one
+                IFieldValue existingRelationsource = existingDoc.get("relationsource");
+                IFieldValue existingGenesource = existingDoc.get("genesource");
+                IFieldValue existingGenemappingsource = existingDoc.get("genemappingsource");
+
+                IFieldValue currentRelationsource = document.get("relationsource");
+                IFieldValue currentGenesource = document.get("genesource");
+                IFieldValue currentGenemappingsource = document.get("genemappingsource");
+
+                // merge the fields into the existing document while avoiding duplicates
+                ArrayFieldValue relationSourceValues = new ArrayFieldValue();
+                relationSourceValues.addFlattened(existingRelationsource);
+                relationSourceValues.addFlattened(currentRelationsource);
+                final TreeSet<RawToken> relationSourceSet = relationSourceValues.stream().map(RawToken.class::cast).collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(t -> t.getTokenValue().toString()))));
+                relationSourceValues = new ArrayFieldValue(new ArrayList<>(relationSourceSet));
+
+                ArrayFieldValue geneSourceValues = new ArrayFieldValue();
+                geneSourceValues.addFlattened(existingGenesource);
+                geneSourceValues.addFlattened(currentGenesource);
+                final TreeSet<RawToken> geneSourceSet = geneSourceValues.stream().map(RawToken.class::cast).collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(t -> t.getTokenValue().toString()))));
+                geneSourceValues = new ArrayFieldValue(new ArrayList<>(geneSourceSet));
+
+                ArrayFieldValue geneMappingSourceValues = new ArrayFieldValue();
+                geneMappingSourceValues.addFlattened(existingGenemappingsource);
+                geneMappingSourceValues.addFlattened(currentGenemappingsource);
+                final TreeSet<RawToken> geneMappingSourceSet = geneMappingSourceValues.stream().map(RawToken.class::cast).collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(t -> t.getTokenValue().toString()))));
+                geneMappingSourceValues = new ArrayFieldValue(new ArrayList<>(geneMappingSourceSet));
+
+                existingDoc.addField("relationsource", relationSourceValues);
+                existingDoc.addField("genesource", geneSourceValues);
+                existingDoc.addField("genemappingsource", geneMappingSourceValues);
+
+                // discard the current document as it has been merged into the existing one
+                docIt.remove();
+            } else {
+                key2doc.put(key, document);
+            }
+        }
+    }
+
 
     /**
      * Filter method as long as we don't have handling for FamilyName gene mentions

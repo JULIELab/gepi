@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+        
+    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+        
+    <primitive>true</primitive>
+        
+    <annotatorImplementationName>de.julielab.jcore.ae.genemerge.GePiFamplexIdAssigner</annotatorImplementationName>
+        
+    <analysisEngineMetaData>
+                
+        <name>GePi Famplex ID Assigner</name>
+                
+        <description>Expects GNormPlus or ProGene-style gene annotations and Gazetteer annotations with Neo4j tid concept IDs. Then, for family gene annotations overlapping with gazetteer annotations, the tid of the gazetteer annotation will be transferred as a resource entry to the family gene.</description>
+                
+        <version>unknown</version>
+                
+        <vendor>de.julielab.jcore.ae.genemerge</vendor>
+                
+        <configurationParameters/>
+                
+        <configurationParameterSettings/>
+                
+        <typeSystemDescription>
+                        
+            <imports>
+                                
+                <import name="de.julielab.jcore.types.jcore-semantics-biology-types"/>
+                            
+            </imports>
+                    
+        </typeSystemDescription>
+                
+        <fsIndexCollection/>
+                
+        <capabilities/>
+                
+        <operationalProperties>
+                        
+            <modifiesCas>true</modifiesCas>
+                        
+            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                        
+            <outputsNewCASes>false</outputsNewCASes>
+                    
+        </operationalProperties>
+            
+    </analysisEngineMetaData>
+    
+</analysisEngineDescription>

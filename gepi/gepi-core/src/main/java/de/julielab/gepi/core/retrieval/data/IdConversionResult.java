@@ -5,7 +5,9 @@ import com.google.common.collect.Multimap;
 import de.julielab.gepi.core.services.IGeneIdService;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static de.julielab.gepi.core.services.IGeneIdService.IdType.UNKNOWN;
 
@@ -63,8 +65,8 @@ public class IdConversionResult {
         this.convertedItems = convertedItems;
     }
 
-    public Set<String> getUnconvertedItems() {
-        return unconvertedItems;
+    public Stream<String> getUnconvertedItems() {
+        return sourceIds.stream().filter(Predicate.not(convertedItems::containsKey));
     }
 
     public void setUnconvertedItems(Set<String> unconvertedItems) {

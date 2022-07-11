@@ -1,0 +1,24 @@
+{
+    "categories": [
+        "ae"
+    ],
+    "description": "",
+    "descriptors": [
+        {
+            "category": "ae",
+            "location": "de.julielab.jcore.ae.genemerge.desc.gepi-gene-merger"
+        },
+        {
+            "category": "ae",
+            "location": "de.julielab.jcore.ae.genemerge.desc.gepi-famplex-id-assigner"
+        }
+    ],
+    "exposable": true,
+    "group": "general",
+    "maven-artifact": {
+        "artifactId": "gepi-indexing-base",
+        "groupId": "de.julielab",
+        "version": "0.2.0-SNAPSHOT"
+    },
+    "name": "GePi Indexing"
+}

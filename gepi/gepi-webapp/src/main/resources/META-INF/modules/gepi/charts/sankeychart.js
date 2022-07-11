@@ -34,9 +34,28 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
         init() {
           console.log('Initializing sankey chart');
+          // Data created by the GepiDataservice:
+          // {
+          //  "nodes": [{"id":tidxy, "name": geneSymbol}] 
+          //  "links": [{"source", "target", "frequency"}]
+          // }
           const sankeyDat = data.getData('relationCounts');
-          console.log(sankeyDat);
+          console.log('Sankey data ' + this.orderType + ':');
+          console.log(sankeyDat)
+          // Aggregated data for Sankey display.
+          // {
+          //  "nodesNLinks: {just sankeyDat from above}",
+          //  "sorted_ids_and_weights_left": [{
+          //      "id": tidxy,
+          //      "node_frequency": <sum of all edge frequencies for this node>,
+          //      "<orderType>": <frequency or harmonic mean for common partners>,
+          //      "name": geneSymbol (only for common partners)
+          //    }],
+          //  "sorted_ids_and_weights_right": same as above only for interaction targets,
+          //  "total_frequency": <number of interactions>
+          // }
           this.preprocessed_data = data.preprocess_data(sankeyDat, this.orderType);
+          console.log(this.preprocessed_data)
 
           this.settings = {
             width: 500,
@@ -152,6 +171,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           }
           const the_data = data.prepare_data(this.preprocessed_data, this.settings.height, this.settings.min_node_height, this.settings.node_spacing, this.settings.show_other, max_other_height);
           console.log('Finished preparing data');
+          console.log(the_data)
 
           const sankey = d3.sankey();
 

@@ -156,7 +156,7 @@ public class EventQueries {
      *
      * @param filterQuery The query string. May contain boolean operators and quoted phrases.
      * @param field       The fulltext field to filter on.
-     * @param occur       MUST or SHOULD.
+     * @param occur       FILTER, MUST or SHOULD.
      * @param eventQuery  The top event query that is currently constructed.
      */
     private static void addFulltextSearchQuery(String filterQuery, String field, BoolClause.Occur occur, BoolQuery eventQuery) {

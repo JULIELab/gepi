@@ -24,12 +24,18 @@ public class GeneFilterBoard extends FilterBoard {
     Map<String, String> tid2homoPrefName;
     @ExternalResource(key = "tid2tophomo")
     Map<String, String> tid2tophomo;
+    @ExternalResource(key = "tid2famplex")
+    Map<String, String[]> tid2famplex;
+    @ExternalResource(key = "tid2hgncgroups")
+    Map<String, String[]> tid2hgncgroups;
     SingleAddonTermsFilter egid2tidAddonFilter;
     Filter gene2tid2atidAddonFilter;
     Filter egid2prefNameReplaceFilter;
     ReplaceFilter eg2tidReplaceFilter;
     Filter eg2tophomoFilter;
     FilterChain egid2homoPrefNameReplaceFilter;
+    Filter eg2famplexFilter;
+    Filter eg2hgncFilter;
 
     @Override
     public void setupFilters() {
@@ -39,5 +45,7 @@ public class GeneFilterBoard extends FilterBoard {
         egid2homoPrefNameReplaceFilter = new FilterChain(new ReplaceFilter(egid2tid), new ReplaceFilter(tid2homoPrefName));
         eg2tidReplaceFilter = new ReplaceFilter(egid2tid);
         eg2tophomoFilter = new FilterChain(eg2tidReplaceFilter, new ReplaceFilter(tid2tophomo));
+        eg2famplexFilter = new FilterChain(eg2tidReplaceFilter, new AddonTermsFilter(tid2famplex));
+        eg2hgncFilter = new FilterChain(eg2tidReplaceFilter, new AddonTermsFilter(tid2hgncgroups));
     }
 }

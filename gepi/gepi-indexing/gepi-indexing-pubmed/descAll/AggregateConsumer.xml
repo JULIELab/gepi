@@ -7,12 +7,6 @@
         
     <delegateAnalysisEngineSpecifiers>
                 
-        <delegateAnalysisEngine key="JCoRe Database Checkpoint Writer">
-                        
-            <import location="JCoRe Database Checkpoint Writer.xml"/>
-                    
-        </delegateAnalysisEngine>
-                
         <delegateAnalysisEngine key="JCoRe Neo4j Relations Consumer">
                         
             <import location="JCoRe Neo4j Relations Consumer.xml"/>
@@ -22,6 +16,24 @@
         <delegateAnalysisEngine key="JCore ElasticSearch Consumer">
                         
             <import location="JCore ElasticSearch Consumer.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="JCoRe ElasticSearch Consumer Localhost">
+                        
+            <import location="JCoRe ElasticSearch Consumer Localhost.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="XMIWriter">
+                        
+            <import location="XMIWriter.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="JCoRe Database Checkpoint Writer">
+                        
+            <import location="JCoRe Database Checkpoint Writer.xml"/>
                     
         </delegateAnalysisEngine>
             
@@ -39,11 +51,15 @@
                         
             <fixedFlow>
                                 
-                <node>JCoRe Database Checkpoint Writer</node>
-                                
                 <node>JCoRe Neo4j Relations Consumer</node>
                                 
                 <node>JCore ElasticSearch Consumer</node>
+                                
+                <node>JCoRe ElasticSearch Consumer Localhost</node>
+                                
+                <node>XMIWriter</node>
+                                
+                <node>JCoRe Database Checkpoint Writer</node>
                             
             </fixedFlow>
                     

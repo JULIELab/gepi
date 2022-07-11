@@ -3,6 +3,7 @@ package de.julielab.gepi.webapp.pages;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
+import de.julielab.gepi.webapp.components.GepiInput;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
@@ -71,6 +72,8 @@ public class Index {
     @Inject
     private IGePiDataService dataService;
 
+    @InjectComponent
+    private GepiInput gepiInput;
 
     public Zone getOutputZone() {
         return outputZone;
@@ -140,8 +143,7 @@ public class Index {
     public Object onReset() {
         log.debug("Reset!");
         requestData = null;
-//        dataSessionId = 0;
-//        dataSessionIdParameter = 0;
+        gepiInput.reset();
         return this;
     }
 
@@ -172,11 +174,9 @@ public class Index {
         log.debug("Received data request for '{}' for dataSessionId {} from the client.", datasource, dataSessionId);
         if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && datasource.equals("bcounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
-        log.debug("Checked datasource name");
         GePiData data = dataService.getData(dataSessionId);
         if (data.getUnrolledResult() == null && data.getAggregatedResult() == null)
             throw new IllegalStateException("The ES result and the Neo4j result for dataSessionId " + dataSessionId + " are both null.");
-        log.debug("Checked if results are null.");
         try {
             log.debug("Creating JSON object from results.");
             JSONObject jsonObject = null;

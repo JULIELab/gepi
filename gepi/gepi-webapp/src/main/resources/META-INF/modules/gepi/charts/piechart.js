@@ -6,6 +6,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         constructor(elementId, widgetSettings) {
             this.elementId = elementId;
             this.widgetSettings = widgetSettings;
+            console.log("Creating pie widget with settings " + widgetSettings)
             this.setup();
         }
 

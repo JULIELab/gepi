@@ -2,6 +2,7 @@
   "settings": {
     "number_of_shards": 2,
     "number_of_replicas": 0,
+    "max_terms_count": 1000000,
     "analysis": {
       "analyzer": {
         "postprocessing_for_preanalyzed_tokens": {
@@ -62,6 +63,14 @@
         "type": "keyword",
         "store": true
       },
+      "argumentfamplexids": {
+        "type": "keyword",
+        "store": true
+      },
+      "argumenthgncgroupids": {
+        "type": "keyword",
+        "store": true
+      },
       "argumentmatchtypes": {
         "type": "keyword",
         "store": true
@@ -94,7 +103,23 @@
         "type": "keyword",
         "store": true
       },
+      "argument1famplexid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument1hgncgroupid": {
+        "type": "keyword",
+        "store": true
+      },
       "argument1matchtype": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument1genesource": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument1genemappingsource": {
         "type": "keyword",
         "store": true
       },
@@ -126,7 +151,23 @@
         "type": "keyword",
         "store": true
       },
+      "argument2famplexid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2hgncgroupid": {
+        "type": "keyword",
+        "store": true
+      },
       "argument2matchtype": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2genesource": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2genemappingsource": {
         "type": "keyword",
         "store": true
       },
@@ -186,13 +227,13 @@
             "type": "text",
             "norms": false,
             "store": true,
-            "copy_to": ["paragraph.headings_completion", "paragraph.headings_kw"]
+            "copy_to": ["paragraph.headingscompletion", "paragraph.headingskw"]
           },
-          "headings_kw": {
+          "headingskw": {
             "type": "keyword",
             "store": true
           },
-          "headings_completion": {
+          "headingscompletion": {
             "type": "completion"
           },
           "textscope": {
@@ -200,6 +241,30 @@
             "store": true
           }
         }
+      },
+      "containsfamily": {
+        "type": "boolean",
+        "store": true
+      },
+      "relationsource": {
+        "type": "keyword",
+        "store": true
+      },
+      "genesource": {
+        "type": "keyword",
+        "store": true
+      },
+      "genemappingsource":{
+        "type": "keyword",
+        "store": true
+      },
+      "mixedgenesource": {
+        "type": "boolean",
+        "store": true
+      },
+      "mixedgenemappingsource": {
+        "type": "boolean",
+        "store": true
       }
     }
   }

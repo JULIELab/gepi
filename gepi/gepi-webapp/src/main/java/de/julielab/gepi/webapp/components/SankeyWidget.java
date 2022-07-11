@@ -37,4 +37,8 @@ public class SankeyWidget extends GepiWidget {
             }
         }
     }
+
+    public String getWidgetTitle() {
+        return commonPartners ? "Interactions with Common Partners" : "Most Frequent Interactions";
+    }
 }

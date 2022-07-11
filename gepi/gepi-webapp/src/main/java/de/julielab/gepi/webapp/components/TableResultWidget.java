@@ -99,13 +99,14 @@ public class TableResultWidget extends GepiWidget {
                 "secondArgumentText",
                 "firstArgumentGeneId",
                 "secondArgumentGeneId",
-                "firstArgumentMatchType",
-                "secondArgumentMatchType",
+//                "firstArgumentMatchType",
+//                "secondArgumentMatchType",
                 "allEventTypes",
                 "fulltextMatchSource",
                 "docId",
                 "eventId",
-                "context"));
+                "context",
+                "geneMappingSources"));
         if (inputMode != null && !inputMode.contains(InputMode.FULLTEXT_QUERY))
             availableColumns.remove("fulltextMatchSource");
 
@@ -123,6 +124,7 @@ public class TableResultWidget extends GepiWidget {
         tableModel.get("allEventTypes").label("relation types");
         tableModel.get("docId").label("document id");
         tableModel.get("eventId").label("event id");
+        tableModel.get("geneMappingSources").label("gene tagger");
 
         contextFormat = new Format() {
             @Override

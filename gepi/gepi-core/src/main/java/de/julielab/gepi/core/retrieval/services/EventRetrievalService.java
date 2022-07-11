@@ -92,6 +92,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_LIKELIHOOD = "likelihood";
 
+    public static final String FIELD_GENE_MAPPING_SOURCE = "genemappingsource";
+
     private static final int SCROLL_SIZE = 2000;
     private Logger log;
     private ISearchServerComponent searchServerComponent;
@@ -171,7 +173,8 @@ public class EventRetrievalService implements IEventRetrievalService {
                         FIELD_EVENT_ARG_MATCH_TYPES,
                         FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
                         FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                        FIELD_EVENT_ARG_TEXT);
+                        FIELD_EVENT_ARG_TEXT,
+                        FIELD_GENE_MAPPING_SOURCE);
                 serverCmd.downloadCompleteResults = true;
                 serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
                 if (!StringUtils.isBlank(sentenceFilter) || !StringUtils.isBlank(paragraphFilter)) {
@@ -252,8 +255,6 @@ public class EventRetrievalService implements IEventRetrievalService {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
             try {
-//                Set<String> idSet = idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet());
-
                 Set<String> idSet = gepiRequestData.getAListIdsAsSet();
 
                 log.debug("Retrieving outside events for {} A IDs", idSet.size());
@@ -263,7 +264,9 @@ public class EventRetrievalService implements IEventRetrievalService {
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
                 carrier.addSearchServerRequest(serverCmd);
                 long time = System.currentTimeMillis();
+                log.debug("Sent server request");
                 searchServerComponent.process(carrier);
+                log.debug("Server answered. Reading results.");
 
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
@@ -312,7 +315,8 @@ public class EventRetrievalService implements IEventRetrievalService {
                 FIELD_EVENT_ARG_MATCH_TYPES,
                 FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
                 FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                FIELD_EVENT_ARG_TEXT);
+                FIELD_EVENT_ARG_TEXT,
+                FIELD_GENE_MAPPING_SOURCE);
         if (numRows == 0)
             serverCmd.fieldsToReturn = Arrays.asList(
                     FIELD_EVENT_ARG_GENE_IDS,
@@ -365,7 +369,8 @@ public class EventRetrievalService implements IEventRetrievalService {
                     FIELD_EVENT_ARG_MATCH_TYPES,
                     FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
                     FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                    FIELD_EVENT_ARG_TEXT);
+                    FIELD_EVENT_ARG_TEXT,
+                    FIELD_GENE_MAPPING_SOURCE);
             serverCmd.downloadCompleteResults = true;
             serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
 

@@ -4,7 +4,9 @@
         <div class="card ${viewmode} widget full-height" id="${clientId}">
             <div class="card-header text-center">
                 ${widgettitle}
-                <span id="${resizeHandleId}" class="float-right widget-resize-to-full widget-tool-symbol ms-2"/>
+                <t:if test="resizable">
+                    <span id="${resizeHandleId}" class="float-right widget-resize-to-full widget-tool-symbol ms-2"/>
+                </t:if>
                 <t:if test="downloadable">
                     <t:eventlink event="download" role="button" class="float-right widget-tool-symbol widget-download"/>
                 </t:if>

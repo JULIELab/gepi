@@ -357,19 +357,13 @@
                                         
                     <array>
                                                 
-                        <string>bannerbiosem:de.julielab.jcore.types.EventMention</string>
-                                                
                         <string>banner:de.julielab.jcore.types.Gene</string>
                                                 
                         <string>de.julielab.jcore.types.Sentence</string>
                                                 
                         <string>de.julielab.jcore.types.Token</string>
                                                 
-                        <string>de.julielab.jcore.types.ChunkNP</string>
-                                                
                         <string>de.julielab.jcore.types.PennBioIEPOSTag</string>
-                                                
-                        <string>de.julielab.jcore.types.Abbreviation</string>
                                             
                     </array>
                                     
@@ -383,7 +377,7 @@
                                 
                 <value>
                                         
-                    <integer>60000000</integer>
+                    <integer>80000000</integer>
                                     
                 </value>
                             

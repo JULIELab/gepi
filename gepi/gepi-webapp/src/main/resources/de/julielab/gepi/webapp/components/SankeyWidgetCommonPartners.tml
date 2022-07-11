@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Sankey Diagram: Common Interaction Partners" t:clientId="sankey_widget_common_partners" class="${classes}" sizeClass="widget-small" result="result">
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Common Interaction Partners" t:clientId="sankey_widget_common_partners" class="${classes}" sizeClass="widget-small" result="result">
 
 <div id="sankeychartcommonpartners" class="fade" style="width: 100%; height: 100%;"></div>
     <t:trigger event="drawChart" />

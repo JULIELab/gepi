@@ -3,7 +3,8 @@
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xsi:schemaLocation="http://www.julielab.de/conceptdb http://www.julielab.de/conceptdb/conceptdb-1.1.0.xsd http://www.julielab.de/conceptdb/concepts/ncbigene
                  http://www.julielab.de/conceptdb/concepts/ncbigeneconcepts-1.1.0.xsd
-                 http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd">
+                 http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd
+                 http://www.julielab.de/conceptdb/exporter-1.1.0.xsd">
     <versioning>
         <version>0.2.0-SNAPSHOT</version>
     </versioning>
@@ -31,7 +32,7 @@
         </operation>
     </preparations>
     <imports>
-        <import>
+        <import name="ncbi_gene_import">
             <rest>
                 <restendpoint>/concepts/concept_manager/insert_concepts</restendpoint>
                 <httpmethod>POST</httpmethod>
@@ -40,7 +41,7 @@
                 <creator xmlns="http://www.julielab.de/conceptdb/concepts/ncbigene">
                     <name>NCBIGeneConceptCreator</name>
                     <configuration>
-			        <basepath>/data/erik/geno/build</basepath>
+                        <basepath>/data/erik/geno/build/</basepath>
                         <gene_info>
                             resources/gene_info_organism_filtered.gz
                         </gene_info>
@@ -52,7 +53,7 @@
                         </organismlist>
                         <organismnames>/data/data_resources/biology/ncbi_tax/names.dmp</organismnames>
                         <homologene>deprecated</homologene>
-                        <gene_group>/var/data/data_resources/biology/entrez/gene/gene_orthologs.gz</gene_group>
+                        <gene_group>/data/data_resources/biology/entrez/gene/gene_orthologs.gz</gene_group>
                     </configuration>
                 </creator>
             </concepts>
@@ -61,6 +62,77 @@
                     <name>DefaultFacetCreator</name>
                     <configuration>
                         <name>NCBI Gene</name>
+                        <sourcetype>hierarchical</sourcetype>
+                        <facetgroup>
+                            <name>BioMed</name>
+                        </facetgroup>
+                    </configuration>
+                </creator>
+            </facet>
+        </import>
+        <import name="famplex_import">
+            <rest>
+                <restendpoint>/concepts/concept_manager/insert_concepts</restendpoint>
+                <httpmethod>POST</httpmethod>
+            </rest>
+            <concepts>
+                <creator>
+                    <name>FamPlexConceptCreator</name>
+                    <configuration>
+                        <relationsfile>
+                            famplex-import-files/relations_egids.tsv
+                        </relationsfile>
+                        <groundingmap>
+                            famplex-import-files/grounding_map.tsv
+                        </groundingmap>
+                        <nameextensionrecords>
+                            famplex-import-files/expanded.dict
+                        </nameextensionrecords>
+                    </configuration>
+                </creator>
+            </concepts>
+            <facet>
+                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
+                    <name>DefaultFacetCreator</name>
+                    <configuration>
+                        <name>FamPlex</name>
+                        <sourcetype>hierarchical</sourcetype>
+                        <facetgroup>
+                            <name>BioMed</name>
+                        </facetgroup>
+                    </configuration>
+                </creator>
+            </facet>
+        </import>
+        <import name="hgnc_groups_import">
+            <rest>
+                <restendpoint>/concepts/concept_manager/insert_concepts</restendpoint>
+                <httpmethod>POST</httpmethod>
+            </rest>
+            <concepts>
+                <creator>
+                    <name>HgncGroupsConceptCreator</name>
+                    <configuration>
+                        <familyfile>
+                            hgnc-groups-import-files/family.csv
+                        </familyfile>
+                        <familyaliasfile>
+                            hgnc-groups-import-files/family_alias.csv
+                        </familyaliasfile>
+                        <hierarchyfile>
+                            hgnc-groups-import-files/hierarchy.csv
+                        </hierarchyfile>
+                        <genetogroupmap>
+                            hgnc-groups-import-files/gene_group_ncbi_map.tsv
+                        </genetogroupmap>
+                    </configuration>
+                </creator>
+            </concepts>
+            <facet>
+                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
+                    <name>DefaultFacetCreator</name>
+                    <configuration>
+                        <name>HGNC</name>
                         <sourcetype>hierarchical</sourcetype>
                         <facetgroup>
                             <name>BioMed</name>
@@ -82,7 +154,11 @@
         <operation name="copy_preferred_names_lowercase">
             <request>
                 <!-- This requires the APOC core library to be installed -->
-                <cypherquery>CALL apoc.periodic.iterate("MATCH (c:CONCEPT) WHERE c.preferredName IS NOT null RETURN c", "SET c.preferredName_lc = toLower(c.preferredName)",{batchSize:1000,iterateList:true,parallel:true,concurrency:50,retries:0}) YIELD batches, total</cypherquery>
+                <cypherquery>CALL apoc.periodic.iterate("MATCH (c:CONCEPT) WHERE c.preferredName IS NOT null RETURN c",
+                    "SET c.preferredName_lc =
+                    toLower(c.preferredName)",{batchSize:1000,iterateList:true,parallel:true,concurrency:50,retries:0})
+                    YIELD batches, total
+                </cypherquery>
             </request>
         </operation>
     </operations>
@@ -106,7 +182,8 @@
         <export name="allgeneaggregates">
             <request>
                 <cypherquery>MATCH (th)-[:HAS_ELEMENT*]->(c:CONCEPT) WHERE (th:AGGREGATE_GENEGROUP OR
-                    th:AGGREGATE_TOP_ORTHOLOGY) AND NOT c:AGGREGATE with c.id as cid,COLLECT(DISTINCT th.id) AS atids RETURN
+                    th:AGGREGATE_TOP_ORTHOLOGY) AND NOT c:AGGREGATE with c.id as cid,COLLECT(DISTINCT th.id) AS atids
+                    RETURN
                     cid, REDUCE(acc=HEAD(atids), atid in TAIL(atids) | acc + "|" + atid)
                 </cypherquery>
             </request>
@@ -128,12 +205,50 @@
         </export>
         <export name="preferredTophomologyNames">
             <request>
-                <cypherquery>MATCH (t:ID_MAP_NCBI_GENES) WITH t OPTIONAL MATCH
-                    (t)-[:HAS_ELEMENT*2]-(n:AGGREGATE_GENEGROUP) RETURN DISTINCT t.id, COALESCE(n.preferredName,
-                    t.preferredName)
+                <cypherquery>MATCH (c:ID_MAP_NCBI_GENES) WITH c OPTIONAL MATCH
+                    (c)-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) WITH c,a OPTIONAL MATCH
+                    (a)-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) RETURN DISTINCT c.id, COALESCE(top.preferredName,
+                    a.preferredName,
+                    c.preferredName)
                 </cypherquery>
             </request>
             <outputfile>es-consumer-resources/tid2topHomologyPrefName.map</outputfile>
+        </export>
+        <!-- Export a map from NCBI Gene tids to all the FamPlex concept tids it is directly or indirectly connected with -->
+        <export name="tid2famplex">
+            <request>
+                <cypherquery>MATCH p=(f:FPLX)&lt;-[:isa|partof*]-(c:ID_MAP_NCBI_GENES) WITH reverse([x IN nodes(p) |
+                    x.id]) AS idlist RETURN head(idlist),reduce(acc=head(tail(idlist)), fplxid IN tail(tail(idlist)) |
+                    acc + "|" + fplxid)
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/tid2famplex.map</outputfile>
+        </export>
+        <export name="tid2hgncgroups">
+            <request>
+                <!-- The 'not' clause is there to ensure that only paths from the highest HGNC group are returned; this avoids partial paths that are just subpaths of the longest one. -->
+                <cypherquery>MATCH p=(h:HGNC_GROUP)-[:IS_BROADER_THAN*]->(c:ID_MAP_NCBI_GENES) WHERE
+                    not((:HGNC_GROUP)-[:IS_BROADER_THAN]->(h)) WITH reverse([x IN nodes(p) | x.id]) AS idlist RETURN
+                    head(idlist),reduce(acc=head(tail(idlist)),hgncid in tail(tail(idlist)) | acc + "|" + hgncid)
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/tid2hgncgroups.map</outputfile>
+        </export>
+        <export name="tid2famplexnames">
+            <request>
+                <rest>
+                    <restendpoint>/concepts/export/lingpipe_dictionary</restendpoint>
+                    <httpmethod>GET</httpmethod>
+                </rest>
+                <parameters>
+                    <parameter name="label">FPLX</parameter>
+                </parameters>
+            </request>
+            <decoding>
+                <base64>true</base64>
+                <gzip>true</gzip>
+            </decoding>
+            <outputfile>processing-dictionaries/famplex.dict</outputfile>
         </export>
     </exports>
 </conceptdatabase>

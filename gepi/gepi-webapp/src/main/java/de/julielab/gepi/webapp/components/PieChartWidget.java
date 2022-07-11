@@ -2,6 +2,7 @@ package de.julielab.gepi.webapp.components;
 
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.annotations.InjectComponent;
+import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -26,6 +27,7 @@ public class PieChartWidget extends GepiWidget {
     @InjectComponent("gepiwidgetlayout")
     private GepiWidgetLayout component;
 
+    @Log
     void afterRender() {
         if (component.isResultLoading() || component.isResultAvailable()) {
             javaScriptSupport.require("gepi/charts/piechart").with(elementId, component.getWidgetSettings());
