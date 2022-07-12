@@ -22,6 +22,7 @@ import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
+import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Import(stylesheet = {"context:css-components/tablewidget.css"})
 public class TableResultWidget extends GepiWidget {
@@ -80,21 +82,13 @@ public class TableResultWidget extends GepiWidget {
     @Property
     @Persist(TabPersistentField.TAB)
     private Format contextFormat;
-    //    @Inject
-//    private Request request;
-//    @InjectComponent
-//    private Zone tableZone;
-    @Inject
-    private AjaxResponseRenderer ajaxResponseRenderer;
     @Inject
     private IEventRetrievalService eventRetrievalService;
-
     @Inject
     private LoggerSource loggerSource;
-//    @InjectComponent
-//    private Grid grid;
+    private JavaScriptSupport javaScriptSupport;
 
-
+    @Log
     void setupRender() {
         getEventSource();
         List<String> availableColumns = new ArrayList<>(List.of("firstArgumentPreferredName",
@@ -217,5 +211,4 @@ public class TableResultWidget extends GepiWidget {
             }
         };
     }
-
 }

@@ -19,7 +19,7 @@
                         <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
                         <div class="row">
                             <t:piechartwidget class="col-4" requestData="requestData" elementId="piechart"/>
-                            <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
+<!--                                                    <t:piechartwidget result="result" class="col-md-4" />-->
                             <t:sankeywidget class="col-4" requestData="requestData" elementId="sankeychart"
                                             commonPartners="false"/>
                             <t:sankeywidget class="col-4" requestData="requestData" elementId="sankeychartcommonpartners" commonPartners="true" />

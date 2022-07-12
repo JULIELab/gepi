@@ -17,7 +17,7 @@
                     but manually hidden until data is available. In all cases, the waiting message is displayed
                     if no data is available at render time -->
                     <t:if test="resultloading">
-                        <div class="text-center shine mt-2">
+                        <div class="text-center shine mt-2 position-absolute top-50 start-50 translate-middle">
                             ${message:loading}
                         </div>
                         <t:trigger event="load"/>

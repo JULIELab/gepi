@@ -266,6 +266,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 long time = System.currentTimeMillis();
                 log.debug("Sent server request");
                 searchServerComponent.process(carrier);
+                Thread.sleep(10000);
                 log.debug("Server answered. Reading results.");
 
 

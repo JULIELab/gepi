@@ -138,15 +138,16 @@ final public class GepiWidgetLayout {
         return !useTapestryZoneUpdates || isResultAvailable();
     }
 
+    @Log
     public boolean isResultLoading() {
         if (!waitForData)
             return false;
 //        log.info("ESResult: {}", getEsResult());
-        if (getEsResult() != null)
+//        if (getEsResult() != null)
 //        log.info("ESResult done: {}", getEsResult().isDone());
-        if (getEsResult() != null && !getEsResult().isDone()) {
-            return true;
-        }
+//        if (getEsResult() != null && !getEsResult().isDone()) {
+//            return true;
+//        }
         return getEsResult() != null && !getEsResult().isDone();
     }
 
@@ -190,6 +191,7 @@ final public class GepiWidgetLayout {
         ajaxResponseRenderer.addRender(widgetZone);
     }
 
+    @Log
     void onLoad() {
         if (useTapestryZoneUpdates) {
             javaScriptSupport.require("gepi/components/widgetManager").invoke("refreshWidget")

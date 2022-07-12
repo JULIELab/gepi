@@ -251,6 +251,7 @@ public class GepiInput {
         Index indexPage = (Index) resources.getContainer();
         ajaxResponseRenderer.addRender(indexPage.getInputZone()).addRender(indexPage.getOutputZone());
         log.trace("Ajax rendering commands sent, entering the output display mode");
+        log.debug("Query input and sending process finished, results can be retrieved and displayed");
     }
 
     private void fetchEventsFromNeo4j(List<String> selectedEventTypeNames, boolean isAListPresent, boolean isABSearchRequest) {
