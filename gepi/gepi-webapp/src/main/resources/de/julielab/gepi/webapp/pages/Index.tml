@@ -19,7 +19,7 @@
                         <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>
                         <div class="row">
                             <t:piechartwidget class="col-4" requestData="requestData" elementId="piechart"/>
-                            <!--                        <t:piechartwidget result="result" class="col-md-4" />-->
+<!--                                                    <t:piechartwidget result="result" class="col-md-4" />-->
                             <t:sankeywidget class="col-4" requestData="requestData" elementId="sankeychart"
                                             commonPartners="false"/>
                             <t:sankeywidget class="col-4" requestData="requestData" elementId="sankeychartcommonpartners" commonPartners="true" />
@@ -36,6 +36,23 @@
                         </div>
                     </t:if>
                 </t:zone>
+            </div>
+        </div>
+        <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="downloadModalLabel">Interaction download</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Interaction data is assembled. This can take a few minutes.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
             </div>
         </div>
     </body>

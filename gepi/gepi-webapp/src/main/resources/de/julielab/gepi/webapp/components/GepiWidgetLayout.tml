@@ -8,7 +8,10 @@
                     <span id="${resizeHandleId}" class="float-right widget-resize-to-full widget-tool-symbol ms-2"/>
                 </t:if>
                 <t:if test="downloadable">
-                    <t:eventlink event="download" role="button" class="float-right widget-tool-symbol widget-download"/>
+<!--                    <t:eventlink event="download" role="button" class="float-right widget-tool-symbol widget-download" data-bs-toggle="modal" data-bs-target="#downloadModal"/>-->
+                    <button type="button" class="btn btn-outline-light float-right widget-tool-symbol widget-download" data-bs-toggle="modal" data-bs-target="#downloadModal"/>
+
+
                 </t:if>
             </div>
             <t:zone t:id="widgetZone" id="prop:${zoneid}" class="full-height">
@@ -17,7 +20,7 @@
                     but manually hidden until data is available. In all cases, the waiting message is displayed
                     if no data is available at render time -->
                     <t:if test="resultloading">
-                        <div class="text-center shine mt-2">
+                        <div class="text-center shine mt-2 position-absolute top-50 start-50 translate-middle">
                             ${message:loading}
                         </div>
                         <t:trigger event="load"/>
