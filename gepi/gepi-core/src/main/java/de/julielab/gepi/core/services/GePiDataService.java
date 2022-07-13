@@ -248,7 +248,7 @@ public class GePiDataService implements IGePiDataService {
     }
 
     private void createExcelSummaryFile(File tsvFile, File xlsFile, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder().command("python", "-c", excelResultCreationScript, tsvFile.getAbsolutePath(), xlsFile.getAbsolutePath(), inputMode.stream().map(InputMode::name).collect(Collectors.joining(" ")), sentenceFilterString != null ? sentenceFilterString : "<none>", paragraphFilterString != null ? paragraphFilterString : "<none>", sectionNameFilterString != null ? sectionNameFilterString : "<none>");
+        ProcessBuilder builder = new ProcessBuilder().command("python3", "-c", excelResultCreationScript, tsvFile.getAbsolutePath(), xlsFile.getAbsolutePath(), inputMode.stream().map(InputMode::name).collect(Collectors.joining(" ")), sentenceFilterString != null ? sentenceFilterString : "<none>", paragraphFilterString != null ? paragraphFilterString : "<none>", sectionNameFilterString != null ? sectionNameFilterString : "<none>");
         Process process = builder.start();
         InputStream processInput = process.getInputStream();
         InputStream processErrors = process.getErrorStream();
