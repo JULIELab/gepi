@@ -28,5 +28,5 @@ Note however, the searching will only work if the Neo4j and ElasticSearch servic
 
 ## Required Python Packages for Result Excel Sheet Creation
 
-* openpyxl
-* xlsxwriter
+* openpyxl v3.0.9
+* xlsxwriter v3.0.1
