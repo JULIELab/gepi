@@ -1,0 +1,17 @@
+.idea
+.settings
+build
+*/*/es-consumer-cache
+gepi-index/*/lib
+gepi-index/*/data
+gepi-index/*/resources
+
+
+.classpath
+.gitignore
+.project
+CHANGELOG.md
+conceptdbapplication.log
+docker-compose.yml
+gepi.iml
+gepi-webapp.log
