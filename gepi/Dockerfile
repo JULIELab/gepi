@@ -1,5 +1,13 @@
 # syntax=docker/dockerfile:1
 
+# This files defines three build layers, two of which are supposed to be used to run the GePI webapp.
+# The first usable stage is "development". It uses the "dependencies" layer which exists mainly for caching reasons.
+# The development stage is meant to include the actual code as a bind mount: the webapp is run in the container
+# but the data lies on the host.
+# The second usable stage is "production". For this one, the whole GePI project must have been freshly built
+# to create the WAR file in gepi-webapp/target. This is then deployed into Jetty's webapps/ directory. Thus,
+# the webapp is contained in the production image and does not rely on data on the host.
+
 FROM maven:alpine as dependencies
 WORKDIR /var/gepi/dev
 COPY maven-settings-docker.xml ./
