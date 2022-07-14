@@ -148,7 +148,7 @@ public class TableResultWidget extends GepiWidget {
     public EventPagesDataSource getEventSource() {
         FilteredGepiRequestData filteredRequest = new FilteredGepiRequestData(requestData);
         filteredRequest.setEventTypeFilter(filterEventType);
-        return new EventPagesDataSource(loggerSource.getLogger(EventPagesDataSource.class), dataService.getData(requestData.getDataSessionId()).getUnrolledResult(), eventRetrievalService, filteredRequest);
+        return new EventPagesDataSource(loggerSource.getLogger(EventPagesDataSource.class), dataService.getData(requestData.getDataSessionId()).getPagedResult(), eventRetrievalService, filteredRequest);
     }
 
     void onUpdateTableData() {
