@@ -34,31 +34,36 @@
             </plugins>
         </pluginManagement>
         <plugins>
-<!--            <plugin>-->
-<!--                &lt;!&ndash; automatically fill in the current app version to the README.md file. For this purpose, we-->
-<!--                have a README.md in the readme-raw subfolder which is the actual source of the file &ndash;&gt;-->
-<!--                <artifactId>maven-resources-plugin</artifactId>-->
-<!--                <version>3.2.0</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>copy-resources</id>-->
-<!--                        &lt;!&ndash; here the phase you need &ndash;&gt;-->
-<!--                        <phase>validate</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>copy-resources</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <outputDirectory>${basedir}</outputDirectory>-->
-<!--                            <resources>-->
-<!--                                <resource>-->
-<!--                                    <directory>${basedir}/readme-raw</directory>-->
-<!--                                    <filtering>true</filtering>-->
-<!--                                </resource>-->
-<!--                            </resources>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
+            <plugin>
+                <!-- automatically fill in the current app version to the README.md file. For this purpose, we
+                have a README.md in the readme-raw subfolder which is the actual source of the file -->
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/readme-raw</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                            <nonFilteredFileExtensions>
+                                <nonFilteredFileExtension>xls</nonFilteredFileExtension>
+                                <nonFilteredFileExtension>zip</nonFilteredFileExtension>
+                                <nonFilteredFileExtension>gz</nonFilteredFileExtension>
+                            </nonFilteredFileExtensions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
 <!--                The jetty plugin is here with <skip>true</skip> to allow the execution of mvn jetty:run in the -->
                 <!-- Run the application using "mvn jetty:run" -->

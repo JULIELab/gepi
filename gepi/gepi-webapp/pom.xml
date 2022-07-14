@@ -129,42 +129,7 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
     </dependencies>
     <build>
         <finalName>gepi-webapp</finalName>
-        <!--        <resources>-->
-        <!--            <resource>-->
-        <!--                <directory>.</directory>-->
-        <!--                <includes>-->
-        <!--                    <include>readme-raw.md</include>-->
-        <!--                </includes>-->
-        <!--                <filtering>true</filtering>-->
-        <!--                <targetPath>README.md</targetPath>-->
-        <!--            </resource>-->
-        <!--        </resources>-->
         <plugins>
-            <plugin>
-                <!-- automatically fill in the current app version to the README.md file. For this purpose, we
-                have a README.md in the readme-raw subfolder which is the actual source of the file -->
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <!-- here the phase you need -->
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/readme-raw</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <!-- Unpack the test data from the respective Maven module so we can use it in our tests -->
                 <groupId>org.apache.maven.plugins</groupId>
