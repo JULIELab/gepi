@@ -102,26 +102,4 @@
         <tapestry-release-version>5.8.1</tapestry-release-version>
         <jcore-version>2.6.0-SNAPSHOT</jcore-version>
     </properties>
-<!--    <profiles>-->
-<!--        <profile>-->
-<!--            <id>default</id>-->
-<!--            <modules>-->
-<!--                <module>gepi-core</module>-->
-<!--                <module>gepi-webapp</module>-->
-<!--                <module>gepi-indexing</module>-->
-<!--                <module>gepi-concept-database</module>-->
-<!--                <module>gepi-test-data</module>-->
-<!--            </modules>-->
-<!--            <activation>-->
-<!--                <activeByDefault>true</activeByDefault>-->
-<!--            </activation>-->
-<!--        </profile>-->
-<!--        <profile>-->
-<!--            <id>docker-development</id>-->
-<!--            <modules>-->
-<!--                <module>gepi-core</module>-->
-<!--                <module>gepi-webapp</module>-->
-<!--            </modules>-->
-<!--        </profile>-->
-<!--    </profiles>-->
 </project>

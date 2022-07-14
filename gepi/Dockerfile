@@ -33,7 +33,7 @@ RUN apt-get update -y && apt-get install -y maven
 USER jetty
 COPY --from=dependencies --chown=jetty:jetty /usr/share/maven/ref/repository /var/lib/jetty/.m2/repository
 COPY --from=dependencies --chown=jetty:jetty /usr/share/maven/ref/repository/de/julielab/gepi-test-data /var/lib/jetty/.m2/repository/de/julielab/gepi-test-data
-CMD ["mvn", "-f", "/var/gepi/dev", "--projects", "gepi-webapp", "--also-make", "jetty:run"]
+CMD ["bash", "-c", "mvn -f /var/gepi/dev --projects gepi-webapp --also-make jetty:run -Dgepi.configuration=${GEPI_CONFIGURATION}"]
 
 FROM jetty:10.0.9-jre11-slim-openjdk as production
 USER root

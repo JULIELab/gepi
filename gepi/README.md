@@ -20,12 +20,17 @@ Run the following commands to create a `development` container:
 
 ```bash
 docker build -t gepi:0.9.0-SNAPSHOT --target development .
-docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev gepi:0.9.0-SNAPSHOT
+docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev -e GEPI_CONFIGURATION=<path to config file> gepi:0.9.0-SNAPSHOT
 ```
 
 The first command builds an image of the `development` stage. This will also build the `dependencies` stage where all the Java dependencies of the GePI application are downloaded and cached. This will take a while on the first execution but should be faster afterwards thanks to caching.
 
-The second command created the Docker container. The `-v` option creates a bind mount that connects the local code to the container. Development can proceed normally and changes will be reflected in the container.
+The second command created the Docker container. The `-v` option creates a bind mount that connects the local code to the container. Development can proceed normally and changes will be reflected in the container. The `-e` parameter sets the configuration file to use. This file is necessary to connect to ElasticSearch and Neo4j for interaction and gene concept data. Refer to the [configuration section](#configuring-the-web-application) for details.
+
+<div style="border: solid 2px black; width: 550px; padding:1em; margin-left: 100px">Hint: When the ElasticSearch or Neo4j servers are running on the host machine, use <code>host.docker.internal</code> to connect to them.</div>
+
+Navigate to `http://localhost:8080` in your browser, and you should see the GePI start page.
+ 
 
 ### Using the `production` Docker image
 
@@ -44,3 +49,20 @@ These commands
 
 Navigate to `localhost:8080` in your browser and you should see the landing page of GePI.
 In actual production, use `dp 80:8080` to bind the Jetty web server in the container to the default HTTP port on the host.
+
+### Configuring the web application
+
+Configuration of the GePI web application happens through a configuration file. The format of the file follows default Java properties files, i.e. key-value pairs separated with `=`. In Tapestry, the keys are called *symbols*. The available configuration symbols are
+
+```properties
+elasticquery.clustername=<name of the ES cluster to connect to>
+elasticquery.url=<actually not a url but the host IP>
+elasticquery.port=9200
+gepi.documents.index.name=<interaction index name in ES>
+
+gepi.neo4j.bolt.url=bolt://<host>:<port>
+```
+
+## GePI development
+
+Important note: ***Do not edit the `README.md` file in the module roots*** if there exists a `readme-raw` subdirectory. The file in the root is just a Maven-filtered copy of the `readme-raw/README.md` file. The Maven filtering replaces Maven properties like the project version in the `readme-raw/README.md` file and puts the result in the module root, overriding the previous `README.md` file.

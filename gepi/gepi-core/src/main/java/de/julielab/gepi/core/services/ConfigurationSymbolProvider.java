@@ -29,7 +29,7 @@ public class ConfigurationSymbolProvider implements SymbolProvider {
 					try {
 						this.symbolProvider = new FileSymbolProvider(configFileName);
 					} catch (IOException e1) {
-						log.error("Could not read configuration file at {}: {}", configFileName, e1.getMessage());
+						throw new IllegalArgumentException("Could not read configuration file at " + configFileName, e1);
 					}
 				}
 			}
