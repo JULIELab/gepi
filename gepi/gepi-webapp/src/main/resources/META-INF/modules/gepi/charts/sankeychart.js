@@ -212,7 +212,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             // .attr("stroke-width", (d) => d.width);
 
           links.append('title')
-              .text((link) => [link.source.id, link.target.id, link.color].join());
+              .text((link) => [link.source.id, link.target.id, link.value, link.color].join(', '));
 
           // nodes
           const nodes = svg.append('g')

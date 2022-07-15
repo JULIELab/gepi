@@ -15,7 +15,7 @@ import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.S
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.*;
 
 public class EventQueries {
-    public static BoolQuery getBipartiteQuery(List<String> eventTypes, String sentenceFilter, String paragraphFilter, Set<String> idSetA, Set<String> idSetB) {
+    public static BoolQuery getClosedQuery(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter, Set<String> idSetA, Set<String> idSetB) {
         TermsQuery listA1Query = new TermsQuery(Collections.unmodifiableCollection(idSetA));
         listA1Query.field = FIELD_EVENT_ARGUMENT1SEARCH;
         TermsQuery listA2Query = new TermsQuery(Collections.unmodifiableCollection(idSetA));
@@ -57,7 +57,7 @@ public class EventQueries {
         BoolQuery eventQuery = new BoolQuery();
         eventQuery.addClause(mustClause);
 
-        if (!eventTypes.isEmpty()) {
+        if (eventTypes != null && !eventTypes.isEmpty()) {
             TermsQuery eventTypesQuery = new TermsQuery(new ArrayList<>(eventTypes));
             eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
             BoolClause eventTypeClause = new BoolClause();
@@ -75,6 +75,10 @@ public class EventQueries {
             // TODO should vs must should be adapted according to the user input
             addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, SHOULD, filterQuery);
         }
+        if (!StringUtils.isBlank(sectionNameFilter)) {
+            // TODO should vs must should be adapted according to the user input
+            addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, FILTER, eventQuery);
+        }
         if (filterQuery.clauses != null) {
             BoolClause fulltextFilterClause = new BoolClause();
             fulltextFilterClause.occur = FILTER;
@@ -84,7 +88,7 @@ public class EventQueries {
         return eventQuery;
     }
 
-    public static BoolQuery getOutsideQuery(GepiRequestData requestData) throws InterruptedException, ExecutionException {
+    public static BoolQuery getOpenQuery(GepiRequestData requestData) throws InterruptedException, ExecutionException {
         List<String> eventTypes = requestData.getEventTypes();
         String sentenceFilter = requestData.getSentenceFilterString();
         String paragraphFilter = requestData.getParagraphFilterString();
@@ -121,7 +125,7 @@ public class EventQueries {
         return eventQuery;
     }
 
-    public static BoolQuery getFulltextQuery(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String filterFieldsConnectionOperator) {
+    public static BoolQuery getFulltextQuery(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter, String filterFieldsConnectionOperator) {
         BoolQuery eventQuery = new BoolQuery();
 
         if (!eventTypes.isEmpty()) {
@@ -142,7 +146,9 @@ public class EventQueries {
         if (!StringUtils.isBlank(paragraphFilter)) {
             addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, filterFieldsOccur, fulltextQuery);
         }
-
+        if (!StringUtils.isBlank(sectionNameFilter)) {
+            addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, filterFieldsOccur, eventQuery);
+        }
         BoolClause fulltextClause = new BoolClause();
         fulltextClause.addQuery(fulltextQuery);
         fulltextClause.occur = BoolClause.Occur.MUST;
