@@ -3,7 +3,6 @@ package de.julielab.gepi.webapp.components;
 import com.google.common.collect.Multimap;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import de.julielab.gepi.core.services.IGePiDataService;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -12,7 +11,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.neo4j.driver.util.Immutable;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -34,7 +32,7 @@ public class StatsWidget extends GepiWidget {
 
     public int getNumberUniqueASymbols() {
         try {
-            return (int) getEsResult().get().getEventList().stream().map(Event::getFirstArgument).map(Argument::getPreferredName).distinct().count();
+            return (int) getPagedEsResult().get().getEventList().stream().map(Event::getFirstArgument).map(Argument::getPreferredName).distinct().count();
         } catch (InterruptedException | ExecutionException e) {
             return 0;
         }
@@ -42,7 +40,7 @@ public class StatsWidget extends GepiWidget {
 
     public int getNumberUniqueBSymbols() {
         try {
-            return (int) getEsResult().get().getEventList().stream().map(Event::getSecondArgument).map(Argument::getPreferredName).distinct().count();
+            return (int) getPagedEsResult().get().getEventList().stream().map(Event::getSecondArgument).map(Argument::getPreferredName).distinct().count();
         } catch (InterruptedException | ExecutionException e) {
             return 0;
         }
@@ -51,7 +49,7 @@ public class StatsWidget extends GepiWidget {
     public long getNumberUniqueABPairs() {
         // TODO unique on what level? The current default is the preferred name. But it really depends, it could also be on gene ID level which would be much more
         try {
-            return getEsResult().get().getEventList().stream().map(e -> e.getFirstArgument().getPreferredName() + "-" + e.getSecondArgument().getPreferredName()).distinct().count();
+            return getPagedEsResult().get().getEventList().stream().map(e -> e.getFirstArgument().getPreferredName() + "-" + e.getSecondArgument().getPreferredName()).distinct().count();
         } catch (InterruptedException | ExecutionException e) {
             return 0;
         }
@@ -59,7 +57,7 @@ public class StatsWidget extends GepiWidget {
 
     public int getNumEvents() {
         try {
-            return getEsResult().get().getEventList().size();
+            return getPagedEsResult().get().getEventList().size();
         } catch (InterruptedException | ExecutionException e) {
             return 0;
         }
@@ -68,7 +66,7 @@ public class StatsWidget extends GepiWidget {
     public List<Triple<String, String, Integer>> getTopInteractions() {
         int n = 10;
         try {
-            Map<Pair<String, String>, Integer> cardinalityMap = getEsResult().get()
+            Map<Pair<String, String>, Integer> cardinalityMap = getPagedEsResult().get()
                     .getEventList().stream()
                     .map(e -> new ImmutablePair<>(e.getFirstArgument().getPreferredName(), e.getSecondArgument().getPreferredName()))
                     .collect(Collectors.toMap(Function.identity(), x -> 1, Integer::sum));

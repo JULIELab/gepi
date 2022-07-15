@@ -77,7 +77,7 @@ public class GePiDataService implements IGePiDataService {
         // get those arguments that were not part of the input
         evtList.forEach(e -> {
             Argument a = e.getArgument(argumentPosition);
-            a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY);
+            a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY_ID);
             arguments.add(a);
         });
 
@@ -94,7 +94,7 @@ public class GePiDataService implements IGePiDataService {
 
         singleArgCount.forEach((k, v) -> {
             JSONArray tmp = new JSONArray();
-            tmp.add(k.getPreferredName());
+            tmp.add(k.getTopHomologyPreferredName());
             tmp.add(v);
             singleArgCountJson.put(tmp);
         });
@@ -309,7 +309,7 @@ public class GePiDataService implements IGePiDataService {
     private JSONObject getJsonObjectForArgument(Argument argument) {
         JSONObject source = new JSONObject();
         source.put("id", argument.getTopHomologyId());
-        source.put("name", argument.getPreferredName());
+        source.put("name", argument.getTopHomologyPreferredName());
         return source;
     }
 

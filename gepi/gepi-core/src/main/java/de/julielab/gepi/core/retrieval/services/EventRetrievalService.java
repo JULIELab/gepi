@@ -44,6 +44,14 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS = "argumenttophomoids";
 
+    /**
+     * @deprecated The match type exact/fuzzy was an emergency categorization for the first GeNo version where
+     * there are exact and partial matches. A partial match is a match of a gene name that is not found in exactly in
+     * the NCBI Gene database but has only an overlap with an existing name. The evaluation scores for approximate
+     * matches were bad in the Weepingtree version so that we offered to omit them. In newer versions, this problem
+     * does not exist any more because we only use exact matches or are very restrictive on the partial matches.
+     */
+    @Deprecated
     public static final String FIELD_EVENT_ARG_MATCH_TYPES = "argumentmatchtypes";
 
     public static final String FIELD_EVENT_ARG_TEXT = "argumentcoveredtext";
@@ -110,8 +118,8 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData) {
-        return getEvents(requestData, 0, Integer.MAX_VALUE);
+    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, boolean forCharts) {
+        return getEvents(requestData, 0, Integer.MAX_VALUE, forCharts);
     }
 
     /**
@@ -120,29 +128,30 @@ public class EventRetrievalService implements IEventRetrievalService {
      * @param requestData
      * @param from
      * @param numRows
+     * @param forCharts
      * @return
      */
     @Override
-    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, int from, int numRows) {
+    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         CompletableFuture<EventRetrievalResult> esResult;
         EnumSet<InputMode> inputMode = requestData.getInputMode();
         if (inputMode.contains(InputMode.AB)) {
-            log.debug("Calling EventRetrievalService for AB search");
-            esResult = getBipartiteEvents(requestData.getListAGePiIds(), requestData.getListBGePiIds(), requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
+            log.debug("Calling EventRetrievalService for AB search for rows from {}, number of rows {}, forCharts: {}", from, numRows, forCharts);
+            esResult = closedSearch(requestData.getListAGePiIds(), requestData.getListBGePiIds(), requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
         } else if (inputMode.contains(InputMode.A)) {
-            log.debug("Calling EventRetrievalService for A search");
-            esResult = getOutsideEvents(requestData, from, numRows);
+            log.debug("Calling EventRetrievalService for A search for rows from {}, number of rows {}, forCharts: {}", from, numRows, forCharts);
+            esResult = openSearch(requestData, from, numRows, forCharts);
         } else {
             // No IDs were entered
-            log.debug("Calling EventRetrievalService for scope filtered events");
+            log.debug("Calling EventRetrievalService for scope filtered events for rows from {}, number of rows {}, forCharts: {}", from, numRows, forCharts);
             esResult = getFulltextFilteredEvents(requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getFilterFieldsConnectionOperator(), requestData.getSectionNameFilterString());
         }
         return esResult;
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Future<IdConversionResult> idStreamA,
-                                                                      Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilterString) {
+    public CompletableFuture<EventRetrievalResult> closedSearch(Future<IdConversionResult> idStreamA,
+                                                                Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilterString) {
         return CompletableFuture.supplyAsync(() -> {
             try {
 
@@ -215,8 +224,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getBipartiteEvents(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter) {
-        return getBipartiteEvents(CompletableFuture.completedFuture(idStream1), CompletableFuture.completedFuture(idStream2), eventTypes, sentenceFilter, paragraphFilter, sectionNameFilter);
+    public CompletableFuture<EventRetrievalResult> closedSearch(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter) {
+        return closedSearch(CompletableFuture.completedFuture(idStream1), CompletableFuture.completedFuture(idStream2), eventTypes, sentenceFilter, paragraphFilter, sectionNameFilter);
     }
 
     /**
@@ -245,12 +254,12 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(GepiRequestData requestData) {
-        return getOutsideEvents(requestData, 0, Integer.MAX_VALUE);
+    public CompletableFuture<EventRetrievalResult> openSearch(GepiRequestData requestData) {
+        return openSearch(requestData, 0, Integer.MAX_VALUE, false);
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(GepiRequestData gepiRequestData, int from, int numRows) {
+    public CompletableFuture<EventRetrievalResult> openSearch(GepiRequestData gepiRequestData, int from, int numRows, boolean forCharts) {
         assert gepiRequestData.getListAGePiIds() != null : "No A-list IDs set.";
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
@@ -259,7 +268,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
                 log.debug("Retrieving outside events for {} A IDs", idSet.size());
                 log.trace("The A IDs are: {}", idSet);
-                SearchServerRequest serverCmd = getOutsideServerRequest(gepiRequestData, from, numRows);
+                SearchServerRequest serverCmd = getOpenSearchRequest(gepiRequestData, from, numRows, forCharts);
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
                 carrier.addSearchServerRequest(serverCmd);
@@ -272,7 +281,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 EventRetrievalResult eventResult = eventResponseProcessingService
                         .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
                 eventResult.setStartRow(from);
-                eventResult.setEndRow(from+numRows-1);
+                eventResult.setEndRow(from + numRows - 1);
                 time = System.currentTimeMillis() - time;
                 log.debug("Retrieved {} outside events from ElasticSearch in {} seconds", eventResult.getEventList().size(), time / 1000);
                 eventResult.setResultType(EventResultType.OUTSIDE);
@@ -287,49 +296,50 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public SearchServerRequest getOutsideServerRequest(GepiRequestData requestData) throws ExecutionException, InterruptedException {
-        return getOutsideServerRequest(requestData, 0, Integer.MAX_VALUE);
+    public SearchServerRequest getOpenSearchRequest(GepiRequestData requestData) throws ExecutionException, InterruptedException {
+        return getOpenSearchRequest(requestData, 0, Integer.MAX_VALUE, false);
     }
 
     @Override
-    public SearchServerRequest getOutsideServerRequest(GepiRequestData requestData, int from, int numRows) throws ExecutionException, InterruptedException {
+    public SearchServerRequest getOpenSearchRequest(GepiRequestData requestData, int from, int numRows, boolean forCharts) throws ExecutionException, InterruptedException {
         BoolQuery eventQuery = EventQueries.getOutsideQuery(requestData);
 
         boolean downloadCompleteResults = numRows == 0 || numRows == Integer.MAX_VALUE;
 
-        SearchServerRequest serverCmd = new SearchServerRequest();
-        serverCmd.query = eventQuery;
-        serverCmd.index = documentIndex;
-        serverCmd.start = from;
-        serverCmd.rows = numRows;
+        SearchServerRequest serverRqst = new SearchServerRequest();
+        serverRqst.query = eventQuery;
+        serverRqst.index = documentIndex;
+        serverRqst.start = from;
+        serverRqst.rows = numRows;
         if (downloadCompleteResults)
-            serverCmd.rows = SCROLL_SIZE;
-        serverCmd.fieldsToReturn = Arrays.asList(
-                FIELD_PMID,
-                FIELD_PMCID,
-                FIELD_EVENT_LIKELIHOOD,
-                FIELD_EVENT_SENTENCE,
-                FIELD_EVENT_MAINEVENTTYPE,
-                FIELD_EVENT_ALL_EVENTTYPES,
-                FIELD_EVENT_ARG_GENE_IDS,
-                FIELD_EVENT_ARG_CONCEPT_IDS,
-                FIELD_EVENT_ARG_PREFERRED_NAME,
-                FIELD_EVENT_ARG_MATCH_TYPES,
-                FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
-                FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                FIELD_EVENT_ARG_TEXT,
-                FIELD_GENE_MAPPING_SOURCE);
-        if (numRows == 0)
-            serverCmd.fieldsToReturn = Arrays.asList(
+            serverRqst.rows = SCROLL_SIZE;
+        if (forCharts)
+            serverRqst.fieldsToReturn = Arrays.asList(
                     FIELD_EVENT_ARG_GENE_IDS,
                     FIELD_EVENT_ARG_CONCEPT_IDS,
-                    FIELD_EVENT_ARG_PREFERRED_NAME,
-                    FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
                     FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                    FIELD_EVENT_ARG_TEXT);
-        serverCmd.downloadCompleteResults = downloadCompleteResults;
-        serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
-        if (numRows != 0) {
+                    FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME
+            );
+        else
+            serverRqst.fieldsToReturn =
+                    Arrays.asList(
+                            FIELD_PMID,
+                            FIELD_PMCID,
+                            FIELD_EVENT_LIKELIHOOD,
+                            FIELD_EVENT_SENTENCE,
+                            FIELD_EVENT_MAINEVENTTYPE,
+                            FIELD_EVENT_ALL_EVENTTYPES,
+                            FIELD_EVENT_ARG_GENE_IDS,
+                            FIELD_EVENT_ARG_CONCEPT_IDS,
+                            FIELD_EVENT_ARG_PREFERRED_NAME,
+                            FIELD_EVENT_ARG_MATCH_TYPES,
+                            FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
+                            FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
+                            FIELD_EVENT_ARG_TEXT,
+                            FIELD_GENE_MAPPING_SOURCE);
+        serverRqst.downloadCompleteResults = downloadCompleteResults;
+        serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
+        if (!forCharts) {
             HighlightCommand hlc = new HighlightCommand();
             hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
             hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
@@ -341,9 +351,9 @@ public class EventRetrievalService implements IEventRetrievalService {
                 tq.term = "xargumentx";
                 f.highlightQuery = tq;
             });
-            serverCmd.addHighlightCmd(hlc);
+            serverRqst.addHighlightCmd(hlc);
         }
-        return serverCmd;
+        return serverRqst;
     }
 
 

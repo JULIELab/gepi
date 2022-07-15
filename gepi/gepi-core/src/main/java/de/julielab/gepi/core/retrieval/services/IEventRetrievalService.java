@@ -12,9 +12,9 @@ import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import de.julielab.gepi.core.services.IGeneIdService.IdType;
 
 public interface IEventRetrievalService {
-	CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData);
+	CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, boolean forCharts);
 
-    CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, int from, int numRows);
+    CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts);
 
     /**
 	 * Retrieves events between two lists of genes. The IDs may be of any
@@ -26,8 +26,8 @@ public interface IEventRetrievalService {
      * @param sectionNameFilterString
      * @return Events between the two streams of IDs.
 	 */
-	CompletableFuture<EventRetrievalResult> getBipartiteEvents(Future<IdConversionResult> idStreamA, Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilterString);
-	CompletableFuture<EventRetrievalResult> getBipartiteEvents(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter);
+	CompletableFuture<EventRetrievalResult> closedSearch(Future<IdConversionResult> idStreamA, Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilterString);
+	CompletableFuture<EventRetrievalResult> closedSearch(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter);
 
 	/**
 	 * Retrieves events between the input genes and any genes not on the list.
@@ -39,13 +39,13 @@ public interface IEventRetrievalService {
 	 * @return Events between genes identified by the input stream and other
 	 *         genes.
 	 */
-	CompletableFuture<EventRetrievalResult> getOutsideEvents(GepiRequestData requestData);
+	CompletableFuture<EventRetrievalResult> openSearch(GepiRequestData requestData);
 
-	CompletableFuture<EventRetrievalResult> getOutsideEvents(GepiRequestData requestData, int from, int numRows);
+	CompletableFuture<EventRetrievalResult> openSearch(GepiRequestData gepiRequestData, int from, int numRows, boolean forCharts);
 
-	SearchServerRequest getOutsideServerRequest(GepiRequestData requestData) throws ExecutionException, InterruptedException;
+	SearchServerRequest getOpenSearchRequest(GepiRequestData requestData) throws ExecutionException, InterruptedException;
 
-	SearchServerRequest getOutsideServerRequest(GepiRequestData requestData, int from, int numRows) throws ExecutionException, InterruptedException;
+	SearchServerRequest getOpenSearchRequest(GepiRequestData requestData, int from, int numRows, boolean forCharts) throws ExecutionException, InterruptedException;
 
 	CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String filterFieldsConnectionOperator, String sectionNameFilterString);
 

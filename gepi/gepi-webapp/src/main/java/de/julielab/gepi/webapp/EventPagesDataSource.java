@@ -1,7 +1,6 @@
 package de.julielab.gepi.webapp;
 
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.webapp.data.FilteredGepiRequestData;
 import org.apache.tapestry5.grid.GridDataSource;
@@ -9,7 +8,6 @@ import org.apache.tapestry5.grid.SortConstraint;
 import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -47,7 +45,7 @@ public class EventPagesDataSource implements GridDataSource {
         // TODO support the sort constraints
         try {
             if (events.get().getStartRow() != i || events.get().getEndRow() != i1) {
-                events = eventRetrievalService.getEvents(requestData, i, i1 - i + 1);
+                events = eventRetrievalService.getEvents(requestData, i, i1 - i + 1, false);
                 log.debug("Received {} events where {} events were requested.", events.get().getEventList().size(), i1 - i + 1);
             } else {
                 log.debug("Used {} events from the existing result where {} events were requested.", events.get().getEventList().size(), i1 - i + 1);

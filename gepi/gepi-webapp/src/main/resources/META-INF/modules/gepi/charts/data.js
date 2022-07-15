@@ -74,12 +74,13 @@
                 type
             } = link;
 
-            let color = "";
-            if (type) {
-                color = "gray";
+            let color = "gray";
+            // if (type) {
+            //     color = "gray";
 
-                link.color = color;
-            }
+            //     link.color = color;
+            // }
+            link.color = color;
         }
     }
 

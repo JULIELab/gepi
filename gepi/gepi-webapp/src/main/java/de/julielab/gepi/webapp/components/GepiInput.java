@@ -236,14 +236,14 @@ public class GepiInput {
         requestData = new GepiRequestData(selectedEventTypeNames, listAGePiIds, listBGePiIds, taxId, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
 //        if ((filterString != null && !filterString.isBlank())) {
-        Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE);
-        Future<EventRetrievalResult> unrolledEsResult = eventRetrievalService.getEvents(requestData);
+        Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
+        Future<EventRetrievalResult> unrolledEsResult = eventRetrievalService.getEvents(requestData, true);
 //        } else {
 //        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
 //        }
 
 
-        data = new GePiData(neo4jResult, null, pagedEsResult,listAGePiIds, listBGePiIds);
+        data = new GePiData(neo4jResult, unrolledEsResult, pagedEsResult,listAGePiIds, listBGePiIds);
         log.debug("Setting newly retrieved data for dataSessionId: {}", dataSessionId);
         dataService.putData(dataSessionId, data);
         Index indexPage = (Index) resources.getContainer();

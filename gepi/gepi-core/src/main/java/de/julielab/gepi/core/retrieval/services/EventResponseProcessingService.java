@@ -69,6 +69,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             List<Object> allEventTypes = eventDocument.getFieldValues(FIELD_EVENT_ALL_EVENTTYPES)
                     .orElse(Collections.emptyList());
             List<Object> texts = eventDocument.getFieldValues(FIELD_EVENT_ARG_TEXT).orElse(Collections.emptyList());
+            @Deprecated
             List<Object> matchTypes = eventDocument.getFieldValues(FIELD_EVENT_ARG_MATCH_TYPES).orElse(Collections.emptyList());
             Optional<String> mainEventType = eventDocument.get(FIELD_EVENT_MAINEVENTTYPE);
             Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
@@ -112,7 +113,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             if (likelihood.isPresent())
                 event.setLikelihood(likelihood.get());
             if (mainEventType.isPresent())
-            event.setMainEventType(mainEventType.get());
+                event.setMainEventType(mainEventType.get());
             event.setAllEventTypes(allEventTypes.stream().map(String.class::cast).collect(Collectors.toList()));
             if (sentenceHl != null && !sentenceHl.isEmpty())
                 event.setHlSentence(StringUtils.normalizeSpace(sentenceHl.get(0)));
@@ -123,10 +124,12 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             if (paragraph.isPresent())
                 event.setParagraph(StringUtils.normalizeSpace(paragraph.get()));
             for (int i = 0; i < event.getNumArguments(); i++) {
-                event.getArgument(i).setPreferredName((String) argPrefNames.get(i));
-                event.getArgument(i).setTopHomologyPreferredName((String) argHomologyPrefNames.get(i));
+                if (!argPrefNames.isEmpty())
+                    event.getArgument(i).setPreferredName((String) argPrefNames.get(i));
+                if (!argHomologyPrefNames.isEmpty())
+                    event.getArgument(i).setTopHomologyPreferredName((String) argHomologyPrefNames.get(i));
                 // legacy index support where the matchTypes do not exist
-                if (i < matchTypes.size())
+                if (i < matchTypes.size() && !matchTypes.isEmpty())
                     event.getArgument(i).setMatchType((String) matchTypes.get(i));
             }
             if (event.getHlSentence() != null) {

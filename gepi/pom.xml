@@ -78,7 +78,7 @@
                         </systemProperty>
                     </systemProperties>
                     <skip>true</skip>
-                    <scan>5</scan>
+                    <scan>10</scan>
                 </configuration>
             </plugin>
         </plugins>
