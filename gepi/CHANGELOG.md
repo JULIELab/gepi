@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.0-beta (18/07/2022)
+- [**performance**] Avoid complete result download after each search [#150](https://github.com/JULIELab/gepi/issues/150)
+- [**closed**] Make paragraph text information available for all events [#123](https://github.com/JULIELab/gepi/issues/123)
+
+---
+
 ## v0.8.0-beta2 (13/07/2022)
 - [**bug**] Fix download table creation [#152](https://github.com/JULIELab/gepi/issues/152)
 
