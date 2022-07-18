@@ -239,7 +239,7 @@ public class GepiInput {
 //        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
 //        }
         final String[] aLines = listATextAreaValue.split("\n");
-        final String[] bLines = listBTextAreaValue.split("\n");
+        final String[] bLines = listBTextAreaValue != null ? listBTextAreaValue.split("\n") : new String[0];
         log.info("[{}] A, first elements: {}", dataSessionId, Arrays.asList(aLines).subList(0, Math.min(5, aLines.length)));
         log.info("[{}] B, first elements: {}", dataSessionId, Arrays.asList(aLines).subList(0, Math.min(5, aLines.length)));
         log.info("[{}] taxIds: {}", dataSessionId, taxId);
