@@ -51,4 +51,8 @@
         <location>/error404</location>
     </error-page>
 
+    <session-config>
+        <session-timeout>60</session-timeout>
+    </session-config>
+
 </web-app>

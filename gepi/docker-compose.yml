@@ -1,6 +1,6 @@
 services:
   gepi:
-    image: gepi:0.8.0-SNAPSHOT
+    image: gepi:0.9.0-SNAPSHOT
     container_name: gepi
     ports:
       - 0.0.0.0:80:8080

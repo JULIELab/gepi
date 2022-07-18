@@ -67,7 +67,6 @@ public class GeneIdService implements IGeneIdService {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Multimap<String, String> idMapping = finalConvertedIds.get();
-//                idMapping.forEach((k,v) ->log.debug("{} -> {}", k, v));
                 IdConversionResult idConversionResult = new IdConversionResult(sourceIds, idMapping, from, to);
                 return idConversionResult;
             } catch (Exception e) {
@@ -82,6 +81,7 @@ public class GeneIdService implements IGeneIdService {
             try (Session session = driver.session()) {
 
                 return session.readTransaction(tx -> {
+                    long time = System.currentTimeMillis();
                     Record record;
                     Multimap<String, String> topAtids = HashMultimap.create();
 
@@ -97,6 +97,8 @@ public class GeneIdService implements IGeneIdService {
                         record = result.next();
                         topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
                     }
+                    time = System.currentTimeMillis() - time;
+                    log.info("Converted {} gene names to {} gene IDs for tax IDs {} in {} seconds.", searchInput.length, topAtids.size(), taxIds, time / 1000);
                     return topAtids;
                 });
             }
@@ -108,6 +110,7 @@ public class GeneIdService implements IGeneIdService {
             try (Session session = driver.session()) {
 
                 return session.readTransaction(tx -> {
+                    long time = System.currentTimeMillis();
                     Record record;
                     Multimap<String, String> topAtids = HashMultimap.create();
 
@@ -123,6 +126,8 @@ public class GeneIdService implements IGeneIdService {
                         record = result.next();
                         topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
                     }
+                    time = System.currentTimeMillis() - time;
+                    log.info("Converted {} gene names to {} gene IDs in {} seconds.", searchInput.length, topAtids.size(), time/1000);
                     return topAtids;
                 });
             }
@@ -145,8 +150,8 @@ public class GeneIdService implements IGeneIdService {
     public CompletableFuture<Multimap<String, String>> convertGeneNames2AggregateIds(Stream<String> geneNames) {
         return CompletableFuture.supplyAsync(() -> {
             try (Session session = driver.session()) {
-
                 return session.readTransaction(tx -> {
+                    long time = System.currentTimeMillis();
                     Record record;
                     Multimap<String, String> topAtids = HashMultimap.create();
 
@@ -161,6 +166,8 @@ public class GeneIdService implements IGeneIdService {
                         record = result.next();
                         topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
                     }
+                    time = System.currentTimeMillis() - time;
+                    log.info("Converted {} gene names to {} aggregate gene IDs in {} seconds", searchInput.length, topAtids.size(), time / 1000);
                     return topAtids;
                 });
             }

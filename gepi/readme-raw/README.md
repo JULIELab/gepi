@@ -19,7 +19,7 @@ The `production` stage expects that the complete GePI project has been built in 
 Run the following commands to create a `development` container:
 
 ```bash
-docker build -t gepi:${project.version} --target development .
+DOCKER_BUILDKIT=1 docker build -t gepi:${project.version} --target development .
 docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev -e GEPI_CONFIGURATION=<path to config file> gepi:${project.version}
 ```
 
@@ -38,7 +38,7 @@ To run the `production` container, run
 
 ```bash
 mvn clean package --projects gepi-webapp --also-make
-docker build -t gepi:${project.version} --target production .
+DOCKER_BUILDKIT=1 docker build -t gepi:${project.version} --target production .
 docker run -dp 8080:8080 gepi:${project.version}
 ```
 

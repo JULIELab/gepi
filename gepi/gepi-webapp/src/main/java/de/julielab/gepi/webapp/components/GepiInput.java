@@ -1,9 +1,6 @@
 package de.julielab.gepi.webapp.components;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -223,7 +220,7 @@ public class GepiInput {
         Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, taxId, "listB");
         if (isABSearchRequest) {
             inputMode = EnumSet.of(InputMode.AB);
-        } else if (isAListPresent){
+        } else if (isAListPresent) {
             inputMode = EnumSet.of(InputMode.A);
         }
         log.info("InputMode {}", inputMode);
@@ -241,9 +238,16 @@ public class GepiInput {
 //        } else {
 //        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
 //        }
+        final String[] aLines = listATextAreaValue.split("\n");
+        final String[] bLines = listBTextAreaValue.split("\n");
+        log.info("[{}] A, first elements: {}", dataSessionId, Arrays.asList(aLines).subList(0, Math.min(5, aLines.length)));
+        log.info("[{}] B, first elements: {}", dataSessionId, Arrays.asList(aLines).subList(0, Math.min(5, aLines.length)));
+        log.info("[{}] taxIds: {}", dataSessionId, taxId);
+        log.info("[{}] sentence filter: {}", dataSessionId, sentenceFilterString);
+        log.info("[{}] paragraph filter: {}", dataSessionId, paragraphFilterString);
+        log.info("[{}] section filter: {}", dataSessionId, sectionNameFilterString);
 
-
-        data = new GePiData(neo4jResult, unrolledEsResult, pagedEsResult,listAGePiIds, listBGePiIds);
+        data = new GePiData(neo4jResult, unrolledEsResult, pagedEsResult, listAGePiIds, listBGePiIds);
         log.debug("Setting newly retrieved data for dataSessionId: {}", dataSessionId);
         dataService.putData(dataSessionId, data);
         Index indexPage = (Index) resources.getContainer();

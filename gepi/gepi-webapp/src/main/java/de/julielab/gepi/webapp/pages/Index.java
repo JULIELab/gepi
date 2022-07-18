@@ -171,7 +171,7 @@ public class Index {
     JSONObject onLoadDataToClient() {
         String datasource = request.getParameter("datasource");
         long dataSessionId = Long.parseLong(Optional.ofNullable(request.getParameter("dataSessionId")).orElse("0"));
-        log.debug("Received data request for '{}' for dataSessionId {} from the client.", datasource, dataSessionId);
+        log.debug("[{}] Received data request for '{}' for dataSessionId {} from the client.", dataSessionId, datasource, dataSessionId);
         if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && datasource.equals("bcounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
         GePiData data = dataService.getData(dataSessionId);
@@ -182,20 +182,22 @@ public class Index {
             JSONObject jsonObject = null;
             if (data.getAggregatedResult() != null) {
                 AggregatedEventsRetrievalResult aggregatedEvents = data.getAggregatedResult().get();
-                log.debug("Obtained aggregated events retrieval result with {} events.", aggregatedEvents.size());
+                log.debug("[{}] Obtained aggregated events retrieval result with {} events.", dataSessionId, aggregatedEvents.size());
                 jsonObject = dataService.getPairedArgsCount(aggregatedEvents);
             }
             else {
                 if (datasource.equals("relationCounts")) {
                     List<Event> eventList = data.getUnrolledResult().get().getEventList();
-                    log.debug("Obtained unrolled list of individual events of size {}.", eventList.size());
+                    log.debug("[{}] Obtained unrolled list of individual events of size {}.", dataSessionId, eventList.size());
                     jsonObject = dataService.getPairedArgsCount(eventList);
                 } else if (datasource.equals("acounts")) {
                     JSONArray aCounts = dataService.getArgumentCount(data.getUnrolledResult().get().getEventList(), 0);
+                    log.debug("[{}] Obtained A list counts of size {}.", dataSessionId, aCounts.size());
                     jsonObject = new JSONObject();
                     jsonObject.put("argumentcounts", aCounts);
                 } else if (datasource.equals("bcounts")) {
                     JSONArray bCounts = dataService.getArgumentCount(data.getUnrolledResult().get().getEventList(), 1);
+                    log.debug("[{}] Obtained B list counts of size {}.", dataSessionId, bCounts.size());
                     jsonObject = new JSONObject();
                     jsonObject.put("argumentcounts", bCounts);
                 }

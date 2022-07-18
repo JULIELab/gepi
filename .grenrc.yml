@@ -2,5 +2,10 @@
   dataSource: "issues"
   prefix: ""
   onlyMilestones: false
-  groupBy: "label"
+  groupBy:
+    Hot fixes: ["urgent"]
+    Speed Improvements: ["performance"]
+    General Enhancements: ["enhancement"]
+    Bug Fixes: ["bug"]
+    Miscellaneous Changes: ["closed"] 
   changelogFilename: "CHANGELOG.md"
