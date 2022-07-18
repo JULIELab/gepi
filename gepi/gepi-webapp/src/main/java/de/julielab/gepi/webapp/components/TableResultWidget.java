@@ -14,6 +14,7 @@ import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
 import org.apache.tapestry5.commons.Messages;
+import org.apache.tapestry5.http.Link;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -79,6 +80,7 @@ public class TableResultWidget extends GepiWidget {
     private IEventRetrievalService eventRetrievalService;
     @Inject
     private LoggerSource loggerSource;
+    @Environmental
     private JavaScriptSupport javaScriptSupport;
 
     @Log
@@ -203,5 +205,10 @@ public class TableResultWidget extends GepiWidget {
                 return "application/vnd.ms-excel";
             }
         };
+    }
+
+    public void afterRender() {
+        final Link downloadEventLink = resources.createEventLink("download");
+        javaScriptSupport.require("gepi/charts/tablewidget").with(downloadEventLink.toAbsoluteURI());
     }
 }
