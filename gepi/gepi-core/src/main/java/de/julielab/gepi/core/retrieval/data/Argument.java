@@ -9,7 +9,7 @@ public class Argument implements Comparable<Argument> {
     private String topHomologyPreferredName;
     private String preferredName;
     private String text;
-    private ComparisonMode comparisonMode = ComparisonMode.TOP_HOMOLOGY;
+    private ComparisonMode comparisonMode = ComparisonMode.TOP_HOMOLOGY_ID;
 
     public Argument(String geneId, String conceptId, String topHomologyId, String text) {
         super();
@@ -37,7 +37,7 @@ public class Argument implements Comparable<Argument> {
     }
 
     public void setTopHomologyPreferredName(String topHomologyPreferredName) {
-        this.topHomologyPreferredName = topHomologyPreferredName;
+        this.topHomologyPreferredName = topHomologyPreferredName.toUpperCase();
     }
 
     public String getGeneId() {
@@ -65,7 +65,7 @@ public class Argument implements Comparable<Argument> {
     }
 
     public String getPreferredName() {
-        return preferredName;
+        return preferredName.toUpperCase();
     }
 
     public void setPreferredName(String preferredName) {
@@ -87,8 +87,9 @@ public class Argument implements Comparable<Argument> {
     @Override
     public int compareTo(Argument o) {
         switch (getComparisonMode()) {
-            case TOP_HOMOLOGY:
-                return topHomologyId.compareTo(o.topHomologyId);
+            case TOP_HOMOLOGY_PREFERRED_NAME:
+                return topHomologyPreferredName.compareTo(o.topHomologyPreferredName);
+            case TOP_HOMOLOGY_ID:
             default:
                 return topHomologyId.compareTo(o.topHomologyId);
         }
@@ -98,6 +99,10 @@ public class Argument implements Comparable<Argument> {
     public int hashCode() {
         String keyItem;
         switch (getComparisonMode()) {
+            case TOP_HOMOLOGY_PREFERRED_NAME:
+                keyItem = topHomologyPreferredName;
+                break;
+            case TOP_HOMOLOGY_ID:
             default:
                 keyItem = topHomologyId;
                 break;
@@ -120,6 +125,11 @@ public class Argument implements Comparable<Argument> {
         String otherId;
         Argument other = (Argument) obj;
         switch (getComparisonMode()) {
+            case TOP_HOMOLOGY_PREFERRED_NAME:
+                id = topHomologyPreferredName;
+                otherId = other.topHomologyPreferredName;
+                break;
+            case TOP_HOMOLOGY_ID:
             default:
                 id = topHomologyId;
                 otherId = other.topHomologyId;
@@ -143,7 +153,7 @@ public class Argument implements Comparable<Argument> {
     }
 
     public enum ComparisonMode {
-        TOP_HOMOLOGY
+        TOP_HOMOLOGY_ID, TOP_HOMOLOGY_PREFERRED_NAME
     }
 
 }

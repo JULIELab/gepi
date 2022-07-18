@@ -59,7 +59,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
           this.settings = {
             width: 500,
-            height: 300,
+            height: 350,
             min_height: 200,
             padding_x: 0,
             padding_y: 20,
@@ -183,6 +183,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
               .nodeId((d) => d.id)
               .nodes(the_data.nodes)
               .links(the_data.links);
+              //.extent([[this.settings.padding_x, this.settings.padding_y],[this.settings.padding_x+this.settings.width, this.settings.padding_y+this.settings.height]]);
               //.iterations(0);
 
           console.log('Computing sankey layout...');
@@ -211,7 +212,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             // .attr("stroke-width", (d) => d.width);
 
           links.append('title')
-              .text((link) => [link.source.id, link.target.id, link.color].join());
+              .text((link) => [link.source.id, link.target.id, link.value, link.color].join(', '));
 
           // nodes
           const nodes = svg.append('g')

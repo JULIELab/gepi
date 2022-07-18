@@ -10,14 +10,12 @@ import de.julielab.elastic.query.components.data.query.*;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
-import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +42,14 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS = "argumenttophomoids";
 
+    /**
+     * @deprecated The match type exact/fuzzy was an emergency categorization for the first GeNo version where
+     * there are exact and partial matches. A partial match is a match of a gene name that is not found in exactly in
+     * the NCBI Gene database but has only an overlap with an existing name. The evaluation scores for approximate
+     * matches were bad in the Weepingtree version so that we offered to omit them. In newer versions, this problem
+     * does not exist any more because we only use exact matches or are very restrictive on the partial matches.
+     */
+    @Deprecated
     public static final String FIELD_EVENT_ARG_MATCH_TYPES = "argumentmatchtypes";
 
     public static final String FIELD_EVENT_ARG_TEXT = "argumentcoveredtext";
@@ -51,6 +57,12 @@ public class EventRetrievalService implements IEventRetrievalService {
     public static final String FIELD_EVENT_ARG_PREFERRED_NAME = "argumentprefnames";
 
     public static final String FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME = "argumenthomoprefnames";
+    public static final List<String> FIELDS_FOR_CHARTS = Arrays.asList(
+            FIELD_EVENT_ARG_GENE_IDS,
+            FIELD_EVENT_ARG_CONCEPT_IDS,
+            FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
+            FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME
+    );
 
     public static final String FIELD_EVENT_ARGUMENT1SEARCH = "argument1";
 
@@ -93,6 +105,21 @@ public class EventRetrievalService implements IEventRetrievalService {
     public static final String FIELD_EVENT_LIKELIHOOD = "likelihood";
 
     public static final String FIELD_GENE_MAPPING_SOURCE = "genemappingsource";
+    public static final List<String> FIELDS_FOR_TABLE = Arrays.asList(
+            FIELD_PMID,
+            FIELD_PMCID,
+            FIELD_EVENT_LIKELIHOOD,
+            FIELD_EVENT_SENTENCE,
+            FIELD_EVENT_MAINEVENTTYPE,
+            FIELD_EVENT_ALL_EVENTTYPES,
+            FIELD_EVENT_ARG_GENE_IDS,
+            FIELD_EVENT_ARG_CONCEPT_IDS,
+            FIELD_EVENT_ARG_PREFERRED_NAME,
+            FIELD_EVENT_ARG_MATCH_TYPES,
+            FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
+            FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
+            FIELD_EVENT_ARG_TEXT,
+            FIELD_GENE_MAPPING_SOURCE);
 
     private static final int SCROLL_SIZE = 2000;
     private Logger log;
@@ -110,8 +137,8 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData) {
-        return getEvents(requestData, 0, Integer.MAX_VALUE);
+    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, boolean forCharts) {
+        return getEvents(requestData, 0, Integer.MAX_VALUE, forCharts);
     }
 
     /**
@@ -120,89 +147,77 @@ public class EventRetrievalService implements IEventRetrievalService {
      * @param requestData
      * @param from
      * @param numRows
+     * @param forCharts
      * @return
      */
     @Override
-    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, int from, int numRows) {
+    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         CompletableFuture<EventRetrievalResult> esResult;
         EnumSet<InputMode> inputMode = requestData.getInputMode();
         if (inputMode.contains(InputMode.AB)) {
-            log.debug("Calling EventRetrievalService for AB search");
-            esResult = getBipartiteEvents(requestData.getListAGePiIds(), requestData.getListBGePiIds(), requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
+            log.debug("Calling EventRetrievalService for AB search for rows from {}, number of rows {}, forCharts: {}", from, numRows, forCharts);
+            esResult = closedSearch(requestData, from, numRows, forCharts);
         } else if (inputMode.contains(InputMode.A)) {
-            log.debug("Calling EventRetrievalService for A search");
-            esResult = getOutsideEvents(requestData, from, numRows);
+            log.debug("Calling EventRetrievalService for A search for rows from {}, number of rows {}, forCharts: {}", from, numRows, forCharts);
+            esResult = openSearch(requestData, from, numRows, forCharts);
         } else {
             // No IDs were entered
-            log.debug("Calling EventRetrievalService for scope filtered events");
-            esResult = getFulltextFilteredEvents(requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getFilterFieldsConnectionOperator(), requestData.getSectionNameFilterString());
+            log.debug("Calling EventRetrievalService for scope filtered events for rows from {}, number of rows {}, forCharts: {}", from, numRows, forCharts);
+            esResult = getFulltextFilteredEvents(requestData, from, numRows, forCharts);
         }
         return esResult;
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getBipartiteEvents(Future<IdConversionResult> idStreamA,
-                                                                      Future<IdConversionResult> idStreamB, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilterString) {
+    public CompletableFuture<EventRetrievalResult> closedSearch(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         return CompletableFuture.supplyAsync(() -> {
             try {
 
-                Set<String> idSetA = idStreamA.get().getConvertedItems().values().stream().collect(Collectors.toSet());
+                Set<String> idSetA = requestData.getListAGePiIds().get().getConvertedItems().values().stream().collect(Collectors.toSet());
 
-                Set<String> idSetB = idStreamB.get().getConvertedItems().values().stream().collect(Collectors.toSet());
+                Set<String> idSetB = requestData.getListBGePiIds().get().getConvertedItems().values().stream().collect(Collectors.toSet());
 
                 log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idSetA.size(), idSetB.size());
 
-                BoolQuery eventQuery = EventQueries.getBipartiteQuery(eventTypes, sentenceFilter, paragraphFilter, idSetA, idSetB);
+                final String sentenceFilter = requestData.getSentenceFilterString();
+                final String paragraphFilter = requestData.getParagraphFilterString();
+                BoolQuery eventQuery = EventQueries.getClosedQuery(requestData.getEventTypes(), sentenceFilter, paragraphFilter, requestData.getSectionNameFilterString(), idSetA, idSetB);
 
-                SearchServerRequest serverCmd = new SearchServerRequest();
-                serverCmd.query = eventQuery;
-                serverCmd.index = documentIndex;
-                serverCmd.rows = SCROLL_SIZE;
-                serverCmd.fieldsToReturn = Collections.emptyList();
-                serverCmd.fieldsToReturn = Arrays.asList(
-                        FIELD_PMID,
-                        FIELD_PMCID,
-                        FIELD_EVENT_LIKELIHOOD,
-                        FIELD_EVENT_SENTENCE,
-                        FIELD_EVENT_PARAGRAPH,
-                        FIELD_EVENT_MAINEVENTTYPE,
-                        FIELD_EVENT_ALL_EVENTTYPES,
-                        FIELD_EVENT_ARG_GENE_IDS,
-                        FIELD_EVENT_ARG_CONCEPT_IDS,
-                        FIELD_EVENT_ARG_PREFERRED_NAME,
-                        FIELD_EVENT_ARG_MATCH_TYPES,
-                        FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
-                        FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                        FIELD_EVENT_ARG_TEXT,
-                        FIELD_GENE_MAPPING_SOURCE);
-                serverCmd.downloadCompleteResults = true;
-                serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
-                if (!StringUtils.isBlank(sentenceFilter) || !StringUtils.isBlank(paragraphFilter)) {
+                SearchServerRequest serverRqst = new SearchServerRequest();
+                serverRqst.query = eventQuery;
+                serverRqst.index = documentIndex;
+                serverRqst.rows = SCROLL_SIZE;
+                serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
+                serverRqst.downloadCompleteResults = true;
+                if (!forCharts)
+                    serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
+                if (!forCharts) {
                     HighlightCommand hlc = new HighlightCommand();
                     hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
                     hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
                     hlc.fields.forEach(f -> {
-//                f.boundaryChars = new char[]{'\n', '\t'};
-//                f.type = HighlightCommand.Highlighter.fastvector;
                         f.pre = "<b>";
                         f.post = "</b>";
-//                MatchQuery hlQuery = new MatchQuery();
-//                hlQuery.field = FIELD_EVENT_SENTENCE;
-//                hlQuery.query = "xargumentx";
-//                f.highlightQuery = hlQuery;
+                        TermQuery tq = new TermQuery();
+                        tq.field = f.field;
+                        tq.term = "xargumentx";
+                        f.highlightQuery = tq;
                     });
-                    serverCmd.addHighlightCmd(hlc);
+                    serverRqst.addHighlightCmd(hlc);
                 }
 
-
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier<>("BipartiteEvents");
-                carrier.addSearchServerRequest(serverCmd);
+                carrier.addSearchServerRequest(serverRqst);
+                long time = System.currentTimeMillis();
                 searchServerComponent.process(carrier);
 
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
                         .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
-                log.debug("Retrieved {} bipartite events from ElasticSearch ", eventResult.getEventList().size());
+                eventResult.setStartRow(from);
+                eventResult.setEndRow(from + numRows - 1);
+                time = System.currentTimeMillis() - time;
+                log.debug("Retrieved {} bipartite events from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time/1000, forCharts);
                 eventResult.setResultType(EventResultType.BIPARTITE);
                 reorderBipartiteEventResultArguments(idSetA, idSetB, eventResult);
                 return eventResult;
@@ -215,8 +230,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getBipartiteEvents(IdConversionResult idStream1, IdConversionResult idStream2, List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter) {
-        return getBipartiteEvents(CompletableFuture.completedFuture(idStream1), CompletableFuture.completedFuture(idStream2), eventTypes, sentenceFilter, paragraphFilter, sectionNameFilter);
+    public CompletableFuture<EventRetrievalResult> closedSearch(GepiRequestData requestData) {
+        return closedSearch(requestData, 0, Integer.MAX_VALUE, false);
     }
 
     /**
@@ -245,12 +260,12 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(GepiRequestData requestData) {
-        return getOutsideEvents(requestData, 0, Integer.MAX_VALUE);
+    public CompletableFuture<EventRetrievalResult> openSearch(GepiRequestData requestData) {
+        return openSearch(requestData, 0, Integer.MAX_VALUE, false);
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getOutsideEvents(GepiRequestData gepiRequestData, int from, int numRows) {
+    public CompletableFuture<EventRetrievalResult> openSearch(GepiRequestData gepiRequestData, int from, int numRows, boolean forCharts) {
         assert gepiRequestData.getListAGePiIds() != null : "No A-list IDs set.";
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
@@ -259,23 +274,22 @@ public class EventRetrievalService implements IEventRetrievalService {
 
                 log.debug("Retrieving outside events for {} A IDs", idSet.size());
                 log.trace("The A IDs are: {}", idSet);
-                SearchServerRequest serverCmd = getOutsideServerRequest(gepiRequestData, from, numRows);
+                SearchServerRequest serverCmd = getOpenSearchRequest(gepiRequestData, from, numRows, forCharts);
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
                 carrier.addSearchServerRequest(serverCmd);
                 long time = System.currentTimeMillis();
                 log.debug("Sent server request");
                 searchServerComponent.process(carrier);
-                Thread.sleep(10000);
                 log.debug("Server answered. Reading results.");
 
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
                         .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
                 eventResult.setStartRow(from);
-                eventResult.setEndRow(from+numRows-1);
+                eventResult.setEndRow(from + numRows - 1);
                 time = System.currentTimeMillis() - time;
-                log.debug("Retrieved {} outside events from ElasticSearch in {} seconds", eventResult.getEventList().size(), time / 1000);
+                log.debug("Retrieved {} outside events from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.OUTSIDE);
                 reorderOutsideEventResultsArguments(idSet, eventResult);
                 log.debug("After reordering, the event list has {} elements", eventResult.getEventList().size());
@@ -288,49 +302,28 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public SearchServerRequest getOutsideServerRequest(GepiRequestData requestData) throws ExecutionException, InterruptedException {
-        return getOutsideServerRequest(requestData, 0, Integer.MAX_VALUE);
+    public SearchServerRequest getOpenSearchRequest(GepiRequestData requestData) throws ExecutionException, InterruptedException {
+        return getOpenSearchRequest(requestData, 0, Integer.MAX_VALUE, false);
     }
 
     @Override
-    public SearchServerRequest getOutsideServerRequest(GepiRequestData requestData, int from, int numRows) throws ExecutionException, InterruptedException {
-        BoolQuery eventQuery = EventQueries.getOutsideQuery(requestData);
+    public SearchServerRequest getOpenSearchRequest(GepiRequestData requestData, int from, int numRows, boolean forCharts) throws ExecutionException, InterruptedException {
+        BoolQuery eventQuery = EventQueries.getOpenQuery(requestData);
 
         boolean downloadCompleteResults = numRows == 0 || numRows == Integer.MAX_VALUE;
 
-        SearchServerRequest serverCmd = new SearchServerRequest();
-        serverCmd.query = eventQuery;
-        serverCmd.index = documentIndex;
-        serverCmd.start = from;
-        serverCmd.rows = numRows;
+        SearchServerRequest serverRqst = new SearchServerRequest();
+        serverRqst.query = eventQuery;
+        serverRqst.index = documentIndex;
+        serverRqst.start = from;
+        serverRqst.rows = numRows;
         if (downloadCompleteResults)
-            serverCmd.rows = SCROLL_SIZE;
-        serverCmd.fieldsToReturn = Arrays.asList(
-                FIELD_PMID,
-                FIELD_PMCID,
-                FIELD_EVENT_LIKELIHOOD,
-                FIELD_EVENT_SENTENCE,
-                FIELD_EVENT_MAINEVENTTYPE,
-                FIELD_EVENT_ALL_EVENTTYPES,
-                FIELD_EVENT_ARG_GENE_IDS,
-                FIELD_EVENT_ARG_CONCEPT_IDS,
-                FIELD_EVENT_ARG_PREFERRED_NAME,
-                FIELD_EVENT_ARG_MATCH_TYPES,
-                FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
-                FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                FIELD_EVENT_ARG_TEXT,
-                FIELD_GENE_MAPPING_SOURCE);
-        if (numRows == 0)
-            serverCmd.fieldsToReturn = Arrays.asList(
-                    FIELD_EVENT_ARG_GENE_IDS,
-                    FIELD_EVENT_ARG_CONCEPT_IDS,
-                    FIELD_EVENT_ARG_PREFERRED_NAME,
-                    FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
-                    FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                    FIELD_EVENT_ARG_TEXT);
-        serverCmd.downloadCompleteResults = downloadCompleteResults;
-        serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
-        if (numRows != 0) {
+            serverRqst.rows = SCROLL_SIZE;
+        serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
+        serverRqst.downloadCompleteResults = downloadCompleteResults;
+        if (!forCharts)
+            serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
+        if (!forCharts) {
             HighlightCommand hlc = new HighlightCommand();
             hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
             hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
@@ -342,70 +335,56 @@ public class EventRetrievalService implements IEventRetrievalService {
                 tq.term = "xargumentx";
                 f.highlightQuery = tq;
             });
-            serverCmd.addHighlightCmd(hlc);
+            serverRqst.addHighlightCmd(hlc);
         }
-        return serverCmd;
+        return serverRqst;
     }
 
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String filterFieldsConnectionOperator, String sectionNameFilterString) {
+    public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
-            BoolQuery eventQuery = EventQueries.getFulltextQuery(eventTypes, sentenceFilter, paragraphFilter, filterFieldsConnectionOperator);
+            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString(), requestData.getFilterFieldsConnectionOperator());
 
-            SearchServerRequest serverCmd = new SearchServerRequest();
-            serverCmd.query = eventQuery;
-            serverCmd.index = documentIndex;
-            serverCmd.rows = SCROLL_SIZE;
-            serverCmd.fieldsToReturn = Arrays.asList(
-                    FIELD_PMID,
-                    FIELD_PMCID,
-                    FIELD_EVENT_LIKELIHOOD,
-                    FIELD_EVENT_SENTENCE,
-                    FIELD_EVENT_PARAGRAPH,
-                    FIELD_EVENT_MAINEVENTTYPE,
-                    FIELD_EVENT_ALL_EVENTTYPES,
-                    FIELD_EVENT_ARG_GENE_IDS,
-                    FIELD_EVENT_ARG_CONCEPT_IDS,
-                    FIELD_EVENT_ARG_PREFERRED_NAME,
-                    FIELD_EVENT_ARG_MATCH_TYPES,
-                    FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
-                    FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-                    FIELD_EVENT_ARG_TEXT,
-                    FIELD_GENE_MAPPING_SOURCE);
-            serverCmd.downloadCompleteResults = true;
-            serverCmd.addSortCommand("_doc", SortOrder.ASCENDING);
+            boolean downloadCompleteResults = numRows == 0 || numRows == Integer.MAX_VALUE;
 
-            HighlightCommand hlc = new HighlightCommand();
-            hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
-            hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
-            hlc.fields.forEach(f -> {
-//                f.boundaryChars = new char[]{'\n', '\t'};
-//                f.type = HighlightCommand.Highlighter.fastvector;
-                f.pre = "<b>";
-                f.post = "</b>";
-//                MatchQuery hlQuery = new MatchQuery();
-//                hlQuery.field = FIELD_EVENT_SENTENCE;
-//                hlQuery.query = "xargumentx";
-//                f.highlightQuery = hlQuery;
-            });
-            serverCmd.addHighlightCmd(hlc);
-
+            SearchServerRequest serverRqst = new SearchServerRequest();
+            serverRqst.query = eventQuery;
+            serverRqst.index = documentIndex;
+            serverRqst.rows = numRows;
+            if (downloadCompleteResults)
+                serverRqst.rows = SCROLL_SIZE;
+            serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
+            serverRqst.downloadCompleteResults = downloadCompleteResults;
+            if (!forCharts)
+                serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
+            if (!forCharts) {
+                HighlightCommand hlc = new HighlightCommand();
+                hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
+                hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
+                hlc.fields.forEach(f -> {
+                    f.pre = "<b>";
+                    f.post = "</b>";
+                    TermQuery tq = new TermQuery();
+                    tq.field = f.field;
+                    tq.term = "xargumentx";
+                    f.highlightQuery = tq;
+                });
+                serverRqst.addHighlightCmd(hlc);
+            }
 
             ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("FulltextFilteredEvents");
-            carrier.addSearchServerRequest(serverCmd);
+            carrier.addSearchServerRequest(serverRqst);
             long time = System.currentTimeMillis();
             searchServerComponent.process(carrier);
 
-
             EventRetrievalResult eventResult = eventResponseProcessingService
                     .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
-            // TODO as soon as implemented
-//            eventResult.setStartRow(from);
-//            eventResult.setEndRow(from+numRows-1);
+            eventResult.setStartRow(from);
+            eventResult.setEndRow(from + numRows - 1);
             time = System.currentTimeMillis() - time;
-            log.debug("Retrieved {} fulltext-filtered events in {} seconds", eventResult.getEventList().size(), time / 1000);
+            log.debug("Retrieved {} fulltext-filtered events in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
             eventResult.setResultType(EventResultType.FULLTEXT_FILTERED);
             return eventResult;
         });

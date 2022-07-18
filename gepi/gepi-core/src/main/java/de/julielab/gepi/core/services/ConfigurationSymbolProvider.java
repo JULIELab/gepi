@@ -14,7 +14,7 @@ public class ConfigurationSymbolProvider implements SymbolProvider {
 	public ConfigurationSymbolProvider(Logger log) {
 		String configFileName = System.getProperty(CONFIG_FILE_PROPERTY);
 		try {
-			if (null == configFileName) {
+			if (null == configFileName || configFileName.isBlank()) {
 				String username = System.getProperty("user.name");
 				configFileName = "configuration.properties." + username;
 				log.info(
@@ -29,12 +29,14 @@ public class ConfigurationSymbolProvider implements SymbolProvider {
 					try {
 						this.symbolProvider = new FileSymbolProvider(configFileName);
 					} catch (IOException e1) {
-						log.error("Could not read configuration file at {}: {}", configFileName, e1.getMessage());
+						throw new IllegalArgumentException("Could not read configuration file at " + configFileName, e1);
 					}
 				}
 			}
-			if (null == this.symbolProvider)
+			if (null == this.symbolProvider) {
+				log.info("Loading configuration from {}", configFileName);
 				this.symbolProvider = new ClasspathResourceSymbolProvider(configFileName);
+			}
 		} catch (NullPointerException e) {
 			throw new IllegalStateException(
 					"No configuration file found in the classpath. A configuration file as classpath resource must either be given by the "+CONFIG_FILE_PROPERTY+" system property or there must exist a file named configuration.properties.user.name where user.name is the system user name system property.");

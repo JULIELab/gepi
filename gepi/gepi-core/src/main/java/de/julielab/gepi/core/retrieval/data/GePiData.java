@@ -11,18 +11,23 @@ public class GePiData {
     private long sessionId;
     private Future<AggregatedEventsRetrievalResult> aggregatedResult;
     private Future<EventRetrievalResult> unrolledResult;
+    private Future<EventRetrievalResult> pagedResult;
     private Future<IdConversionResult> listAIdConversionResult;
     private Future<IdConversionResult> listBIdConversionResult;
-
-    public GePiData(Future<AggregatedEventsRetrievalResult> aggregatedResult, Future<EventRetrievalResult> unrolledResult, Future<IdConversionResult> listAIdConversionResult, Future<IdConversionResult> listBIdConversionResult) {
+    public GePiData(Future<AggregatedEventsRetrievalResult> aggregatedResult, Future<EventRetrievalResult> unrolledResult, Future<EventRetrievalResult> pagedResult, Future<IdConversionResult> listAIdConversionResult, Future<IdConversionResult> listBIdConversionResult) {
         this.aggregatedResult = aggregatedResult;
         this.unrolledResult = unrolledResult;
+        this.pagedResult = pagedResult;
         this.listAIdConversionResult = listAIdConversionResult;
         this.listBIdConversionResult = listBIdConversionResult;
     }
 
     private GePiData() {
         // for the EMPTY constant
+    }
+
+    public Future<EventRetrievalResult> getPagedResult() {
+        return pagedResult;
     }
 
     public long getSessionId() {

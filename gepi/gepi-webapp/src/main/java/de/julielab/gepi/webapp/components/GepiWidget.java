@@ -39,7 +39,11 @@ public class GepiWidget {
     @InjectPage
     private Index index;
 
-    public Future<EventRetrievalResult> getEsResult() {
+    public Future<EventRetrievalResult> getPagedEsResult() {
+        return dataService.getData(requestData.getDataSessionId()).getPagedResult();
+    }
+
+    public Future<EventRetrievalResult> getUnrolledResult() {
         return dataService.getData(requestData.getDataSessionId()).getUnrolledResult();
     }
 

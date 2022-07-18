@@ -2,7 +2,6 @@ package de.julielab.gepi.webapp.components;
 
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
-import de.julielab.gepi.core.services.GePiDataService;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.BeanModelEvent;
 import de.julielab.gepi.webapp.base.TabPersistentField;
@@ -15,13 +14,10 @@ import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
 import org.apache.tapestry5.commons.Messages;
-import org.apache.tapestry5.corelib.components.Grid;
-import org.apache.tapestry5.corelib.components.Zone;
-import org.apache.tapestry5.http.services.Request;
+import org.apache.tapestry5.http.Link;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
@@ -32,10 +28,8 @@ import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @Import(stylesheet = {"context:css-components/tablewidget.css"})
 public class TableResultWidget extends GepiWidget {
@@ -86,6 +80,7 @@ public class TableResultWidget extends GepiWidget {
     private IEventRetrievalService eventRetrievalService;
     @Inject
     private LoggerSource loggerSource;
+    @Environmental
     private JavaScriptSupport javaScriptSupport;
 
     @Log
@@ -148,7 +143,7 @@ public class TableResultWidget extends GepiWidget {
     public EventPagesDataSource getEventSource() {
         FilteredGepiRequestData filteredRequest = new FilteredGepiRequestData(requestData);
         filteredRequest.setEventTypeFilter(filterEventType);
-        return new EventPagesDataSource(loggerSource.getLogger(EventPagesDataSource.class), dataService.getData(requestData.getDataSessionId()).getUnrolledResult(), eventRetrievalService, filteredRequest);
+        return new EventPagesDataSource(loggerSource.getLogger(EventPagesDataSource.class), dataService.getData(requestData.getDataSessionId()).getPagedResult(), eventRetrievalService, filteredRequest);
     }
 
     void onUpdateTableData() {
@@ -190,7 +185,7 @@ public class TableResultWidget extends GepiWidget {
             @Override
             public void prepareResponse(Response response) {
                 try {
-                    statisticsFile = dataService.getOverviewExcel(getEsResult().get().getEventList(), requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
+                    statisticsFile = dataService.getOverviewExcel(getPagedEsResult().get().getEventList(), requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
 
                     response.setHeader("Content-Length", "" + statisticsFile.length()); // output into file
                     response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getName());
@@ -210,5 +205,10 @@ public class TableResultWidget extends GepiWidget {
                 return "application/vnd.ms-excel";
             }
         };
+    }
+
+    public void afterRender() {
+        final Link downloadEventLink = resources.createEventLink("download");
+        javaScriptSupport.require("gepi/charts/tablewidget").with(downloadEventLink.toAbsoluteURI());
     }
 }
