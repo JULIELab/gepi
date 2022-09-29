@@ -72,7 +72,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
 
                             // skip events extracted PMC abstracts when there exists a corresponding PubMed document
                             if (paragraphDocument.containsKey("textscope") && paragraphDocument.get("textscope").toString().equals("abstract") && relDoc.get("source").toString().equals("pmc") && relDoc.containsKey("pmid")) {
-                                log.info("DEBUG MESSAGE: Event with arguments ({}, {}) from document {} omitted because it appeared in the abstract and the PubMed document {} corresponds to it", relDoc.get("argument1coveredtext"), relDoc.get("argument2coveredtext"), docId, relDoc.get("pmid"));
+                                log.debug("DEBUG MESSAGE: Event with arguments ({}, {}) from document {} omitted because it appeared in the abstract and the PubMed document {} corresponds to it", relDoc.get("argument1coveredtext"), relDoc.get("argument2coveredtext"), docId, relDoc.get("pmid"));
                                 continue;
                             }
 
@@ -208,7 +208,13 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         List<Zone> zonesAscending = zoneIndex.get(rel).stream().sorted(Comparator.comparingInt(z -> z.getEnd() - z.getBegin())).collect(Collectors.toList());
         ArrayFieldValue zoneHeadings = new ArrayFieldValue();
         IFieldValue textScope = null;
-        Optional<Title> documentTitle = JCasUtil.select(jCas, Title.class).stream().filter(t -> t.getTitleType().equals("document")).findAny();
+        Optional<Title> documentTitle = null;
+        try {
+            documentTitle = JCasUtil.select(jCas, Title.class).stream().filter(t -> t.getTitleType() != null && t.getTitleType().equals("document")).findAny();
+        } catch (Exception e) {
+            log.error("NPE for title " + JCasUtil.select(jCas, Title.class));
+            throw e;
+        }
         AnnotationFS paragraphLike = null;
         Map<Zone, Integer> zoneIds = new HashMap<>();
         int idCounter = 0;

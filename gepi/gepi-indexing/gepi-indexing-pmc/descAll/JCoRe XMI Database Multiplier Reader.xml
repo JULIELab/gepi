@@ -382,6 +382,18 @@
                 </value>
                             
             </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>IncreasedAttributeSize</name>
+                                
+                <value>
+                                        
+                    <integer>80000000</integer>
+                                    
+                </value>
+                            
+            </nameValuePair>
                     
         </configurationParameterSettings>
                 
