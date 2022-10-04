@@ -159,7 +159,9 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         function observeFormSubmit() {
             form = $("form[id^='input']");
             console.log("Adding submit listener")
-            form.on("submit", form => {console.log("Search form was submitted, clearing data chache."); data.clearData();});
+            form.on("submit", form => {console.log("Search form was submitted, clearing data cache."); data.clearData();});
+            // scroll to top; sometimes one needs to scroll down to find the submit button
+            form.on("submit", form => {window.scrollTo(0, 0, {"behavior":"smooth"})});
         }
 
         function observeInputFetchArea() {
