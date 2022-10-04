@@ -33,7 +33,7 @@
 <!--	<logger name="de.julielab.gepi.webapp.state.GePiSessionStateCreator" level="TRACE"/>-->
 <!--	<logger name="de.julielab.gepi.webapp.state.GePiSessionState" level="TRACE"/>-->
 <!--	<logger name="de.julielab.gepi.core.services.GepiCoreModule.IEventResponseProcessingService" level="TRACE"/>-->
-<!--	<logger name="de.julielab.gepi.core.services.GepiCoreModule.IEventRetrievalService" level="TRACE"/>-->
+	<logger name="de.julielab.gepi.core.services.GepiCoreModule.IEventRetrievalService" level="DEBUG"/>
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 <!--		<appender-ref ref="FILE" />-->

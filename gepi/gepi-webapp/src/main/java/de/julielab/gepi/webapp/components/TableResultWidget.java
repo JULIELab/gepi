@@ -24,12 +24,14 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.Future;
 
 @Import(stylesheet = {"context:css-components/tablewidget.css"})
 public class TableResultWidget extends GepiWidget {
@@ -185,7 +187,15 @@ public class TableResultWidget extends GepiWidget {
             @Override
             public void prepareResponse(Response response) {
                 try {
-                    statisticsFile = dataService.getOverviewExcel(getPagedEsResult().get().getEventList(), requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
+                    Future<EventRetrievalResult> unrolledResult4download = getUnrolledResult4download();
+                    // Check if we have the download data cached. Otherwise, get it and cache it
+                    if (unrolledResult4download == null) {
+                        unrolledResult4download = eventRetrievalService.getEvents(requestData, false);
+                        // We use a weak reference for the complete data since it requires much memory because of all
+                        // the context data. The GC should be able to evict it, if necessary.
+                        dataService.getData(requestData.getDataSessionId()).setUnrolledResult4download(new WeakReference<>(unrolledResult4download));
+                    }
+                    statisticsFile = dataService.getOverviewExcel(unrolledResult4download.get().getEventList(), requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
 
                     response.setHeader("Content-Length", "" + statisticsFile.length()); // output into file
                     response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getName());

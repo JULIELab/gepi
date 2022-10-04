@@ -7,3 +7,5 @@ docker run -d --name elasticsearch-preanalyzed -p 9200:9200 -p 9300:9300 -e "dis
 
 And, finally, create an index:
 curl -XPUT http://localhost:9200/gepi_0.2 -H 'Content-Type: application/json' -d @../gepi-indexing-base/src/main/resources/elasticSearchMapping.json
+
+The index must then be filled with documents. Refer to *GePIN Development* section of the main GePIN README.md in the project root for details.

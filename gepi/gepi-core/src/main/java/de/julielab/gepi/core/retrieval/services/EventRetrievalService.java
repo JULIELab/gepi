@@ -57,12 +57,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     public static final String FIELD_EVENT_ARG_PREFERRED_NAME = "argumentprefnames";
 
     public static final String FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME = "argumenthomoprefnames";
-    public static final List<String> FIELDS_FOR_CHARTS = Arrays.asList(
-            FIELD_EVENT_ARG_GENE_IDS,
-            FIELD_EVENT_ARG_CONCEPT_IDS,
-            FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-            FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME
-    );
+
 
     public static final String FIELD_EVENT_ARGUMENT1SEARCH = "argument1";
 
@@ -120,7 +115,12 @@ public class EventRetrievalService implements IEventRetrievalService {
             FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
             FIELD_EVENT_ARG_TEXT,
             FIELD_GENE_MAPPING_SOURCE);
-
+    public static final List<String> FIELDS_FOR_CHARTS = Arrays.asList(
+            FIELD_EVENT_ARG_GENE_IDS,
+            FIELD_EVENT_ARG_CONCEPT_IDS,
+            FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
+            FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME
+    );
     private static final int SCROLL_SIZE = 2000;
     private Logger log;
     private ISearchServerComponent searchServerComponent;

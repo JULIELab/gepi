@@ -65,6 +65,8 @@ public class Argument implements Comparable<Argument> {
     }
 
     public String getPreferredName() {
+        if (preferredName ==  null)
+            throw new IllegalStateException("The preferredName field for Argument with concept id " + conceptId + " is null.");
         return preferredName.toUpperCase();
     }
 

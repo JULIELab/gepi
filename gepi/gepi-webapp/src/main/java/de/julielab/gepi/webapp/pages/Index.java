@@ -91,7 +91,7 @@ public class Index {
             log.debug("Existing dataSessionId is {}", dataSessionId);
         }
         GePiData data = dataService.getData(dataSessionId);
-        resultNonNullOnLoad = data != null && (data.getUnrolledResult() != null || data.getAggregatedResult() != null);
+        resultNonNullOnLoad = data != null && (data.getUnrolledResult4charts() != null || data.getAggregatedResult() != null);
     }
 
     // Handle call with an unwanted context
@@ -112,7 +112,7 @@ public class Index {
 
     private Future<EventRetrievalResult> getEsResult() {
         System.out.println("persistent dataSessionId for getEsResult " + dataSessionId);
-        return dataService.getData(dataSessionId).getUnrolledResult();
+        return dataService.getData(dataSessionId).getUnrolledResult4charts();
     }
 
     private Future<AggregatedEventsRetrievalResult> getNeo4jResult() {
@@ -175,7 +175,7 @@ public class Index {
         if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && datasource.equals("bcounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
         GePiData data = dataService.getData(dataSessionId);
-        if (data.getUnrolledResult() == null && data.getAggregatedResult() == null)
+        if (data.getUnrolledResult4charts() == null && data.getAggregatedResult() == null)
             throw new IllegalStateException("The ES result and the Neo4j result for dataSessionId " + dataSessionId + " are both null.");
         try {
             log.debug("Creating JSON object from results.");
@@ -187,16 +187,16 @@ public class Index {
             }
             else {
                 if (datasource.equals("relationCounts")) {
-                    List<Event> eventList = data.getUnrolledResult().get().getEventList();
+                    List<Event> eventList = data.getUnrolledResult4charts().get().getEventList();
                     log.debug("[{}] Obtained unrolled list of individual events of size {}.", dataSessionId, eventList.size());
                     jsonObject = dataService.getPairedArgsCount(eventList);
                 } else if (datasource.equals("acounts")) {
-                    JSONArray aCounts = dataService.getArgumentCount(data.getUnrolledResult().get().getEventList(), 0);
+                    JSONArray aCounts = dataService.getArgumentCount(data.getUnrolledResult4charts().get().getEventList(), 0);
                     log.debug("[{}] Obtained A list counts of size {}.", dataSessionId, aCounts.size());
                     jsonObject = new JSONObject();
                     jsonObject.put("argumentcounts", aCounts);
                 } else if (datasource.equals("bcounts")) {
-                    JSONArray bCounts = dataService.getArgumentCount(data.getUnrolledResult().get().getEventList(), 1);
+                    JSONArray bCounts = dataService.getArgumentCount(data.getUnrolledResult4charts().get().getEventList(), 1);
                     log.debug("[{}] Obtained B list counts of size {}.", dataSessionId, bCounts.size());
                     jsonObject = new JSONObject();
                     jsonObject.put("argumentcounts", bCounts);

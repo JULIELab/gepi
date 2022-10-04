@@ -234,7 +234,7 @@ public class GepiInput {
         log.debug("Fetching events from ElasticSearch");
 //        if ((filterString != null && !filterString.isBlank())) {
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
-        Future<EventRetrievalResult> unrolledEsResult = eventRetrievalService.getEvents(requestData, true);
+        Future<EventRetrievalResult> unrolledResult4Charts = eventRetrievalService.getEvents(requestData, true);
 //        } else {
 //        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
 //        }
@@ -247,7 +247,7 @@ public class GepiInput {
         log.info("[{}] paragraph filter: {}", dataSessionId, paragraphFilterString);
         log.info("[{}] section filter: {}", dataSessionId, sectionNameFilterString);
 
-        data = new GePiData(neo4jResult, unrolledEsResult, pagedEsResult, listAGePiIds, listBGePiIds);
+        data = new GePiData(neo4jResult, unrolledResult4Charts, pagedEsResult, listAGePiIds, listBGePiIds);
         log.debug("Setting newly retrieved data for dataSessionId: {}", dataSessionId);
         dataService.putData(dataSessionId, data);
         Index indexPage = (Index) resources.getContainer();

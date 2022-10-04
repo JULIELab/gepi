@@ -3,8 +3,6 @@ package de.julielab.gepi.webapp.components;
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
-import de.julielab.gepi.core.retrieval.data.InputMode;
-import de.julielab.gepi.core.services.GePiDataService;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.pages.Index;
 import org.apache.tapestry5.BindingConstants;
@@ -12,7 +10,6 @@ import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
-import java.util.EnumSet;
 import java.util.concurrent.Future;
 
 public class GepiWidget {
@@ -43,8 +40,12 @@ public class GepiWidget {
         return dataService.getData(requestData.getDataSessionId()).getPagedResult();
     }
 
-    public Future<EventRetrievalResult> getUnrolledResult() {
-        return dataService.getData(requestData.getDataSessionId()).getUnrolledResult();
+    public Future<EventRetrievalResult> getUnrolledResult4charts() {
+        return dataService.getData(requestData.getDataSessionId()).getUnrolledResult4charts();
+    }
+
+    public Future<EventRetrievalResult> getUnrolledResult4download() {
+        return dataService.getData(requestData.getDataSessionId()).getUnrolledResult4download().get();
     }
 
     public Future<AggregatedEventsRetrievalResult> getNeo4jResult() {

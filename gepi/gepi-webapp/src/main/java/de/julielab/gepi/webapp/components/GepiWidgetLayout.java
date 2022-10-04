@@ -8,21 +8,15 @@ import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.pages.Index;
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.http.Link;
-import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -104,7 +98,7 @@ final public class GepiWidgetLayout {
     }
 
     public Future<EventRetrievalResult> getEsResult() {
-        return dataService.getData(requestData.getDataSessionId()).getUnrolledResult();
+        return dataService.getData(requestData.getDataSessionId()).getUnrolledResult4charts();
     }
 
     public Future<AggregatedEventsRetrievalResult> getNeo4jResult() {

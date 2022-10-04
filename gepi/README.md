@@ -66,3 +66,18 @@ gepi.neo4j.bolt.url=bolt://<host>:<port>
 ## GePI development
 
 Important note: ***Do not edit the `README.md` file in the module roots*** if there exists a `readme-raw` subdirectory. The file in the root is just a Maven-filtered copy of the `readme-raw/README.md` file. The Maven filtering replaces Maven properties like the project version in the `readme-raw/README.md` file and puts the result in the module root, overriding the previous `README.md` file.
+
+### Development ElasticSearch
+
+For development purposes, an ElasticSearch Docker container can be created using the contents of the `gepi-indexing/es-docker` directory.
+
+In the original development, this container-ES was populated by selecting a random subset of document containing genes from the larger JeDIS database tables of a completely processed PubMed. The CoStoSys subset table for this purpose was called `gepi.dev` which might be found at appropriate places - or not if the last pipeline run was not a development run. The used pipeline was the production `gepi-indexing-pubmed` pipeline with the following adjustments:
+* *JCoRe ElasticSearch Consumer* deactivated
+* *Gazetteer FamPlex Dictionary* deactivated
+* *JCoRe ElasticSearch Consumer Localhost* activated 
+* *Gazetteer FamPlex Dictionary dev* 
+* DB XMI reader configured to read from the `gepi.dev` subset table
+* `config/costosys.xml` file must use the `DBConnection` called `pmlocalhost`
+    * this required that the JeDIS database runs at the localhost or there is an SSH tunnel to the database server
+
+The ES Consumer resources that these components use were the original resources derived from the production Neo4j gene database so that the production database could be used for development.
