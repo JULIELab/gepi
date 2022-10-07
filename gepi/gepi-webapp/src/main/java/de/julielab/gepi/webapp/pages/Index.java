@@ -172,7 +172,7 @@ public class Index {
         String datasource = request.getParameter("datasource");
         long dataSessionId = Long.parseLong(Optional.ofNullable(request.getParameter("dataSessionId")).orElse("0"));
         log.debug("[{}] Received data request for '{}' for dataSessionId {} from the client.", dataSessionId, datasource, dataSessionId);
-        if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && datasource.equals("bcounts"))
+        if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && !datasource.equals("bcounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
         GePiData data = dataService.getData(dataSessionId);
         if (data.getUnrolledResult4charts() == null && data.getAggregatedResult() == null)

@@ -13,14 +13,16 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         setup() {
           index.getReadySemaphor().done(() => {
             data.awaitData('acounts', this.widgetSettings.dataSessionId).done(() => {
-              const inputcolReadyPromise = $('#inputcol').data('animationtimer');
-              if (inputcolReadyPromise) {
-                inputcolReadyPromise.done(() => {
-                    this.init(this.elementId, this.orderType);
-                });
-              } else {
-                this.init(this.elementId, this.orderType);
-              }
+                data.awaitData('bcounts', this.widgetSettings.dataSessionId).done(() => {
+                  const inputcolReadyPromise = $('#inputcol').data('animationtimer');
+                  if (inputcolReadyPromise) {
+                    inputcolReadyPromise.done(() => {
+                        this.init(this.elementId);
+                    });
+                  } else {
+                    this.init(this.elementId);
+                  }
+               });
             });
           });
         }
@@ -28,20 +30,25 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         init() {
             // Remove the Loading... banner
             $('#' + this.elementId + '-outer .text-center.shine').remove();
-            
-            const argCounts = data.getData('acounts')['argumentcounts'];
+
+            this.drawPieChart('acounts', this.elementId+'-acounts');
+            this.drawPieChart('bcounts', this.elementId+'-bcounts')
+        }
+
+        drawPieChart(countType, parentElementId) {
+            const argCounts = data.getData(countType)['argumentcounts'];
             let argMap = {}
             for (let i = 0; i < argCounts.length; i++)
                 argMap[argCounts[i][0]] = argCounts[i][1]
 
-            let svg = d3.select('#'+this.elementId)
+            let svg = d3.select('#'+parentElementId)
                 .append('svg')
                 .attr('width', 300)
                 .attr('height', 300);
-            
+
             let colorScale = d3.scaleOrdinal().domain(argCounts.map(i => i[0])).range(d3.schemeSet2);
             let maxFrequency = d3.max(argCounts.map(x => x[1]));
-            
+
             let sequentialScale = d3.scaleSequential()
                 .domain([0, maxFrequency])
                 .interpolator(d3.interpolateViridis);
