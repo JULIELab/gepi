@@ -84,31 +84,25 @@
                     </div>
                 </div>
                 <div class="row mt-3">
-                    <hr class=""/>
-                    <div class="col-12">
-                        <h5>Enter words to filter the paragraphs in which returned events occur.</h5>
-                        <t:TextField t:id="paragraphfilter" value="paragraphfilterstring"/>
+                    <div class="col-12 text-center mx-auto">
+                        <div class="btn-group" role="group" aria-label="Boolean connector between sentence and paragraph level filtering">
+                            <t:RadioGroup t:id="kwgroup" value="filterFieldsConnectionOperator" class="btn-group" role="group" aria-label="Boolean connector between sentence and paragraph level filtering">
+                                    <t:Radio t:id="and" id="and" class="btn-check" type="radio"
+                                             value="literal:AND"
+                                             label="AND"/>
+                                    <t:label for="and" class="btn btn-outline-primary"/>
+                                    <t:Radio t:id="or" class="btn-check" id="or" type="radio"
+                                             value="literal:OR"
+                                             label="OR"/>
+                                    <t:label for="or" class="btn btn-outline-primary"/>
+                            </t:RadioGroup>
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-12">
-                        <div>
-                            Keyword Operator
-                            <t:RadioGroup t:id="kwgroup" value="filterFieldsConnectionOperator">
-                                <div class="form-check form-check-inline">
-                                    <t:Radio t:id="and" id="and" class="form-check-input" type="radio"
-                                             value="literal:AND"
-                                             label="AND"/>
-                                    <t:label for="and" class="form-check-label"/>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <t:Radio t:id="or" class="form-check-input" id="or" type="radio"
-                                             value="literal:OR"
-                                             label="OR"/>
-                                    <t:label for="or" class="form-check-label"/>
-                                </div>
-                            </t:RadioGroup>
-                        </div>
+                        <h5>Enter words to filter the paragraphs in which returned events occur.</h5>
+                        <t:TextField t:id="paragraphfilter" value="paragraphfilterstring"/>
                     </div>
                 </div>
                 <div class="row mt-3">
