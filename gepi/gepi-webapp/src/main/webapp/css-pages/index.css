@@ -84,7 +84,8 @@ body.noScroll {
 }
 
 
-/* The a and .pagination styles are taken from Bootstrap 3/4 because Tapestry uses those Bootstrap versions.
+/* Fixes for Tapestry using an older Bootstrap version
+    The a and .pagination styles are taken from Bootstrap 3/4 because Tapestry uses those Bootstrap versions.
    Thus, the Grid component sets the respective classes. Since we use a newer Bootstrap version, this leads
    to missing styling. This is fixed here for the Grid component. */
 a {
@@ -125,3 +126,49 @@ a:active, a:hover {
          border-bottom-color: rgb(221, 221, 221);
          border-left-color: rgb(221, 221, 221);
  }
+
+
+/* The form verification error panel and error messages misses some styles. Taken from tapestry-core-5.8.1.jar/META-INF/assets/tapestry5/bootstrap/css/bootstrap.css */
+
+.help-block {
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  color: #737373;
+}
+
+/* This is a custom style to hide the 'x' letter that is replaced by the larger bootstrap5 X */
+.alert .btn-close {
+    color: rgba(0, 0, 0, 0);
+}
+
+.has-error .help-block,
+.has-error .control-label,
+.has-error .radio,
+.has-error .checkbox,
+.has-error .radio-inline,
+.has-error .checkbox-inline,
+.has-error.radio label,
+.has-error.checkbox label,
+.has-error.radio-inline label,
+.has-error.checkbox-inline label {
+  color: #a94442;
+}
+.has-error .form-control {
+  border-color: #a94442;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+.has-error .form-control:focus {
+  border-color: #843534;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+}
+.has-error .input-group-addon {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #a94442;
+}
+.has-error .form-control-feedback {
+  color: #a94442;
+}

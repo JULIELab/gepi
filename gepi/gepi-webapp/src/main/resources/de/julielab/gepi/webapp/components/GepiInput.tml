@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
-    <div class="card no-outline" tabindex="0">
-        <div class="card-header">
-            <h4 class="text-center">
-                Input Specification
-            </h4>
-        </div>
-        <div class="card-body">
-            <div id="inputcolhandle" class="background-arrow-left fade no-outline"/>
-            <form role="form" t:type="form" async="true" t:id="inputform" id="inputform">
+    <form role="form" t:type="form" async="true" t:id="inputform" id="inputform">
+        <div class="card no-outline" tabindex="0">
+            <div class="card-header">
+                <h4 class="text-center">
+                    Input Specification
+                </h4>
+            </div>
+            <div class="card-body">
+                <div id="inputcolhandle" class="background-arrow-left fade no-outline"/>
                 <!-- Hidden field to store the data session ID to the client -->
                 <t:textfield t:id="dataSessionIdField" value="dataSessionId" hidden="true"
                              title="Hidden field to store session information."/>
@@ -58,68 +58,71 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-3">
-                    <hr class=""/>
-                    <div class="col-6">
-                        <h5>Filter the search and results for the following organism</h5>
-                        <h6 class="card-subtitle mb-3 text-muted">Add multiple IDs separated by commas</h6>
-                        <t:label for="organismInput">NCBI Taxonomy ID</t:label>
-                        <t:textfield t:id="organismInput" id="organismInput" value="taxId"/>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <hr class=""/>
-                    <div id="eventtypediv" class="col-12">
-                        <h5>Restrict event retrieval to the following event types.
-                        </h5>
-                        <t:checklist t:id="eventtypes" selected="selectedeventtypes" encoder="eventtypeencoder"
-                                     model="eventtypemodel" class="testclass" t:t-checklist-row="testzeugs"/>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <hr class=""/>
-                    <div class="col-12">
-                        <h5>Enter words to filter the sentences in which returned events occur.</h5>
-                        <t:TextField t:id="sentencefilter" value="sentencefilterstring"/>
-                    </div>
-                </div>
-                <div class="row mt-3">
+            </div>
+            <t:errors globalOnly="false"/>
+        </div>
+        <div class="card">
+            <h6 class="card-header text-center">Filter the results by organism<button type="button" class="btn btn-outline-light widget-tool-symbol info float-end" data-bs-toggle="tooltip" title="Acceptable items are species IDs from the NCBI Taxonomy. Examples include 9606 for human or 10090 for mus musculus. Refer to the NCBI Taxonomy web page for a comprehensive catalogue of species."/></h6>
+            <div class="card-body">
+                <h6 class="card-subtitle mb-3 text-muted">Add multiple IDs separated by commas</h6>
+                <t:label for="organismInput">NCBI Taxonomy IDs</t:label> <!--https://www.ncbi.nlm.nih.gov/taxonomy-->
+                <t:textfield t:id="organismInput" id="organismInput" value="taxId"/>
+            </div>
+        </div>
+        <div class="card">
+            <h6 class="card-header text-center">Filter the result by interaction type<button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"/></h6>
+            <div class="card-body" id="eventtypediv">
+                <t:checklist t:id="eventtypes" selected="selectedeventtypes" encoder="eventtypeencoder"
+                             model="eventtypemodel" t-checklist-row="testzeugs"/>
+            </div>
+        </div>
+        <div class="card">
+            <h6 class="card-header text-center">Filter the result by keywords occurring in the context of
+                interactions<button type="button"  class="btn btn-outline-light widget-tool-symbol info float-end"/>
+            </h6>
+            <div class="card-body">
+                <t:TextField t:id="sentencefilter" id="sentencefilter" t:clientId="sentencefilter" value="sentencefilterstring"
+                             placeholder="Provide keywords that must appear in the sentence of the interaction"/>
+                <div class="row mt-3 mb-3">
                     <div class="col-12 text-center mx-auto">
-                        <div class="btn-group" role="group" aria-label="Boolean connector between sentence and paragraph level filtering">
-                            <t:RadioGroup t:id="kwgroup" value="filterFieldsConnectionOperator" class="btn-group" role="group" aria-label="Boolean connector between sentence and paragraph level filtering">
-                                    <t:Radio t:id="and" id="and" class="btn-check" type="radio"
-                                             value="literal:AND"
-                                             label="AND"/>
-                                    <t:label for="and" class="btn btn-outline-primary"/>
-                                    <t:Radio t:id="or" class="btn-check" id="or" type="radio"
-                                             value="literal:OR"
-                                             label="OR"/>
-                                    <t:label for="or" class="btn btn-outline-primary"/>
+                        <div class="btn-group" role="group"
+                             aria-label="Boolean connector between sentence and paragraph level filtering">
+                            <t:RadioGroup t:id="kwgroup" value="filterFieldsConnectionOperator" class="btn-group"
+                                          role="group"
+                                          aria-label="Boolean connector between sentence and paragraph level filtering">
+                                <t:Radio t:id="and" id="and" class="btn-check" type="radio"
+                                         value="literal:AND"
+                                         label="AND"/>
+                                <t:label for="and" class="btn btn-outline-primary"/>
+                                <t:Radio t:id="or" class="btn-check" id="or" type="radio"
+                                         value="literal:OR"
+                                         label="OR"/>
+                                <t:label for="or" class="btn btn-outline-primary"/>
                             </t:RadioGroup>
                         </div>
                     </div>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <h5>Enter words to filter the paragraphs in which returned events occur.</h5>
-                        <t:TextField t:id="paragraphfilter" value="paragraphfilterstring"/>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <hr class=""/>
-                    <h5>Section name filter</h5>
-                    <div class="col-12">
-                        <t:TextField t:id="sectionnamefilter" value="sectionnamefilterstring" />
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <hr class="medium bottom top"/>
-                    <div class="col-12 text-center">
-                        <t:submit class="btn btn-primary btn-block" value="Go!"/>
-                    </div>
-                </div>
-                <t:errors globalOnly="false"/>
-            </form>
+                <t:TextField t:id="paragraphfilter" id="paragraphfilter" t:clientId="paragraphfilter" value="paragraphfilterstring"
+                             placeholder="Provide keywords that must appear in the paragraph or abstract of the interaction"/>
+            </div>
         </div>
-    </div>
+        <div class="card">
+            <h6 class="card-header text-center">Filter the result by keywords occurring in headings that contain
+                interactions<button type="button"  class="btn btn-outline-light widget-tool-symbol info float-end"/>
+            </h6>
+            <div class="card-body">
+                <t:TextField t:id="sectionnamefilter" id="sectionnamefilter" t:clientId="sectionnamefilter" value="sectionnamefilterstring"
+                             placeholder="Provide keywords that must appear in the section headings or document title"/>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row mt-3 mb-3">
+                    <div class="col-12 text-center">
+                        <t:submit class="btn btn-primary btn-block w-25" value="Go!"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </t:container>

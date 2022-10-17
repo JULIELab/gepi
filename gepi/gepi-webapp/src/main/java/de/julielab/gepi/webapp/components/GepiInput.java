@@ -67,6 +67,9 @@ public class GepiInput {
     @InjectComponent
     private TextField paragraphFilter;
 
+    @InjectComponent
+    private TextField sectionnameFilter;
+
     @Property
     @Persist(TabPersistentField.TAB)
     private String listATextAreaValue;
@@ -196,11 +199,13 @@ public class GepiInput {
         boolean noIdsGiven = listATextAreaValue == null || listATextAreaValue.isEmpty();
         boolean noSentenceFilterGiven = sentenceFilterString == null || sentenceFilterString.isBlank();
         boolean noParagraphFilterGiven = paragraphFilterString == null || paragraphFilterString.isBlank();
-        if (noIdsGiven && noSentenceFilterGiven && noParagraphFilterGiven) {
-            String msg = "Either lists of gene IDs or names must be given or a filter query to restrict the returned events.";
-            inputForm.recordError(lista, msg);
-            inputForm.recordError(sentenceFilter, msg + "1");
-            inputForm.recordError(paragraphFilter, msg + "2");
+        boolean noSectionHeadingFilterGiven = sectionNameFilterString == null || sectionNameFilterString.isBlank();
+        if (noIdsGiven && noSentenceFilterGiven && noParagraphFilterGiven && noSectionHeadingFilterGiven) {
+            inputForm.recordError("Input is required to start a search for molecular interactions. There are different ways to start a search. Each possibility presented below or any combination of them can start a search.");
+            inputForm.recordError(lista, "Enter a list of NCBI Gene IDs or NCBI Gene symbols into List A to search for interactions that include the provided genes.");
+            inputForm.recordError(sentenceFilter, "Enter keywords to filter the interactions for words appearing in the same sentence.");
+            inputForm.recordError(paragraphFilter, "Enter keywords to filter the interactions for words appearing in the same paragraph or abstract.");
+            inputForm.recordError(sectionnameFilter, "Enter keywords to filter the interactions for words appearing in the section or abstract where the interaction appears in.");
             return;
         }
     }
