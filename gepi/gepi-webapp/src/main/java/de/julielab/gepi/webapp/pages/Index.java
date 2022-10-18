@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
 /**
  * Start page of application gepi-webapp.
  */
-@Import(stylesheet = {"context:css-pages/index.css"}, library = {"context:bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js"})
+@Import(stylesheet = {"context:css-pages/index.css"})
 public class Index {
     @Inject
     private ComponentResources resources;

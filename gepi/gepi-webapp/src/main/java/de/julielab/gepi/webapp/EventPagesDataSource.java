@@ -61,7 +61,6 @@ public class EventPagesDataSource implements GridDataSource {
     @Override
     public Object getRowValue(int i) {
         try {
-            System.out.println("Get row value " + i + " in list of size " + events.get().getEventList().size());
             return new BeanModelEvent(events.get().getEventList().get(i - start));
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException(e);

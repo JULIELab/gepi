@@ -1,4 +1,4 @@
-define(["jquery"], function($) {
+define(["jquery", "bootstrap5/modal"], function($, modal) {
 	$('#downloadModal').modal();
 	return function(downloadUrl){
 		$('#downloadButton').on('click', function(){

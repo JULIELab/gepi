@@ -113,8 +113,10 @@ public class EventRetrievalService implements IEventRetrievalService {
             FIELD_EVENT_ARG_MATCH_TYPES,
             FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
             FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-            FIELD_EVENT_ARG_TEXT,
-            FIELD_GENE_MAPPING_SOURCE);
+            FIELD_EVENT_ARG_TEXT
+//            ,
+//            FIELD_GENE_MAPPING_SOURCE
+    );
     public static final List<String> FIELDS_FOR_CHARTS = Arrays.asList(
             FIELD_EVENT_ARG_GENE_IDS,
             FIELD_EVENT_ARG_CONCEPT_IDS,

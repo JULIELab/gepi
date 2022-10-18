@@ -13,6 +13,8 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         togglelistb();
         observelistachange();
         setuplistfileselectors();
+        setuplistfiledragndrop(listaId);
+        setuplistfiledragndrop(listbId);
         setupclearbuttons();
         setupShowInputPanel();
         observekeypress();
@@ -35,7 +37,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
          */
         function observelistbchange() {
             $(listb).on("input change", function() {
-                togglelistaoptions();
+//                togglelistaoptions();
             });
         }
 
@@ -76,6 +78,40 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
             });
         }
 
+        /*
+         * Enabled drag & drop functionality for a text area. We use it to drop file lists to the listA and listB
+         * text areas.
+         */
+
+        function setuplistfiledragndrop(textAreaId) {
+            textarea = document.getElementById(textAreaId);
+            textarea.addEventListener("dragenter", dragenter, false);
+            textarea.addEventListener("dragover", dragover, false);
+            textarea.addEventListener("drop", e => drop(e, textAreaId), false);
+        }
+
+        /* Prohibit unwanted side effects from other component through the dragging */
+        function dragenter(e) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+
+        /* Prohibit unwanted side effects from other component through the dragging */
+        function dragover(e) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+
+        /* Load a file dragged on a text area and set the contents to the text area */
+        function drop(e, textarea) {
+          e.stopPropagation();
+          e.preventDefault();
+
+          const dt = e.dataTransfer;
+
+          loadfile(dt, textarea, togglelistb);
+        }
+
         function setupclearbuttons() {
             $("#cleara").on("click", function() {
                 $(lista).val("");
@@ -106,13 +142,14 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
          * empty.
          */
         function togglelistaoptions() {
-            let islistbempty = $(listb).val().length == 0;
-            let listaoptions = $("#listaoptions input");
-            if (islistbempty) {
-                listaoptions.attr("disabled", false);
-            } else {
-                listaoptions.attr("disabled", true);
-            }
+        // There is currently nothing to do. The options below currently do not exist.
+//            let islistbempty = $(listb).val().length == 0;
+//            let listaoptions = $("#listaoptions input");
+//            if (islistbempty) {
+//                listaoptions.attr("disabled", false);
+//            } else {
+//                listaoptions.attr("disabled", true);
+//            }
         }
 
         /*
@@ -121,7 +158,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
          */
         function togglelistb() {
             let islistaempty = $(lista).val().length == 0;
-            let listbelements = $("#listbdiv textarea, #listbdiv label, #listbdiv button")
+            let listbelements = $("#listbdiv textarea, #listbdiv label, #listbdiv input, #listbdiv button")
             let listbdiv = $("#listbdiv");
             if (islistaempty) {
                 listbelements.attr("disabled", true);
