@@ -1,10 +1,7 @@
 package de.julielab.gepi.webapp.components;
 
 import org.apache.tapestry5.BindingConstants;
-import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.Log;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -12,6 +9,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.services.IGePiDataService;
 
+@Import(stylesheet = {"context:css-components/piechartwidget.css"})
 public class PieChartWidget extends GepiWidget {
 
     @Inject
@@ -31,6 +29,7 @@ public class PieChartWidget extends GepiWidget {
     void afterRender() {
         if (component.isResultLoading() || component.isResultAvailable()) {
             javaScriptSupport.require("gepi/charts/piechart").with(elementId, component.getWidgetSettings());
+            javaScriptSupport.require("bootstrap5/tab");
         }
     }
 

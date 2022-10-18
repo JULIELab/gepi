@@ -43,7 +43,7 @@
                                     List B
                                     <span class="text-muted">optional</span>
                                 </t:label>
-                                <t:textarea class="form-control" rows="20" t:id="listb" id="listb"
+                                <t:textarea class="form-control" rows="20" t:id="listb" id="listb" t:clientId="listb"
                                             placeholder="Becomes available when List A is not empty. Copy in your second list of IDs here or use the upload function."
                                             value="listbtextareavalue">
                                 </t:textarea>
@@ -107,7 +107,7 @@
             </div>
         </div>
         <div class="card">
-            <h6 class="card-header text-center">Filter the result by keywords occurring in headings that contain
+            <h6 class="card-header text-center">Filter the result by keywords occurring in headings of sections and abstracts that contain
                 interactions<button type="button"  class="btn btn-outline-light widget-tool-symbol info float-end"/>
             </h6>
             <div class="card-body">

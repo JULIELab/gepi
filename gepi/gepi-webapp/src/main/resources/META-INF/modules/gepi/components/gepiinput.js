@@ -84,6 +84,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
          */
 
         function setuplistfiledragndrop(textAreaId) {
+            console.log(textAreaId)
             textarea = document.getElementById(textAreaId);
             textarea.addEventListener("dragenter", dragenter, false);
             textarea.addEventListener("dragover", dragover, false);
