@@ -36,51 +36,127 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         }
 
         drawPieChart(countType, parentElementId) {
-            const argCounts = data.getData(countType)['argumentcounts'];
-            let argMap = {}
-            for (let i = 0; i < argCounts.length; i++)
-                argMap[argCounts[i][0]] = argCounts[i][1]
+            let argCounts = data.getData(countType)['argumentcounts'];
+            const sum = argCounts.reduce((accumulator, value) => accumulator + value[1], 0);
+            argCounts = argCounts.map(x => {return {label: x[0], value: x[1], percentage: x[1]/sum}})
+            
+            let width = 400,
+                height = 300,
+                radius = Math.min(width, height) / 2;
 
             let svg = d3.select('#'+parentElementId)
                 .append('svg')
-                .attr('width', 300)
-                .attr('height', 300);
+                .attr('class', 'piechartcanvas')
+                .append('g');
 
-            let colorScale = d3.scaleOrdinal().domain(argCounts.map(i => i[0])).range(d3.schemeSet2);
-            let maxFrequency = d3.max(argCounts.map(x => x[1]));
+            svg.append('g')
+                .attr('class', 'slices')
+            svg.append('g')
+                .attr('class', 'callouts');
+            svg.append('g')
+                .attr('class', 'labels');
+            svg.append('g')
+                .attr('class', 'percentages')
+
+            svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+            let colorScale = d3.scaleOrdinal().domain(argCounts.map(d => d.label)).range(d3.schemeAccent);
+            let maxFrequency = d3.max(argCounts.map(d => d.value));
 
             let sequentialScale = d3.scaleSequential()
                 .domain([0, maxFrequency])
                 .interpolator(d3.interpolateViridis);
             // the data items are arrays where first element is the gene symbol and the second is the count
             let pieGen = d3.pie()
-                .value(d => d[1])
+                .value(d => d.value)
             let arc = d3.arc()
-                .innerRadius(0)
-                .outerRadius(100);
+                .innerRadius(radius * 0.2)
+                .outerRadius(radius * 0.6);
+
+            let outerArc = d3.arc()
+                .innerRadius(radius * 0.8)
+                .outerRadius(radius * 0.8);
 
             let pie = pieGen(argCounts)
-            console.log(pie)
-            let g = svg.append('g')
-                .attr('transform', 'translate(150,150)');
-            g.selectAll('path')
+            svg.select('.slices')
+                .selectAll('path')
                 .data(pie)
                 .enter()
                 .append('path')
+                .attr('class', 'slice')
+                .attr('opacity', '.7')
                 .attr('d', arc)
-                .attr('fill', d => colorScale(d.value))
-            g.selectAll('path')
-                .append('title')
-                .text(d => d.data[0])
-            g.selectAll('text')
+                .attr('fill', (d,i) => colorScale(i))
+                .on('mouseover', function(d,i) {
+                    d3.select(this).transition()
+                        .duration('400')
+                        .attr('opacity', '1');
+                })
+                .on('mouseout', function(d,i) {
+                    d3.select(this).transition()
+                        .duration('400')
+                        .attr('opacity', '.7');
+                });
+
+            function midAngle(d){
+                return d.startAngle + (d.endAngle - d.startAngle)/2;
+            }
+
+            /* ------- labels ---------- */
+
+           svg.select(".labels")
+                .selectAll("text")
                 .data(pie)
                 .enter()
-                .filter(d => (d.endAngle - d.startAngle)*100 > 30)
-                .append('text')
-                .text(d => d.data[0])
-                .attr('transform', d => 'translate('+arc.centroid(d)+')')
+                .append("text")
+                .attr("dy", ".35em")
+                .text(function(d) {
+                    return d.data.label;
+                 })
+                .attr("transform", function(d) {
+                     let pos = outerArc.centroid(d);
+                     pos[0] = radius * (midAngle(d) < Math.PI ? 1 : -1);
+                     return "translate("+ pos +")";
+                 })
+                .style("text-anchor", function(d){
+                   return midAngle(d) < Math.PI ? "start":"end";
+                 });
+    
+            /* ------- percentages -------- */
+
+            svg.select('.percentages')
+                .selectAll('text')
+                .data(pie)
+                .enter()
+                .append("text")
+                .text(function(d){
+                    return Math.round(100 * d.data.percentage) + '%';
+                })
+                .attr('class', 'percentage')
+                .attr('transform', function(d) {
+                    let pos = arc.centroid(d);
+                    return 'translate(' + pos + ')';
+                })
                 .style('text-anchor', 'middle')
-        }
+                .style('dominant-baseline', 'middle');
+
+            /* ------- callouts ---------- */
+
+            svg.select(".callouts")
+                .selectAll("polyline")
+                .data(pie)
+                .enter()
+                .append("polyline")
+                .attr('class', 'callout')
+                .attr("points", function(d){
+                    let labelPoint = outerArc.centroid(d);
+                    labelPoint[0] = radius * 0.95 * (midAngle(d) < Math.PI ? 1 : -1);
+                    let slicePoint = arc.centroid(d)
+                    slicePoint[0] = slicePoint[0] * 1.3
+                    slicePoint[1] = slicePoint[1] * 1.3
+                    return [slicePoint, outerArc.centroid(d), labelPoint];
+                }); 
+        }        
     }
 
     return function newPieWidget(elementId, widgetsettings) {
