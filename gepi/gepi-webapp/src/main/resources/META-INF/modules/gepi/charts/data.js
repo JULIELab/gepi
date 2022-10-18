@@ -9,7 +9,6 @@
     let dataUrl = null;
 
     function getSortedNodes(nodesNLinks, orderFunction) {
-        console.log("Calling order function");
         let t0 = performance.now();
         nodesObject = functions[orderFunction](nodesNLinks);
         nodesObject.leftnodes.sort((a, b) => b[orderFunction] - a[orderFunction]);
@@ -22,7 +21,6 @@
 
     function setDataUrl(url) {
         dataUrl = url;
-        console.log("URL to request data has been set to " + dataUrl);
     }
 
     function getDataUrl() {
@@ -30,7 +28,6 @@
     }
 
     function clearData() {
-        console.log("Clearing cached relation data")
         data = new Map();
         requestedData = new Map();
     }
@@ -55,7 +52,6 @@
 // TODO dataSessionId must be part of the key
         let promise = requestedData.get(sourceName);
         if (!promise) {
-            console.log("Creating new promise for data " + sourceName);
             promise = $.Deferred();
             requestedData.set(sourceName, promise);
             loadData(sourceName, dataSessionId);

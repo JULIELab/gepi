@@ -1,7 +1,10 @@
 .piechartcanvas {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    width: 400px;
-    height: 300px;
+    height: 100%;
+}
+
+#piechartscontent {
+    flex-grow: 1;
 }
 
 polyline{
@@ -22,4 +25,8 @@ polyline.callout {
 
 text.percentage {
     pointer-events: none;
+}
+
+#numgeneinput {
+    width: 3.3rem;
 }

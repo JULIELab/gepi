@@ -1,11 +1,16 @@
-define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widgetManager'], function($, data, index, widgetManager) {
+define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widgetManager', 'bootstrap5/tab', 'bootstrap5/dropdown'], function($, data, index, widgetManager) {
     class PieWidget {
         elementId
         widgetSettings
+        // the ID of the input element where the user can specify the numbers of genes to be shown
+        numGeneInputId
+        makeOtherBin
 
         constructor(elementId, widgetSettings) {
             this.elementId = elementId;
             this.widgetSettings = widgetSettings;
+            this.numGeneInputId = 'numgeneinput';
+            this.makeOtherBin = false;
             console.log("Creating pie widget with settings " + widgetSettings)
             this.setup();
         }
@@ -27,22 +32,81 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           });
         }
 
+        /*
+        * Helper function to obtain the width and height of a plot area
+        */
+        getDimensionsByElementId(elementId) {
+            let element = document.getElementById(elementId);
+            let clientRect = element.getBoundingClientRect();
+            return [clientRect.height, clientRect.width]
+        }
+
         init() {
             // Remove the Loading... banner
             $('#' + this.elementId + '-outer .text-center.shine').remove();
+            let aCountElId = this.elementId+'-acounts';
+            let bCountElId = this.elementId+'-bcounts'
 
-            this.drawPieChart('acounts', this.elementId+'-acounts');
-            this.drawPieChart('bcounts', this.elementId+'-bcounts')
+            // The client dimensions of the chart that is currently not shown (because of the tabs for acounts and bcounts)
+            // are 0x0. Thus, we here get all the dimensions and use the non-zero ones.
+            let [aCountElHeight, aCountElWidth] = this.getDimensionsByElementId(aCountElId);
+            let [bCountElHeight, bCountElWidth] = this.getDimensionsByElementId(bCountElId);
+            this.height = Math.max(aCountElHeight, bCountElHeight);
+            this.width = Math.max(aCountElWidth, bCountElWidth);
+           
+            this.drawPieChart('acounts', aCountElId);
+            this.drawPieChart('bcounts', bCountElId)
+
+            let timeoutId = undefined;
+              // Observe changes in the the 'number of genes' input field
+            $('#' + this.numGeneInputId).on('input', x => {
+                if (timeoutId)
+                    clearTimeout(timeoutId);
+                timeoutId = setTimeout(
+                    () => {
+                        this.drawPieChart('acounts', aCountElId);
+                        this.drawPieChart('bcounts', bCountElId);
+                    }, 500);
+            });
+            $('#numgenesdropdown li a.number').on('click', e => {
+                $('#' + this.numGeneInputId).val(e.currentTarget.text);
+                this.drawPieChart('acounts', aCountElId);
+                this.drawPieChart('bcounts', bCountElId);
+            });
+            $('#numgenesdropdown li a.other-bin').on('click', e => {
+                this.makeOtherBin = !this.makeOtherBin;
+                console.log("Making other bin: " + this.makeOtherBin);
+                this.drawPieChart('acounts', aCountElId);
+                this.drawPieChart('bcounts', bCountElId);
+            });
         }
+
 
         drawPieChart(countType, parentElementId) {
             let argCounts = data.getData(countType)['argumentcounts'];
             const sum = argCounts.reduce((accumulator, value) => accumulator + value[1], 0);
             argCounts = argCounts.map(x => {return {label: x[0], value: x[1], percentage: x[1]/sum}})
+            // get the number of slices to show from the input field
+            let numToShow = $('#' + this.numGeneInputId).val();
             
-            let width = 400,
-                height = 300,
+            // default to 20
+            numToShow = parseInt(numToShow) ? numToShow : 20;
+            let otherSum = undefined;
+            if (argCounts.length > numToShow && this.makeOtherBin) {
+                let tail = argCounts.slice(numToShow);
+                otherSum = tail.reduce((accumulator, item) => accumulator + item.value, 0);
+            }
+            argCounts = argCounts.slice(0, numToShow);
+            console.log("otherSum: " + otherSum)
+            if (otherSum)
+                argCounts.push({label: 'others', value: otherSum, percentage: otherSum/sum});
+            
+            let width = this.width,
+                height = this.height,
                 radius = Math.min(width, height) / 2;
+
+            // remove potentially existing SVG element
+            d3.select('#'+parentElementId + " svg").remove();
 
             let svg = d3.select('#'+parentElementId)
                 .append('svg')

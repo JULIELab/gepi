@@ -11,7 +11,6 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
     this.handle = $('#' + this.handleId);
     this.chartArea = $('#' + this.widgetId.split('-')[0])
     this.useTapestryZoneUpdates = widgetSettings.useTapestryZoneUpdates;
-    console.log("Creating Widget with settings " + JSON.stringify(widgetSettings))
     this.setupViewModeHandle();
   }
   Widget.prototype.getViewMode = function() {

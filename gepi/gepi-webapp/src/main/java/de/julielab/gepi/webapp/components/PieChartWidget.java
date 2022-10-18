@@ -29,7 +29,6 @@ public class PieChartWidget extends GepiWidget {
     void afterRender() {
         if (component.isResultLoading() || component.isResultAvailable()) {
             javaScriptSupport.require("gepi/charts/piechart").with(elementId, component.getWidgetSettings());
-            javaScriptSupport.require("bootstrap5/tab");
         }
     }
 

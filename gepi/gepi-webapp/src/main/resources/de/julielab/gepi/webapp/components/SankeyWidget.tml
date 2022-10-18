@@ -6,6 +6,7 @@
     server which is sent once and can then be reused. Updating the whole widget via Ajax basically resets it
     which can cause issues with HTML elements which are renewed and then not found in JavaScript any more. -->
 
+    <!-- the following is rendered within GepiWidgetLayout.tml in a bootstrap card-body element; the widget is a bootstrap card -->
     <!-- Sankey widgets manage themselves in JavaScript, thus we always render all elements independently from the view mode -->
     <div class="row full-height">
         <div class="${chartAreaColumnSizeClass} text-center full-height">

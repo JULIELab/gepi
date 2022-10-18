@@ -22,7 +22,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
               const inputcolReadyPromise = $('#inputcol').data('animationtimer');
               if (inputcolReadyPromise) {
                 inputcolReadyPromise.done(() => {
-                  console.log("Input column gives green light")
                     this.init(this.elementId, this.orderType);
                 });
               } else {
@@ -33,15 +32,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         }
 
         init() {
-          console.log('Initializing sankey chart');
           // Data created by the GepiDataservice:
           // {
           //  "nodes": [{"id":tidxy, "name": geneSymbol}] 
           //  "links": [{"source", "target", "frequency"}]
           // }
           const sankeyDat = data.getData('relationCounts');
-          console.log('Sankey data ' + this.orderType + ':');
-          console.log(sankeyDat)
           // Aggregated data for Sankey display.
           // {
           //  "nodesNLinks: {just sankeyDat from above}",
@@ -55,7 +51,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           //  "total_frequency": <number of interactions>
           // }
           this.preprocessed_data = data.preprocess_data(sankeyDat, this.orderType);
-          console.log(this.preprocessed_data)
 
           this.settings = {
             width: 500,
@@ -141,7 +136,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           chartContainer.removeClass('hidden');
           this.settings.width = chart_elem.clientWidth - 2 * this.settings.padding_x - 10;
           this.settings.height = chart_elem.clientHeight - 2 * this.settings.padding_y;
-          console.log("Creating svg element with size " + this.settings.width + " x " + this.settings.height)
+          console.log("Creating svg element for sankey diagram with size " + this.settings.width + " x " + this.settings.height)
           const svg = chart
               .append('svg')
               .attr('width', this.settings.width)
