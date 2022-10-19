@@ -30,7 +30,7 @@
                                 <li><a class="dropdown-item number" href="#">25</a></li>
                                 <li><hr class="dropdown-divider"/></li>
                                 <!-- the 'other-bin' class is used in JS to identify this specific item -->
-                                <li  data-bs-toggle="tooltip" title="Toggles if genes that are not shown are collected in a special 'others' bin. Only applicable if there are more genes that can be displayed."><a class="dropdown-item other-bin" href="#">Make 'other' bin</a></li>
+                                <li  data-bs-toggle="tooltip" title="Toggles if genes that are not shown are collected in a special 'others' bin. Only applicable if there are more genes than can be displayed."><a class="dropdown-item other-bin" href="#">Make 'other' bin</a></li>
                             </ul>
                         </div>
                     </form>

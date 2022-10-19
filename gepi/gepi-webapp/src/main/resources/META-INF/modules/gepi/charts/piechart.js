@@ -1,17 +1,15 @@
-define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widgetManager', 'bootstrap5/tab', 'bootstrap5/dropdown'], function($, data, index, widgetManager) {
+define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widgetManager', 'bootstrap5/tooltip', 'bootstrap5/tab', 'bootstrap5/dropdown'], function($, data, index, widgetManager, Tooltip) {
     class PieWidget {
-        elementId
-        widgetSettings
+        elementId;
+        widgetSettings;
         // the ID of the input element where the user can specify the numbers of genes to be shown
-        numGeneInputId
-        makeOtherBin
+        numGeneInputId = 'numgeneinput';
+        numGenesDropdownItemId = 'numgenesdropdown';
+        makeOtherBin = false;
 
         constructor(elementId, widgetSettings) {
             this.elementId = elementId;
             this.widgetSettings = widgetSettings;
-            this.numGeneInputId = 'numgeneinput';
-            this.makeOtherBin = false;
-            console.log("Creating pie widget with settings " + widgetSettings)
             this.setup();
         }
 
@@ -79,6 +77,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 this.drawPieChart('acounts', aCountElId);
                 this.drawPieChart('bcounts', bCountElId);
             });
+
+            this.initTooltips();
         }
 
 
@@ -220,7 +220,15 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                     slicePoint[1] = slicePoint[1] * 1.3
                     return [slicePoint, outerArc.centroid(d), labelPoint];
                 }); 
-        }        
+        }
+
+        initTooltips() {
+            let numGeneInput = $('#' + this.numGeneInputId)[0];
+            new Tooltip(numGeneInput, {'trigger':'hover'});
+
+            let makeOtherBinMenuItem = $('#' + this.numGenesDropdownItemId+ ' li > a.other-bin').parent()[0];
+            new Tooltip(makeOtherBinMenuItem, {'trigger':'hover'});
+        }      
     }
 
     return function newPieWidget(elementId, widgetsettings) {
