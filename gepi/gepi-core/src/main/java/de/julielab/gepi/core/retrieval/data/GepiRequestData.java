@@ -15,7 +15,7 @@ public class GepiRequestData implements Cloneable {
     private Future<IdConversionResult> listBGePiIds;
     private String sentenceFilterString;
     private String paragraphFilterString;
-    private String filterFieldsConnectionOperator;
+    private String filterFieldsConnectionOperator = "AND";
     private EnumSet<InputMode> inputMode;
     private long dataSessionId;
     private String taxId;

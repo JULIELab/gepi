@@ -188,7 +188,6 @@ public class GepiInput {
     }
 
     void setupRender() {
-        //listATextAreaValue = "2475\n196";
         log.warn("{}", inputMode);
         filterFieldsConnectionOperator = "AND";
     }
@@ -229,6 +228,7 @@ public class GepiInput {
             inputMode = EnumSet.of(InputMode.A);
         }
         log.info("InputMode {}", inputMode);
+        log.info("Filter fields connector: {}", filterFieldsConnectionOperator);
         if (isSentenceFilterPresent || isParagraphFilterPresent) {
             if (inputMode != null)
                 inputMode.add(InputMode.FULLTEXT_QUERY);

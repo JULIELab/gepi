@@ -181,9 +181,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
                 log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idSetA.size(), idSetB.size());
 
-                final String sentenceFilter = requestData.getSentenceFilterString();
-                final String paragraphFilter = requestData.getParagraphFilterString();
-                BoolQuery eventQuery = EventQueries.getClosedQuery(requestData.getEventTypes(), sentenceFilter, paragraphFilter, requestData.getSectionNameFilterString(), idSetA, idSetB);
+                BoolQuery eventQuery = EventQueries.getClosedQuery(requestData, idSetA, idSetB);
 
                 SearchServerRequest serverRqst = new SearchServerRequest();
                 serverRqst.query = eventQuery;
@@ -219,7 +217,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 eventResult.setStartRow(from);
                 eventResult.setEndRow(from + numRows - 1);
                 time = System.currentTimeMillis() - time;
-                log.debug("Retrieved {} bipartite events from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time/1000, forCharts);
+                log.debug("Retrieved {} bipartite events from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.BIPARTITE);
                 reorderBipartiteEventResultArguments(idSetA, idSetB, eventResult);
                 return eventResult;

@@ -10,12 +10,11 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.FILTER;
-import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.SHOULD;
+import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.*;
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.*;
 
 public class EventQueries {
-    public static BoolQuery getClosedQuery(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter, Set<String> idSetA, Set<String> idSetB) {
+    public static BoolQuery getClosedQuery(GepiRequestData requestData, Set<String> idSetA, Set<String> idSetB) {
         TermsQuery listA1Query = new TermsQuery(Collections.unmodifiableCollection(idSetA));
         listA1Query.field = FIELD_EVENT_ARGUMENT1SEARCH;
         TermsQuery listA2Query = new TermsQuery(Collections.unmodifiableCollection(idSetA));
@@ -29,12 +28,12 @@ public class EventQueries {
         BoolClause a1b2Clause = new BoolClause();
         a1b2Clause.addQuery(listA1Query);
         a1b2Clause.addQuery(listB2Query);
-        a1b2Clause.occur = BoolClause.Occur.MUST;
+        a1b2Clause.occur = MUST;
 
         BoolClause a2b1Clause = new BoolClause();
         a2b1Clause.addQuery(listA2Query);
         a2b1Clause.addQuery(listB1Query);
-        a2b1Clause.occur = BoolClause.Occur.MUST;
+        a2b1Clause.occur = MUST;
 
         BoolQuery a1b2Query = new BoolQuery();
         a1b2Query.addClause(a1b2Clause);
@@ -52,13 +51,13 @@ public class EventQueries {
 
         BoolClause mustClause = new BoolClause();
         mustClause.addQuery(mustQuery);
-        mustClause.occur = BoolClause.Occur.MUST;
+        mustClause.occur = MUST;
 
         BoolQuery eventQuery = new BoolQuery();
         eventQuery.addClause(mustClause);
 
-        if (eventTypes != null && !eventTypes.isEmpty()) {
-            TermsQuery eventTypesQuery = new TermsQuery(new ArrayList<>(eventTypes));
+        if (requestData.getEventTypes() != null && !requestData.getEventTypes().isEmpty()) {
+            TermsQuery eventTypesQuery = new TermsQuery(new ArrayList<>(requestData.getEventTypes()));
             eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
             BoolClause eventTypeClause = new BoolClause();
             eventTypeClause.addQuery(eventTypesQuery);
@@ -67,17 +66,15 @@ public class EventQueries {
         }
 
         BoolQuery filterQuery = new BoolQuery();
-        if (!StringUtils.isBlank(sentenceFilter)) {
-            // TODO should vs must should be adapted according to the user input
-            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, SHOULD, filterQuery);
+        BoolClause.Occur sentenceParagraphOccur = requestData.getFilterFieldsConnectionOperator().equalsIgnoreCase("and") ? MUST : SHOULD;
+        if (!StringUtils.isBlank(requestData.getSentenceFilterString())) {
+            addFulltextSearchQuery(requestData.getSentenceFilterString(), FIELD_EVENT_SENTENCE, sentenceParagraphOccur, filterQuery);
         }
-        if (!StringUtils.isBlank(paragraphFilter)) {
-            // TODO should vs must should be adapted according to the user input
-            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, SHOULD, filterQuery);
+        if (!StringUtils.isBlank(requestData.getParagraphFilterString())) {
+            addFulltextSearchQuery(requestData.getParagraphFilterString(), FIELD_EVENT_PARAGRAPH, sentenceParagraphOccur, filterQuery);
         }
-        if (!StringUtils.isBlank(sectionNameFilter)) {
-            // TODO should vs must should be adapted according to the user input
-            addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, FILTER, eventQuery);
+        if (!StringUtils.isBlank(requestData.getSectionNameFilterString())) {
+            addFulltextSearchQuery(requestData.getSectionNameFilterString(), FIELD_PARAGRAPH_HEADINGS, FILTER, eventQuery);
         }
         if (filterQuery.clauses != null) {
             BoolClause fulltextFilterClause = new BoolClause();
@@ -99,7 +96,7 @@ public class EventQueries {
 
         BoolClause termsClause = new BoolClause();
         termsClause.addQuery(termsQuery);
-        termsClause.occur = BoolClause.Occur.MUST;
+        termsClause.occur = MUST;
 
         BoolQuery eventQuery = new BoolQuery();
         eventQuery.addClause(termsClause);
@@ -113,15 +110,25 @@ public class EventQueries {
             eventQuery.addClause(eventTypeClause);
         }
 
+        BoolQuery filterQuery = new BoolQuery();
+        BoolClause.Occur sentenceParagraphOccur = requestData.getFilterFieldsConnectionOperator().equalsIgnoreCase("and") ? MUST : SHOULD;
         if (!StringUtils.isBlank(sentenceFilter)) {
-            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, FILTER, eventQuery);
+            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, sentenceParagraphOccur, filterQuery);
         }
         if (!StringUtils.isBlank(paragraphFilter)) {
-            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, FILTER, eventQuery);
+            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, sentenceParagraphOccur, filterQuery);
         }
         if (!StringUtils.isBlank(sectionNameFilter)) {
             addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, FILTER, eventQuery);
         }
+
+        if (filterQuery.clauses != null) {
+            BoolClause fulltextFilterClause = new BoolClause();
+            fulltextFilterClause.occur = FILTER;
+            fulltextFilterClause.addQuery(filterQuery);
+            eventQuery.addClause(fulltextFilterClause);
+        }
+
         return eventQuery;
     }
 
@@ -138,8 +145,7 @@ public class EventQueries {
         }
 
         BoolQuery fulltextQuery = new BoolQuery();
-
-        BoolClause.Occur filterFieldsOccur = filterFieldsConnectionOperator.equalsIgnoreCase("and") ? BoolClause.Occur.MUST : BoolClause.Occur.SHOULD;
+        BoolClause.Occur filterFieldsOccur = filterFieldsConnectionOperator.equalsIgnoreCase("and") ? MUST : BoolClause.Occur.SHOULD;
         if (!StringUtils.isBlank(sentenceFilter)) {
             addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, filterFieldsOccur, fulltextQuery);
         }
@@ -151,7 +157,7 @@ public class EventQueries {
         }
         BoolClause fulltextClause = new BoolClause();
         fulltextClause.addQuery(fulltextQuery);
-        fulltextClause.occur = BoolClause.Occur.MUST;
+        fulltextClause.occur = MUST;
         eventQuery.addClause(fulltextClause);
         return eventQuery;
     }
