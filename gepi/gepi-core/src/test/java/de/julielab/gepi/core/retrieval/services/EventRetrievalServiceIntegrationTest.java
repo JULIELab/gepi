@@ -104,7 +104,7 @@ public class EventRetrievalServiceIntegrationTest {
         // paragraph of the latter.
         // Through the 'or' operator, we should get both
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("108", "3458")).withFilterFieldsConnectionOperator("AND").withSentenceFilterString("\"pertussis toxin\"").withParagraphFilterString("\"Heparinized blood\""));
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("108", "3458")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"pertussis toxin\"").withParagraphFilterString("\"Heparinized blood\""));
         assertThat(outsideEvents.get().getEventList()).extracting(Event::getEventId).containsExactlyInAnyOrder("10022233_FE6_0_1", "10022233_FE7_0_1", "10022381_FE16_0_1");
     }
 
