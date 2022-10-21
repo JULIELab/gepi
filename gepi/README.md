@@ -19,8 +19,8 @@ The `production` stage expects that the complete GePI project has been built in 
 Run the following commands to create a `development` container:
 
 ```bash
-DOCKER_BUILDKIT=1 docker build -t gepi:0.10.0-SNAPSHOT --target development .
-docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev -e GEPI_CONFIGURATION=<path to config file> gepi:0.10.0-SNAPSHOT
+DOCKER_BUILDKIT=1 docker build -t gepi:0.10.1-SNAPSHOT --target development .
+docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev -e GEPI_CONFIGURATION=<path to config file> gepi:0.10.1-SNAPSHOT
 ```
 
 The first command builds an image of the `development` stage. This will also build the `dependencies` stage where all the Java dependencies of the GePI application are downloaded and cached. This will take a while on the first execution but should be faster afterwards thanks to caching.
@@ -38,8 +38,8 @@ To run the `production` container, run
 
 ```bash
 mvn clean package --projects gepi-webapp --also-make
-DOCKER_BUILDKIT=1 docker build -t gepi:0.10.0-SNAPSHOT --target production .
-docker run -dp 8080:8080 gepi:0.10.0-SNAPSHOT
+DOCKER_BUILDKIT=1 docker build -t gepi:0.10.1-SNAPSHOT --target production .
+docker run -dp 8080:8080 gepi:0.10.1-SNAPSHOT
 ```
 
 These commands
@@ -66,3 +66,11 @@ gepi.neo4j.bolt.url=bolt://<host>:<port>
 ## GePI development
 
 Important note: ***Do not edit the `README.md` file in the module roots*** if there exists a `readme-raw` subdirectory. The file in the root is just a Maven-filtered copy of the `readme-raw/README.md` file. The Maven filtering replaces Maven properties like the project version in the `readme-raw/README.md` file and puts the result in the module root, overriding the previous `README.md` file.
+
+### Update version
+
+Update the new version number in the following places:
+* `pom.xml` files (tip: use `mvn versions:set -DnewVersion=<new version>` and `mvn versions:commit` to remove the backup files)
+* `README.md` (by executing `mvn clean package -DskipTests` to filter the `readme-raw/README.md` file to automatically set the current version to the `README.md` file)
+* `AppModule.java` in `gepi-webapp`
+* the Docker image version in the Dockerfile

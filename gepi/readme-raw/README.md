@@ -66,3 +66,11 @@ gepi.neo4j.bolt.url=bolt://<host>:<port>
 ## GePI development
 
 Important note: ***Do not edit the `README.md` file in the module roots*** if there exists a `readme-raw` subdirectory. The file in the root is just a Maven-filtered copy of the `readme-raw/README.md` file. The Maven filtering replaces Maven properties like the project version in the `readme-raw/README.md` file and puts the result in the module root, overriding the previous `README.md` file.
+
+### Update version
+
+Update the new version number in the following places:
+* `pom.xml` files (tip: use `mvn versions:set -DnewVersion=<new version>` and `mvn versions:commit` to remove the backup files)
+* `README.md` (by executing `mvn clean package -DskipTests` to filter the `readme-raw/README.md` file to automatically set the current version to the `README.md` file)
+* `AppModule.java` in `gepi-webapp`
+* the Docker image version in the Dockerfile
