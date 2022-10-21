@@ -113,6 +113,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             FIELD_PMCID,
             FIELD_EVENT_LIKELIHOOD,
             FIELD_EVENT_SENTENCE_TEXT,
+            FIELD_EVENT_PARAGRAPH_TEXT,
             FIELD_EVENT_MAINEVENTTYPE,
             FIELD_EVENT_ALL_EVENTTYPES,
             FIELD_EVENT_ARG_GENE_IDS,
