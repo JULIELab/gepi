@@ -19,8 +19,8 @@ The `production` stage expects that the complete GePI project has been built in 
 Run the following commands to create a `development` container:
 
 ```bash
-DOCKER_BUILDKIT=1 docker build -t gepi:0.9.0-SNAPSHOT --target development .
-docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev -e GEPI_CONFIGURATION=<path to config file> gepi:0.9.0-SNAPSHOT
+DOCKER_BUILDKIT=1 docker build -t gepi:0.10.0-SNAPSHOT --target development .
+docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev -e GEPI_CONFIGURATION=<path to config file> gepi:0.10.0-SNAPSHOT
 ```
 
 The first command builds an image of the `development` stage. This will also build the `dependencies` stage where all the Java dependencies of the GePI application are downloaded and cached. This will take a while on the first execution but should be faster afterwards thanks to caching.
@@ -38,8 +38,8 @@ To run the `production` container, run
 
 ```bash
 mvn clean package --projects gepi-webapp --also-make
-DOCKER_BUILDKIT=1 docker build -t gepi:0.9.0-SNAPSHOT --target production .
-docker run -dp 8080:8080 gepi:0.9.0-SNAPSHOT
+DOCKER_BUILDKIT=1 docker build -t gepi:0.10.0-SNAPSHOT --target production .
+docker run -dp 8080:8080 gepi:0.10.0-SNAPSHOT
 ```
 
 These commands
@@ -66,18 +66,3 @@ gepi.neo4j.bolt.url=bolt://<host>:<port>
 ## GePI development
 
 Important note: ***Do not edit the `README.md` file in the module roots*** if there exists a `readme-raw` subdirectory. The file in the root is just a Maven-filtered copy of the `readme-raw/README.md` file. The Maven filtering replaces Maven properties like the project version in the `readme-raw/README.md` file and puts the result in the module root, overriding the previous `README.md` file.
-
-### Development ElasticSearch
-
-For development purposes, an ElasticSearch Docker container can be created using the contents of the `gepi-indexing/es-docker` directory.
-
-In the original development, this container-ES was populated by selecting a random subset of document containing genes from the larger JeDIS database tables of a completely processed PubMed. The CoStoSys subset table for this purpose was called `gepi.dev` which might be found at appropriate places - or not if the last pipeline run was not a development run. The used pipeline was the production `gepi-indexing-pubmed` pipeline with the following adjustments:
-* *JCoRe ElasticSearch Consumer* deactivated
-* *Gazetteer FamPlex Dictionary* deactivated
-* *JCoRe ElasticSearch Consumer Localhost* activated 
-* *Gazetteer FamPlex Dictionary dev* 
-* DB XMI reader configured to read from the `gepi.dev` subset table
-* `config/costosys.xml` file must use the `DBConnection` called `pmlocalhost`
-    * this required that the JeDIS database runs at the localhost or there is an SSH tunnel to the database server
-
-The ES Consumer resources that these components use were the original resources derived from the production Neo4j gene database so that the production database could be used for development.
