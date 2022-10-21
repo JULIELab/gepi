@@ -7,7 +7,7 @@
         <version>2.4.1</version>
     </parent>
     <artifactId>gepi</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>0.10.0-SNAPSHOT</version>
     <name>GePi</name>
     <description>The GePi parent project.</description>
     <packaging>pom</packaging>
