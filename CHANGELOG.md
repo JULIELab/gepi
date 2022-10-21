@@ -1,5 +1,53 @@
 # Changelog
 
+## v0.10.0-beta (21/10/2022)
+
+#### General Enhancements
+
+- [**enhancement**] Add tabs to the pie charts widgets to switch between a- and b-counts [#162](https://github.com/JULIELab/gepi/issues/162)
+- [**enhancement**] Scroll to top upon search submission [#161](https://github.com/JULIELab/gepi/issues/161)
+- [**enhancement**] Implement AND/OR for sentence and paragraph filters [#160](https://github.com/JULIELab/gepi/issues/160)
+- [**enhancement**] Fix Pie Chart coloring [#156](https://github.com/JULIELab/gepi/issues/156)
+
+#### Bug Fixes
+
+- [**bug**] Fix fulltext match column [#163](https://github.com/JULIELab/gepi/issues/163)
+- [**bug**] Fix paged result download [#159](https://github.com/JULIELab/gepi/issues/159)
+
+---
+
+## v0.9.0-beta (18/07/2022)
+
+#### Speed Improvements
+
+- [**performance**] Implement paged result retrieval for closed search [#151](https://github.com/JULIELab/gepi/issues/151)
+- [**performance**] Avoid complete result download after each search [#150](https://github.com/JULIELab/gepi/issues/150)
+
+#### General Enhancements
+
+- [**enhancement**] Avoid freezing on result download [#157](https://github.com/JULIELab/gepi/issues/157)
+- [**enhancement**] Re-enable the common partners Sankey [#149](https://github.com/JULIELab/gepi/issues/149)
+- [**enhancement**] Make the table Ajax-Enabled [#143](https://github.com/JULIELab/gepi/issues/143)
+- [**enhancement**] Implement paged result retrieval from ES [#138](https://github.com/JULIELab/gepi/issues/138)
+
+#### Bug Fixes
+
+- [**bug**] Fix bug where events are duplicated [#133](https://github.com/JULIELab/gepi/issues/133)
+
+#### Miscellaneous Changes
+
+- [**closed**] Add highlighting to table [#129](https://github.com/JULIELab/gepi/issues/129)
+- [**closed**] Allow sentence and paragraph filters to contain compounds/phrases [#125](https://github.com/JULIELab/gepi/issues/125)
+- [**closed**] Add paragraph filter options to GepiInput [#124](https://github.com/JULIELab/gepi/issues/124)
+- [**closed**] Make paragraph text information available for all events [#123](https://github.com/JULIELab/gepi/issues/123)
+
+---
+
+## v0.8.0-beta2 (13/07/2022)
+- [**bug**] Fix download table creation [#152](https://github.com/JULIELab/gepi/issues/152)
+
+---
+
 ## v0.8.0-beta (bioRxiv upload) (11/07/2022)
 # GePI v0.8.0-beta
 
