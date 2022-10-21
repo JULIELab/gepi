@@ -363,7 +363,7 @@
                                                 
                         <string>gnormplus:de.julielab.jcore.types.Gene</string>
                                                 
-                        <string>de.julielab.jcore.types.PennBioIEPosTag</string>
+                        <string>de.julielab.jcore.types.PennBioIEPOSTag</string>
                                             
                     </array>
                                     

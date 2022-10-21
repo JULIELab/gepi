@@ -11,9 +11,11 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.*;
@@ -73,10 +75,14 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             List<Object> matchTypes = eventDocument.getFieldValues(FIELD_EVENT_ARG_MATCH_TYPES).orElse(Collections.emptyList());
             Optional<String> mainEventType = eventDocument.get(FIELD_EVENT_MAINEVENTTYPE);
             Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
-            Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE);
-            Optional<String> paragraph = eventDocument.get(FIELD_EVENT_PARAGRAPH);
-            List<String> sentenceHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE);
-            List<String> paragraphHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH);
+            Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE_TEXT);
+            Optional<String> paragraph = eventDocument.get(FIELD_EVENT_PARAGRAPH_TEXT);
+            List<String> sentenceArgumentHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT);
+            List<String> sentenceTriggerHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_TRIGGER);
+            List<String> sentenceFilterHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_FILTER);
+            List<String> paragraphArgumentHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH_TEXT);
+            List<String> paragraphTriggerHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH_TEXT_TRIGGER);
+            List<String> paragraphFilterHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH_TEXT_FILTER);
             List<String> geneMappingSources = eventDocument.getFieldValues(FIELD_GENE_MAPPING_SOURCE).orElse(Collections.emptyList()).stream().map(Object::toString).collect(Collectors.toList());
             String eventId = eventDocument.getId();
 
@@ -115,12 +121,12 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             if (mainEventType.isPresent())
                 event.setMainEventType(mainEventType.get());
             event.setAllEventTypes(allEventTypes.stream().map(String.class::cast).collect(Collectors.toList()));
-            if (sentenceHl != null && !sentenceHl.isEmpty())
-                event.setHlSentence(StringUtils.normalizeSpace(sentenceHl.get(0)));
+            if (sentenceArgumentHl != null && !sentenceArgumentHl.isEmpty())
+                event.setHlSentence(StringUtils.normalizeSpace(sentenceArgumentHl.get(0)));
             if (sentence.isPresent())
                 event.setSentence(StringUtils.normalizeSpace(sentence.get()));
-            if (paragraphHl != null && !paragraphHl.isEmpty())
-                event.setHlParagraph(StringUtils.normalizeSpace(paragraphHl.get(0)));
+            if (paragraphFilterHl != null && !paragraphFilterHl.isEmpty())
+                event.setHlParagraph(StringUtils.normalizeSpace(paragraphFilterHl.get(0)));
             if (paragraph.isPresent())
                 event.setParagraph(StringUtils.normalizeSpace(paragraph.get()));
             for (int i = 0; i < event.getNumArguments(); i++) {
@@ -134,17 +140,73 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             }
             if (event.getHlSentence() != null) {
                 Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getHlSentence());
-                if (fulltextQueryHighlightedMatcher.find())
-                    event.setSentenceMatchingFulltextQuery(true);
+//                if (fulltextQueryHighlightedMatcher.find())
+//                    event.setSentenceMatchingFulltextQuery(true);
             }
             if (event.getHlParagraph() != null) {
                 Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getHlParagraph());
-                if (fulltextQueryHighlightedMatcher.find())
-                    event.setParagraphMatchingFulltextQuery(true);
+//                if (fulltextQueryHighlightedMatcher.find())
+//                    event.setParagraphMatchingFulltextQuery(true);
             }
+            event.setSentenceMatchingFulltextQuery(sentenceFilterHl != null && !sentenceFilterHl.isEmpty());
+            event.setParagraphMatchingFulltextQuery(paragraphFilterHl != null && !paragraphFilterHl.isEmpty());
             event.setGeneMappingSources(geneMappingSources);
             return event;
         }).filter(Objects::nonNull);
+    }
+
+    /**
+     * <p>Merges different highlighting of the same text string via HTML tags into a single text string with all the highlight tags.</p>
+     *
+     * @param highlights The different highlightings of the same text.
+     * @return The combined highlighted string or <code>null</code> if all input highlights were <code>null</code>.
+     */
+    private String mergeHighlighting(String... highlights) {
+        Pattern tagPattern = Pattern.compile("<[^>]+>");
+        // Build position-tag maps. This list will contain one position-tag map for each highlighted string
+        List<SortedMap<Integer, String>> tagMaps = new ArrayList<>();
+        for (String hl : highlights) {
+            if (hl == null)
+                continue;
+            final Matcher tagMatcher = tagPattern.matcher(hl);
+            // Sums up the encountered tag lengths. Thus, the start of a tag in the highlighted string minus the offset
+            // is the start of the tag without counting previous tags, hence, in the original string.
+            int offset = 0;
+            // This map stores the position of each tag in the original, non-highlighted string.
+            SortedMap<Integer, String> pos2tag = new TreeMap<>();
+            while (tagMatcher.find()) {
+                final int tagPos = tagMatcher.start();
+                final String tag = tagMatcher.group();
+                pos2tag.put(tagPos - offset, tag);
+                offset += tag.length();
+            }
+        }
+        if (tagMaps.isEmpty())
+            return null;
+
+        // we will add the elements of the merged highlight string from end to start
+        List<String> reversedMergedHighlight = new ArrayList<>();
+        String nonHighlightedString = tagPattern.matcher(highlights[0]).replaceAll("");
+        int lastPos = nonHighlightedString.length();
+        int maxPosIndex = Integer.MIN_VALUE;
+        // Assemble the merged highlight string. In each iteration we determine the remaining tag with the largest
+        // offset and add the text between it and the previous tag and itself to the merged string.
+        while (tagMaps.stream().anyMatch(Predicate.not(Map::isEmpty))) {
+            for (var tagMap : tagMaps)
+                maxPosIndex = Math.max(maxPosIndex, tagMap.lastKey());
+            // the last tag as in the highest offset position of all tags of all highlights
+            final SortedMap<Integer, String> lastTagMap = tagMaps.get(maxPosIndex);
+            int pos = lastTagMap.lastKey();
+            String tag = lastTagMap.get(pos);
+            reversedMergedHighlight.add(nonHighlightedString.substring(pos + tag.length(), lastPos));
+            reversedMergedHighlight.add(tag);
+            // Save the start position of this tag. For the next tag we will need it as the end point of the substring
+            // on the nonHighlightedString.
+            lastPos = pos;
+            // Remove this tag so that in the next iteration we get the preceeding one.
+            lastTagMap.remove(pos);
+        }
+        return IntStream.range(0, reversedMergedHighlight.size()).mapToObj(i -> reversedMergedHighlight.get(reversedMergedHighlight.size() - i)).collect(Collectors.joining());
     }
 
 

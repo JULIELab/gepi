@@ -125,8 +125,8 @@ public class GepiInput {
     @Parameter
     private String paragraphFilterString;
 
-    @Persist
     @Property
+    @Persist(TabPersistentField.TAB)
     private String filterFieldsConnectionOperator;
 
     @Property
@@ -189,7 +189,8 @@ public class GepiInput {
 
     void setupRender() {
         log.warn("{}", inputMode);
-        filterFieldsConnectionOperator = "AND";
+        if (filterFieldsConnectionOperator == null)
+            filterFieldsConnectionOperator = "AND";
     }
 
     void onValidateFromInputForm() {

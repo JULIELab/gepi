@@ -68,10 +68,10 @@ public class EventQueries {
         BoolQuery filterQuery = new BoolQuery();
         BoolClause.Occur sentenceParagraphOccur = requestData.getFilterFieldsConnectionOperator().equalsIgnoreCase("and") ? MUST : SHOULD;
         if (!StringUtils.isBlank(requestData.getSentenceFilterString())) {
-            addFulltextSearchQuery(requestData.getSentenceFilterString(), FIELD_EVENT_SENTENCE, sentenceParagraphOccur, filterQuery);
+            addFulltextSearchQuery(requestData.getSentenceFilterString(), FIELD_EVENT_SENTENCE_TEXT, sentenceParagraphOccur, filterQuery);
         }
         if (!StringUtils.isBlank(requestData.getParagraphFilterString())) {
-            addFulltextSearchQuery(requestData.getParagraphFilterString(), FIELD_EVENT_PARAGRAPH, sentenceParagraphOccur, filterQuery);
+            addFulltextSearchQuery(requestData.getParagraphFilterString(), FIELD_EVENT_PARAGRAPH_TEXT, sentenceParagraphOccur, filterQuery);
         }
         if (!StringUtils.isBlank(requestData.getSectionNameFilterString())) {
             addFulltextSearchQuery(requestData.getSectionNameFilterString(), FIELD_PARAGRAPH_HEADINGS, FILTER, eventQuery);
@@ -113,10 +113,10 @@ public class EventQueries {
         BoolQuery filterQuery = new BoolQuery();
         BoolClause.Occur sentenceParagraphOccur = requestData.getFilterFieldsConnectionOperator().equalsIgnoreCase("and") ? MUST : SHOULD;
         if (!StringUtils.isBlank(sentenceFilter)) {
-            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, sentenceParagraphOccur, filterQuery);
+            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE_TEXT, sentenceParagraphOccur, filterQuery);
         }
         if (!StringUtils.isBlank(paragraphFilter)) {
-            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, sentenceParagraphOccur, filterQuery);
+            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH_TEXT, sentenceParagraphOccur, filterQuery);
         }
         if (!StringUtils.isBlank(sectionNameFilter)) {
             addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, FILTER, eventQuery);
@@ -147,10 +147,10 @@ public class EventQueries {
         BoolQuery fulltextQuery = new BoolQuery();
         BoolClause.Occur filterFieldsOccur = filterFieldsConnectionOperator.equalsIgnoreCase("and") ? MUST : BoolClause.Occur.SHOULD;
         if (!StringUtils.isBlank(sentenceFilter)) {
-            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE, filterFieldsOccur, fulltextQuery);
+            addFulltextSearchQuery(sentenceFilter, FIELD_EVENT_SENTENCE_TEXT, filterFieldsOccur, fulltextQuery);
         }
         if (!StringUtils.isBlank(paragraphFilter)) {
-            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH, filterFieldsOccur, fulltextQuery);
+            addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH_TEXT, filterFieldsOccur, fulltextQuery);
         }
         if (!StringUtils.isBlank(sectionNameFilter)) {
             addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, filterFieldsOccur, eventQuery);

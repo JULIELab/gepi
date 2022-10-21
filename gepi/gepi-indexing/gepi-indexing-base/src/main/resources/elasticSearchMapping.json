@@ -196,6 +196,14 @@
             "term_vector": "with_positions_offsets",
             "norms": false
           },
+          "text_filter": {
+            "type": "alias",
+            "path": "sentence.text"
+          },
+          "text_trigger": {
+            "type": "alias",
+            "path": "sentence.text"
+          },
           "id": {
             "type": "keyword",
             "store": true
@@ -214,6 +222,14 @@
             "store": true,
             "term_vector": "with_positions_offsets",
             "norms": false
+          },
+          "text_filter": {
+            "type": "alias",
+            "path": "paragraph.text"
+          },
+          "text_trigger": {
+            "type": "alias",
+            "path": "paragraph.text"
           },
           "id": {
             "type": "keyword",

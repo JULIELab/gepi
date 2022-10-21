@@ -91,9 +91,17 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_ARG2_HOMOLOGY_PREFERRED_NAME = "argument2homoprefname";
 
-    public static final String FIELD_EVENT_SENTENCE = "sentence.text";
+    public static final String FIELD_EVENT_SENTENCE_TEXT = "sentence.text";
 
-    public static final String FIELD_EVENT_PARAGRAPH = "paragraph.text";
+    public static final String FIELD_EVENT_PARAGRAPH_TEXT = "paragraph.text";
+
+    public static final String FIELD_EVENT_SENTENCE_TEXT_FILTER = "sentence.text_filter";
+
+    public static final String FIELD_EVENT_PARAGRAPH_TEXT_FILTER = "paragraph.text_filter";
+
+    public static final String FIELD_EVENT_SENTENCE_TEXT_TRIGGER = "sentence.text_trigger";
+
+    public static final String FIELD_EVENT_PARAGRAPH_TEXT_TRIGGER = "paragraph.text_trigger";
 
     public static final String FIELD_PARAGRAPH_HEADINGS = "paragraph.headings";
 
@@ -104,7 +112,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             FIELD_PMID,
             FIELD_PMCID,
             FIELD_EVENT_LIKELIHOOD,
-            FIELD_EVENT_SENTENCE,
+            FIELD_EVENT_SENTENCE_TEXT,
             FIELD_EVENT_MAINEVENTTYPE,
             FIELD_EVENT_ALL_EVENTTYPES,
             FIELD_EVENT_ARG_GENE_IDS,
@@ -192,18 +200,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 if (!forCharts)
                     serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
                 if (!forCharts) {
-                    HighlightCommand hlc = new HighlightCommand();
-                    hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
-                    hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
-                    hlc.fields.forEach(f -> {
-                        f.pre = "<b>";
-                        f.post = "</b>";
-                        TermQuery tq = new TermQuery();
-                        tq.field = f.field;
-                        tq.term = "xargumentx";
-                        f.highlightQuery = tq;
-                    });
-                    serverRqst.addHighlightCmd(hlc);
+                    addHighlighting(serverRqst);
                 }
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier<>("BipartiteEvents");
@@ -324,20 +321,40 @@ public class EventRetrievalService implements IEventRetrievalService {
         if (!forCharts)
             serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
         if (!forCharts) {
-            HighlightCommand hlc = new HighlightCommand();
-            hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
-            hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
-            hlc.fields.forEach(f -> {
-                f.pre = "<b>";
-                f.post = "</b>";
-                TermQuery tq = new TermQuery();
-                tq.field = f.field;
-                tq.term = "xargumentx";
-                f.highlightQuery = tq;
-            });
-            serverRqst.addHighlightCmd(hlc);
+            addHighlighting(serverRqst);
         }
         return serverRqst;
+    }
+
+    private void addHighlighting(SearchServerRequest serverRqst) {
+        serverRqst.addHighlightCmd(getHighlightCommand("xargumentx", "hl-argument", FIELD_EVENT_SENTENCE_TEXT, FIELD_EVENT_PARAGRAPH_TEXT));
+        serverRqst.addHighlightCmd(getHighlightCommand("xtriggerx", "hl-trigger", FIELD_EVENT_SENTENCE_TEXT_TRIGGER, FIELD_EVENT_PARAGRAPH_TEXT_TRIGGER));
+        serverRqst.addHighlightCmd(getHighlightCommand(null, "hl-filter", FIELD_EVENT_SENTENCE_TEXT_FILTER, FIELD_EVENT_PARAGRAPH_TEXT_FILTER));
+    }
+
+    /**
+     * <p>Created highlight commands required for GePI searches.</p>
+     * <p>When <code>hlTerm</code> is not null, it used in a <code>TermQuery</code> that is specified as a highlight query. This is used to highlight only special terms like event argument and event trigger words. The respective placeholder terms - <code>xargumentx</code> and <code>xtriggerx</code> - have been added in the <code>RelationDocumentGenerator</code> in the indexing code. If <code>hlTerm</code> is null, the actual query terms are highlighted.</p>
+     *
+     * @param hlTerm
+     * @param hlClass
+     * @return
+     */
+    private HighlightCommand getHighlightCommand(String hlTerm, String hlClass, String... hlFields) {
+        HighlightCommand hlc = new HighlightCommand();
+        for (String hlField : hlFields)
+            hlc.addField(hlField, 1, 0);
+        hlc.fields.forEach(f -> {
+            f.pre = "<em class=\"" + hlClass + "\">";
+            f.post = "</em>";
+            if (hlTerm != null) {
+                TermQuery tq = new TermQuery();
+                tq.field = f.field;
+                tq.term = hlTerm;
+                f.highlightQuery = tq;
+            }
+        });
+        return hlc;
     }
 
 
@@ -360,18 +377,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             if (!forCharts)
                 serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
             if (!forCharts) {
-                HighlightCommand hlc = new HighlightCommand();
-                hlc.addField(FIELD_EVENT_SENTENCE, 10, 0);
-                hlc.addField(FIELD_EVENT_PARAGRAPH, 10, 0);
-                hlc.fields.forEach(f -> {
-                    f.pre = "<b>";
-                    f.post = "</b>";
-                    TermQuery tq = new TermQuery();
-                    tq.field = f.field;
-                    tq.term = "xargumentx";
-                    f.highlightQuery = tq;
-                });
-                serverRqst.addHighlightCmd(hlc);
+                addHighlighting(serverRqst);
             }
 
             ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("FulltextFilteredEvents");
