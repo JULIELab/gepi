@@ -71,7 +71,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                         this.drawPieChart('bcounts', bCountElId);
                     }, 500);
             });
-            $('#'+this.numGenesDropdownItemId+'-pie li a.number').on('click', e => {
+            $('#'+this.numGenesDropdownItemId+' li a.number').on('click', e => {
                 $('#' + this.numGeneInputId).val(e.currentTarget.text);
                 this.drawPieChart('acounts', aCountElId);
                 this.drawPieChart('bcounts', bCountElId);

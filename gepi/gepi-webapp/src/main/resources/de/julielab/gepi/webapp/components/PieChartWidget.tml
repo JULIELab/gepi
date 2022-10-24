@@ -21,7 +21,7 @@
                         <div class="input-group">
                             <input type="text" id="numgeneinput-pie" class="form-control" aria-label="NumberOfGenes" oninput="this.value = this.value.replace(/[^0-9]/g, '');" value="20" data-bs-toggle="tooltip" title="Specify the number of interaction partners that should be included in the pie chart"/>
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"/>
-                            <ul id="numgenesdropdown" class="dropdown-menu dropdown-menu-end">
+                            <ul id="numgenesdropdown-pie" class="dropdown-menu dropdown-menu-end">
                                 <!-- the 'number' class is used in JS to select only those elements that represent
                                      a number of genes to show -->
                                 <li><a class="dropdown-item number" href="#">5</a></li>
