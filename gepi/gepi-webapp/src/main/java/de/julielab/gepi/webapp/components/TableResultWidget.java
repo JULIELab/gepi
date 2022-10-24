@@ -122,7 +122,13 @@ public class TableResultWidget extends GepiWidget {
         tableModel.get("docId").label("document id");
         tableModel.get("eventId").label("event id");
 //        tableModel.get("geneMappingSources").label("gene tagger");
-
+        // Disable the sorting buttons. Since we reorder the event arguments so that arguments from list A
+        // always appear as the "first" argument, we cannot sort in ElasticSearch because there is no fixed
+        // field we could sort on for the gene arguments. Other columns would be possible to sort on but
+        // this was never a user request so just leave it for now.
+        for (String property : tableModel.getPropertyNames()) {
+            tableModel.get(property).sortable(false);
+        }
         contextFormat = new Format() {
             @Override
             public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {

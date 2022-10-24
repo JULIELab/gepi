@@ -8,7 +8,8 @@
 
 <!--    <div class="row h-100">-->
 <!--        <div class="${chartAreaColumnSizeClass} text-center">-->
-            <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
+            <!-- While loading, the tabs should not be shown. Thus, initialize with d-none. -->
+            <ul class="nav nav-pills nav-fill d-none" id="pie-tabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="acounts-tab" data-bs-toggle="tab" data-bs-target="#acounts" type="button" role="tab" aria-controls="acounts" aria-selected="true">A-List Counts</button>
                 </li>
@@ -18,7 +19,7 @@
                 <li class="nav-item" role="presentation">
                     <form class="container-fluid">
                         <div class="input-group">
-                            <input type="text" id="numgeneinput" class="form-control" aria-label="NumberOfGenes" aria-describedby="numgenetext" oninput="this.value = this.value.replace(/[^0-9]/g, '');" value="20" data-bs-toggle="tooltip" title="Specify the number of interaction partners that should be included in the pie chart"/>
+                            <input type="text" id="numgeneinput-pie" class="form-control" aria-label="NumberOfGenes" oninput="this.value = this.value.replace(/[^0-9]/g, '');" value="20" data-bs-toggle="tooltip" title="Specify the number of interaction partners that should be included in the pie chart"/>
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"/>
                             <ul id="numgenesdropdown" class="dropdown-menu dropdown-menu-end">
                                 <!-- the 'number' class is used in JS to select only those elements that represent
@@ -27,7 +28,6 @@
                                 <li><a class="dropdown-item number" href="#">10</a></li>
                                 <li><a class="dropdown-item number" href="#">15</a></li>
                                 <li><a class="dropdown-item number" href="#">20</a></li>
-                                <li><a class="dropdown-item number" href="#">25</a></li>
 <!--                                <li><hr class="dropdown-divider"/></li>-->
                                 <!-- the 'other-bin' class is used in JS to identify this specific item -->
 <!--                                <li  data-bs-toggle="tooltip" title="Toggles if genes that are not shown are collected in a special 'others' bin. Only applicable if there are more genes than can be displayed."><a class="dropdown-item other-bin" href="#">Make 'other' bin</a></li>-->

@@ -6,8 +6,6 @@
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
 
     <div>${viewmode}</div>
-<!--        <t:zone t:id="tablezone" id="tablezone">-->
-<!--    <t:if test="esResult.isDone()">-->
         <t:grid source="eventSource" row="eventrow" model="tableModel" rowsPerPage="${rowsperpage}"
                 pagerPosition="bottom" inplace="true">
             <p:firstArgumentPreferredNameCell>

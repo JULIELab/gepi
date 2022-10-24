@@ -1,6 +1,48 @@
 <!DOCTYPE html>
-<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout" widgettitle="Bar Chart" t:clientId="barchart_widget" class="${classes}" result="result">
-    
-<div id="barchart" style="width: 100%; height: 100%;"></div>
-    <t:trigger event="drawChart" />
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
+     widgettitle="Interaction Partner Distribution A-List" t:clientId="${elementId}-outer" class="${classes}"
+     sizeClass="small" esResult="esResult" neo4jResult="neo4jResult" useTapestryZoneUpdates="false" requestData="requestData" waitForData="true">
+    <!-- useTapestryZoneUpdates should be false for all JavaScript-based widgets. They just receive data from the
+    server which is sent once and can then be reused. Updating the whole widget via Ajax basically resets it
+    which can cause issues with HTML elements which are renewed and then not found in JavaScript any more. -->
+
+    <!-- While loading, the tabs should not be shown. Thus, initialize with d-none. -->
+    <ul class="nav nav-pills nav-fill d-none" id="bar-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="acounts-tab-bar" data-bs-toggle="tab" data-bs-target="#acounts-bar" type="button" role="tab" aria-controls="acounts-bar" aria-selected="true">A-List Counts</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="bcounts-tab-bar" data-bs-toggle="tab" data-bs-target="#bcounts-bar" type="button" role="tab" aria-controls="bcounts-bar" aria-selected="false">B-List Counts</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <form class="container-fluid">
+                <div class="input-group">
+                    <input type="text" id="numgeneinput-bar" class="form-control" aria-label="NumberOfGenes" oninput="this.value = this.value.replace(/[^0-9]/g, '');" value="20" data-bs-toggle="tooltip" title="Specify the number of interaction partners that should be included in the pie chart"/>
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"/>
+                    <ul id="numgenesdropdown-bar" class="dropdown-menu dropdown-menu-end">
+                        <!-- the 'number' class is used in JS to select only those elements that represent
+                             a number of genes to show -->
+                        <li><a class="dropdown-item number" href="#">5</a></li>
+                        <li><a class="dropdown-item number" href="#">10</a></li>
+                        <li><a class="dropdown-item number" href="#">15</a></li>
+                        <li><a class="dropdown-item number" href="#">20</a></li>
+                        <li><hr class="dropdown-divider"/></li>
+<!--                    the 'other-bin' class is used in JS to identify this specific item -->
+                        <li data-bs-toggle="tooltip" title="Toggles if genes that are not shown are collected in a special 'others' bar. Only applicable if there are more genes than can be displayed."><a class="dropdown-item other-bin" href="#"><span class="tick d-none">&#10003; </span>Make 'other' bar</a></li>
+                        <li data-bs-toggle="tooltip" title="Toggles if percentages instead of counts are displayed."><a class="dropdown-item percentages" href="#"><span class="tick d-none">&#10003; </span>Display percentages</a></li>
+                    </ul>
+                </div>
+            </form>
+        </li>
+    </ul>
+
+
+    <div class="tab-content" id="barchartscontent">
+        <div class="tab-pane h-100 fade show active" id="acounts-bar" role="tabpanel" aria-labelledby="acounts-tab-bar">
+            <div id="${elementId}-acounts" class="chart-area h-100"/>
+        </div>
+        <div class="tab-pane h-100 fade show" id="bcounts-bar" role="tabpanel" aria-labelledby="bcounts-tab-bar">
+            <div id="${elementId}-bcounts" class="chart-area h-100"/>
+        </div>
+    </div>
 </div>

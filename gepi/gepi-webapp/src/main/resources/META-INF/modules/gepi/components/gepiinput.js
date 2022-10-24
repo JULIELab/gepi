@@ -158,13 +158,16 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
          */
         function togglelistb() {
             let islistaempty = $(lista).val().length == 0;
-            let listbelements = $("#listbdiv textarea, #listbdiv label, #listbdiv input, #listbdiv button")
+            let listbelements = $("#listbdiv textarea, #listbdiv input, #listbdiv button");
+            let selectFile = $("#listbdiv label");
             let listbdiv = $("#listbdiv");
             if (islistaempty) {
                 listbelements.attr("disabled", true);
+                selectFile.addClass("disabled");
                 listbdiv.tooltip("enable");
             } else {
                 listbelements.attr("disabled", false);
+                selectFile.removeClass("disabled");
                 listbdiv.tooltip("disable");
             }
         }

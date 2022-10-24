@@ -2,9 +2,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
     class PieWidget {
         elementId;
         widgetSettings;
-        // the ID of the input element where the user can specify the numbers of genes to be shown
-        numGeneInputId = 'numgeneinput';
-        numGenesDropdownItemId = 'numgenesdropdown';
+         // id of the element that holds the tabs and the dropdown menu
+        tabPieId = 'pie-tabs'
+        // id of the input element where the user can specify the numbers of genes to be shown
+        numGeneInputId = 'numgeneinput-pie';
+        // id of the dropdown menu
+        numGenesDropdownItemId = 'numgenesdropdown-pie';
         makeOtherBin = true;
 
         constructor(elementId, widgetSettings) {
@@ -42,6 +45,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         init() {
             // Remove the Loading... banner
             $('#' + this.elementId + '-outer .text-center.shine').remove();
+            // show the control elements: tabs, dropdown menu
+            $('#' + this.tabPieId).removeClass('d-none');
             let aCountElId = this.elementId+'-acounts';
             let bCountElId = this.elementId+'-bcounts'
 
@@ -66,7 +71,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                         this.drawPieChart('bcounts', bCountElId);
                     }, 500);
             });
-            $('#numgenesdropdown li a.number').on('click', e => {
+            $('#'+this.numGenesDropdownItemId+'-pie li a.number').on('click', e => {
                 $('#' + this.numGeneInputId).val(e.currentTarget.text);
                 this.drawPieChart('acounts', aCountElId);
                 this.drawPieChart('bcounts', bCountElId);
@@ -80,9 +85,9 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             let argCounts = data.getData(countType)['argumentcounts'];
             const sum = argCounts.reduce((accumulator, value) => accumulator + value[1], 0);
             argCounts = argCounts.map(x => {return {label: x[0], value: x[1], percentage: x[1]/sum}})
+
             // get the number of slices to show from the input field
             let numToShow = $('#' + this.numGeneInputId).val();
-            
             // default to 20
             numToShow = parseInt(numToShow) ? numToShow : 20;
             let otherSum = undefined;
@@ -219,8 +224,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             let numGeneInput = $('#' + this.numGeneInputId)[0];
             new Tooltip(numGeneInput, {'trigger':'hover'});
 
-            let makeOtherBinMenuItem = $('#' + this.numGenesDropdownItemId+ ' li > a.other-bin').parent()[0];
-            new Tooltip(makeOtherBinMenuItem, {'trigger':'hover'});
+            //let makeOtherBinMenuItem = $('#' + this.numGenesDropdownItemId+ ' li > a.other-bin').parent()[0];
+            //new Tooltip(makeOtherBinMenuItem, {'trigger':'hover'});
         }      
     }
 
