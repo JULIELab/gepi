@@ -5,7 +5,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         // the ID of the input element where the user can specify the numbers of genes to be shown
         numGeneInputId = 'numgeneinput';
         numGenesDropdownItemId = 'numgenesdropdown';
-        makeOtherBin = false;
+        makeOtherBin = true;
 
         constructor(elementId, widgetSettings) {
             this.elementId = elementId;
@@ -71,12 +71,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 this.drawPieChart('acounts', aCountElId);
                 this.drawPieChart('bcounts', bCountElId);
             });
-            $('#numgenesdropdown li a.other-bin').on('click', e => {
-                this.makeOtherBin = !this.makeOtherBin;
-                console.log("Making other bin: " + this.makeOtherBin);
-                this.drawPieChart('acounts', aCountElId);
-                this.drawPieChart('bcounts', bCountElId);
-            });
 
             this.initTooltips();
         }
@@ -97,7 +91,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 otherSum = tail.reduce((accumulator, item) => accumulator + item.value, 0);
             }
             argCounts = argCounts.slice(0, numToShow);
-            console.log("otherSum: " + otherSum)
             if (otherSum)
                 argCounts.push({label: 'others', value: otherSum, percentage: otherSum/sum});
             
