@@ -1,0 +1,12 @@
+.barchartcanvas {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    height: 100%;
+}
+
+#barchartscontent {
+    flex-grow: 1;
+}
+
+#numgeneinput-bar {
+    width: 3.3rem;
+}
