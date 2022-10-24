@@ -55,6 +55,9 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           this.settings = {
             width: 500,
             height: 350,
+            margin: {
+              top: 10, right: 10, bottom: 10, left: 10
+            },
             min_height: 200,
             padding_x: 0,
             padding_y: 20,
@@ -134,16 +137,17 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           const chartContainer = $('#' + this.elementId + '-container');
           // chartContainer.closest(".panel-body > .shine").addClass("hidden");
           chartContainer.removeClass('hidden');
-          this.settings.width = chart_elem.clientWidth - 2 * this.settings.padding_x - 10;
-          this.settings.height = chart_elem.clientHeight - 2 * this.settings.padding_y;
+          this.settings.width = chart_elem.clientWidth - this.settings.margin.left - this.settings.margin.right;
+          this.settings.height = chart_elem.clientHeight - this.settings.margin.top - this.settings.margin.bottom;
           console.log("Creating svg element for sankey diagram with size " + this.settings.width + " x " + this.settings.height)
           const svg = chart
               .append('svg')
-              .attr('width', this.settings.width)
-              .attr('height', this.settings.height)
-              .attr('top', '50px');
+              .attr('width', this.settings.width + this.settings.margin.left + this.settings.margin.right)
+              .attr('height', this.settings.height + this.settings.margin.top + this.settings.margin.bottom);
 
-          return svg;//.append('g');//.attr('transform', 'translate(' + this.settings.padding_x + ',' + this.settings.padding_y + ')');
+          return svg
+            .append('g')
+            .attr('transform', 'translate(' + this.settings.margin.left + ',' + this.settings.margin.top + ')');
         }
 
 
@@ -165,14 +169,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             max_other_height = Infinity;
           }
           const the_data = data.prepare_data(this.preprocessed_data, this.settings.height, this.settings.min_node_height, this.settings.node_spacing, this.settings.show_other, max_other_height);
-          console.log('Finished preparing data');
-          console.log(the_data)
 
           const sankey = d3.sankey();
 
           console.log("Sankey size set to " + this.settings.width + " x " + this.settings.height + " with origin (0, 0).")
           sankey
-              .size([this.settings.width - 1 , this.settings.height - 5])
+              .size([this.settings.width, this.settings.height])
               .nodeWidth(this.settings.node_width)
               .nodePadding(this.settings.node_spacing)
               .nodeId((d) => d.id)
