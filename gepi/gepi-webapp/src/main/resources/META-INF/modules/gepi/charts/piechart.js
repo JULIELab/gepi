@@ -83,6 +83,10 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
         drawPieChart(countType, parentElementId) {
             let argCounts = data.getData(countType)['argumentcounts'];
+            if (argCounts.length === 0) {
+                $('#'+parentElementId).append('<div class="alert alert-info mx-auto">There is not data to display.</div>');
+                return;
+            }
             const sum = argCounts.reduce((accumulator, value) => accumulator + value[1], 0);
             argCounts = argCounts.map(x => {return {label: x[0], value: x[1], percentage: x[1]/sum}})
 

@@ -7,7 +7,7 @@
 
     <div>${viewmode}</div>
         <t:grid source="eventSource" row="eventrow" model="tableModel" rowsPerPage="${rowsperpage}"
-                pagerPosition="bottom" inplace="true">
+                pagerPosition="bottom" inplace="true" empty="block:no_data_block">
             <p:firstArgumentPreferredNameCell>
                 <a href="https://www.ncbi.nlm.nih.gov/gene/${eventrow.firstargumentgeneid}" target="_blank"
                    data-toggle="tooltip" data-placement="top"
@@ -32,4 +32,8 @@
                 <t:trigger event="updateTableZone"/>
             </p:contextCell>
         </t:grid>
+    <!-- Used for the 'empty' parameter of the grid component above. Defines the HTML to show when there is no data. -->
+    <t:block t:id="no_data_block">
+        <div class="alert alert-info mx-auto">No interactions were found for the input genes.</div>
+    </t:block>
 </div>
