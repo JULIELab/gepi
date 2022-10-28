@@ -228,5 +228,6 @@ public class TableResultWidget extends GepiWidget {
     public void afterRender() {
         final Link downloadEventLink = resources.createEventLink("download");
         javaScriptSupport.require("gepi/charts/tablewidget").with(downloadEventLink.toAbsoluteURI());
+        javaScriptSupport.require("gepi/base").invoke("setuptooltips");
     }
 }

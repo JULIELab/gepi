@@ -126,6 +126,11 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
             <type>zip</type>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>gepi-webapp</finalName>

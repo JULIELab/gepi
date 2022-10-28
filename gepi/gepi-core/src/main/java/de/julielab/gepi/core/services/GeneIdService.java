@@ -247,27 +247,30 @@ public class GeneIdService implements IGeneIdService {
     }
 
     @Override
-    public Map<String, GepiGeneInfo> getGeneInfo(List<String> conceptIds) {
-        Map<String, GepiGeneInfo> geneInfo = new HashMap<>();
+    public Map<String, GepiGeneInfo> getGeneInfo(Iterable<String> conceptIds) {
+        Map<String, GepiGeneInfo> geneInfo;
         try (Session session = driver.session()) {
-            session.readTransaction(tx -> {
-                Record record;
-                Multimap<String, String> topAtids = HashMultimap.create();
+            geneInfo = session.readTransaction(tx -> {
+                Map<String, GepiGeneInfo> innerGeneInfo = new HashMap<>();
 
-                final String query = "MATCH (c:CONCEPT:ID_MAP_NCBI_GENES) WHERE c.originalId IN $originalIds WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c.originalId AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
-                final Value parameters = parameters("originalIds", conceptIds);
+                final String query = "MATCH (c:CONCEPT) WHERE c.id IN $conceptIds RETURN c.originalId,c.id,c.preferredName,c.synonyms,c.descriptions,labels(c)";
+                final Value parameters = parameters("conceptIds", conceptIds);
                 Result result = tx.run(
                         query,
                         parameters);
 
                 while (result.hasNext()) {
-                    record = result.next();
-                    topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
+                    Record record = result.next();
+                    String conceptId = record.get("c.id").asString();
+                    String originalId = record.get("c.originalId").asString();
+                    String preferredName = record.get("c.preferredName").asString();
+                    List<String> labels = record.get("labels(c)").asList(v -> v.asString());
+                    innerGeneInfo.put(conceptId, GepiGeneInfo.builder().originalId(originalId).conceptId(conceptId).symbol(preferredName).labels(new HashSet<>(labels)).build());
                 }
-                return topAtids;
+                return innerGeneInfo;
             });
         }
-        return null;
+        return geneInfo;
     }
 
 }

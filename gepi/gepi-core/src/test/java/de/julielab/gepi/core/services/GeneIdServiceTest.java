@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.services;
 
 import com.google.common.collect.Multimap;
+import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,7 +10,9 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.harness.junit.rule.Neo4jRule;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,6 +68,18 @@ public class GeneIdServiceTest {
         assertThat(conversionResult.getUnconvertedItems()).containsExactly("akt1");
     }
 
+    @Test
+    public void getGeneInfo() throws Exception {
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GEPI_AGGREGATE, null).get();
+        final Map<String, GepiGeneInfo> geneInfo = geneIdService.getGeneInfo(conversionResult.getTargetIds());
+        assertThat(geneInfo).containsKeys("atid2", "atid3");
+        assertThat(geneInfo.get("tid2").getSymbol()).isEqualTo("Mtor");
+        assertThat(geneInfo.get("atid2").getSymbol()).isEqualTo("mTOR");
+        assertThat(geneInfo.get("atid2").getOriginalId()).isEqualTo("2475");
+        assertThat(geneInfo.get("atid3").getSymbol()).isEqualTo("AKT1");
+    }
+
     private void setupDB(GraphDatabaseService graphDatabaseService) {
         // Example graph with two groups of genes: mTOR and Akt1.
         // This graph does not show the real data but is shaped to cover the test cases.
@@ -79,7 +94,7 @@ public class GeneIdServiceTest {
         final String testData = "CREATE (f:FACET {id:'fid0', name:'Genes'})," +
                 "(a:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_lc:'mtor',id:'atid0'})," +
                 "(a2:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_lc:'mtor',id:'atid1'})," +
-                "(t:AGGREGATE_TOP_ORTHOLOGY:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_lc:'mtor',id:'atid2'})," +
+                "(t:AGGREGATE_TOP_ORTHOLOGY:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_lc:'mtor',id:'atid2',originalId:'2475'})," +
                 "(h:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mTOR',preferredName_lc:'mtor',originalId:'2475',id:'tid0',taxId:'9606'})," +
                 "(m:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_lc:'mtor',originalId:'56717',id:'tid1',taxId:'10090'}),"+
                 "(d:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mtor',preferredName_lc:'mtor',originalId:'324254',id:'tid1',taxId:'7955'}),"+
@@ -97,7 +112,6 @@ public class GeneIdServiceTest {
                 "(f)-[:HAS_ROOT_CONCEPT]->(a3),"+
                 "(a3)-[:HAS_ELEMENT]->(akth),"+
                 "(a3)-[:HAS_ELEMENT]->(aktm)";
-//        System.out.println(testData);
         try (final Transaction tx = graphDatabaseService.beginTx()) {
             tx.execute(testData);
             tx.commit();

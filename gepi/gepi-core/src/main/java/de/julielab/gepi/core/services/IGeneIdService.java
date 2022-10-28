@@ -5,7 +5,6 @@ import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -68,6 +67,6 @@ public interface IGeneIdService {
 	 */
 	CompletableFuture<Multimap<String, String>> convertGene2AggregateIds(Stream<String> input);
 
-	Map<String, GepiGeneInfo> getGeneInfo(List<String> conceptIds);
+	Map<String, GepiGeneInfo> getGeneInfo(Iterable<String> conceptIds);
 
 }
