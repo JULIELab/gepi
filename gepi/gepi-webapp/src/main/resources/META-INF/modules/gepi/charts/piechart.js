@@ -76,8 +76,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 this.drawPieChart('acounts', aCountElId);
                 this.drawPieChart('bcounts', bCountElId);
             });
-
-            this.initTooltips();
         }
 
 
@@ -106,11 +104,18 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             let width = this.width,
                 height = this.height,
                 radius = Math.min(width, height) / 2;
+            // leave some margin left and right for the labels
+            if (width < height) {
+                console.log("piechart: adding margin of " + 60 + " because width is less than height")
+                radius = radius - 60;
+            }
+
+            console.log("piechart radius: " +  radius)
 
             // remove potentially existing SVG element
             d3.select('#'+parentElementId + " svg").remove();
 
-            let svg = d3.select('#'+parentElementId)
+            const svg = d3.select('#'+parentElementId)
                 .append('svg')
                 .attr('class', 'piechartcanvas')
                 .append('g');
@@ -126,12 +131,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
             svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-            let colorScale = d3.scaleOrdinal().domain(argCounts.map(d => d.label)).range(d3.schemeAccent);
-            let maxFrequency = d3.max(argCounts.map(d => d.value));
+            const colorScale = d3.scaleOrdinal().domain(argCounts.map(d => d.label)).range(d3.schemeAccent);
+            const maxFrequency = d3.max(argCounts.map(d => d.value));
 
-            let sequentialScale = d3.scaleSequential()
-                .domain([0, maxFrequency])
-                .interpolator(d3.interpolateViridis);
+            const sequentialScale = d3.scaleSequential()
+                  .domain([0, maxFrequency])
+                  .interpolator(d3.interpolateViridis);
             // the data items are arrays where first element is the gene symbol and the second is the count
             let pieGen = d3.pie()
                 .value(d => d.value)
@@ -150,6 +155,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 .enter()
                 .append('path')
                 .attr('class', 'slice')
+                .attr('data-bs-toggle', 'default-tooltip')
+                .attr('title', d => d.data.label)
                 .attr('opacity', '.7')
                 .attr('d', arc)
                 .attr('fill', (d,i) => colorScale(i))
@@ -164,9 +171,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                         .attr('opacity', '.7');
                 });
 
+
             function midAngle(d){
                 return d.startAngle + (d.endAngle - d.startAngle)/2;
             }
+
+            function labelDisplayCheck(d, i) { return i < argCounts.length-5 || d.data.percentage >= 0.04 };
 
             /* ------- labels ---------- */
 
@@ -174,6 +184,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 .selectAll("text")
                 .data(pie)
                 .enter()
+                .filter(labelDisplayCheck)
                 .append("text")
                 .attr("dy", ".35em")
                 .text(function(d) {
@@ -181,7 +192,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                  })
                 .attr("transform", function(d) {
                      let pos = outerArc.centroid(d);
-                     pos[0] = radius * (midAngle(d) < Math.PI ? 1 : -1);
+                     pos[0] = radius * 1 * (midAngle(d) < Math.PI ? 1 : -1);
                      return "translate("+ pos +")";
                  })
                 .style("text-anchor", function(d){
@@ -212,6 +223,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 .selectAll("polyline")
                 .data(pie)
                 .enter()
+                .filter(labelDisplayCheck)
                 .append("polyline")
                 .attr('class', 'callout')
                 .attr("points", function(d){
@@ -222,14 +234,18 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                     slicePoint[1] = slicePoint[1] * 1.3
                     return [slicePoint, outerArc.centroid(d), labelPoint];
                 }); 
+
+            this.initTooltips();
         }
 
         initTooltips() {
             let numGeneInput = $('#' + this.numGeneInputId)[0];
             new Tooltip(numGeneInput, {'trigger':'hover'});
 
-            //let makeOtherBinMenuItem = $('#' + this.numGenesDropdownItemId+ ' li > a.other-bin').parent()[0];
-            //new Tooltip(makeOtherBinMenuItem, {'trigger':'hover'});
+            console.log("Creating piechart tooltips on " + this.elementId)
+            $('#' + this.elementId + '-outer svg .slice').each(function() {
+                 new Tooltip(this)
+             });
         }      
     }
 

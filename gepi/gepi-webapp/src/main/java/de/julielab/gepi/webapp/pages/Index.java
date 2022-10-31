@@ -210,5 +210,173 @@ public class Index {
         return null;
     }
 
+    public int getStatsSmColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 6;
+        } else if (isAList() && !isBList()) {
+            // only a list given
+            return 8;
+        }
+        // AB lists given
+        return 12;
+    }
+
+    public int getStatsLgColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 7;
+        } else if (isAList() && !isBList()) {
+            // only a list given
+            return 12;
+        }
+        // AB lists given
+        return 12;
+    }
+
+    public int getStatsXxlColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 6;
+        } else if (isAList() && !isBList()) {
+            // only a list given
+            return 12;
+        }
+        // AB lists given
+        return 12;
+    }
+
+    public int getStatsXxxlColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 4;
+        } else if (isAList() && !isBList()) {
+            // only a list given
+            return 8;
+        }
+        // AB lists given
+        return 12;
+    }
+
+    public int getPieSmColSize() {
+        if (!isBList()) {
+            return 12-getStatsSmColSize();
+        }
+        // AB lists given
+        return 6;
+    }
+
+    public int getPieLgColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 12-getStatsLgColSize();
+        } else if (isAList() && !isBList()) {
+            // only a list given
+            return 6;
+        }
+        // AB lists given
+        return 6;
+    }
+
+    public int getPieXxlColSize() {
+        if (!isBList()) {
+            return 6;
+        }
+        return 6;
+    }
+
+    public int getPieXxxlColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 4;
+        } else
+        if (!isBList()) {
+            return 12-getStatsXxxlColSize();
+        }
+        // AB lists given
+        return 6;
+    }
+
+    public int getBarXxlColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 4;
+        } else
+        if (!isBList()) {
+            return 6;
+        }
+        // AB lists given
+        return 6;
+    }
+
+    public int getBarXxxlColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 4;
+        } else
+        if (!isBList()) {
+            return 4;
+        }
+        // AB lists given
+        return 6;
+    }
+
+    public int getSankeyXxlColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 4;
+        } else if (isBList()) {
+            // a and b lists given
+            return 6;
+        }
+        // only a list given
+        return 6;
+    }
+
+    public int getSankeyXxxlColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 6;
+        } else if (isBList()) {
+            // a and b lists given
+            return 6;
+        }
+        // only a list given
+        return 4;
+    }
+
+    public int getSankeyComSmColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 12;
+        } else if (isBList()) {
+            // a and b lists given
+            return 6;
+        }
+        // only a list given
+        return 4;
+    }
+
+    public int getSankeyComLgColSize() {
+        if (!isAList()) {
+            // no gene lists given
+            return 12;
+        } else if (isBList()) {
+            // a and b lists given
+            return 6;
+        }
+        // only a list given
+        return 6;
+    }
+
+
+
+    private boolean isAList() {
+        return requestData.getInputMode().contains(InputMode.A) || isBList();
+    }
+
+    private boolean isBList() {
+        return requestData.getInputMode().contains(InputMode.AB);
+    }
 
 }

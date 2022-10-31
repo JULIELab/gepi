@@ -1,0 +1,16 @@
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+    <table class="table">
+        <tr>
+            <th>input</th>
+            <th>recognized symbol</th>
+            <th>mapping type</th>
+        </tr>
+        <t:loop t:source="getInputMapping()" value="inputMappingLoopItem">
+            <tr>
+                <th>${inputMappingLoopItem.input}</th>
+                <td class="${mappingFoundClass}">${inputMappingLoopItem.target}</td>
+                <td><span class="badge text-bg-primary">${inputMappingLoopItem.type}</span></td>
+            </tr>
+        </t:loop>
+    </table>
+</div>

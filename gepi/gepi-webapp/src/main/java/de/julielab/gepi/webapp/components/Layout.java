@@ -14,7 +14,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 /**
  * Layout component for pages of application test-project.
  */
-@Import(stylesheet = "context:css-components/layout.css")
+@Import(stylesheet = {"context:css-components/layout.css", "bootstrap-custom.css"})
 public class Layout {
 	@Inject
 	private ComponentResources resources;

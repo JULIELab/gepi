@@ -5,7 +5,7 @@
      viewMode="viewMode" useTapestryZoneUpdates="false" requestData="requestData" downloadable="true"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
     <div class="row">
-        <div class="col-3">
+        <div class="col-lg-6 col-xxl">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Result statistics</h5>
@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-lg-6 col-xxl">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Top Interactions</h5>
@@ -51,31 +51,34 @@
                 </div>
             </div>
         </div>
-        <div class="col-5">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">A-list mapping <span class="badge text-bg-primary" title="Number of input items successfully converted to GePI gene entities" data-bs-toggle="default-tooltip">${getInputSize('a', 'converted')}</span>&nbsp;<span class="badge text-bg-danger" title="Number of input items that could not be converted to GePI gene entities" data-bs-toggle="default-tooltip">${getInputSize('a','unconverted')}</span></h5>
-                    <table class="table">
-                        <tr>
-                            <th>input</th>
-                            <th>recognized symbol</th>
-                            <th>mapping type</th>
-                        </tr>
-                        <t:loop t:source="getaInputMapping(10)" value="inputMappingLoopItem">
-                            <tr>
-                                <th>${inputMappingLoopItem.input}</th>
-                                <td class="${mappingFoundClass}">${inputMappingLoopItem.target}</td>
-                                <td><span class="badge text-bg-primary">${inputMappingLoopItem.type}</span></td>
-                            </tr>
-                        </t:loop>
-                    </table>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#alistmappingmodal">
-                        See whole list
-                    </button>
+        <t:if test="AList">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">A-list mapping <span class="badge text-bg-primary" title="Number of input items successfully converted to GePI gene entities" data-bs-toggle="default-tooltip">${getInputSize('a', 'converted')}</span>&nbsp;<span class="badge text-bg-danger" title="Number of input items that could not be converted to GePI gene entities" data-bs-toggle="default-tooltip">${getInputSize('a','unconverted')}</span></h5>
+                        <t:InputListMappingTable requestData="requestData" list="a" maxTableSize="10"/>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#alistmappingmodal">
+                            See whole list
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </t:if>
+        <t:if test="BList">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">B-list mapping <span class="badge text-bg-primary" title="Number of input items successfully converted to GePI gene entities" data-bs-toggle="default-tooltip">${getInputSize('b', 'converted')}</span>&nbsp;<span class="badge text-bg-danger" title="Number of input items that could not be converted to GePI gene entities" data-bs-toggle="default-tooltip">${getInputSize('b','unconverted')}</span></h5>
+                        <t:InputListMappingTable requestData="requestData" list="b" maxTableSize="10"/>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#blistmappingmodal">
+                            See whole list
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </t:if>
     </div>
     <div class="modal fade" id="alistmappingmodal" tabindex="-1" aria-labelledby="alistmappingmodallabel"
          aria-hidden="true">
@@ -86,20 +89,24 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <table class="table">
-                        <tr>
-                            <th>input</th>
-                            <th>recognized symbol</th>
-                            <th>mapping type</th>
-                        </tr>
-                        <t:loop t:source="getaInputMapping(-1)" value="inputMappingLoopItem">
-                            <tr>
-                                <th>${inputMappingLoopItem.input}</th>
-                                <td class="${mappingFoundClass}">${inputMappingLoopItem.target}</td>
-                                <td>${inputMappingLoopItem.type}</td>
-                            </tr>
-                        </t:loop>
-                    </table>
+                    <t:InputListMappingTable requestData="requestData" list="a" maxTableSize="-1"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="blistmappingmodal" tabindex="-1" aria-labelledby="blistmappingmodallabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="blistmappingmodallabel">A-List Input Mapping</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <t:InputListMappingTable requestData="requestData" list="b" maxTableSize="-1"/>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
