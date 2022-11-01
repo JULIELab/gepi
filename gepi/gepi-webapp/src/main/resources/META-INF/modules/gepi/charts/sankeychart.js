@@ -61,6 +61,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           bottom: 10,
           left: 10
         },
+        max_width: 800,
         min_height: 200,
         padding_x: 0,
         padding_y: 20,
@@ -140,6 +141,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       // chartContainer.closest(".panel-body > .shine").addClass("hidden");
       chartContainer.removeClass('hidden');
       this.settings.width = chart_elem.clientWidth - this.settings.margin.left - this.settings.margin.right;
+      this.settings.width = Math.min(this.settings.width, this.settings.max_width);
       this.settings.height = chart_elem.clientHeight - this.settings.margin.top - this.settings.margin.bottom;
       console.log("Creating svg element for sankey diagram with size " + this.settings.width + " x " + this.settings.height)
       const svg = chart
@@ -166,7 +168,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         $('#' + this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-12');
         $('#' + this.elementId + '-container').parent().addClass('d-none');
       } else {
-        $('#' + this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-10');
+        $('#' + this.elementId).parent().removeClass((index, classNames) => classNames.split(' ').filter(name => name.match('.*col-[0-9]*'))).addClass('col-sm-10 col-lg-8 col-xl-6');
         $('#' + this.elementId + '-container').parent().removeClass('d-none');
       }
 

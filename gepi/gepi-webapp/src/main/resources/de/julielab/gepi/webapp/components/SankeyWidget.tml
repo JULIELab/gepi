@@ -9,10 +9,12 @@
     <!-- the following is rendered within GepiWidgetLayout.tml in a bootstrap card-body element; the widget is a bootstrap card -->
     <!-- Sankey widgets manage themselves in JavaScript, thus we always render all elements independently from the view mode -->
     <div class="row full-height">
-        <div class="${chartAreaColumnSizeClass} text-center full-height">
-            <div id="${elementId}" class="chart-area full-height"/>
+        <!-- The col-xy class is controlled in sankeychart.js when resizing the widget -->
+        <div class="col-12 text-center h-100 mx-auto">
+            <div id="${elementId}" class="chart-area h-100"/>
         </div>
-        <div class="col-2">
+        <!-- put the controls first when the screen size forces us to stack the chart and the controls -->
+        <div class="col-auto mx-auto order-sm-first order-lg-last">
             <div id="${elementId}-container">
                 <div class="settings">
                     <div class="sliders"></div>

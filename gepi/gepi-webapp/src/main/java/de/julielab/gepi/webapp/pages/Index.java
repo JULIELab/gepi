@@ -159,9 +159,9 @@ public class Index {
         return hasLargeWidget ? "noScroll" : "";
     }
 
-    public String getWidgetOverlayShowClass() {
-        return hasLargeWidget ? "into" : "";
-    }
+//    public String getWidgetOverlayShowClass() {
+//        return hasLargeWidget ? "into" : "";
+//    }
 
     /**
      * Called from the client to retrieve the data for chart display.

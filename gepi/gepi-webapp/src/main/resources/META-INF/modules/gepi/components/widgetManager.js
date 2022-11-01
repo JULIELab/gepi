@@ -28,17 +28,19 @@ define(['jquery', 't5/core/zone'], function($, zoneManager) {
       switch (currentMode) {
         case 'large':
           $('body').removeClass('noScroll');
-          $('#disableplane').removeClass('show');
+          $('#largewidget-backdrop').removeClass('show');
           newMode = 'small';
           oldHandleClass = 'widget-resize-to-small';
           newHandleClass = 'widget-resize-to-full';
+          widget.widget.addClass('h-100');
           break;
         case 'small':
           $('body').addClass('noScroll');
           newMode = 'large';
           oldHandleClass = 'widget-resize-to-full';
           newHandleClass = 'widget-resize-to-small';
-          window.setTimeout(() => $('#disableplane').addClass('show'), 500);
+          widget.widget.removeClass('h-100');
+          window.setTimeout(() => $('#largewidget-backdrop').addClass('show'), 500);
           break;
       }
 

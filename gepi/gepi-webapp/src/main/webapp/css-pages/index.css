@@ -65,6 +65,16 @@ body.noScroll {
     left: 0;
 }
 
+#largewidget-backdrop.fade.show {
+    background-color: #000000;
+    opacity: .4;
+    z-index: 10;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 50px;
+    left: 0;
+}
 
 #widgetOverlay {
 	position: fixed;
@@ -74,7 +84,7 @@ body.noScroll {
 	height: ~"calc(100vh - 50px)";
 	background-color: #ffffff;
 	z-index: 10;
-	pointer-events: none;
+
 }
 
 #inputToggleButton.disabled,
