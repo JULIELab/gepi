@@ -48,22 +48,11 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             $('#' + this.elementId + '-outer .text-center.shine').remove();
             // show the control elements: tabs, dropdown menu
             $('#' + this.tabBarId).removeClass('d-none');
-            let aCountElId = this.elementId + '-acounts';
-            let bCountElId = this.elementId + '-bcounts'
 
-            // The client dimensions of the chart that is currently not shown (because of the tabs for acounts and bcounts)
-            // are 0x0. Thus, we here get all the dimensions and use the non-zero ones.
-            let [aCountElHeight, aCountElWidth] = this.getDimensionsByElementId(aCountElId);
-            let [bCountElHeight, bCountElWidth] = this.getDimensionsByElementId(bCountElId);
-            this.height = Math.max(aCountElHeight, bCountElHeight);
-            this.width = Math.max(aCountElWidth, bCountElWidth);
-
-            this.drawBarChart('acounts', aCountElId);
-            this.drawBarChart('bcounts', bCountElId)
+            this.redraw();
 
             const update = () => {
-                this.drawBarChart('acounts', aCountElId);
-                this.drawBarChart('bcounts', bCountElId);
+                this.redraw();
                 this.toggleMenuTicks();
             }
 
@@ -87,8 +76,21 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 this.displayPercentages = !this.displayPercentages;
                 update();
             });
+        }
 
-            this.initTooltips();
+        redraw() {
+            let aCountElId = this.elementId + '-acounts';
+            let bCountElId = this.elementId + '-bcounts'
+
+            // The client dimensions of the chart that is currently not shown (because of the tabs for acounts and bcounts)
+            // are 0x0. Thus, we here get all the dimensions and use the non-zero ones.
+            let [aCountElHeight, aCountElWidth] = this.getDimensionsByElementId(aCountElId);
+            let [bCountElHeight, bCountElWidth] = this.getDimensionsByElementId(bCountElId);
+            this.height = Math.max(aCountElHeight, bCountElHeight);
+            this.width = Math.max(aCountElWidth, bCountElWidth);
+
+            this.drawBarChart('acounts', aCountElId);
+            this.drawBarChart('bcounts', bCountElId)
         }
 
         /*
@@ -201,13 +203,13 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                     .call(d3.axisLeft(y))
             }
             // text label for the y axis
-  svg.append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 0 - margin.left)
-      .attr("x",0 - (height / 2))
-      .attr("dy", "1em")
-      .style("text-anchor", "middle")
-      .text(this.displayPercentages ? "percent" : "frequency");      
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x",0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text(this.displayPercentages ? "percent" : "frequency");      
 
             // Bars
             svg.selectAll("mybar")
@@ -217,23 +219,35 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 .attr("y", d => y(valueSupplier(d)))
                 .attr("width", x.bandwidth())
                 .attr("height", d => height - y(valueSupplier(d)))
+                .attr("class", "bar")
+                .attr('data-bs-toggle', 'default-tooltip')
+                .attr('title', d => d.label + "<br />count: " + d.value + "<br />fraction: " + (Math.round(100 * d.percentage) + '%'))
                 .attr("fill", "#69b3a2")
+                .on('mouseover', function(d,i) {
+                    d3.select(this).transition()
+                        .duration('400')
+                        .attr('fill', '#518c7f');
+                })
+                .on('mouseout', function(d,i) {
+                    d3.select(this).transition()
+                        .duration('400')
+                        .attr('fill', '#69b3a2');
+                });
 
-
+                this.initTooltips();
         }
 
         initTooltips() {
-            // const numGeneInput = $('#' + this.numGeneInputId)[0];
-            // new Tooltip(numGeneInput, {
-            //     'trigger': 'hover'
-            // });
-
             const tooltipTriggerList = [].slice.call(document.querySelectorAll(
                 '#' + this.numGeneInputId + ',' +
                 '#' + this.numGenesDropdownItemId + ' li[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.forEach(i => new Tooltip(i, {
                 'trigger': 'hover'
             }));
+
+            $('#' + this.elementId + '-outer svg .bar').each(function() {
+                 new Tooltip(this, {html:true})
+             });
         }
     }
 

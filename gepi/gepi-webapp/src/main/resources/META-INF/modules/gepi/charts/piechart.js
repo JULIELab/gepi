@@ -47,6 +47,26 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             $('#' + this.elementId + '-outer .text-center.shine').remove();
             // show the control elements: tabs, dropdown menu
             $('#' + this.tabPieId).removeClass('d-none');
+
+            this.redraw();
+
+            let timeoutId = undefined;
+              // Observe changes in the the 'number of genes' input field
+            $('#' + this.numGeneInputId).on('input', x => {
+                if (timeoutId)
+                    clearTimeout(timeoutId);
+                timeoutId = setTimeout(
+                    () => {
+                        this.redraw();
+                    }, 500);
+            });
+            $('#'+this.numGenesDropdownItemId+' li a.number').on('click', e => {
+                $('#' + this.numGeneInputId).val(e.currentTarget.text);
+                this.redraw();
+            });
+        }
+
+        redraw() {
             let aCountElId = this.elementId+'-acounts';
             let bCountElId = this.elementId+'-bcounts'
 
@@ -59,23 +79,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
            
             this.drawPieChart('acounts', aCountElId);
             this.drawPieChart('bcounts', bCountElId)
-
-            let timeoutId = undefined;
-              // Observe changes in the the 'number of genes' input field
-            $('#' + this.numGeneInputId).on('input', x => {
-                if (timeoutId)
-                    clearTimeout(timeoutId);
-                timeoutId = setTimeout(
-                    () => {
-                        this.drawPieChart('acounts', aCountElId);
-                        this.drawPieChart('bcounts', bCountElId);
-                    }, 500);
-            });
-            $('#'+this.numGenesDropdownItemId+' li a.number').on('click', e => {
-                $('#' + this.numGeneInputId).val(e.currentTarget.text);
-                this.drawPieChart('acounts', aCountElId);
-                this.drawPieChart('bcounts', bCountElId);
-            });
         }
 
 

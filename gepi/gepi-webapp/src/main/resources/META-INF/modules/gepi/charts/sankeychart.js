@@ -61,7 +61,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           bottom: 10,
           left: 10
         },
-        max_width: 800,
+        max_width: 600,
         min_height: 200,
         padding_x: 0,
         padding_y: 20,
