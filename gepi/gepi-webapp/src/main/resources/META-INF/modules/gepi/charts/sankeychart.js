@@ -74,7 +74,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         node_to_label_spacing: 5,
         // max_number_nodes: 3,
         show_other: false,
-        restrict_other_height: true,
+        restrict_other_height: false,
         max_other_height: 100,
         fine_node_highlights: true,
         active_link_color: '#000055',

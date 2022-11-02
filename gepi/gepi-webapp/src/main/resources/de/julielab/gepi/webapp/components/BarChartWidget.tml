@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
-     widgettitle="Interaction Partner Distribution A-List" t:clientId="${elementId}-outer" class="${classes}"
+     widgettitle="Interaction Partner Distribution A-List (Bars)" t:clientId="${elementId}-outer" class="${classes}"
      sizeClass="small" esResult="esResult" neo4jResult="neo4jResult" useTapestryZoneUpdates="false" requestData="requestData" waitForData="true" resizable="true">
     <!-- useTapestryZoneUpdates should be false for all JavaScript-based widgets. They just receive data from the
     server which is sent once and can then be reused. Updating the whole widget via Ajax basically resets it
@@ -26,6 +26,7 @@
                         <li><a class="dropdown-item number" href="#">10</a></li>
                         <li><a class="dropdown-item number" href="#">15</a></li>
                         <li><a class="dropdown-item number" href="#">20</a></li>
+                        <li><a class="dropdown-item number" href="#">30</a></li>
                         <li><hr class="dropdown-divider"/></li>
 <!--                    the 'other-bin' class is used in JS to identify this specific item -->
                         <li data-bs-toggle="tooltip" title="Toggles if genes that are not shown are collected in a special 'others' bar. Only applicable if there are more genes than can be displayed."><a class="dropdown-item other-bin" href="#"><span class="tick d-none">&#10003; </span>Make 'other' bar</a></li>

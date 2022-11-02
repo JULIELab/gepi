@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
-     widgettitle="Interaction Partner Distribution A-List" t:clientId="${elementId}-outer" class="${classes}"
+     widgettitle="Interaction Partner Distribution A-List (Pie)" t:clientId="${elementId}-outer" class="${classes}"
      sizeClass="small" esResult="esResult" neo4jResult="neo4jResult" useTapestryZoneUpdates="false" requestData="requestData" waitForData="true" resizable="true">
     <!-- useTapestryZoneUpdates should be false for all JavaScript-based widgets. They just receive data from the
     server which is sent once and can then be reused. Updating the whole widget via Ajax basically resets it
@@ -19,7 +19,7 @@
                 <li class="nav-item" role="presentation">
                     <form class="container-fluid">
                         <div class="input-group">
-                            <input type="text" id="numgeneinput-pie" class="form-control" aria-label="NumberOfGenes" oninput="this.value = this.value.replace(/[^0-9]/g, '');" value="20" data-bs-toggle="tooltip" title="Specify the number of interaction partners that should be included in the pie chart"/>
+                            <input type="text" id="numgeneinput-pie" class="form-control" aria-label="NumberOfGenes" oninput="this.value = this.value.replace(/[^0-9]/g, '');" value="7" data-bs-toggle="tooltip" title="Specify the number of interaction partners that should be included in the pie chart"/>
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"/>
                             <ul id="numgenesdropdown-pie" class="dropdown-menu dropdown-menu-end">
                                 <!-- the 'number' class is used in JS to select only those elements that represent
@@ -27,10 +27,6 @@
                                 <li><a class="dropdown-item number" href="#">5</a></li>
                                 <li><a class="dropdown-item number" href="#">10</a></li>
                                 <li><a class="dropdown-item number" href="#">15</a></li>
-                                <li><a class="dropdown-item number" href="#">20</a></li>
-<!--                                <li><hr class="dropdown-divider"/></li>-->
-                                <!-- the 'other-bin' class is used in JS to identify this specific item -->
-<!--                                <li  data-bs-toggle="tooltip" title="Toggles if genes that are not shown are collected in a special 'others' bin. Only applicable if there are more genes than can be displayed."><a class="dropdown-item other-bin" href="#">Make 'other' bin</a></li>-->
                             </ul>
                         </div>
                     </form>

@@ -93,8 +93,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
             // get the number of slices to show from the input field
             let numToShow = $('#' + this.numGeneInputId).val();
-            // default to 20
-            numToShow = parseInt(numToShow) ? numToShow : 20;
+            // default to 7
+            numToShow = parseInt(numToShow) ? numToShow : 7;
             let otherSum = undefined;
             if (argCounts.length > numToShow && this.makeOtherBin) {
                 let tail = argCounts.slice(numToShow);

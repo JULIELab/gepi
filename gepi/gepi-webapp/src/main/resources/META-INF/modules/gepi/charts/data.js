@@ -177,35 +177,96 @@
             };
         }
 
-        /*
-         * Expects the output from preprocess_data_for_sankey. Does some filtering that depends on the
-         * available canvas size and user settings such as padding and whether the 'other' link should
-         * be displayed.
-         */
         function prepare_data(pre_data, total_height, min_height, padding, show_other, max_other_size) {
-
             let {
                 nodesNLinks,
+                // the nodes are objects with keys 'id' and 'frequency'
                 sorted_ids_and_weights_left,
                 sorted_ids_and_weights_right,
                 total_frequency,
             } = pre_data;
+            const maxNumNodes = total_height / (padding+20);
+            const linksBySource = new Map();
+            for (let link of nodesNLinks.links) {
+                let links4node = linksBySource.get(link.source);
+                if (!links4node) {
+                    links4node = [];
+                    linksBySource.set(link.source, links4node);
+                }
+                links4node.push(link);
+            }
+            const id2name = new Map();
+            for (let node of nodesNLinks.nodes)
+                id2name.set(node.id, node.name);
+            const filtered_nodes = [];
+            const filtered_links = [];
+            const leftNodeIds = new Set();
+            const rightNodeIds = new Set();
+            for (let node of sorted_ids_and_weights_left) {
+                const links4node = linksBySource.get(node.id);
+                for (let link of links4node) {
+                      filtered_links.push({
+                            source: link.source + "_from",
+                            target: link.target + "_to",
+                            value: link.frequency
+                        });
+                    if (!leftNodeIds.has(link.source)) {
+                        filtered_nodes.push({
+                            id: link.source + "_from",
+                            name: id2name.get(link.source)
+                        });
+                        leftNodeIds.add(link.source);
+                    }
+                    if (!rightNodeIds.has(link.target)) {
+                        filtered_nodes.push({
+                            id: link.target + "_to",
+                            name: id2name.get(link.target)
+                        });
+                        rightNodeIds.add(link.target);
+                    }
 
-            let included_ids_from = getIncludedIds(sorted_ids_and_weights_left, total_frequency, total_height, min_height, padding, show_other, max_other_size);
-            let included_ids_to = getIncludedIds(sorted_ids_and_weights_right, total_frequency, total_height, min_height, padding, show_other, max_other_size);
-
-            let {
-                filtered_links,
-                misc_from,
-                misc_to,
-            } = filter_and_suffix_links(nodesNLinks.links, included_ids_from, included_ids_to, show_other);
-            let filtered_nodes = filter_and_suffix_nodes(nodesNLinks, included_ids_from, included_ids_to, misc_from, misc_to);
+                    if (leftNodeIds.size > maxNumNodes || rightNodeIds.size > maxNumNodes)
+                        break;
+                }
+                if (leftNodeIds.size > maxNumNodes || rightNodeIds.size > maxNumNodes)
+                    break;
+            }
 
             return {
                 nodes: filtered_nodes,
                 links: filtered_links,
             };
         }
+
+        /*
+         * Expects the output from preprocess_data_for_sankey. Does some filtering that depends on the
+         * available canvas size and user settings such as padding and whether the 'other' link should
+         * be displayed.
+         */
+        // function prepare_data(pre_data, total_height, min_height, padding, show_other, max_other_size) {
+
+        //     let {
+        //         nodesNLinks,
+        //         sorted_ids_and_weights_left,
+        //         sorted_ids_and_weights_right,
+        //         total_frequency,
+        //     } = pre_data;
+
+        //     let included_ids_from = getIncludedIds(sorted_ids_and_weights_left, total_frequency, total_height, min_height, padding, show_other, max_other_size);
+        //     let included_ids_to = getIncludedIds(sorted_ids_and_weights_right, total_frequency, total_height, min_height, padding, show_other, max_other_size);
+
+        //     let {
+        //         filtered_links,
+        //         misc_from,
+        //         misc_to,
+        //     } = filter_and_suffix_links(nodesNLinks.links, included_ids_from, included_ids_to, show_other);
+        //     let filtered_nodes = filter_and_suffix_nodes(nodesNLinks, included_ids_from, included_ids_to, misc_from, misc_to);
+
+        //     return {
+        //         nodes: filtered_nodes,
+        //         links: filtered_links,
+        //     };
+        // }
 
 
 
@@ -220,11 +281,12 @@
 
             let frequency_so_far = 0;
             let padding_so_far = 0;
+            let num_nodes_so_far = 0;
             if (!show_other) padding_so_far = -padding;
             let min_frequency = Infinity;
 
             for (let node of sorted_ids_and_weights) {
-
+                num_nodes_so_far = num_nodes_so_far + 1;
                 padding_so_far += padding;
                 frequency_so_far += node.node_frequency;
                 min_frequency = Math.min(node.node_frequency, min_frequency);
@@ -236,9 +298,12 @@
                     other_node_height = Math.min(min_scale * (total_frequency - frequency_so_far), max_other_size);
                 }
 
-                if (real_node_height + other_node_height + padding_so_far > total_height) {
+                if (num_nodes_so_far > 3)
                     break;
-                }
+
+                // if (real_node_height + other_node_height + padding_so_far > total_height) {
+                //     break;
+                // }
 
                 included_ids[node.id] = true;
 

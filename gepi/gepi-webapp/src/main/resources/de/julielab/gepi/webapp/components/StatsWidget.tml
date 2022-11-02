@@ -2,7 +2,7 @@
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
      widgettitle="Result Statistics" t:clientId="stats_widget" class="${classes}" sizeClass="widget-large"
      esResult="esResult"
-     viewMode="viewMode" useTapestryZoneUpdates="false" requestData="requestData" downloadable="true"
+     viewMode="viewMode" useTapestryZoneUpdates="false" requestData="requestData" downloadable="false"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
     <div class="row">
         <div class="col-lg-6 col-xxl">
