@@ -1,8 +1,10 @@
-define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widgetManager'], function($, data, index, widgetManager) {
+define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widgetManager', 'bootstrap5/tooltip'], function($, data, index, widgetManager, Tooltip) {
   class SankeyWidget {
     elementId
     orderType
     widgetSettings
+    links
+    nodes
 
     constructor(elementId, orderType, widgetSettings) {
       this.elementId = elementId;
@@ -74,6 +76,11 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         show_other: false,
         restrict_other_height: true,
         max_other_height: 100,
+        fine_node_highlights: true,
+        active_link_color: '#000055',
+        inactive_link_color: 'gray',
+        active_node_opacity: 1,
+        inactive_node_opacity: 0.15,
       };
 
 
@@ -207,7 +214,9 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       this.adapt_node_widths(the_data, max_other_height);
 
       // links
-      const links = svg.append('g')
+      const active_link_color = this.settings.active_link_color;
+      const inactive_link_color = this.settings.inactive_link_color;
+      this.links = svg.append('g')
         .attr('fill', 'none')
         .attr('stroke', '#000')
         .attr('fill-opacity', '0.2')
@@ -215,17 +224,31 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         .data(the_data.links)
         .enter().append('path')
         .attr('class', 'link')
-        .attr('fill', (d) => d.color)
+        .attr('fill', this.settings.inactive_link_color)
         // .attr("stroke", (d) => d.color)
         .attr('d', this.compute_path)
-        .attr('stroke-width', 0);
+        .attr('stroke-width', 0)
+         .attr("title", link => link.source.name + " - " + link.target.name + "<br />interaction count: "+link.value)
+         .attr('data-bs-toggle', 'default-tooltip')
+         .on('mouseover', function(d,i) {
+                    d3.select(this).transition()
+                        .duration('400')
+                        .attr('fill', active_link_color);
+                })
+                .on('mouseout', function(d,i) {
+                    d3.select(this).transition()
+                        .duration('400')
+                        .attr('fill', inactive_link_color);
+                });;
       // .attr("stroke-width", (d) => d.width);
 
-      links.append('title')
-        .text((link) => [link.source.id, link.target.id, link.value, link.color].join(', '));
+      // this.links.append('title')
+      //   .text((link) => [link.source.id, link.target.id, link.value, link.color].join(', '));
 
       // nodes
-      const nodes = svg.append('g')
+       const boundNodeHover = this.nodeHover.bind(this);
+      const boundNodeUnhover = this.nodeUnhover.bind(this);
+      this.nodes = svg.append('g')
         .selectAll('.node')
         .data(the_data.nodes)
         .join("rect")
@@ -256,6 +279,9 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             return 1;
           }
         })
+          .property('onmouseover', () => boundNodeHover)
+        .property('onmouseout', () => boundNodeUnhover);
+      this.nodes
         .append("title")
         .text(d => d.name);
 
@@ -286,10 +312,11 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       //       }
       //     });
 
-      nodes.on('click', (d) => {
-        this.selected_by_node_id[d.id] = !this.selected_by_node_id[d.id];
-        this.redraw();
-      });
+      // this.nodes.on('click', (d) => {
+      //   console.log("Click auf eine node: " + JSON.stringify(d))
+      //   this.selected_by_node_id[d.id] = !this.selected_by_node_id[d.id];
+      //   this.redraw();
+      // });
 
       const settings = this.settings;
       // nodes: labels
@@ -300,23 +327,67 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         .data(the_data.nodes)
         .join("text")
         .text((d) => d.name)
+        .property('onmouseover', () => boundNodeHover)
+        .property('onmouseout', () => boundNodeUnhover)
         .attr('y', (d) => (d.y1 + d.y0) / 2)
         .attr('x', (d) => d.x0 < this.settings.width / 2 ? d.x1 + 6 : d.x0 - 6)
         .attr("dy", "0.35em")
         .attr("text-anchor", d => d.x0 < this.settings.width / 2 ? "start" : "end");
 
-      // nodes.append('title')
-      // .text((d) => d.name);
+        this.initTooltips();
+    }
 
+     initTooltips() {
+            this.links.each(function() {
+                 new Tooltip(this, {html:true})
+             });
+        }
 
-      // vertical centering in the widget
-      //let height = parseInt($('#' + this.elementId).css('height').slice(0, -2));
-      //let parentHeight = parseInt($('#' + this.elementId).parent().css('height').slice(0, -2));
-      //let parentWidth = parseInt($('#' + this.elementId).parent().css('width').slice(0, -2));
-      //let headerHeight = parseInt($('#'+this.elementId+'-outer .card-header').css('height').slice(0, -2));
-      //$('#' + this.elementId).css('position', 'absolute');
-      //$('#' + this.elementId).css('top', (headerHeight+((parentHeight-height)/2))+'px');
-      //$('#' + this.elementId).css('width', (parentWidth*2/3)+'px');
+    nodeHover(event) {
+      this.hovered_id = event.target.__data__.id;
+
+      const connected_nodes = {};
+      connected_nodes[this.hovered_id] = 10000000;
+
+      
+      this.links.transition().duration('400').attr('fill', this.settings.inactive_link_color);
+
+      this.links.filter((link) => {
+        if (link.source.id === this.hovered_id) {
+          connected_nodes[link.target.id] = link.value;
+          return true;
+        } else if (link.target.id === this.hovered_id) {
+          connected_nodes[link.source.id] = link.value;
+          return true;
+        } else {
+          return false;
+        }
+      }).raise().transition().duration('400').attr('fill', this.settings.active_link_color);
+
+      // this.nodes.attr('opacity', (n) => {
+      //   if (this.settings.fine_node_highlights) {
+      //     const v1 = 1 - Math.pow(0.97, connected_nodes[n.id] || 0);
+      //     const finalOpacity = (this.settings.active_node_opacity - this.settings.inactive_node_opacity) * v1 +
+      //       this.settings.inactive_node_opacity;
+      //     return finalOpacity;
+      //   } else {
+      //     if (connected_nodes[n.id]) {
+      //       return this.settings.active_node_opacity;
+      //     } else {
+      //       return this.settings.inactive_node_opacity;
+      //     }
+      //   }
+      // });
+    }
+
+    nodeUnhover(event) {
+      const unhovered_id = event.target.__data__.id;
+
+      if (unhovered_id === this.hovered_id) {
+        this.links.filter(link => link.target.id === unhovered_id || link.source.id === unhovered_id)
+            .transition().duration('400').attr('fill', this.settings.inactive_link_color);
+        // this.links.attr('fill', this.settings.inactive_link_color);
+      }
     }
 
     add_toggle(id, text, initial_state, change_handler) {
