@@ -8,7 +8,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         numGeneInputId = 'numgeneinput-bar';
         // id of the dropdown menu
         numGenesDropdownItemId = 'numgenesdropdown-bar';
-        makeOtherBin = true;
+        makeOtherBin = false;
         displayPercentages = false;
 
         constructor(elementId, widgetSettings) {

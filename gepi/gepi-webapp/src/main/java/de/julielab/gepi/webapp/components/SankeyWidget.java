@@ -1,6 +1,7 @@
 package de.julielab.gepi.webapp.components;
 
 import org.apache.tapestry5.BindingConstants;
+import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
@@ -9,6 +10,7 @@ import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.services.javascript.InitializationPriority;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
+@Import(stylesheet = {"context:css-components/sankeywidget.css"})
 public class SankeyWidget extends GepiWidget {
 
     @Inject

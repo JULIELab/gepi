@@ -5,6 +5,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
     widgetSettings
     links
     nodes
+    tooltips = []
 
     constructor(elementId, orderType, widgetSettings) {
       this.elementId = elementId;
@@ -63,7 +64,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           bottom: 10,
           left: 10
         },
-        max_width: 600,
+        max_width: 700,
         min_height: 200,
         padding_x: 0,
         padding_y: 20,
@@ -107,30 +108,31 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         this.redraw();
 
         const orderType = this.orderType;
-        this.add_slider('padding-slider-'+orderType, 'Padding: ', 2, 25, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
-        this.add_slider('min-size-slider-'+orderType, 'Minimum node size: ', 5, 25, 2, settings.min_node_height, (value) => settings.min_node_height = value);
+        this.add_slider('padding-slider-' + orderType, 'Padding ', 2, 25, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
+        // this.add_slider('min-size-slider-'+orderType, 'Minimum node size: ', 5, 25, 2, settings.min_node_height, (value) => settings.min_node_height = value);
         //this.add_slider('node-height-slider', 'Chart height: ', 40, 400, 2, settings.height, (value) => settings.height = value - 0);
         // add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, this.settings.max_number_nodes, (value) => this.settings.max_number_nodes = value);
-        this.add_slider('max-other-slider-'+orderType, 'Maximum size of "Other" node:', 2, 150, 2, settings.max_other_height, (value) => settings.max_other_height = value);
+        // this.add_slider('max-other-slider-'+orderType, 'Maximum size of "Other" node:', 2, 150, 2, settings.max_other_height, (value) => settings.max_other_height = value);
+
+        // this.add_toggle(
+        //   'restrict-other-toggle-'+orderType,
+        //   'Restrict size of "Other" node',
+        //   settings.restrict_other_height,
+        //   (state) => settings.restrict_other_height = state,
+        // );
 
         this.add_toggle(
-          'restrict-other-toggle-'+orderType,
-          'Restrict size of "Other" node',
-          settings.restrict_other_height,
-          (state) => settings.restrict_other_height = state,
-        );
-
-        this.add_toggle(
-          'show-other-toggle-'+orderType,
+          'show-other-toggle-' + orderType,
           'Show "Other" node',
+          'Compute special "other" nodes that serve as a collective replacement for all genes that cannot be shown due to restricted display area.',
           settings.show_other,
           (state) => settings.show_other = state,
         );
 
-        this.add_button('Clear selection', () => {
-          this.selected_by_node_id = {};
-          this.redraw();
-        });
+        // this.add_button('Clear selection', () => {
+        //   this.selected_by_node_id = {};
+        //   this.redraw();
+        // });
 
         $('#' + this.elementId).data('mainWasCalled', true);
         console.log('Finished main.');
@@ -164,6 +166,10 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
 
     redraw() {
+      // Clear the existing Bootstrap Tooltips because when we click on a button with a tooltip
+      // that causes redraw(), the displayed tooltip won't disappear any more otherwise.
+      this.tooltips.forEach(tooltip => tooltip.dispose());
+      this.tooltips = [];
       // Display an info box when there is not data.
       if (this.preprocessed_data.total_frequency <= 0) {
         const infoMessage = this.orderType === 'frequency' ? "There is no data to display." : "There are no common interaction partners in the current result.";
@@ -194,8 +200,10 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       const sankey = d3.sankey();
 
       console.log("Sankey size set to " + this.settings.width + " x " + this.settings.height + " with origin (0, 0).")
+      // Restrict the height by the number of displayed links. This helps when there are only few links
+      // but a lot of space where the nodes become very large.
       sankey
-        .size([this.settings.width, Math.min(this.settings.height,the_data.links.length*40)])
+        .size([this.settings.width, Math.min(this.settings.height, the_data.links.length * 40)])
         .nodeWidth(this.settings.node_width)
         .nodePadding(this.settings.node_spacing)
         .nodeId((d) => d.id)
@@ -229,25 +237,25 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         // .attr("stroke", (d) => d.color)
         .attr('d', this.compute_path)
         .attr('stroke-width', 0)
-         .attr("title", link => link.source.name + " - " + link.target.name + "<br />interaction count: "+link.value)
-         .attr('data-bs-toggle', 'default-tooltip')
-         .on('mouseover', function(d,i) {
-                    d3.select(this).transition()
-                        .duration('400')
-                        .attr('fill', active_link_color);
-                })
-                .on('mouseout', function(d,i) {
-                    d3.select(this).transition()
-                        .duration('400')
-                        .attr('fill', inactive_link_color);
-                });;
+        .attr("title", link => link.source.name + " - " + link.target.name + "<br />interaction count: " + link.value)
+        .attr('data-bs-toggle', 'default-tooltip')
+        .on('mouseover', function(d, i) {
+          d3.select(this).transition()
+            .duration('400')
+            .attr('fill', active_link_color);
+        })
+        .on('mouseout', function(d, i) {
+          d3.select(this).transition()
+            .duration('400')
+            .attr('fill', inactive_link_color);
+        });;
       // .attr("stroke-width", (d) => d.width);
 
       // this.links.append('title')
       //   .text((link) => [link.source.id, link.target.id, link.value, link.color].join(', '));
 
       // nodes
-       const boundNodeHover = this.nodeHover.bind(this);
+      const boundNodeHover = this.nodeHover.bind(this);
       const boundNodeUnhover = this.nodeUnhover.bind(this);
       this.nodes = svg.append('g')
         .selectAll('.node')
@@ -258,29 +266,9 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         .attr("y", d => d.y0)
         .attr("height", d => d.y1 - d.y0)
         .attr("width", d => d.x1 - d.x0)
-        .attr("fill", (d) => {
-          /* COLOR SCHEME FOR NODES
-              normal - black
-              misc/hidden - gray (semi-transparent)
-              selected - blue
-              pinned - ? maybe a pattern? red checkerboard?
-
-               */
-
-          if (this.selected_by_node_id[d.id]) {
-            return '#0040a0';
-          } else {
-            return '#000000';
-          }
-        })
-        .attr('opacity', (d) => {
-          if (d.id === 'MISC_from' || d.id === 'MISC_to') {
-            return 0.4;
-          } else {
-            return 1;
-          }
-        })
-          .property('onmouseover', () => boundNodeHover)
+        .attr("fill", (d) => d.id.startsWith("MISC") ? "#ff0000" : "#4cabe6")
+        .attr('opacity', (d) => d.id.startsWith("MISC") ? 0.5 : 1)
+        .property('onmouseover', () => boundNodeHover)
         .property('onmouseout', () => boundNodeUnhover);
       this.nodes
         .append("title")
@@ -335,14 +323,29 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         .attr("dy", "0.35em")
         .attr("text-anchor", d => d.x0 < this.settings.width / 2 ? "start" : "end");
 
-        this.initTooltips();
+      this.initTooltips();
     }
 
-     initTooltips() {
-            this.links.each(function() {
-                 new Tooltip(this, {html:true})
-             });
-        }
+    initTooltips() {
+      // enable tooltips on the links
+      this.links.each(function() {
+        new Tooltip(this, {
+          html: true
+        });
+      });
+      // enable tooltips on buttons, e.g. 'Show other node'.
+      const tooltips = $('#' + this.elementId + '-container .settings .checkboxes label').map(function() {
+        return new Tooltip(this, {
+          trigger: 'hover'
+        });
+      });
+      // Add the button tooltips to the global list. We use this at the
+      // beginning of redraw() to dispose of the tooltips. This is needed
+      // because when the buttons are clicked, redraw() is called and,
+      // in turn, this function, initTooltips(). This causes the old
+      // tooltips to persist, i.e. they don't disappear.
+      tooltips.each((i, tooltip) => this.tooltips.push(tooltip));
+    }
 
     nodeHover(event) {
       this.hovered_id = event.target.__data__.id;
@@ -350,7 +353,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       const connected_nodes = {};
       connected_nodes[this.hovered_id] = 10000000;
 
-      
+
       this.links.transition().duration('400').attr('fill', this.settings.inactive_link_color);
 
       this.links.filter((link) => {
@@ -364,21 +367,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           return false;
         }
       }).raise().transition().duration('400').attr('fill', this.settings.active_link_color);
-
-      // this.nodes.attr('opacity', (n) => {
-      //   if (this.settings.fine_node_highlights) {
-      //     const v1 = 1 - Math.pow(0.97, connected_nodes[n.id] || 0);
-      //     const finalOpacity = (this.settings.active_node_opacity - this.settings.inactive_node_opacity) * v1 +
-      //       this.settings.inactive_node_opacity;
-      //     return finalOpacity;
-      //   } else {
-      //     if (connected_nodes[n.id]) {
-      //       return this.settings.active_node_opacity;
-      //     } else {
-      //       return this.settings.inactive_node_opacity;
-      //     }
-      //   }
-      // });
     }
 
     nodeUnhover(event) {
@@ -386,23 +374,25 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
       if (unhovered_id === this.hovered_id) {
         this.links.filter(link => link.target.id === unhovered_id || link.source.id === unhovered_id)
-            .transition().duration('400').attr('fill', this.settings.inactive_link_color);
+          .transition().duration('400').attr('fill', this.settings.inactive_link_color);
         // this.links.attr('fill', this.settings.inactive_link_color);
       }
     }
 
-    add_toggle(id, text, initial_state, change_handler) {
-      const p = d3.select('#' + this.elementId + '-container .settings .checkboxes').append('p');
-      const input = p.append('input')
+    add_toggle(id, text, tooltip, initial_state, change_handler) {
+      const div = d3.select('#' + this.elementId + '-container .settings .checkboxes').append('div');
+      const input = div.append('input')
         .attr('type', 'checkbox')
         .attr('class', 'btn-check')
         .attr('id', id);
       if (initial_state) {
         input.attr('checked', 'checked');
       }
-      p.append('label')
+      div.append('label')
         .attr('for', id)
         .attr('class', 'btn btn-primary')
+        .attr('data-bs-toggle', 'tooltip')
+        .attr('title', tooltip)
         .text(' ' + text);
       const redraw = this.redraw.bind(this);
       input.on('change', function() {
@@ -412,15 +402,16 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
     }
 
     add_slider(id, label_text, min, max, step, value, change_handler) {
-      const p = d3.select('#' + this.elementId + '-container .settings').select('.sliders').append('p');
+      const div = d3.select('#' + this.elementId + '-container .settings').select('.sliders').append('div').attr('class', 'slider-container');
       const redraw = this.redraw.bind(this);
 
 
-      p.append('label')
+      div.append('label')
         .attr('for', id)
+        .attr('class', 'ms-2')
         .text(label_text);
 
-      p.append('input')
+      div.append('input')
         .attr('type', 'range')
         .attr('id', id)
         .attr('min', min)
