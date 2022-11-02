@@ -185,7 +185,8 @@
                 sorted_ids_and_weights_right,
                 total_frequency,
             } = pre_data;
-            const maxNumNodes = total_height / (padding+20);
+            const maxNumNodes = total_height / (padding + 20);
+            // const maxNumNodes = 2;
             const linksBySource = new Map();
             for (let link of nodesNLinks.links) {
                 let links4node = linksBySource.get(link.source);
@@ -202,14 +203,17 @@
             const filtered_links = [];
             const leftNodeIds = new Set();
             const rightNodeIds = new Set();
+            const keptLinks = new Set();
+            const linkKeyFunc = link => link.source + "-" + link.target;
             for (let node of sorted_ids_and_weights_left) {
                 const links4node = linksBySource.get(node.id);
                 for (let link of links4node) {
-                      filtered_links.push({
-                            source: link.source + "_from",
-                            target: link.target + "_to",
-                            value: link.frequency
-                        });
+                    filtered_links.push({
+                        source: link.source + "_from",
+                        target: link.target + "_to",
+                        value: link.frequency
+                    });
+                    keptLinks.add(linkKeyFunc(link));
                     if (!leftNodeIds.has(link.source)) {
                         filtered_nodes.push({
                             id: link.source + "_from",
@@ -230,6 +234,43 @@
                 }
                 if (leftNodeIds.size > maxNumNodes || rightNodeIds.size > maxNumNodes)
                     break;
+            }
+            if (show_other) {
+                let leftOtherValue = 0;
+                let rightOtherValue = 0;
+                for (let link of nodesNLinks.links) {
+                    if (!keptLinks.has(linkKeyFunc(link))) {
+                        const keptLeftNode = leftNodeIds.has(link.source);
+                        const keptRightNode = rightNodeIds.has(link.target);
+                        if (keptLeftNode) {
+                            rightOtherValue = rightOtherValue + link.frequency;
+                            filtered_links.push({
+                                source: link.source + "_from",
+                                target: "MISC_to",
+                                value: link.frequency
+                            });
+                        } else if (keptRightNode) {
+                            leftOtherValue = leftOtherValue + link.frequency;
+                            filtered_links.push({
+                                source: "MISC_from",
+                                target: link.target + "_to",
+                                value: link.frequency
+                            });
+                        }
+                    }
+                }
+                if (leftOtherValue) {
+                    filtered_nodes.push({
+                        id: "MISC_from",
+                        name: "others"
+                    });
+                }
+                if (rightOtherValue) {
+                    filtered_nodes.push({
+                        id: "MISC_to",
+                        name: "others"
+                    });
+                }
             }
 
             return {
@@ -298,12 +339,9 @@
                     other_node_height = Math.min(min_scale * (total_frequency - frequency_so_far), max_other_size);
                 }
 
-                if (num_nodes_so_far > 3)
+                if (real_node_height + other_node_height + padding_so_far > total_height) {
                     break;
-
-                // if (real_node_height + other_node_height + padding_so_far > total_height) {
-                //     break;
-                // }
+                }
 
                 included_ids[node.id] = true;
 

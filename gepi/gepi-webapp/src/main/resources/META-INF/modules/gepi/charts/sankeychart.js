@@ -10,7 +10,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       this.elementId = elementId;
       this.orderType = orderType;
       this.widgetSettings = widgetSettings;
-      console.log("Creating sankey with settings: " + JSON.stringify(widgetSettings))
+      console.log("Creating sankey with settings: " + JSON.stringify(widgetSettings) + " and orderType " + orderType)
       this.setup();
     }
 
@@ -106,21 +106,22 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
         this.redraw();
 
-        this.add_slider('padding-slider', 'Padding: ', 2, 25, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
-        this.add_slider('min-size-slider', 'Minimum node size: ', 5, 25, 2, settings.min_node_height, (value) => settings.min_node_height = value);
+        const orderType = this.orderType;
+        this.add_slider('padding-slider-'+orderType, 'Padding: ', 2, 25, 2, settings.node_spacing, (value) => settings.node_spacing = Number(value));
+        this.add_slider('min-size-slider-'+orderType, 'Minimum node size: ', 5, 25, 2, settings.min_node_height, (value) => settings.min_node_height = value);
         //this.add_slider('node-height-slider', 'Chart height: ', 40, 400, 2, settings.height, (value) => settings.height = value - 0);
         // add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, this.settings.max_number_nodes, (value) => this.settings.max_number_nodes = value);
-        this.add_slider('max-other-slider', 'Maximum size of "Other" node:', 2, 150, 2, settings.max_other_height, (value) => settings.max_other_height = value);
+        this.add_slider('max-other-slider-'+orderType, 'Maximum size of "Other" node:', 2, 150, 2, settings.max_other_height, (value) => settings.max_other_height = value);
 
         this.add_toggle(
-          'restrict-other-toggle',
+          'restrict-other-toggle-'+orderType,
           'Restrict size of "Other" node',
           settings.restrict_other_height,
           (state) => settings.restrict_other_height = state,
         );
 
         this.add_toggle(
-          'show-other-toggle',
+          'show-other-toggle-'+orderType,
           'Show "Other" node',
           settings.show_other,
           (state) => settings.show_other = state,
@@ -194,7 +195,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
       console.log("Sankey size set to " + this.settings.width + " x " + this.settings.height + " with origin (0, 0).")
       sankey
-        .size([this.settings.width, this.settings.height])
+        .size([this.settings.width, Math.min(this.settings.height,the_data.links.length*40)])
         .nodeWidth(this.settings.node_width)
         .nodePadding(this.settings.node_spacing)
         .nodeId((d) => d.id)
