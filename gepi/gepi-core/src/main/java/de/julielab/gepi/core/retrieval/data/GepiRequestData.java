@@ -18,6 +18,7 @@ public class GepiRequestData implements Cloneable {
     private String filterFieldsConnectionOperator = "AND";
     private EnumSet<InputMode> inputMode;
     private long dataSessionId;
+    private int eventLikelihood;
     private String taxId;
     private String sectionNameFilterString;
 
@@ -25,7 +26,12 @@ public class GepiRequestData implements Cloneable {
         return taxId;
     }
 
-    public GepiRequestData(List<String> eventTypes, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String taxId, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, long dataSessionId) {
+    public int getEventLikelihood() {
+        return eventLikelihood;
+    }
+
+    public GepiRequestData(List<String> eventTypes, int eventLikelihood, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String taxId, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, long dataSessionId) {
+        this.eventLikelihood = eventLikelihood;
         this.taxId = taxId;
         this.sectionNameFilterString = sectionNameFilterString;
 //        System.out.println("New RequestData with data session ID " + dataSessionId);

@@ -130,6 +130,10 @@ public class GepiInput {
     private String filterFieldsConnectionOperator;
 
     @Property
+    @Persist(TabPersistentField.TAB)
+    private Integer eventLikelihood;
+
+    @Property
     private String sectionNameFilterString;
 
     /**
@@ -172,11 +176,13 @@ public class GepiInput {
     public void reset() {
         listATextAreaValue = "";
         listBTextAreaValue = "";
+        taxId = "";
+        selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
+        eventLikelihood = 1;
         filterFieldsConnectionOperator = "AND";
         sentenceFilterString = "";
         paragraphFilterString = "";
         sectionNameFilterString = "";
-        taxId = "";
     }
 
     public ValueEncoder getEventTypeEncoder() {
@@ -191,6 +197,8 @@ public class GepiInput {
         log.warn("{}", inputMode);
         if (filterFieldsConnectionOperator == null)
             filterFieldsConnectionOperator = "AND";
+        if (eventLikelihood == null)
+            eventLikelihood = 1;
     }
 
     void onValidateFromInputForm() {
@@ -236,7 +244,7 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, listAGePiIds, listBGePiIds, taxId, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+        requestData = new GepiRequestData(selectedEventTypeNames, eventLikelihood, listAGePiIds, listBGePiIds, taxId, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
 //        if ((filterString != null && !filterString.isBlank())) {
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);

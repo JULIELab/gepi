@@ -58,7 +58,28 @@ public class BeanModelEvent {
         return event.getSecondArgument().getMatchType();
     }
 
-    public String getGeneMappingSources() { return event.getGeneMappingSources().stream().collect(Collectors.joining(", "));}
+    public String getGeneMappingSources() {
+        return event.getGeneMappingSources().stream().collect(Collectors.joining(", "));
+    }
+
+    public String getFactuality() {
+        switch (event.getLikelihood()) {
+            case 1:
+                return "negation";
+            case 2:
+                return "low";
+            case 3:
+                return "investigation";
+            case 4:
+                return "moderate";
+            case 5:
+                return "high";
+            case 6:
+                return "assertion";
+            default:
+                throw new IllegalArgumentException("Illegal likelihood ordinal " + event.getLikelihood());
+        }
+    }
 
     public String getFirstArgumentTextWithPreferredName() {
         Argument argument = event.getFirstArgument();

@@ -30,7 +30,6 @@ public class EventPagesDataSource implements GridDataSource {
         int availableRows = 0;
         try {
             availableRows = (int) events.get().getNumTotalRows();
-//            availableRows = (int) eventRetrievalService.getEvents(requestData, 0, 0).get().getNumTotalRows();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -42,13 +41,12 @@ public class EventPagesDataSource implements GridDataSource {
 
     @Override
     public void prepare(int i, int i1, List<SortConstraint> list) {
-        // TODO support the sort constraints
         try {
             if (events.get().getStartRow() != i || events.get().getEndRow() != i1) {
                 events = eventRetrievalService.getEvents(requestData, i, i1 - i + 1, false);
-                log.debug("Received {} events where {} events were requested.", events.get().getEventList().size(), i1 - i + 1);
+                log.debug("Received {} events where {} events were requested. From {} to {}.", events.get().getEventList().size(), i1 - i + 1, i1, i);
             } else {
-                log.debug("Used {} events from the existing result where {} events were requested.", events.get().getEventList().size(), i1 - i + 1);
+                log.debug("Used {} events from the existing result where {} events were requested. From {} to {}.", events.get().getEventList().size(), i1 - i + 1, i, i1);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -97,6 +97,7 @@ public class TableResultWidget extends GepiWidget {
 //                "firstArgumentMatchType",
 //                "secondArgumentMatchType",
                 "allEventTypes",
+                "factuality",
                 "fulltextMatchSource",
                 "docId",
                 "eventId",

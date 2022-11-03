@@ -77,6 +77,43 @@
             </div>
         </div>
         <div class="card">
+            <h6 class="card-header text-center">Filter the result by factuality of the interactions<button type="button" class="btn btn-outline-light widget-tool-symbol info float-end" data-bs-toggle="default-tooltip" title="Factuality means whether an interaction is described as actually happening, not happening or possibly happening on a likelihood scale."/></h6>
+            <div class="card-body mx-auto">
+                <div class="btn-group" role="group"
+                     aria-label="Boolean connector between sentence and paragraph level filtering">
+                    <t:RadioGroup t:id="likelihoodgroup" value="eventlikelihood" class="btn-group"
+                                  role="group"
+                                  aria-label="Interaction factuality / likelihood level.">
+                        <!-- the literal values 1-6 correspond to the ordinal scale used internally -->
+                        <t:Radio t:id="radio_likelihood_negation" id="radio_likelihood_negation" class="btn-check" type="radio"
+                                 value="literal:1"
+                                 label="negation"/>
+                        <t:label for="radio_likelihood_negation" class="btn btn-outline-primary"/>
+                        <t:Radio t:id="radio_likelihood_low" class="btn-check" id="radio_likelihood_low" type="radio"
+                                 value="literal:2"
+                                 label="low"/>
+                        <t:label for="radio_likelihood_low" class="btn btn-outline-primary"/>
+                        <t:Radio t:id="radio_likelihood_investigation" class="btn-check" id="radio_likelihood_investigation" type="radio"
+                                 value="literal:3"
+                                 label="investigation"/>
+                        <t:label for="radio_likelihood_investigation" class="btn btn-outline-primary"/>
+                        <t:Radio t:id="radio_likelihood_moderate" class="btn-check" id="radio_likelihood_moderate" type="radio"
+                                 value="literal:4"
+                                 label="moderate"/>
+                        <t:label for="radio_likelihood_moderate" class="btn btn-outline-primary"/>
+                        <t:Radio t:id="radio_likelihood_high" class="btn-check" id="radio_likelihood_high" type="radio"
+                                 value="literal:5"
+                                 label="high"/>
+                        <t:label for="radio_likelihood_high" class="btn btn-outline-primary"/>
+                        <t:Radio t:id="radio_likelihood_assertion" class="btn-check" id="radio_likelihood_assertion" type="radio"
+                                 value="literal:6"
+                                 label="assertion"/>
+                        <t:label for="radio_likelihood_assertion" class="btn btn-outline-primary"/>
+                    </t:RadioGroup>
+                </div>
+            </div>
+        </div>
+        <div class="card">
             <h6 class="card-header text-center">Filter the result by keywords occurring in the context of
                 interactions<button type="button"  class="btn btn-outline-light widget-tool-symbol info float-end" data-bs-toggle="default-tooltip" title="Since the molecular interactions are extracted from full text, they appear within sentences and paragraphs. This context is stored with the interactions and can be used for filter purposes."/>
             </h6>

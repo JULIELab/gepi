@@ -206,8 +206,11 @@ public class AppModule {
 
     @Startup
     public static void scheduleJobs(ParallelExecutor pExecutor, PeriodicExecutor executor, IStatisticsCollector statisticsCollector) {
-         executor.addJob(new IntervalSchedule(60000),
-         "Event Statistics Calculation Job",
-         statisticsCollector);
+        // this was meant to collection current interaction statistics once a day (the lower time given here was for
+        // development purposes)
+        // Could still be done, removed it for now due to time constraints
+//         executor.addJob(new IntervalSchedule(60000),
+//         "Event Statistics Calculation Job",
+//         statisticsCollector);
     }
 }

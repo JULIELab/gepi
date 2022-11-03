@@ -363,13 +363,14 @@ public class EventRetrievalService implements IEventRetrievalService {
     public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
-            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData.getEventTypes(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString(), requestData.getFilterFieldsConnectionOperator());
+            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData.getEventTypes(), requestData.getEventLikelihood(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString(), requestData.getFilterFieldsConnectionOperator());
 
             boolean downloadCompleteResults = numRows == 0 || numRows == Integer.MAX_VALUE;
 
             SearchServerRequest serverRqst = new SearchServerRequest();
             serverRqst.query = eventQuery;
             serverRqst.index = documentIndex;
+            serverRqst.start = from;
             serverRqst.rows = numRows;
             if (downloadCompleteResults)
                 serverRqst.rows = SCROLL_SIZE;

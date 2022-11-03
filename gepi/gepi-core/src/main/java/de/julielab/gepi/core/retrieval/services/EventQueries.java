@@ -1,9 +1,6 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import de.julielab.elastic.query.components.data.query.BoolClause;
-import de.julielab.elastic.query.components.data.query.BoolQuery;
-import de.julielab.elastic.query.components.data.query.SimpleQueryStringQuery;
-import de.julielab.elastic.query.components.data.query.TermsQuery;
+import de.julielab.elastic.query.components.data.query.*;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import org.apache.commons.lang.StringUtils;
 
@@ -82,6 +79,8 @@ public class EventQueries {
             fulltextFilterClause.addQuery(filterQuery);
             eventQuery.addClause(fulltextFilterClause);
         }
+        if (requestData.getEventLikelihood() > 1)
+            addEventLikelihoodFilter(eventQuery, requestData.getEventLikelihood());
         return eventQuery;
     }
 
@@ -128,11 +127,23 @@ public class EventQueries {
             fulltextFilterClause.addQuery(filterQuery);
             eventQuery.addClause(fulltextFilterClause);
         }
+        if (requestData.getEventLikelihood() > 1)
+            addEventLikelihoodFilter(eventQuery, requestData.getEventLikelihood());
 
         return eventQuery;
     }
 
-    public static BoolQuery getFulltextQuery(List<String> eventTypes, String sentenceFilter, String paragraphFilter, String sectionNameFilter, String filterFieldsConnectionOperator) {
+    private static void addEventLikelihoodFilter(BoolQuery eventQuery, int likelihood) {
+        final RangeQuery query = new RangeQuery();
+        query.field = FIELD_EVENT_LIKELIHOOD;
+        query.greaterThanOrEqual = likelihood;
+        BoolClause likelihoodFilterClause = new BoolClause();
+        likelihoodFilterClause.occur = FILTER;
+        likelihoodFilterClause.addQuery(query);
+        eventQuery.addClause(likelihoodFilterClause);
+    }
+
+    public static BoolQuery getFulltextQuery(List<String> eventTypes, int eventLikelihood, String sentenceFilter, String paragraphFilter, String sectionNameFilter, String filterFieldsConnectionOperator) {
         BoolQuery eventQuery = new BoolQuery();
 
         if (!eventTypes.isEmpty()) {
@@ -159,6 +170,9 @@ public class EventQueries {
         fulltextClause.addQuery(fulltextQuery);
         fulltextClause.occur = MUST;
         eventQuery.addClause(fulltextClause);
+        if (eventLikelihood > 1) {
+            addEventLikelihoodFilter(eventQuery, eventLikelihood);
+        }
         return eventQuery;
     }
 
