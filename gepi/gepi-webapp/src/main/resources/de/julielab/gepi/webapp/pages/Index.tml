@@ -7,7 +7,9 @@
             <div id="inputfetcharea"/>
             <div id="inputcol" class="">
                 <t:zone t:id="inputzone" id="inputzone">
+                    <div class="h-100">
                     <t:gepiinput dataSessionId="dataSessionId" requestData="requestData"/>
+                    </div>
                 </t:zone>
             </div>
         </div>

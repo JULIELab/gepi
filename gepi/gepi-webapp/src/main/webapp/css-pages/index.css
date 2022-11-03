@@ -1,11 +1,3 @@
-body {
-    background-color: #DDD;
-}
-
-body.noScroll {
-	overflow: hidden;
-}
-
 #resultResizeHandle {
 	float: right;
 	transform: rotate(90deg) scale(1.1);

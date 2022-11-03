@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+    <div id="inputcolhandle" class="background-arrow-left fade no-outline"/>
     <form role="form" t:type="form" async="true" t:id="inputform" id="inputform">
         <div class="card no-outline" tabindex="0">
             <div class="card-header">
@@ -8,7 +9,6 @@
                 </h4>
             </div>
             <div class="card-body">
-                <div id="inputcolhandle" class="background-arrow-left fade no-outline"/>
                 <!-- Hidden field to store the data session ID to the client -->
                 <t:textfield t:id="dataSessionIdField" value="dataSessionId" hidden="true"
                              title="Hidden field to store session information."/>
@@ -62,7 +62,11 @@
             <t:errors globalOnly="false"/>
         </div>
         <div class="card">
-            <h6 class="card-header text-center">Filter the results by organism<button type="button" class="btn btn-outline-light widget-tool-symbol info float-end" data-bs-toggle="default-tooltip" title="Acceptable items are species IDs from the NCBI Taxonomy. Examples include 9606 for human or 10090 for mus musculus. Refer to the NCBI Taxonomy web page for a comprehensive catalogue of species."/></h6>
+            <h6 class="card-header text-center">Filter the results by organism
+                <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
+                        data-bs-toggle="default-tooltip"
+                        title="Acceptable items are species IDs from the NCBI Taxonomy. Examples include 9606 for human or 10090 for mus musculus. Refer to the NCBI Taxonomy web page for a comprehensive catalogue of species."/>
+            </h6>
             <div class="card-body">
                 <h6 class="card-subtitle mb-3 text-muted">Add multiple IDs separated by commas</h6>
                 <t:label for="organismInput">NCBI Taxonomy IDs</t:label> <!--https://www.ncbi.nlm.nih.gov/taxonomy-->
@@ -70,14 +74,22 @@
             </div>
         </div>
         <div class="card">
-            <h6 class="card-header text-center">Filter the result by interaction type<button type="button" class="btn btn-outline-light widget-tool-symbol info float-end" data-bs-toggle="default-tooltip" title="The recognition algorithm for molecular events distinguishes between the interaction types shown below. Activate or deactivate each type to include exclude interactions of this type from the results."/></h6>
+            <h6 class="card-header text-center">Filter the result by interaction type
+                <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
+                        data-bs-toggle="default-tooltip"
+                        title="The recognition algorithm for molecular events distinguishes between the interaction types shown below. Activate or deactivate each type to include exclude interactions of this type from the results."/>
+            </h6>
             <div class="card-body" id="eventtypediv">
                 <t:checklist t:id="eventtypes" selected="selectedeventtypes" encoder="eventtypeencoder"
                              model="eventtypemodel" t-checklist-row="testzeugs"/>
             </div>
         </div>
         <div class="card">
-            <h6 class="card-header text-center">Filter the result by factuality of the interactions<button type="button" class="btn btn-outline-light widget-tool-symbol info float-end" data-bs-toggle="default-tooltip" title="Factuality means whether an interaction is described as actually happening, not happening or possibly happening on a likelihood scale."/></h6>
+            <h6 class="card-header text-center">Filter the result by factuality of the interactions
+                <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
+                        data-bs-toggle="default-tooltip"
+                        title="Factuality means whether an interaction is described as actually happening, not happening or possibly happening on a likelihood scale."/>
+            </h6>
             <div class="card-body mx-auto">
                 <div class="btn-group" role="group"
                      aria-label="Boolean connector between sentence and paragraph level filtering">
@@ -85,7 +97,8 @@
                                   role="group"
                                   aria-label="Interaction factuality / likelihood level.">
                         <!-- the literal values 1-6 correspond to the ordinal scale used internally -->
-                        <t:Radio t:id="radio_likelihood_negation" id="radio_likelihood_negation" class="btn-check" type="radio"
+                        <t:Radio t:id="radio_likelihood_negation" id="radio_likelihood_negation" class="btn-check"
+                                 type="radio"
                                  value="literal:1"
                                  label="negation"/>
                         <t:label for="radio_likelihood_negation" class="btn btn-outline-primary"/>
@@ -93,11 +106,13 @@
                                  value="literal:2"
                                  label="low"/>
                         <t:label for="radio_likelihood_low" class="btn btn-outline-primary"/>
-                        <t:Radio t:id="radio_likelihood_investigation" class="btn-check" id="radio_likelihood_investigation" type="radio"
+                        <t:Radio t:id="radio_likelihood_investigation" class="btn-check"
+                                 id="radio_likelihood_investigation" type="radio"
                                  value="literal:3"
                                  label="investigation"/>
                         <t:label for="radio_likelihood_investigation" class="btn btn-outline-primary"/>
-                        <t:Radio t:id="radio_likelihood_moderate" class="btn-check" id="radio_likelihood_moderate" type="radio"
+                        <t:Radio t:id="radio_likelihood_moderate" class="btn-check" id="radio_likelihood_moderate"
+                                 type="radio"
                                  value="literal:4"
                                  label="moderate"/>
                         <t:label for="radio_likelihood_moderate" class="btn btn-outline-primary"/>
@@ -105,7 +120,8 @@
                                  value="literal:5"
                                  label="high"/>
                         <t:label for="radio_likelihood_high" class="btn btn-outline-primary"/>
-                        <t:Radio t:id="radio_likelihood_assertion" class="btn-check" id="radio_likelihood_assertion" type="radio"
+                        <t:Radio t:id="radio_likelihood_assertion" class="btn-check" id="radio_likelihood_assertion"
+                                 type="radio"
                                  value="literal:6"
                                  label="assertion"/>
                         <t:label for="radio_likelihood_assertion" class="btn btn-outline-primary"/>
@@ -115,10 +131,14 @@
         </div>
         <div class="card">
             <h6 class="card-header text-center">Filter the result by keywords occurring in the context of
-                interactions<button type="button"  class="btn btn-outline-light widget-tool-symbol info float-end" data-bs-toggle="default-tooltip" title="Since the molecular interactions are extracted from full text, they appear within sentences and paragraphs. This context is stored with the interactions and can be used for filter purposes."/>
+                interactions
+                <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
+                        data-bs-toggle="default-tooltip"
+                        title="Since the molecular interactions are extracted from full text, they appear within sentences and paragraphs. This context is stored with the interactions and can be used for filter purposes."/>
             </h6>
             <div class="card-body">
-                <t:TextField t:id="sentencefilter" id="sentencefilter" t:clientId="sentencefilter" value="sentencefilterstring"
+                <t:TextField t:id="sentencefilter" id="sentencefilter" t:clientId="sentencefilter"
+                             value="sentencefilterstring"
                              placeholder="Provide keywords that must appear in the sentence of the interaction"/>
                 <div class="row mt-3 mb-3">
                     <div class="col-12 text-center mx-auto">
@@ -139,16 +159,22 @@
                         </div>
                     </div>
                 </div>
-                <t:TextField t:id="paragraphfilter" id="paragraphfilter" t:clientId="paragraphfilter" value="paragraphfilterstring"
+                <t:TextField t:id="paragraphfilter" id="paragraphfilter" t:clientId="paragraphfilter"
+                             value="paragraphfilterstring"
                              placeholder="Provide keywords that must appear in the paragraph or abstract of the interaction"/>
             </div>
         </div>
         <div class="card">
-            <h6 class="card-header text-center">Filter the result by keywords occurring in headings of sections and abstracts that contain
-                interactions<button type="button"  class="btn btn-outline-light widget-tool-symbol info float-end" data-bs-toggle="default-tooltip" title="The result will only contain interactions that appear within a section with a heading or main document title that matches the filter."/>
+            <h6 class="card-header text-center">Filter the result by keywords occurring in headings of sections and
+                abstracts that contain
+                interactions
+                <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
+                        data-bs-toggle="default-tooltip"
+                        title="The result will only contain interactions that appear within a section with a heading or main document title that matches the filter."/>
             </h6>
             <div class="card-body">
-                <t:TextField t:id="sectionnamefilter" id="sectionnamefilter" t:clientId="sectionnamefilter" value="sectionnamefilterstring"
+                <t:TextField t:id="sectionnamefilter" id="sectionnamefilter" t:clientId="sectionnamefilter"
+                             value="sectionnamefilterstring"
                              placeholder="Provide keywords that must appear in the section headings or document title"/>
             </div>
         </div>
