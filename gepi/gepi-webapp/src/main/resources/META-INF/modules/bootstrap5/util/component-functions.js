@@ -44,4 +44,3 @@
   Object.defineProperties(exports, { __esModule: { value: true }, [Symbol.toStringTag]: { value: 'Module' } });
 
 }));
-//# sourceMappingURL=component-functions.js.map

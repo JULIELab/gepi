@@ -281,4 +281,3 @@
   return EventHandler;
 
 }));
-//# sourceMappingURL=event-handler.js.map

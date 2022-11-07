@@ -64,4 +64,3 @@
   return data;
 
 }));
-//# sourceMappingURL=data.js.map

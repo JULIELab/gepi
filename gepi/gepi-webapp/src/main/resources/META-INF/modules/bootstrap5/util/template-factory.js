@@ -175,4 +175,3 @@
   return TemplateFactory;
 
 }));
-//# sourceMappingURL=template-factory.js.map

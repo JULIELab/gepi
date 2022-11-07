@@ -82,4 +82,3 @@
   return Manipulator;
 
 }));
-//# sourceMappingURL=manipulator.js.map
