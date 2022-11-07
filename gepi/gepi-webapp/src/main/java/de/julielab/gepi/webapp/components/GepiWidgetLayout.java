@@ -202,6 +202,9 @@ final public class GepiWidgetLayout {
         return clientId + "_resize";
     }
 
+    public Zone getBodyZone() {
+        return (Zone) resources.getEmbeddedComponent("widgetZone");
+    }
     @Log
     public boolean isLarge() {
         return viewMode.equals(ViewMode.LARGE.name().toLowerCase());

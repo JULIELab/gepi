@@ -15,7 +15,7 @@
 
                 </t:if>
             </div>
-            <t:zone t:id="widgetZone" id="prop:${zoneid}" class="h-100">
+            <t:zone t:id="widgetZone" id="${zoneid}" class="h-100">
                 <div class="card-body widget ${viewmode} h-100">
                     <!-- Note that is not if-else but two ifs. For JS-based charts, the body is always rendered
                     but manually hidden until data is available. In all cases, the waiting message is displayed

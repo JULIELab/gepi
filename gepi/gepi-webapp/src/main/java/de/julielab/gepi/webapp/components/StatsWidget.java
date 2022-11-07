@@ -68,9 +68,9 @@ public class StatsWidget extends GepiWidget {
     public List<Triple<String, String, Integer>> getTopInteractions() {
         int n = 10;
         try {
-            Map<Pair<String, String>, Integer> cardinalityMap = getPagedEsResult().get()
+            Map<Pair<String, String>, Integer> cardinalityMap = getUnrolledResult4charts().get()
                     .getEventList().stream()
-                    .map(e -> new ImmutablePair<>(e.getFirstArgument().getPreferredName(), e.getSecondArgument().getPreferredName()))
+                    .map(e -> new ImmutablePair<>(e.getFirstArgument().getTopHomologyPreferredName(), e.getSecondArgument().getTopHomologyPreferredName()))
                     .collect(Collectors.toMap(Function.identity(), x -> 1, Integer::sum));
             List<Triple<String, String, Integer>> topInteractions = new ArrayList<>(cardinalityMap.size());
             for (Pair<String, String> symbolPair : cardinalityMap.keySet()) {

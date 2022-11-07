@@ -134,7 +134,7 @@
                 interactions
                 <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
                         data-bs-toggle="default-tooltip"
-                        title="Since the molecular interactions are extracted from full text, they appear within sentences and paragraphs. This context is stored with the interactions and can be used for filter purposes."/>
+                        title="${fulltextFilterTooltip}"/>
             </h6>
             <div class="card-body">
                 <t:TextField t:id="sentencefilter" id="sentencefilter" t:clientId="sentencefilter"

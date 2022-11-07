@@ -77,7 +77,7 @@ public class GePiDataService implements IGePiDataService {
         // get those arguments that were not part of the input
         evtList.forEach(e -> {
             Argument a = e.getArgument(argumentPosition);
-            a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY_ID);
+            a.setComparisonMode(ComparisonMode.TOP_HOMOLOGY_PREFERRED_NAME);
             arguments.add(a);
         });
 
@@ -125,17 +125,17 @@ public class GePiDataService implements IGePiDataService {
             final Event k = e.getKey();
             final Integer v = e.getValue();
             JSONObject link = new JSONObject();
-            link.put("source", k.getFirstArgument().getTopHomologyId());
-            link.put("target", k.getSecondArgument().getTopHomologyId());
+            link.put("source", k.getFirstArgument().getTopHomologyPreferredName());
+            link.put("target", k.getSecondArgument().getTopHomologyPreferredName());
             link.put("frequency", v);
             link.put("type", k.getMainEventType());
 
             links.put(link);
 
-            if (nodeIdAlreadySeen.add(k.getFirstArgument().getTopHomologyId())) {
+            if (nodeIdAlreadySeen.add(k.getFirstArgument().getTopHomologyPreferredName())) {
                 nodes.put(getJsonObjectForArgument(k.getFirstArgument()));
             }
-            if (nodeIdAlreadySeen.add(k.getSecondArgument().getTopHomologyId())) {
+            if (nodeIdAlreadySeen.add(k.getSecondArgument().getTopHomologyPreferredName())) {
                 nodes.put(getJsonObjectForArgument(k.getSecondArgument()));
             }
         });
@@ -308,7 +308,7 @@ public class GePiDataService implements IGePiDataService {
 
     private JSONObject getJsonObjectForArgument(Argument argument) {
         JSONObject source = new JSONObject();
-        source.put("id", argument.getTopHomologyId());
+        source.put("id", argument.getTopHomologyPreferredName());
         source.put("name", argument.getTopHomologyPreferredName());
         return source;
     }

@@ -30,7 +30,6 @@ public class GepiWidget {
     @Parameter
     @Property
     protected GepiRequestData requestData;
-//    protected long dataSessionId;
 
 
     @InjectPage

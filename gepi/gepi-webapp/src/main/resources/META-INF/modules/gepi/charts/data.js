@@ -182,7 +182,7 @@
          * available canvas size and user settings such as padding and whether the 'other' link should
          * be displayed.
          */
-        function prepare_data(pre_data, total_height, min_height, padding, show_other, max_other_size) {
+        function prepare_data_new(pre_data, total_height, min_height, padding, show_other, max_other_size) {
             let {
                 nodesNLinks,
                 // the nodes are objects with keys 'id' and 'frequency'
@@ -321,6 +321,195 @@
             }
         }
 
+function prepare_data(pre_data, total_height, min_height, padding, show_other, max_other_size) {
+
+        let {
+            nodesNLinks,
+            sorted_ids_and_weights_left,
+            sorted_ids_and_weights_right,
+            total_frequency,
+        } = pre_data;
+
+        let included_ids_from = getIncludedIds(sorted_ids_and_weights_left, total_frequency, total_height, min_height, padding, show_other, max_other_size);
+        let included_ids_to = getIncludedIds(sorted_ids_and_weights_right, total_frequency, total_height, min_height, padding, show_other, max_other_size);
+
+        let {
+            filtered_links,
+            misc_from,
+            misc_to,
+        } = filter_and_suffix_links(nodesNLinks.links, included_ids_from, included_ids_to, show_other);
+        let filtered_nodes = filter_and_suffix_nodes(nodesNLinks, included_ids_from, included_ids_to, misc_from, misc_to);
+
+        return {
+            nodes: filtered_nodes,
+            links: filtered_links,
+        };
+    }
+
+
+
+    /*
+     * Returns the node ids of the leading elements in 'sorted_ids_and_weights' that can be displayed
+     * taking into account the given 'total_height' of the diagram, the 'min_height' of each displayed
+     * node and the 'padding' between the nodes.
+     */
+    function getIncludedIds(sorted_ids_and_weights, total_frequency, total_height, min_height, padding, show_other, max_other_size) {
+
+        let included_ids = {};
+
+        let frequency_so_far = 0;
+        let padding_so_far = 0;
+        if (!show_other) padding_so_far = -padding;
+        let min_frequency = Infinity;
+
+        for (let node of sorted_ids_and_weights) {
+
+            padding_so_far += padding;
+            frequency_so_far += node.node_frequency;
+            min_frequency = Math.min(node.node_frequency, min_frequency);
+
+            let min_scale = min_height / min_frequency;
+            let real_node_height = frequency_so_far * min_scale;
+            let other_node_height = 0;
+            if (show_other) {
+                other_node_height = Math.min(min_scale * (total_frequency-frequency_so_far), max_other_size);
+            }
+
+            if (real_node_height + other_node_height + padding_so_far > total_height) {
+                break;
+            }
+
+            included_ids[node.id] = true;
+
+        }
+
+        return included_ids;
+    }
+
+    /*
+     * Filters 'input_links' according the the provided included nodes.
+     * Computes the surrogate edges to and from the misc nodes (one left, one right).
+     */
+    function filter_and_suffix_links(input_links, included_ids_from, included_ids_to, show_other) {
+        let filtered_links = [];
+        let from_misc_by_id_and_color = {};
+        let to_misc_by_id_and_color = {};
+        let between_misc_by_color = {};
+
+        let misc_from = false;
+        let misc_to = false;
+
+        // Filter the links according to the included nodes, adding up the weights of the links filtered out
+
+        for (let link of input_links) {
+            if (included_ids_from[link.source]) {
+                if (included_ids_to[link.target]) {
+                    filtered_links.push({
+                        source: link.source + "_from",
+                        target: link.target + "_to",
+                        value: link.frequency,
+                        color: link.color,
+                    });
+                } else {
+                    let from = link.source + "_from";
+                    let id_to_misc_by_color = to_misc_by_id_and_color[from] || {};
+                    id_to_misc_by_color[link.color] = (id_to_misc_by_color[link.color] || 0) + link.frequency;
+                    to_misc_by_id_and_color[from] = id_to_misc_by_color;
+                }
+            } else {
+                if (included_ids_to[link.target]) {
+                    let to = link.target + "_to";
+                    let misc_to_id_by_color = from_misc_by_id_and_color[to] || {};
+                    misc_to_id_by_color[link.color] = (misc_to_id_by_color[link.color] || 0) + link.frequency;
+                    from_misc_by_id_and_color[to] = misc_to_id_by_color;
+                } else {
+                    between_misc_by_color[link.color] = (between_misc_by_color[link.color] || 0) + link.frequency;
+                }
+            }
+        }
+
+        // Add "fake links" connecting nodes to misc nodes
+
+        if (show_other) {
+            for (let [id, misc_to_id_by_color] of Object.entries(from_misc_by_id_and_color)) {
+                for (let [color, weight] of Object.entries(misc_to_id_by_color)) {
+                    filtered_links.push({
+                        source: "MISC_from",
+                        target: id,
+                        value: weight,
+                        color,
+                    });
+                }
+                misc_from = true;
+            }
+
+            for (let [id, id_to_misc_by_color] of Object.entries(to_misc_by_id_and_color)) {
+                for (let [color, weight] of Object.entries(id_to_misc_by_color)) {
+                    filtered_links.push({
+                        source: id,
+                        target: "MISC_to",
+                        value: weight,
+                        color,
+                    });
+                }
+                misc_to = true;
+            }
+
+            for (let [color, weight] of Object.entries(between_misc_by_color)) {
+                filtered_links.push({
+                    source: "MISC_from",
+                    target: "MISC_to",
+                    value: weight,
+                    color,
+                });
+                misc_from = true;
+                misc_to = true;
+            }
+        }
+
+        return {
+            filtered_links,
+            misc_from,
+            misc_to
+        };
+    }
+
+    function filter_and_suffix_nodes(nodesNLinks, included_ids_from, included_ids_to, misc_from, misc_to) {
+        let raw_nodes = nodesNLinks.nodes;
+        let filtered_nodes = [];
+
+        for (let node of raw_nodes) {
+            if (included_ids_from[node.id]) {
+                filtered_nodes.push({
+                    id: node.id + "_from",
+                    name: node.name,
+                });
+            }
+
+            if (included_ids_to[node.id]) {
+                filtered_nodes.push({
+                    id: node.id + "_to",
+                    name: node.name,
+                });
+            }
+        }
+
+        if (misc_from) {
+            filtered_nodes.push({
+                id: "MISC_from",
+                name: "Other",
+            });
+        }
+
+        if (misc_to) {
+            filtered_nodes.push({
+                id: "MISC_to",
+                name: "Other",
+            });
+        }
+
+        return filtered_nodes;
+    }
 
         return {
             preprocess_data_for_sankey,

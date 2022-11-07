@@ -316,5 +316,7 @@ public class GepiInput {
 
     public enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
 
-
+    public String getFulltextFilterTooltip() {
+        return "The document context is stored with the interactions and can be used for filter purposes. The supported query syntax is described in the ElasticSearch <a target=\"_blank\" class=\"link-secondary\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-simple-query-string-query.html\">documentation</a>.";
+    }
 }

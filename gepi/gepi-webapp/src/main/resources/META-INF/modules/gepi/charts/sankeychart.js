@@ -74,7 +74,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         node_width: 10,
         node_to_label_spacing: 5,
         // max_number_nodes: 3,
-        show_other: false,
+        show_other: true,
         restrict_other_height: false,
         max_other_height: 100,
         fine_node_highlights: true,
@@ -112,19 +112,20 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         // this.add_slider('min-size-slider-'+orderType, 'Minimum node size: ', 5, 25, 2, settings.min_node_height, (value) => settings.min_node_height = value);
         //this.add_slider('node-height-slider', 'Chart height: ', 40, 400, 2, settings.height, (value) => settings.height = value - 0);
         // add_slider("node-number-slider", "Max number of nodes: ", 0, 300, 2, this.settings.max_number_nodes, (value) => this.settings.max_number_nodes = value);
-        // this.add_slider('max-other-slider-'+orderType, 'Maximum size of "Other" node:', 2, 150, 2, settings.max_other_height, (value) => settings.max_other_height = value);
+         // this.add_slider('max-other-slider-'+orderType, 'Maximum size of "other" node ', 2, 150, 2, settings.max_other_height, (value) => settings.max_other_height = value);
 
-        // this.add_toggle(
-        //   'restrict-other-toggle-'+orderType,
-        //   'Restrict size of "Other" node',
-        //   settings.restrict_other_height,
-        //   (state) => settings.restrict_other_height = state,
-        // );
+         // this.add_toggle(
+         //   'restrict-other-toggle-'+orderType,
+         //   'Restrict size of "other" node',
+         //   'Re-scales the "other" node to make more room for concrete interaction gene symbols. Note that the size of the "other" node will not be propertional to the number of interactions connected with it any more.',
+         //   settings.restrict_other_height,
+         //   (state) => settings.restrict_other_height = state,
+         // );
 
         this.add_toggle(
           'show-other-toggle-' + orderType,
-          'Show "Other" node',
-          'Compute special "other" nodes that serve as a collective replacement for all genes that cannot be shown due to restricted display area.',
+          'Show "other" node',
+          'Compute special "other" nodes that serve as a collective replacement for all genes that cannot be shown due to restricted display area. Will not be displayed if there is enough room for all interaction partners.',
           settings.show_other,
           (state) => settings.show_other = state,
         );
@@ -390,7 +391,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       }
       div.append('label')
         .attr('for', id)
-        .attr('class', 'btn btn-primary')
+        .attr('class', 'btn btn-primary mt-3')
         .attr('data-bs-toggle', 'tooltip')
         .attr('title', tooltip)
         .text(' ' + text);
@@ -405,12 +406,6 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       const div = d3.select('#' + this.elementId + '-container .settings').select('.sliders').append('div').attr('class', 'slider-container');
       const redraw = this.redraw.bind(this);
 
-
-      div.append('label')
-        .attr('for', id)
-        .attr('class', 'ms-2')
-        .text(label_text);
-
       div.append('input')
         .attr('type', 'range')
         .attr('id', id)
@@ -423,6 +418,11 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           change_handler(value);
           redraw();
         });
+
+         div.append('label')
+        .attr('for', id)
+        .attr('class', 'ms-2')
+        .text(label_text);
     }
 
     add_button(text, click_handler) {

@@ -8,17 +8,24 @@ import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.EventPagesDataSource;
 import de.julielab.gepi.webapp.data.FilteredGepiRequestData;
 import de.julielab.java.utilities.FileUtilities;
-import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.StreamResponse;
+import org.apache.tapestry5.*;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
 import org.apache.tapestry5.commons.Messages;
+import org.apache.tapestry5.commons.services.TypeCoercer;
+import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.http.Link;
 import org.apache.tapestry5.http.services.Response;
+import org.apache.tapestry5.internal.OptionModelImpl;
+import org.apache.tapestry5.internal.SelectModelImpl;
+import org.apache.tapestry5.internal.services.StringValueEncoder;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
+import org.apache.tapestry5.util.EnumSelectModel;
+import org.apache.tapestry5.util.EnumValueEncoder;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -32,6 +39,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 @Import(stylesheet = {"context:css-components/tablewidget.css"})
 public class TableResultWidget extends GepiWidget {
@@ -84,6 +92,9 @@ public class TableResultWidget extends GepiWidget {
     private LoggerSource loggerSource;
     @Environmental
     private JavaScriptSupport javaScriptSupport;
+
+//    @Property
+//    private List<String> selectedColumns;
 
     @Log
     void setupRender() {
@@ -141,8 +152,30 @@ public class TableResultWidget extends GepiWidget {
                 return source;
             }
         };
+//        selectedColumns = tableModel.getPropertyNames();
     }
+//    @Inject
+//    private TypeCoercer typeCoercer;
+//
+//    public ValueEncoder getColumnsEncoder() {
+//        return new StringValueEncoder();
+//    }
+//
+//    public SelectModel getColumnsModel() {
+//        return new SelectModelImpl(tableModel.getPropertyNames().stream().map(p -> new OptionModelImpl(p)).toArray(OptionModel[]::new));
+//    }
 
+//    @Inject
+//    private AjaxResponseRenderer ajaxResponseRenderer;
+//
+//    @InjectComponent
+//    private GepiWidgetLayout gepiWidgetLayout;
+//
+    // for columns selection
+//    public void onSuccessFromColumnsForm() {
+//        tableModel.include(selectedColumns.toArray(String[]::new));
+//        ajaxResponseRenderer.addRender(gepiWidgetLayout.getBodyZone());
+//    }
     /**
      * When the form containing the filter elements is submitted, we want to re-render the table via AJAX
      */

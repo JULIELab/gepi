@@ -202,6 +202,14 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 svg.append("g")
                     .call(d3.axisLeft(y))
             }
+            // text label for the x axis
+            svg.append("text")
+                .attr("y", height+margin.top)
+                .attr("x", width/2)
+                .attr("dy", "2em")
+                .style("text-anchor", "middle")
+                .text("NCBI Gene symbol");     
+
             // text label for the y axis
             svg.append("text")
                 .attr("transform", "rotate(-90)")

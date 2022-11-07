@@ -4,10 +4,15 @@
      esResult="esResult"
      viewMode="viewMode" useTapestryZoneUpdates="true" requestData="requestData" downloadable="true" waitForData="true"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
+<!--    <form role="form" t:type="form" async="true" t:id="columnsform" id="columnsform">-->
+<!--    <t:checklist t:id="columns" selected="selectedColumns" encoder="columnsEncoder"-->
+<!--                 model="columnsModel" t-checklist-row="testzeugs"/>-->
+<!--        <button>submit</button>-->
+<!--</form>-->
 
     <div>${viewmode}</div>
         <t:grid source="eventSource" row="eventrow" model="tableModel" rowsPerPage="${rowsperpage}"
-                pagerPosition="bottom" inplace="true" empty="block:no_data_block">
+                pagerPosition="bottom" inplace="true" empty="block:no_data_block" t:id="resultTable">
             <p:firstArgumentPreferredNameCell>
                 <a href="https://www.ncbi.nlm.nih.gov/gene/${eventrow.firstargumentgeneid}" target="_blank"
                    data-toggle="tooltip" data-placement="top"
