@@ -80,8 +80,6 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             List<String> sentenceArgumentHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT);
             List<String> sentenceTriggerHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_TRIGGER);
             List<String> sentenceFilterHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_FILTER);
-            List<String> paragraphArgumentHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH_TEXT);
-            List<String> paragraphTriggerHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH_TEXT_TRIGGER);
             List<String> paragraphFilterHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH_TEXT_FILTER);
             List<String> geneMappingSources = eventDocument.getFieldValues(FIELD_GENE_MAPPING_SOURCE).orElse(Collections.emptyList()).stream().map(Object::toString).collect(Collectors.toList());
             String eventId = eventDocument.getId();
@@ -121,8 +119,9 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             if (mainEventType.isPresent())
                 event.setMainEventType(mainEventType.get());
             event.setAllEventTypes(allEventTypes.stream().map(String.class::cast).collect(Collectors.toList()));
-            if (sentenceArgumentHl != null && !sentenceArgumentHl.isEmpty())
-                event.setHlSentence(StringUtils.normalizeSpace(sentenceArgumentHl.get(0)));
+            String mergedSentenceHl = mergeHighlighting(sentenceArgumentHl, sentenceTriggerHl, sentenceFilterHl);
+            if (mergedSentenceHl != null)
+                event.setHlSentence(StringUtils.normalizeSpace(mergedSentenceHl));
             if (sentence.isPresent())
                 event.setSentence(StringUtils.normalizeSpace(sentence.get()));
             if (paragraphFilterHl != null && !paragraphFilterHl.isEmpty())
@@ -138,21 +137,30 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                 if (i < matchTypes.size() && !matchTypes.isEmpty())
                     event.getArgument(i).setMatchType((String) matchTypes.get(i));
             }
-            if (event.getHlSentence() != null) {
-                Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getHlSentence());
-//                if (fulltextQueryHighlightedMatcher.find())
-//                    event.setSentenceMatchingFulltextQuery(true);
-            }
-            if (event.getHlParagraph() != null) {
-                Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getHlParagraph());
-//                if (fulltextQueryHighlightedMatcher.find())
-//                    event.setParagraphMatchingFulltextQuery(true);
-            }
+//            if (event.getHlSentence() != null) {
+//                Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getHlSentence());
+////                if (fulltextQueryHighlightedMatcher.find())
+////                    event.setSentenceMatchingFulltextQuery(true);
+//            }
+//            if (event.getHlParagraph() != null) {
+//                Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getHlParagraph());
+////                if (fulltextQueryHighlightedMatcher.find())
+////                    event.setParagraphMatchingFulltextQuery(true);
+//            }
             event.setSentenceMatchingFulltextQuery(sentenceFilterHl != null && !sentenceFilterHl.isEmpty());
             event.setParagraphMatchingFulltextQuery(paragraphFilterHl != null && !paragraphFilterHl.isEmpty());
             event.setGeneMappingSources(geneMappingSources);
             return event;
         }).filter(Objects::nonNull);
+    }
+
+    /**
+     * <p>Convenience signature for {@link #mergeHighlighting(String...)}.</p>
+     * @param highlights Lists of highlight string that might be null or empty as they come from the ElasticSearch document.
+     * @return The merged highlights of all first list elements (additional items are ignored!) of each input list that is not blank.
+     */
+    private String mergeHighlighting(List<String>... highlights) {
+        return mergeHighlighting(Arrays.stream(highlights).filter(Objects::nonNull).filter(Predicate.not(Collection::isEmpty)).map(l -> l.get(0)).toArray(String[]::new));
     }
 
     /**
@@ -166,7 +174,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
         // Build position-tag maps. This list will contain one position-tag map for each highlighted string
         List<SortedMap<Integer, String>> tagMaps = new ArrayList<>();
         for (String hl : highlights) {
-            if (hl == null)
+            if (hl == null || hl.isBlank())
                 continue;
             final Matcher tagMatcher = tagPattern.matcher(hl);
             // Sums up the encountered tag lengths. Thus, the start of a tag in the highlighted string minus the offset
@@ -180,6 +188,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                 pos2tag.put(tagPos - offset, tag);
                 offset += tag.length();
             }
+            tagMaps.add(pos2tag);
         }
         if (tagMaps.isEmpty())
             return null;
@@ -188,26 +197,45 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
         List<String> reversedMergedHighlight = new ArrayList<>();
         String nonHighlightedString = tagPattern.matcher(highlights[0]).replaceAll("");
         int lastPos = nonHighlightedString.length();
-        int maxPosIndex = Integer.MIN_VALUE;
         // Assemble the merged highlight string. In each iteration we determine the remaining tag with the largest
-        // offset and add the text between it and the previous tag and itself to the merged string.
+        // offset and add the text between the previous tag and itself to the merged string.
         while (tagMaps.stream().anyMatch(Predicate.not(Map::isEmpty))) {
-            for (var tagMap : tagMaps)
-                maxPosIndex = Math.max(maxPosIndex, tagMap.lastKey());
+            // find the map with the offset-highest tag
+            int maxPosIndex = getMaxOffsetTagIndex(tagMaps);
             // the last tag as in the highest offset position of all tags of all highlights
-            final SortedMap<Integer, String> lastTagMap = tagMaps.get(maxPosIndex);
-            int pos = lastTagMap.lastKey();
-            String tag = lastTagMap.get(pos);
-            reversedMergedHighlight.add(nonHighlightedString.substring(pos + tag.length(), lastPos));
+            final SortedMap<Integer, String> highestOffsetTagMap = tagMaps.get(maxPosIndex);
+            int pos = highestOffsetTagMap.lastKey();
+            String tag = highestOffsetTagMap.get(pos);
+            try {
+                reversedMergedHighlight.add(nonHighlightedString.substring(pos, lastPos));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             reversedMergedHighlight.add(tag);
             // Save the start position of this tag. For the next tag we will need it as the end point of the substring
             // on the nonHighlightedString.
             lastPos = pos;
             // Remove this tag so that in the next iteration we get the preceeding one.
-            lastTagMap.remove(pos);
+            highestOffsetTagMap.remove(pos);
+            if (highestOffsetTagMap.isEmpty())
+                tagMaps.remove(maxPosIndex);
         }
-        return IntStream.range(0, reversedMergedHighlight.size()).mapToObj(i -> reversedMergedHighlight.get(reversedMergedHighlight.size() - i)).collect(Collectors.joining());
+        // All tags processed. We now only miss the text from the beginning up to the first tag.
+        reversedMergedHighlight.add(nonHighlightedString.substring(0, lastPos));
+        return IntStream.range(1, reversedMergedHighlight.size()+1).mapToObj(i -> reversedMergedHighlight.get(reversedMergedHighlight.size() - i)).collect(Collectors.joining());
     }
 
+    private int getMaxOffsetTagIndex(List<SortedMap<Integer,String>> tagMaps) {
+        int indexWithHightestOffsetTag = 0;
+        int highestOffset = -1;
+        for (int i = 0; i < tagMaps.size(); i++) {
+            SortedMap<Integer, String> tagMap = tagMaps.get(i);
+            if (tagMap.lastKey() > highestOffset) {
+                highestOffset = tagMap.lastKey();
+                indexWithHightestOffsetTag = i;
+            }
+        }
+        return indexWithHightestOffsetTag;
+    }
 
 }

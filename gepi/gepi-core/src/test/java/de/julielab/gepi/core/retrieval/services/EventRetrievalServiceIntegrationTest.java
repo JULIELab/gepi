@@ -182,4 +182,13 @@ public class EventRetrievalServiceIntegrationTest {
         CompletableFuture<EventRetrievalResult> outsideEventsWithSectionFilter = eventRetrievalService.openSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3458")).withSectionNameFilterString("cytokine"));
         assertThat(outsideEventsWithSectionFilter.get().getEventList().size()).isEqualTo(1);
     }
+
+    @Test
+    public void testHighlighting() throws Exception {
+        // This tests uses 10049519_FE11_0_1.json and 10051468_FE0_0_1.json
+        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("7124")).withListBGePiIds(IdConversionResult.of("3569","7351")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"neutrophil infiltration\"").withParagraphFilterString("\"regenerating mice\""));
+        final List<Event> eventList = bipartiteEventsEvents.get().getEventList();
+        System.out.println(eventList);
+    }
 }

@@ -2,8 +2,10 @@ package de.julielab.gepi.webapp;
 
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
+import org.apache.poi.wp.usermodel.Paragraph;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class BeanModelEvent {
@@ -91,11 +93,17 @@ public class BeanModelEvent {
     }
 
     public String getContext() {
-        if (event.isParagraphMatchingFulltextQuery() && !event.isSentenceMatchingFulltextQuery())
-            return event.getSentence() + "<br>" + event.getHlParagraph();
-        if (event.isSentenceMatchingFulltextQuery())
-            return event.getSentence() + "<br>" + event.getHlSentence();
-        return event.getSentence();
+        if (!event.isParagraphMatchingFulltextQuery())
+            return "<div><span class=\"info-interaction-sentence\" title=\"sentence of occurrence\" data-bs-toggle=\"default-tooltip\">&nbsp;</span>" + event.getHlSentence() + "</div>";
+        StringBuilder paragraphHighlight4display = new StringBuilder();
+        final String hlParagraph = event.getHlParagraph().trim();
+        final String hlParagraphWoTags = hlParagraph.replaceAll("<[^>]+>", "");
+        if (!Character.isUpperCase(hlParagraph.charAt(0)))
+            paragraphHighlight4display.append("...");
+        paragraphHighlight4display.append(hlParagraph);
+        if (!Pattern.matches("\\p{Punct}", String.valueOf(hlParagraphWoTags.charAt(hlParagraphWoTags.length() - 1))))
+            paragraphHighlight4display.append("...");
+        return "<div><span class=\"info-interaction-sentence\" title=\"sentence of occurrence\" data-bs-toggle=\"default-tooltip\">&nbsp;</span>" + event.getHlSentence() + "</div><div><span class=\"info-paragraph-match\" title=\"paragraph-level full text filter match\" data-bs-toggle=\"default-tooltip\">&nbsp;</span>" + paragraphHighlight4display + "</div>";
     }
 
     public String getSecondArgumentTextWithPreferredName() {

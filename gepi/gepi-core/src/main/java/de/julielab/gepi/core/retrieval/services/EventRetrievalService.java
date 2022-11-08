@@ -328,8 +328,8 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     private void addHighlighting(SearchServerRequest serverRqst) {
-        serverRqst.addHighlightCmd(getHighlightCommand("xargumentx", "hl-argument", FIELD_EVENT_SENTENCE_TEXT, FIELD_EVENT_PARAGRAPH_TEXT));
-        serverRqst.addHighlightCmd(getHighlightCommand("xtriggerx", "hl-trigger", FIELD_EVENT_SENTENCE_TEXT_TRIGGER, FIELD_EVENT_PARAGRAPH_TEXT_TRIGGER));
+        serverRqst.addHighlightCmd(getHighlightCommand("xargumentx", "hl-argument", FIELD_EVENT_SENTENCE_TEXT));
+        serverRqst.addHighlightCmd(getHighlightCommand("xtriggerx", "hl-trigger", FIELD_EVENT_SENTENCE_TEXT_TRIGGER));
         serverRqst.addHighlightCmd(getHighlightCommand(null, "hl-filter", FIELD_EVENT_SENTENCE_TEXT_FILTER, FIELD_EVENT_PARAGRAPH_TEXT_FILTER));
     }
 
@@ -346,14 +346,16 @@ public class EventRetrievalService implements IEventRetrievalService {
         for (String hlField : hlFields)
             hlc.addField(hlField, 1, 0);
         hlc.fields.forEach(f -> {
-            f.pre = "<em class=\"" + hlClass + "\">";
-            f.post = "</em>";
+            f.pre = "<mark class=\"" + hlClass + "\">";
+            f.post = "</mark>";
             if (hlTerm != null) {
                 TermQuery tq = new TermQuery();
                 tq.field = f.field;
                 tq.term = hlTerm;
                 f.highlightQuery = tq;
             }
+            if (f.field.contains("paragraph"))
+                f.fragsize = 80;
         });
         return hlc;
     }

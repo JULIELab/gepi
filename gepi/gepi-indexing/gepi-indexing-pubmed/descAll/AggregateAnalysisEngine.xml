@@ -7,12 +7,6 @@
         
     <delegateAnalysisEngineSpecifiers>
                 
-        <delegateAnalysisEngine key="GePi Gene Merger">
-                        
-            <import location="GePi Gene Merger.xml"/>
-                    
-        </delegateAnalysisEngine>
-                
         <delegateAnalysisEngine key="Gazetteer FamPlex Dictionary dev">
                         
             <import location="Gazetteer FamPlex Dictionary dev.xml"/>
@@ -28,12 +22,6 @@
         <delegateAnalysisEngine key="GePi Famplex ID Assigner">
                         
             <import location="GePi Famplex ID Assigner.xml"/>
-                    
-        </delegateAnalysisEngine>
-                
-        <delegateAnalysisEngine key="JCoRe BioSEM Event Annotator">
-                        
-            <import location="JCoRe BioSEM Event Annotator.xml"/>
                     
         </delegateAnalysisEngine>
                 
@@ -55,9 +43,9 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="Gene Mapping">
+        <delegateAnalysisEngine key="JCoRe AcronymAnnotator">
                         
-            <import location="Gene Mapping.xml"/>
+            <import location="JCoRe AcronymAnnotator.xml"/>
                     
         </delegateAnalysisEngine>
             
@@ -75,15 +63,11 @@
                         
             <fixedFlow>
                                 
-                <node>GePi Gene Merger</node>
-                                
                 <node>Gazetteer FamPlex Dictionary dev</node>
                                 
                 <node>Gazetteer FamPlex Dictionary</node>
                                 
                 <node>GePi Famplex ID Assigner</node>
-                                
-                <node>JCoRe BioSEM Event Annotator</node>
                                 
                 <node>JCoRe Likelihood Detection AE</node>
                                 
@@ -91,7 +75,7 @@
                                 
                 <node>de.julielab.jcore.ae.eventflattener.EventFlattener</node>
                                 
-                <node>Gene Mapping</node>
+                <node>JCoRe AcronymAnnotator</node>
                             
             </fixedFlow>
                     

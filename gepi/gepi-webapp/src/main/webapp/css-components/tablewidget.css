@@ -5,3 +5,30 @@ select {
 #tableresult_widget .card-body {
     overflow: scroll;
 }
+
+.hl-trigger {
+    background-color: #ff9c9c;
+}
+
+.hl-filter {
+    background-color: #4cabe6;
+    /*margin: 0 0.1875em 0 0.1875em;*/
+}
+
+.info-paragraph-match {
+    background-image: url("../images/filter_alt_black_24dp.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    display: inline-block;
+    width: 24px;
+    margin-right: 0.25rem;
+}
+
+.info-interaction-sentence {
+    background-image: url("../images/segment_black_24dp.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    display: inline-block;
+    width: 24px;
+    margin-right: 0.25rem;
+}

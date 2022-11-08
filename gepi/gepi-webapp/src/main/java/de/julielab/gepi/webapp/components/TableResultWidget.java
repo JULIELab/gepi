@@ -111,7 +111,7 @@ public class TableResultWidget extends GepiWidget {
                 "factuality",
                 "fulltextMatchSource",
                 "docId",
-                "eventId",
+//                "eventId",
                 "context"
 //                ,
 //                "geneMappingSources"
@@ -132,7 +132,7 @@ public class TableResultWidget extends GepiWidget {
 //        tableModel.get("secondArgumentMatchType").label("gene B match type");
         tableModel.get("allEventTypes").label("relation types");
         tableModel.get("docId").label("document id");
-        tableModel.get("eventId").label("event id");
+//        tableModel.get("eventId").label("event id");
 //        tableModel.get("geneMappingSources").label("gene tagger");
         // Disable the sorting buttons. Since we reorder the event arguments so that arguments from list A
         // always appear as the "first" argument, we cannot sort in ElasticSearch because there is no fixed
@@ -261,7 +261,8 @@ public class TableResultWidget extends GepiWidget {
 
     public void afterRender() {
         final Link downloadEventLink = resources.createEventLink("download");
-        javaScriptSupport.require("gepi/charts/tablewidget").with(downloadEventLink.toAbsoluteURI());
+        javaScriptSupport.require("gepi/charts/tablewidget").invoke("download").with(downloadEventLink.toAbsoluteURI());
+        javaScriptSupport.require("gepi/charts/tablewidget").invoke("setupHighlightTooltips");
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
     }
 }

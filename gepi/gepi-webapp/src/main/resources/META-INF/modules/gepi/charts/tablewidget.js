@@ -1,6 +1,6 @@
-define(["jquery", "bootstrap5/modal"], function($, modal) {
+define(["jquery", "bootstrap5/modal", "bootstrap5/tooltip"], function($, modal, Tooltip) {
 	$('#downloadModal').modal();
-	return function(downloadUrl){
+	const download = function(downloadUrl){
 		$('#downloadButton').on('click', function(){
 			$('#downloadModal').modal('toggle');
 			console.log("Downloading data from " + downloadUrl)
@@ -17,5 +17,22 @@ define(["jquery", "bootstrap5/modal"], function($, modal) {
    			console.log("Download window popped up")
    			link.remove();
 		})};
+
+	const setupHighlightTooltips = function() {
+		$(".hl-argument").each(function() {
+			new Tooltip(this, {title: "interaction partner"});
+		});
+		$(".hl-trigger").each(function() {
+			new Tooltip(this, {title: "interaction indicator word"});
+		})
+		$(".hl-filter").each(function() {
+			new Tooltip(this, {title: "fulltext filter match"});
+		})
+	}
+
+	return {
+		download: download,
+		setupHighlightTooltips: setupHighlightTooltips
+	}
 })
 
