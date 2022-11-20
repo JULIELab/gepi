@@ -204,6 +204,26 @@
             "type": "alias",
             "path": "sentence.text"
           },
+          "text_likelihood_1": {
+            "type": "alias",
+            "path": "sentence.text"
+          },
+          "text_likelihood_2": {
+            "type": "alias",
+            "path": "sentence.text"
+          },
+          "text_likelihood_3": {
+            "type": "alias",
+            "path": "sentence.text"
+          },
+          "text_likelihood_4": {
+            "type": "alias",
+            "path": "sentence.text"
+          },
+          "text_likelihood_5": {
+            "type": "alias",
+            "path": "sentence.text"
+          },
           "id": {
             "type": "keyword",
             "store": true

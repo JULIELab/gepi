@@ -19,7 +19,7 @@
                                 
                 <analysisEngineMetaData>
                                         
-                    <name>Gazetteer FamPlex Dictionary dev</name>
+                    <name>Gazetteer FPLX HGNC Groups Dictionary dev</name>
                                         
                     <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
             It must be set which exact annotation type should be created for recognized dictionary entries and
@@ -158,7 +158,7 @@
                                                         
                             <configurableDataResourceSpecifier>
                                                                 
-                                <url>file:/Users/faessler/Research/gepi/processing-dictionaries/famplex.dict</url>
+                                <url>file:/Users/faessler/Research/gepi/processing-dictionaries/fplxhgncgroupnames.dict</url>
                                                                 
                                 <resourceMetaData>
                                                                         
@@ -546,9 +546,63 @@
                                         
                     <version>2.6.0-SNAPSHOT</version>
                                         
-                    <configurationParameters/>
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>AssignmentStrategy</name>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>ConceptTypeName</name>
+                                                        
+                            <description>The qualified UIMA type name for the concept annotation for which likelihood assignment should be performed. Must be a subclass of de.julielab.jcore.types.ConceptMention. Defaults to de.julielab.jcore.types.ConceptMention.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
                                         
-                    <configurationParameterSettings/>
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>AssignmentStrategy</name>
+                                                        
+                            <value>
+                                                                
+                                <string>next-concept</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>ConceptTypeName</name>
+                                                        
+                            <value>
+                                                                
+                                <string>de.julielab.jcore.types.EventMention</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
                                         
                     <typeSystemDescription>
                                                 

@@ -64,6 +64,11 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 $('#' + this.numGeneInputId).val(e.currentTarget.text);
                 this.redraw();
             });
+
+            // Create tooltips for static elements that are not re-drawn.
+            // Tooltips for the chart itself must be re-created after each
+            // redraw() call, see redraw() below.
+            new Tooltip(document.getElementById(this.numGeneInputId), {'trigger':'hover'});
         }
 
         redraw() {
@@ -78,12 +83,14 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             this.width = Math.max(aCountElWidth, bCountElWidth);
            
             this.drawPieChart('acounts', aCountElId);
-            this.drawPieChart('bcounts', bCountElId)
+            this.drawPieChart('bcounts', bCountElId);
+
+            this.initTooltips();
         }
 
 
         drawPieChart(countType, parentElementId) {
-            let argCounts = data.getData(countType)['argumentcounts'];
+            let argCounts = data.getData(countType, this.widgetSettings.dataSessionId)['argumentcounts'];
             if (argCounts.length === 0) {
                 $('#'+parentElementId).append('<div class="alert alert-info mx-auto">There is not data to display.</div>');
                 return;
@@ -121,6 +128,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             const svg = d3.select('#'+parentElementId)
                 .append('svg')
                 .attr('class', 'piechartcanvas')
+                .attr('width', width)
                 .append('g');
 
             svg.append('g')
@@ -237,14 +245,9 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                     slicePoint[1] = slicePoint[1] * 1.3
                     return [slicePoint, outerArc.centroid(d), labelPoint];
                 }); 
-
-            this.initTooltips();
         }
 
         initTooltips() {
-            let numGeneInput = $('#' + this.numGeneInputId)[0];
-            new Tooltip(numGeneInput, {'trigger':'hover'});
-
             console.log("Creating piechart tooltips on " + this.elementId)
             $('#' + this.elementId + '-outer svg .slice').each(function() {
                  new Tooltip(this)

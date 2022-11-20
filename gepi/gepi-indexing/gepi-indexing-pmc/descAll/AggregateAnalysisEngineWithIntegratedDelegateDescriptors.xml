@@ -93,7 +93,7 @@
                                 
                 <analysisEngineMetaData>
                                         
-                    <name>Gazetteer FamPlex Dictionary</name>
+                    <name>Gazetteer FPLX HGNC Group Dictionary</name>
                                         
                     <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
             It must be set which exact annotation type should be created for recognized dictionary entries and
@@ -232,7 +232,7 @@
                                                         
                             <configurableDataResourceSpecifier>
                                                                 
-                                <url>file:/var/data/gepi/processing-dictionaries/famplex.dict</url>
+                                <url>file:/var/data/gepi/processing-dictionaries/fplxhgncgroupnames.dict</url>
                                                                 
                                 <resourceMetaData>
                                                                         

@@ -40,7 +40,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       //  "nodes": [{"id":tidxy, "name": geneSymbol}] 
       //  "links": [{"source", "target", "frequency"}]
       // }
-      const sankeyDat = data.getData('relationCounts');
+      const sankeyDat = data.getData('relationCounts', this.widgetSettings.dataSessionId);
       // Aggregated data for Sankey display.
       // {
       //  "nodesNLinks: {just sankeyDat from above}",

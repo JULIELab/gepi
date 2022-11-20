@@ -9,7 +9,7 @@
         
     <analysisEngineMetaData>
                 
-        <name>Gazetteer FamPlex Dictionary dev</name>
+        <name>Gazetteer FPLX HGNC Group Dictionary</name>
                 
         <description>This is a minimal template for the use with the JCoRe component using the Lingpipe Gazetteer Chunker.
             It must be set which exact annotation type should be created for recognized dictionary entries and
@@ -139,7 +139,7 @@
                         
             <externalResource>
                                 
-                <name>ConfigurableDictionaryChunkerProvider</name>
+                <name>FamPlex productive</name>
                                 
                 <description>Employs the configurable alternative chunker implementation. This alternative
                 implementation is primarily meant for approximate matching and should be used in this intent.
@@ -148,7 +148,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/Users/faessler/Research/gepi/processing-dictionaries/famplex.dict</url>
+                    <url>file:/var/data/gepi/processing-dictionaries/fplxhgncgroupnames.dict</url>
                                         
                     <resourceMetaData>
                                                 
@@ -346,7 +346,7 @@
                                 
                 <key>DictionaryChunkerProvider</key>
                                 
-                <resourceName>ConfigurableDictionaryChunkerProvider</resourceName>
+                <resourceName>FamPlex productive</resourceName>
                             
             </externalResourceBinding>
                     

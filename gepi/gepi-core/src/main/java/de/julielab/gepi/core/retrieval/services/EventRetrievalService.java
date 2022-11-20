@@ -42,6 +42,10 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS = "argumenttophomoids";
 
+    public static final String FIELD_EVENT_ARG_FAMPLEX_IDS = "argumentfamplexids";
+
+    public static final String FIELD_EVENT_ARG_HGNC_GROUP_IDS = "argumenthgncgroupids";
+
     /**
      * @deprecated The match type exact/fuzzy was an emergency categorization for the first GeNo version where
      * there are exact and partial matches. A partial match is a match of a gene name that is not found in exactly in
@@ -100,6 +104,16 @@ public class EventRetrievalService implements IEventRetrievalService {
     public static final String FIELD_EVENT_PARAGRAPH_TEXT_FILTER = "paragraph.text_filter";
 
     public static final String FIELD_EVENT_SENTENCE_TEXT_TRIGGER = "sentence.text_trigger";
+
+    public static final String FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_1 = "sentence.text_likelihood_1";
+
+    public static final String FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_2 = "sentence.text_likelihood_2";
+
+    public static final String FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_3 = "sentence.text_likelihood_3";
+
+    public static final String FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_4 = "sentence.text_likelihood_4";
+
+    public static final String FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_5 = "sentence.text_likelihood_5";
 
     public static final String FIELD_EVENT_PARAGRAPH_TEXT_TRIGGER = "paragraph.text_trigger";
 
@@ -330,6 +344,11 @@ public class EventRetrievalService implements IEventRetrievalService {
     private void addHighlighting(SearchServerRequest serverRqst) {
         serverRqst.addHighlightCmd(getHighlightCommand("xargumentx", "hl-argument", FIELD_EVENT_SENTENCE_TEXT));
         serverRqst.addHighlightCmd(getHighlightCommand("xtriggerx", "hl-trigger", FIELD_EVENT_SENTENCE_TEXT_TRIGGER));
+        serverRqst.addHighlightCmd(getHighlightCommand("xlike1x", "hl-like1", FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_1));
+        serverRqst.addHighlightCmd(getHighlightCommand("xlike2x", "hl-like2", FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_2));
+        serverRqst.addHighlightCmd(getHighlightCommand("xlike3x", "hl-like3", FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_3));
+        serverRqst.addHighlightCmd(getHighlightCommand("xlike4x", "hl-like4", FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_4));
+        serverRqst.addHighlightCmd(getHighlightCommand("xlike5x", "hl-like5", FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_5));
         serverRqst.addHighlightCmd(getHighlightCommand(null, "hl-filter", FIELD_EVENT_SENTENCE_TEXT_FILTER, FIELD_EVENT_PARAGRAPH_TEXT_FILTER));
     }
 
@@ -349,10 +368,19 @@ public class EventRetrievalService implements IEventRetrievalService {
             f.pre = "<mark class=\"" + hlClass + "\">";
             f.post = "</mark>";
             if (hlTerm != null) {
-                TermQuery tq = new TermQuery();
-                tq.field = f.field;
-                tq.term = hlTerm;
-                f.highlightQuery = tq;
+                SearchServerQuery q;
+                if (hlTerm.contains("*")) {
+                    final WildcardQuery wcq = new WildcardQuery();
+                    wcq.field = f.field;
+                    wcq.query = hlTerm;
+                    q = wcq;
+                } else {
+                    TermQuery tq = new TermQuery();
+                    tq.field = f.field;
+                    tq.term = hlTerm;
+                    q = tq;
+                }
+                f.highlightQuery = q;
             }
             if (f.field.contains("paragraph"))
                 f.fragsize = 80;
@@ -432,31 +460,32 @@ public class EventRetrievalService implements IEventRetrievalService {
         List<Event> reorderedEvents = new ArrayList<>(eventResult.getEventList());
         for (Iterator<Event> it = reorderedEvents.iterator(); it.hasNext(); ) {
             Event e = it.next();
-            // remove events that do not have any other argument than the
-            // input ID itself
-//            if (e.getArguments().stream().map(a -> a.getTopHomologyId()).distinct().count() < 2) {
-//                it.remove();
-//                continue;
+            final Argument secondArg = e.getArgument(1);
+//            if (idSet.contains(secondArg.getTopHomologyPreferredName()) || idSet.contains(secondArg.getHgncId()) || idSet.contains(secondArg.famplexId())) {
+//                List<Argument> arguments = e.getArguments();
+//                Argument tmp = arguments.get(0);
+//                arguments.set(0, arguments.get(1));
+//                arguments.set(1, tmp);
 //            }
-            int inputIdPosition = -1;
-            for (int i = 0; i < e.getNumArguments(); ++i) {
-                Argument g = e.getArgument(i);
-                // see also above comment in reorderBipartiteEventResultArguments method:
-                // compare via top-homologyId, not geneId; see also #60 and #62
-                if (idSet.contains(g.getTopHomologyId()) || idSet.contains(g.getConceptId()) || idSet.contains(g.getGeneId())) {
-                    inputIdPosition = i;
-                    break;
-                }
-            }
-            if (inputIdPosition == -1)
-                throw new IllegalStateException(
-                        "An event was returned that does not contain an input argument ID: " + e);
-            if (inputIdPosition > 0) {
-                List<Argument> arguments = e.getArguments();
-                Argument tmp = arguments.get(0);
-                arguments.set(0, arguments.get(inputIdPosition));
-                arguments.set(inputIdPosition, tmp);
-            }
+//            int inputIdPosition = -1;
+//            for (int i = 0; i < e.getNumArguments(); ++i) {
+//                Argument g = e.getArgument(i);
+//                // see also above comment in reorderBipartiteEventResultArguments method:
+//                // compare via top-homologyId, not geneId; see also #60 and #62
+//                if (idSet.contains(g.getTopHomologyId()) || idSet.contains(g.getConceptId()) || idSet.contains(g.getGeneId())) {
+//                    inputIdPosition = i;
+//                    break;
+//                }
+//            }
+//            if (inputIdPosition == -1)
+//                throw new IllegalStateException(
+//                        "An event was returned that does not contain an input argument ID: " + e);
+//            if (inputIdPosition > 0) {
+//                List<Argument> arguments = e.getArguments();
+//                Argument tmp = arguments.get(0);
+//                arguments.set(0, arguments.get(inputIdPosition));
+//                arguments.set(inputIdPosition, tmp);
+//            }
         }
         eventResult.setEvents(reorderedEvents);
     }

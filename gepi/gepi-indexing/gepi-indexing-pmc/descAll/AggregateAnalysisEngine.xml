@@ -13,15 +13,15 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="Gazetteer FamPlex Dictionary dev">
+        <delegateAnalysisEngine key="Gazetteer FPLX HGNC Group Dictionary dev">
                         
-            <import location="Gazetteer FamPlex Dictionary dev.xml"/>
+            <import location="Gazetteer FPLX HGNC Group Dictionary dev.xml"/>
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="Gazetteer FamPlex Dictionary">
+        <delegateAnalysisEngine key="Gazetteer FPLX HGNC Group Dictionary">
                         
-            <import location="Gazetteer FamPlex Dictionary.xml"/>
+            <import location="Gazetteer FPLX HGNC Group Dictionary.xml"/>
                     
         </delegateAnalysisEngine>
                 
@@ -71,9 +71,9 @@
                                 
                 <node>GePi Gene Merger</node>
                                 
-                <node>Gazetteer FamPlex Dictionary dev</node>
+                <node>Gazetteer FPLX HGNC Group Dictionary dev</node>
                                 
-                <node>Gazetteer FamPlex Dictionary</node>
+                <node>Gazetteer FPLX HGNC Group Dictionary</node>
                                 
                 <node>GePi Famplex ID Assigner</node>
                                 

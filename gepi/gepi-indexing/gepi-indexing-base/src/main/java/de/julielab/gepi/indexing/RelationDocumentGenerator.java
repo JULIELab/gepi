@@ -34,6 +34,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     private final TextFilterBoard textFb;
     private final GeneFilterBoard geneFb;
     private final ConstantOutputFilter constantTriggerFilter;
+    private final Pattern SECTION_NUMBERING = Pattern.compile("^([0-9]+\\.)+([0-9]+)?\\s*");
 
     public RelationDocumentGenerator(FilterRegistry filterRegistry) {
         super(filterRegistry);
@@ -156,9 +157,9 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         }
     }
 
-
     /**
      * Filter method as long as we don't have handling for FamilyName gene mentions
+     *
      * @param arguments
      * @return
      */
@@ -269,9 +270,9 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         return paragraphDocument;
     }
 
-    private final Pattern SECTION_NUMBERING = Pattern.compile("^([0-9]+\\.)+([0-9]+)?\\s*");
     /**
      * Headings often come with their numbering e.g. "3. Results". We do not care about the number, strip it.
+     *
      * @param heading The complete heading of a section.
      * @return The heading without leading numbers.
      */
@@ -311,21 +312,23 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         featurePathSets.add(new FeaturePathSet(Token.type, Arrays.asList("/:coveredText()"), null, textFb.textTokensFilter));
         featurePathSets.add(new FeaturePathSet(Abbreviation.type, Arrays.asList("/textReference:coveredText()"), null, textFb.textTokensFilter));
         featurePathSets.add(new FeaturePathSet(Gene.type, Arrays.asList("/resourceEntryList/entryId"), null, new FilterChain(geneFb.gene2tid2atidAddonFilter, new UniqueFilter())));
-        featurePathSets.add(new FeaturePathSet(FlattenedRelation.type, Arrays.asList("/rootRelation/specificType"), null, constantTriggerFilter));
+//        featurePathSets.add(new FeaturePathSet(FlattenedRelation.type, Arrays.asList("/rootRelation/specificType"), null, constantTriggerFilter));
         List<PreanalyzedToken> tokens = relationFieldValueGenerator.getTokensForAnnotationIndexes(featurePathSets, null, true, PreanalyzedToken.class, fullTextSpan, null, jCas);
         // We only want the special highlighting term xargumentx for the actual two arguments of the
         // current relation. Thus we need to interlace the argument terms with the sentence terms.
-        addArgumentTokens(tokens, argPair, fullTextSpan.getBegin(), fullTextSpan.getEnd(), relation);
+        addArgumentAndTriggerTokens(tokens, argPair, fullTextSpan.getBegin(), fullTextSpan.getEnd(), relation);
         // First sort by offset. For equal offsets, put the tokens with positionIncrement == 1 first.
         Collections.sort(tokens, Comparator.<PreanalyzedToken>comparingInt(t -> t.start).thenComparing(t -> t.positionIncrement, Comparator.reverseOrder()));
+        if (!tokens.isEmpty() && tokens.get(0).positionIncrement == 0)
+            tokens.get(0).positionIncrement = 1;
         PreanalyzedFieldValue preanalyzedFieldValue = relationFieldValueGenerator.createPreanalyzedFieldValue(fullTextSpan.getCoveredText(), tokens);
-        if (!tokens.isEmpty() && tokens.get(0).positionIncrement <= 0)
-            throw new IllegalStateException("Created a token stream for an annotation of type " + fullTextSpan.getClass().getCanonicalName() + " where the first token has position increment " + tokens.get(0).positionIncrement + ". This is illegal. Token sequence is: " + tokens.stream().map(t -> "[" + t.term + "]" + " " + t.start + "-" + t.end + " i:" + t.positionIncrement).collect(Collectors.joining(" || ")));
+//        if (!tokens.isEmpty() && tokens.get(0).positionIncrement <= 0)
+//            throw new IllegalStateException("Created a token stream for an annotation of type " + fullTextSpan.getClass().getCanonicalName() + " where the first token has position increment " + tokens.get(0).positionIncrement + ". This is illegal. Token sequence is: " + tokens.stream().map(t -> "[" + t.term + "]" + " " + t.start + "-" + t.end + " i:" + t.positionIncrement).collect(Collectors.joining(" || ")));
         return preanalyzedFieldValue;
     }
 
 
-    private void addArgumentTokens(List<PreanalyzedToken> tokens, FeatureStructure[] argPair, int fullTextSpanStart, int fullTextSpanEnd, FlattenedRelation relation) {
+    private void addArgumentAndTriggerTokens(List<PreanalyzedToken> tokens, FeatureStructure[] argPair, int fullTextSpanStart, int fullTextSpanEnd, FlattenedRelation relation) {
         ArgumentMention arg1 = (ArgumentMention) argPair[0];
         ArgumentMention arg2 = (ArgumentMention) argPair[1];
 
@@ -340,6 +343,23 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         token2.end = arg2.getEnd() - fullTextSpanStart;
         token2.positionIncrement = 0;
         token2.term = "xargumentx";
+
+        final EventTrigger trigger = ((EventMention) relation.getRootRelation()).getTrigger();
+        PreanalyzedToken triggerToken = new PreanalyzedToken();
+        triggerToken.start = trigger.getBegin() - fullTextSpanStart;
+        triggerToken.end = trigger.getEnd() - fullTextSpanStart;
+        triggerToken.positionIncrement = 0;
+        triggerToken.term = "xtriggerx";
+
+        final LikelihoodIndicator likelihood = relation.getRootRelation().getLikelihood();
+        PreanalyzedToken likelihoodToken = null;
+        if (!likelihood.getLikelihood().equals("assertion")) {
+            likelihoodToken = new PreanalyzedToken();
+            likelihoodToken.start = likelihood.getBegin() - fullTextSpanStart;
+            likelihoodToken.end = likelihood.getEnd() - fullTextSpanStart;
+            likelihoodToken.positionIncrement = 0;
+            likelihoodToken.term = "xlike"+FieldCreationUtils.likelihoodValues.get(likelihood.getLikelihood())+"x";
+        }
 
         if (token1.start < 0 || token1.end > fullTextSpanEnd - fullTextSpanStart) {
             String docId;
@@ -362,5 +382,8 @@ public class RelationDocumentGenerator extends DocumentGenerator {
 
         tokens.add(token1);
         tokens.add(token2);
+        tokens.add(triggerToken);
+        if (likelihoodToken != null)
+            tokens.add(likelihoodToken);
     }
 }

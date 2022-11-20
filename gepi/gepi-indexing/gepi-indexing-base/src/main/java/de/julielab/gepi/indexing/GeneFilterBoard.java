@@ -45,7 +45,7 @@ public class GeneFilterBoard extends FilterBoard {
         egid2homoPrefNameReplaceFilter = new FilterChain(new ReplaceFilter(egid2tid), new ReplaceFilter(tid2homoPrefName));
         eg2tidReplaceFilter = new ReplaceFilter(egid2tid);
         eg2tophomoFilter = new FilterChain(eg2tidReplaceFilter, new ReplaceFilter(tid2tophomo));
-        eg2famplexFilter = new FilterChain(eg2tidReplaceFilter, new AddonTermsFilter(tid2famplex));
-        eg2hgncFilter = new FilterChain(eg2tidReplaceFilter, new AddonTermsFilter(tid2hgncgroups));
+        eg2famplexFilter = new FilterChain(eg2tophomoFilter, new AddonTermsFilter(tid2famplex));
+        eg2hgncFilter = new FilterChain(eg2tophomoFilter, new AddonTermsFilter(tid2hgncgroups));
     }
 }

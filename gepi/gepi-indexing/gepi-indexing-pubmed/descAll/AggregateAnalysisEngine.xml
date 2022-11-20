@@ -7,15 +7,15 @@
         
     <delegateAnalysisEngineSpecifiers>
                 
-        <delegateAnalysisEngine key="Gazetteer FamPlex Dictionary dev">
+        <delegateAnalysisEngine key="Gazetteer FPLX HGNC Groups Dictionary dev">
                         
-            <import location="Gazetteer FamPlex Dictionary dev.xml"/>
+            <import location="Gazetteer FPLX HGNC Groups Dictionary dev.xml"/>
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="Gazetteer FamPlex Dictionary">
+        <delegateAnalysisEngine key="Gazetteer FPLX HGNC Groups Dictionary">
                         
-            <import location="Gazetteer FamPlex Dictionary.xml"/>
+            <import location="Gazetteer FPLX HGNC Groups Dictionary.xml"/>
                     
         </delegateAnalysisEngine>
                 
@@ -63,9 +63,9 @@
                         
             <fixedFlow>
                                 
-                <node>Gazetteer FamPlex Dictionary dev</node>
+                <node>Gazetteer FPLX HGNC Groups Dictionary dev</node>
                                 
-                <node>Gazetteer FamPlex Dictionary</node>
+                <node>Gazetteer FPLX HGNC Groups Dictionary</node>
                                 
                 <node>GePi Famplex ID Assigner</node>
                                 

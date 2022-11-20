@@ -5,37 +5,55 @@
         
     <primitive>true</primitive>
         
-    <annotatorImplementationName>de.julielab.jcore.ae.likelihoodassignment.LikelihoodAssignmentAnnotator</annotatorImplementationName>
+    <annotatorImplementationName>de.julielab.jcore.ae.acronymtagger.main.AcronymAnnotator</annotatorImplementationName>
         
     <analysisEngineMetaData>
                 
-        <name>JCoRe Likelihood Assignment AE</name>
+        <name>JCoRe AcronymAnnotator</name>
                 
-        <description>Analysis Engine to assign likelihood indicators to their corresponding entities and events.</description>
+        <description/>
                 
         <version>2.6.0-SNAPSHOT</version>
+                
+        <vendor>JULIE Lab Jena, Germany</vendor>
                 
         <configurationParameters>
                         
             <configurationParameter>
                                 
-                <name>AssignmentStrategy</name>
+                <name>ConsistencyAnno</name>
                                 
-                <type>String</type>
+                <description>set true if AcronymAnnotator should annotate every occurence of shortforms in the text</description>
+                                
+                <type>Boolean</type>
                                 
                 <multiValued>false</multiValued>
                                 
-                <mandatory>false</mandatory>
+                <mandatory>true</mandatory>
                             
             </configurationParameter>
                         
             <configurationParameter>
                                 
-                <name>ConceptTypeName</name>
+                <name>MaxLength</name>
                                 
-                <description>The qualified UIMA type name for the concept annotation for which likelihood assignment should be performed. Must be a subclass of de.julielab.jcore.types.ConceptMention. Defaults to de.julielab.jcore.types.ConceptMention.</description>
+                <description>Define how far (how many words, ignoring stopwords) the AE is supposed too look for the beginning of the fullform.</description>
                                 
-                <type>String</type>
+                <type>Integer</type>
+                                
+                <multiValued>false</multiValued>
+                                
+                <mandatory>true</mandatory>
+                            
+            </configurationParameter>
+                        
+            <configurationParameter>
+                                
+                <name>Postprocessing</name>
+                                
+                <description>Activates a post processing that unifies overlapping abbreviations and fullforms.</description>
+                                
+                <type>Boolean</type>
                                 
                 <multiValued>false</multiValued>
                                 
@@ -49,11 +67,11 @@
                         
             <nameValuePair>
                                 
-                <name>AssignmentStrategy</name>
+                <name>ConsistencyAnno</name>
                                 
                 <value>
                                         
-                    <string>next-concept</string>
+                    <boolean>true</boolean>
                                     
                 </value>
                             
@@ -61,11 +79,23 @@
                         
             <nameValuePair>
                                 
-                <name>ConceptTypeName</name>
+                <name>MaxLength</name>
                                 
                 <value>
                                         
-                    <string>de.julielab.jcore.types.EventMention</string>
+                    <integer>5</integer>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>Postprocessing</name>
+                                
+                <value>
+                                        
+                    <boolean>true</boolean>
                                     
                 </value>
                             
@@ -77,11 +107,13 @@
                         
             <imports>
                                 
-                <import name="de.julielab.jcore.types.jcore-semantics-mention-types"/>
+                <import name="de.julielab.jcore.types.jcore-morpho-syntax-types"/>
                             
             </imports>
                     
         </typeSystemDescription>
+                
+        <typePriorities/>
                 
         <fsIndexCollection/>
                 
@@ -91,11 +123,15 @@
                                 
                 <inputs>
                                         
-                    <type>de.julielab.jcore.types.LikelihoodIndicator</type>
+                    <type allAnnotatorFeatures="true">de.julielab.jcore.types.Sentence</type>
                                     
                 </inputs>
                                 
-                <outputs/>
+                <outputs>
+                                        
+                    <type allAnnotatorFeatures="true">de.julielab.jcore.types.Abbreviation</type>
+                                    
+                </outputs>
                                 
                 <languagesSupported/>
                             
@@ -114,5 +150,7 @@
         </operationalProperties>
             
     </analysisEngineMetaData>
+        
+    <resourceManagerConfiguration/>
     
 </analysisEngineDescription>

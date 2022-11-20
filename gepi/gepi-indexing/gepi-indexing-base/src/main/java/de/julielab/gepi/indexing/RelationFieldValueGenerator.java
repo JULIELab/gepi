@@ -165,7 +165,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("source", docId.startsWith("PMC") ? "pmc" : "pubmed");
                             String arg1EntryIdPath = "/ref/resourceEntryList[" + k + "]/entryId";
                             String arg2EntryIdPath = "/ref/resourceEntryList[" + l + "]/entryId";
-                            document.addField("arguments", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter}, null));
+                            document.addField("arguments", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1],argPair[0], argPair[1],argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath,arg1EntryIdPath, arg2EntryIdPath,arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter}, null));
                             document.addField("argumentgeneids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, null, null));
                             document.addField("argumentconceptids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2tidReplaceFilter, geneFb.eg2tidReplaceFilter}, null));
                             document.addField("argumenttophomoids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2tophomoFilter, geneFb.eg2tophomoFilter}, null));

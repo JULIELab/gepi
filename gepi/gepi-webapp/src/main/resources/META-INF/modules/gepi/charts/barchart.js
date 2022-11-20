@@ -10,6 +10,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         numGenesDropdownItemId = 'numgenesdropdown-bar';
         makeOtherBin = false;
         displayPercentages = false;
+        tooltips;
 
         constructor(elementId, widgetSettings) {
             this.elementId = elementId;
@@ -18,9 +19,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         }
 
         setup() {
+            console.log("Bar chart setup up")
             index.getReadySemaphor().done(() => {
                 data.awaitData('acounts', this.widgetSettings.dataSessionId).done(() => {
+                    console.log("Received acounts data")
                     data.awaitData('bcounts', this.widgetSettings.dataSessionId).done(() => {
+                        console.log("received bcounts data")
                         const inputcolReadyPromise = $('#inputcol').data('animationtimer');
                         if (inputcolReadyPromise) {
                             inputcolReadyPromise.done(() => {
@@ -76,6 +80,16 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 this.displayPercentages = !this.displayPercentages;
                 update();
             });
+
+            // Create tooltips for static elements that are not re-drawn.
+            // Tooltips for the chart itself must be re-created after each
+            // redraw() call, see redraw() below.
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll(
+                    '#' + this.numGeneInputId + ',' +
+                    '#' + this.numGenesDropdownItemId + ' li[data-bs-toggle="tooltip"]'))
+                .forEach(i => new Tooltip(i, {
+                    'trigger': 'hover'
+                }));
         }
 
         redraw() {
@@ -91,6 +105,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
             this.drawBarChart('acounts', aCountElId);
             this.drawBarChart('bcounts', bCountElId)
+
+            this.initTooltips();
         }
 
         /*
@@ -112,9 +128,10 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         }
 
         drawBarChart(countType, parentElementId) {
-            let argCounts = data.getData(countType)['argumentcounts'];
-             if (argCounts.length === 0) {
-                $('#'+parentElementId).append('<div class="alert alert-info mx-auto">There is not data to display.</div>');
+            console.log("Drawing bar chart.")
+            let argCounts = data.getData(countType, this.widgetSettings.dataSessionId)['argumentcounts'];
+            if (argCounts.length === 0) {
+                $('#' + parentElementId).append('<div class="alert alert-info mx-auto">There is not data to display.</div>');
                 return;
             }
             const sum = argCounts.reduce((accumulator, value) => accumulator + value[1], 0);
@@ -204,20 +221,20 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
             }
             // text label for the x axis
             svg.append("text")
-                .attr("y", height+margin.top)
-                .attr("x", width/2)
+                .attr("y", height + margin.top)
+                .attr("x", width / 2)
                 .attr("dy", "2em")
                 .style("text-anchor", "middle")
-                .text("NCBI Gene symbol");     
+                .text("NCBI Gene symbol");
 
             // text label for the y axis
             svg.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 0 - margin.left)
-                .attr("x",0 - (height / 2))
+                .attr("x", 0 - (height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
-                .text(this.displayPercentages ? "percent" : "frequency");      
+                .text(this.displayPercentages ? "percent" : "frequency");
 
             // Bars
             svg.selectAll("mybar")
@@ -231,31 +248,28 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 .attr('data-bs-toggle', 'default-tooltip')
                 .attr('title', d => d.label + "<br />count: " + d.value + "<br />fraction: " + (Math.round(100 * d.percentage) + '%'))
                 .attr("fill", "#69b3a2")
-                .on('mouseover', function(d,i) {
+                .on('mouseover', function(d, i) {
                     d3.select(this).transition()
                         .duration('400')
                         .attr('fill', '#518c7f');
                 })
-                .on('mouseout', function(d,i) {
+                .on('mouseout', function(d, i) {
                     d3.select(this).transition()
                         .duration('400')
                         .attr('fill', '#69b3a2');
                 });
-
-                this.initTooltips();
         }
 
+        /*
+         * Create tooltips for chart elements. Is called in redraw() because
+         * tooltips need to be re-created after each redrawing.
+         */
         initTooltips() {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll(
-                '#' + this.numGeneInputId + ',' +
-                '#' + this.numGenesDropdownItemId + ' li[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.forEach(i => new Tooltip(i, {
-                'trigger': 'hover'
-            }));
-
             $('#' + this.elementId + '-outer svg .bar').each(function() {
-                 new Tooltip(this, {html:true})
-             });
+                new Tooltip(this, {
+                    html: true
+                })
+            });
         }
     }
 

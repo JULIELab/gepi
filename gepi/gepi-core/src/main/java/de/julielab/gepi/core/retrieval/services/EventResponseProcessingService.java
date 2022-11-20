@@ -64,6 +64,10 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                     .orElse(Collections.emptyList());
             List<Object> topHomologyIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS)
                     .orElse(Collections.emptyList());
+            List<Object> famplexIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_FAMPLEX_IDS)
+                    .orElse(Collections.emptyList());
+            List<Object> hgncGroupIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_HGNC_GROUP_IDS)
+                    .orElse(Collections.emptyList());
             List<Object> argPrefNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_PREFERRED_NAME)
                     .orElse(Collections.emptyList());
             List<Object> argHomologyPrefNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME)
@@ -80,6 +84,11 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             List<String> sentenceArgumentHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT);
             List<String> sentenceTriggerHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_TRIGGER);
             List<String> sentenceFilterHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_FILTER);
+            List<String> sentenceLikelihood1Hl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_1);
+            List<String> sentenceLikelihood2Hl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_2);
+            List<String> sentenceLikelihood3Hl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_3);
+            List<String> sentenceLikelihood4Hl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_4);
+            List<String> sentenceLikelihood5Hl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_5);
             List<String> paragraphFilterHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH_TEXT_FILTER);
             List<String> geneMappingSources = eventDocument.getFieldValues(FIELD_GENE_MAPPING_SOURCE).orElse(Collections.emptyList()).stream().map(Object::toString).collect(Collectors.toList());
             String eventId = eventDocument.getId();
@@ -90,6 +99,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                 String conceptId = i < conceptIds.size() ? (String) conceptIds.get(i) : null;
                 String geneId = i < geneIds.size() ? (String) geneIds.get(i) : null;
                 String topHomologyId = i < topHomologyIds.size() ? (String) topHomologyIds.get(i) : null;
+                String famplexId = i < famplexIds.size() ? (String) famplexIds.get(i) : null;
+                String hgncGroupId = i < hgncGroupIds.size() ? (String) hgncGroupIds.get(i) : null;
                 String text = i < texts.size() ? StringUtils.normalizeSpace((String) texts.get(i)) : null;
 
                 if (conceptId != null) {
@@ -119,7 +130,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             if (mainEventType.isPresent())
                 event.setMainEventType(mainEventType.get());
             event.setAllEventTypes(allEventTypes.stream().map(String.class::cast).collect(Collectors.toList()));
-            String mergedSentenceHl = mergeHighlighting(sentenceArgumentHl, sentenceTriggerHl, sentenceFilterHl);
+            String mergedSentenceHl = mergeHighlighting(sentenceArgumentHl, sentenceTriggerHl, sentenceFilterHl, sentenceLikelihood1Hl, sentenceLikelihood2Hl, sentenceLikelihood3Hl, sentenceLikelihood4Hl, sentenceLikelihood5Hl);
             if (mergedSentenceHl != null)
                 event.setHlSentence(StringUtils.normalizeSpace(mergedSentenceHl));
             if (sentence.isPresent())

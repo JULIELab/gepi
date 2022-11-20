@@ -32,6 +32,9 @@
                    title="${articleReferenceTitle}">${eventrow.docId}
                 </a>
             </p:docIdCell>
+            <p:factualityCell>
+                <t:output value="${eventrow.factuality}" filter="false" format="contextformat"/>
+            </p:factualityCell>
             <p:contextCell>
                 <t:output value="${eventrow.context}" filter="false" format="contextformat"/>
                 <t:trigger event="updateTableZone"/>

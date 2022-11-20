@@ -32,29 +32,33 @@
             requestedData = new Map();
         }
 
-        function loadData(source, dataSessionId) {
-            parameters = "datasource=" + source + "&dataSessionId=" + dataSessionId;
+        function loadData(sourceName, dataSessionId) {
+            parameters = "datasource=" + sourceName + "&dataSessionId=" + dataSessionId;
             console.log("Loading data with parameters " + parameters + " from " + dataUrl);
-            $.get(dataUrl, parameters, data => setData(source, data));
+            $.get(dataUrl, parameters, data => setData(sourceName, dataSessionId, data));
         }
 
-        function setData(name, dataset) {
-            data.set(name, dataset);
-            console.log("Data for key " + name + " was set, its promise is resolved.");
-            awaitData(name).resolve();
+        function setData(sourceName, dataSessionId, dataset) {
+            data.set(makeDataKey(sourceName, dataSessionId), dataset);
+            console.log("Data for key " + sourceName + " for dataSessionId " + dataSessionId + " was set, its promise is resolved.");
+            awaitData(sourceName, dataSessionId).resolve();
         }
 
-        function getData(name) {
-            return data.get(name);
+        function getData(sourceName, dataSessionId) {
+            return data.get(makeDataKey(sourceName, dataSessionId));
+        }
+
+        function makeDataKey(sourceName, dataSessionId) {
+            return sourceName + "_" + dataSessionId;
         }
 
         function awaitData(sourceName, dataSessionId) {
-            console.log("Data with source name " + sourceName + " was requested for dataSessionId " + dataSessionId);
-            // TODO dataSessionId must be part of the key
-            let promise = requestedData.get(sourceName);
+            const key = makeDataKey(sourceName, dataSessionId);
+            let promise = requestedData.get(key);
             if (!promise) {
+                console.log("Data with source name " + sourceName + " was requested for dataSessionId " + dataSessionId);
                 promise = $.Deferred();
-                requestedData.set(sourceName, promise);
+                requestedData.set(key, promise);
                 loadData(sourceName, dataSessionId);
             } else {
                 console.log("Data with source name " + sourceName + " was already requested for dataSessionId " + dataSessionId + " and is not loaded again.");

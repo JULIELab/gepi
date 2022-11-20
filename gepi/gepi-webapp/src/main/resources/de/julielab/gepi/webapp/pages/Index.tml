@@ -21,15 +21,15 @@
                     <t:if test="requestData">
 <!--                        <div id="widgetOverlay" class="fade ${widgetOverlayShowClass}"/>-->
                         <div class="row">
-                            <t:statswidget class="col-sm-${statsSmColSize} col-lg-${statsLgColSize} col-xxl-${statsXxlColSize} col-xxxl-${statsXxxlColSize} mt-3" requestData="requestData"/>
-                            <t:piechartwidget class="col-sm-${pieSmColSize} col-lg-${pieLgColSize}  col-xxl-${pieXxlColSize} col-xxxl-${pieXxxlColSize} mt-3" requestData="requestData" elementId="piechart"/>
+                            <t:statswidget class="col-sm-12 col-lg-${statsLgColSize} col-xxl-${statsXxlColSize} col-xxxl-${statsXxxlColSize} mt-3" requestData="requestData"/>
+                            <t:piechartwidget class="col-sm-6 col-lg-${pieLgColSize}  col-xxl-${pieXxlColSize} col-xxxl-${pieXxxlColSize} mt-3" requestData="requestData" elementId="piechart"/>
 
 <!--                        </div>-->
 <!--                <div class="row mt-3">-->
                             <t:barchartwidget class="col-sm-6 col-xxl-${barXxlColSize} col-xxxl-${barXxxlColSize} mt-3" requestData="requestData" elementId="barchart"/>
                             <t:sankeywidget class="col-sm-6 col-xxl-${sankeyXxlColSize} col-xxxl-${sankeyXxxlColSize} mt-3" requestData="requestData" elementId="sankeychart"
                                             commonPartners="false"/>
-                            <t:sankeywidget class="col-sm-${sankeyComSmColSize} col-lg-${sankeyComLgColSize} col-xxl-${sankeyXxlColSize} col-xxxl-${sankeyXxxlColSize}  mt-3" requestData="requestData" elementId="sankeychartcommonpartners" commonPartners="true" />
+                            <t:sankeywidget class="col-sm-6 col-lg-${sankeyComLgColSize} col-xxl-${sankeyXxlColSize} col-xxxl-${sankeyXxxlColSize}  mt-3" requestData="requestData" elementId="sankeychartcommonpartners" commonPartners="true" />
                             <!--                            <t:circlewidget class="col-4" requestData="requestData" elementId="circlechart"/>-->
                             <!--                        <t:sankeywidget result="result" class="col-lg-4" elementId="sankeychart" commonPartners="false" />-->
                             <!--                        <t:sankeywidget result="result" class="col-lg-4" elementId="sankeychartcommonpartners" commonPartners="true" />-->

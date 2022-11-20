@@ -65,22 +65,68 @@ public class BeanModelEvent {
     }
 
     public String getFactuality() {
+        String class1;
+        String class2;
+        String class3;
+        String likelihood;
         switch (event.getLikelihood()) {
             case 1:
-                return "negation";
+                class1 = "star-empty";
+                class2 = "star-empty";
+                class3 = "star-empty";
+                likelihood = "negation";
+                break;
             case 2:
-                return "low";
+                class1 = "star-half";
+                class2 = "star-empty";
+                class3 = "star-empty";
+                likelihood = "low";
+            break;
             case 3:
-                return "investigation";
+                class1 = "star-full";
+                class2 = "star-empty";
+                class3 = "star-empty";
+                likelihood = "investigation";
+            break;
             case 4:
-                return "moderate";
+                class1 = "star-full";
+                class2 = "star-half";
+                class3 = "star-empty";
+                likelihood = "moderate";
+            break;
             case 5:
-                return "high";
+                class1 = "star-full";
+                class2 = "star-full";
+                class3 = "star-half";
+                likelihood = "high";
+            break;
             case 6:
-                return "assertion";
+                class1 = "star-full";
+                class2 = "star-full";
+                class3 = "star-full";
+                likelihood = "assertion";
+            break;
             default:
                 throw new IllegalArgumentException("Illegal likelihood ordinal " + event.getLikelihood());
         }
+        return "<div title=\""+likelihood+"\" data-bs-toggle=\"default-tooltip\" class=\"text-center\"><span class=\"symbol-background " + class1 + "\">&nbsp;</span><span class=\"symbol-background " + class2 + "\">&nbsp;</span><span class=\"symbol-background " + class3 + "\">&nbsp;</span></div>";
+
+//        switch (event.getLikelihood()) {
+//            case 1:
+//                return "negation";
+//            case 2:
+//                return "low";
+//            case 3:
+//                return "investigation";
+//            case 4:
+//                return "moderate";
+//            case 5:
+//                return "high";
+//            case 6:
+//                return "assertion";
+//            default:
+//                throw new IllegalArgumentException("Illegal likelihood ordinal " + event.getLikelihood());
+//        }
     }
 
     public String getFirstArgumentTextWithPreferredName() {
@@ -94,7 +140,7 @@ public class BeanModelEvent {
 
     public String getContext() {
         if (!event.isParagraphMatchingFulltextQuery())
-            return "<div><span class=\"info-interaction-sentence\" title=\"sentence of occurrence\" data-bs-toggle=\"default-tooltip\">&nbsp;</span>" + event.getHlSentence() + "</div>";
+            return "<div class=\"ms-4\"><span class=\"info-interaction-sentence\" title=\"sentence of occurrence\" data-bs-toggle=\"default-tooltip\">&nbsp;</span>" + event.getHlSentence() + "</div>";
         StringBuilder paragraphHighlight4display = new StringBuilder();
         final String hlParagraph = event.getHlParagraph().trim();
         final String hlParagraphWoTags = hlParagraph.replaceAll("<[^>]+>", "");
@@ -103,7 +149,7 @@ public class BeanModelEvent {
         paragraphHighlight4display.append(hlParagraph);
         if (!Pattern.matches("\\p{Punct}", String.valueOf(hlParagraphWoTags.charAt(hlParagraphWoTags.length() - 1))))
             paragraphHighlight4display.append("...");
-        return "<div><span class=\"info-interaction-sentence\" title=\"sentence of occurrence\" data-bs-toggle=\"default-tooltip\">&nbsp;</span>" + event.getHlSentence() + "</div><div><span class=\"info-paragraph-match\" title=\"paragraph-level full text filter match\" data-bs-toggle=\"default-tooltip\">&nbsp;</span>" + paragraphHighlight4display + "</div>";
+        return "<div class=\"ms-4\"><div><span class=\"info-interaction-sentence\" title=\"sentence of occurrence\" data-bs-toggle=\"default-tooltip\">&nbsp;</span>" + event.getHlSentence() + "</div><div><span class=\"info-paragraph-match\" title=\"paragraph-level full text filter match\" data-bs-toggle=\"default-tooltip\">&nbsp;</span>" + paragraphHighlight4display + "</div></div>";
     }
 
     public String getSecondArgumentTextWithPreferredName() {
