@@ -1,0 +1,22 @@
+Extract here the original archives for the BioCreative2,
+BioCreative3 and NLM-Gene corpora.
+The JULIE Lab GNormPlus processing pipelines link to this location.
+
+Of note, for BioCreative3 evaluation  the evaluation files are downloaded
+separately from BioCreative in the GNTestEval.zip archive.
+
+Note for NLM-Gene corpus: The official download from 2021
+consists of documents in BioC format. That format is not
+used here because the 2021 BioC release seems to miss
+a significant amount of annotations in comparison
+to the non-public version in PubTator format. The
+PubTator version was used for the evaluations in the
+NLM-Gene paper and also for the GePI paper. The PubTator
+version was obtained by contacting the authors when
+internal evaluations of GNormPlus did not reproduce
+the results from the NLM-Gene paper.
+Thus, be careful to either obtain an updated version
+of the official corpus - which did not exist as of
+November 2022 - or request the PubTator format corpus
+from the GNormPlus developers.
+

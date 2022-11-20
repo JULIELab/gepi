@@ -1,0 +1,39 @@
+# Pipeline output data
+**/data/output-bioc/
+
+# GNormPlus resources (see comment in linkGNormPlusResources.sh)
+**/Ab3P
+**/BioC.dtd
+**/CRF
+**/Dictionary
+**/Library
+**/identify_abbr
+**/path_Ab3P 
+**/tmBioC.key
+
+# Corpus files
+corpora/BC3GNTest                    
+corpora/BC3GNTest.zip
+# BC3 gold gene lists
+corpora/GNTestEval
+corpora/GNTestEval.zip
+corpora/NLM-Gene.zip
+corpora/NLMGene_Test.txt
+corpora/NLMGene_Train.txt
+corpora/bc2GNtest
+
+# Pipeline library files (must be downloaded via the JCoRe Pipeline Builder)
+**/lib
+# Pipeline error reports
+**/pipeline-error
+# Pipeline temporary files
+*-processing/evaluation
+*-processing/jcore-gnp-tmp
+*-processing/tmp
+# Pipeline miscellaneous
+*-processing/missing_configuration.txt
+
+
+# Utility programs for pipeline running and evaluation (downloaded by the
+# evaluation script when needed)
+*.jar
