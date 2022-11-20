@@ -1,0 +1,20 @@
+{
+    "categories": [
+        "ae"
+    ],
+    "description": "Given the gold BioNLP ST gene mentions and other gene mentions - possibly from gene recognizer - merges the two different sources of genes. For simplicity, this component employs two different types to represent genes. The BioNLP ST reader uses the de.julielab.jcore.types.Gene type. The other genes should be realized with de.julielab.jcore.types.Protein annotations.",
+    "descriptors": [
+        {
+            "category": "ae",
+            "location": "de.julielab.jcore.ae.bionlpgenesmerger.desc.jcore-bionlpgold-pred-gene-merge-ae"
+        }
+    ],
+    "exposable": true,
+    "group": "general",
+    "maven-artifact": {
+        "artifactId": "jcore-bionlpgold-pred-gene-merge-ae",
+        "groupId": "de.julielab",
+        "version": "2.6.0-SNAPSHOT"
+    },
+    "name": "JCoRe BioNLP Gold and Predicted Genes Merge AE"
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>
+  <annotatorImplementationName>de.julielab.jcore.ae.bionlpgenesmerger.BioNLPGeneMerger</annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>JCoRe BioNLP Gold and Predicted Genes Merge AE</name>
+    <description>Given the gold BioNLP ST gene mentions and other gene mentions - possibly from gene recognizer - merges the two different sources of genes. For simplicity, this component employs two different types to represent genes. The BioNLP ST reader uses the de.julielab.jcore.types.Gene type. The other genes should be realized with de.julielab.jcore.types.Protein annotations.</description>
+    <vendor>JULIE Lab Jena, Germany</vendor>
+    <configurationParameters/>
+    <configurationParameterSettings/>
+    <typeSystemDescription>
+      <imports>
+        <import name="de.julielab.jcore.types.jcore-semantics-biology-types"/>
+      </imports>
+    </typeSystemDescription>
+    <fsIndexCollection/>
+    <capabilities>
+      <capability>
+        <inputs>
+          <type>de.julielab.jcore.types.Gene</type>
+          <type>de.julielab.jcore.types.Protein</type>
+        </inputs>
+        <outputs>
+          <type>de.julielab.jcore.types.Gene</type>
+        </outputs>
+        <languagesSupported/>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+</analysisEngineDescription>
