@@ -42,8 +42,9 @@ public class RelationFieldValueGeneratorTest {
         header.setDocId("doc1");
         header.addToIndexes();
         jCas.setDocumentText("Gene1 regulates gene2.");
-        ArgumentMention a1 = createGeneArgument(jCas, 0, 5, "id1");
-        ArgumentMention a2 = createGeneArgument(jCas, 16, 21, "id2");
+        // We assign id2 first to test that the aggregation term creation successfully sorts the values
+        ArgumentMention a1 = createGeneArgument(jCas, 0, 5, "id2");
+        ArgumentMention a2 = createGeneArgument(jCas, 16, 21, "id1");
 
         FlattenedRelation rel = new FlattenedRelation(jCas);
         rel.setArguments(JCoReTools.addToFSArray(null, List.of(a1, a2)));
@@ -58,9 +59,10 @@ public class RelationFieldValueGeneratorTest {
         assertThat(docs).hasSize(1);
         Document doc = (Document) docs.get(0);
 
-        assertThat(doc.get("argumentgeneids").toString()).isEqualTo("[id1, id2]");
-        assertThat(doc.get("argument1geneid").toString()).isEqualTo("id1");
-        assertThat(doc.get("argument2geneid").toString()).isEqualTo("id2");
+        assertThat(doc.get("argumentgeneids").toString()).isEqualTo("[id2, id1]");
+        assertThat(doc.get("aggregationvalue").toString()).isEqualTo("id1---id2");
+        assertThat(doc.get("argument1geneid").toString()).isEqualTo("id2");
+        assertThat(doc.get("argument2geneid").toString()).isEqualTo("id1");
         assertThat(doc.get("maineventtype").toString()).isEqualTo("regulation");
     }
 

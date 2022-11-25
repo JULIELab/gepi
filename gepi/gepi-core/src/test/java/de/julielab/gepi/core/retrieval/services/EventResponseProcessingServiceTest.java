@@ -31,18 +31,6 @@ public class EventResponseProcessingServiceTest {
         assertThat(event.getHlSentence()).isEqualTo("These results suggest that CINC produced in the pleural exudate may participate in <em class=\"hl-filter\">neutrophil</em> <em class=\"hl-filter\">infiltration</em>, that IL-6 <em class=\"hl-trigger\">induced</em> in the plasma <em class=\"hl-trigger\">stimulates</em> T-kininogen production, and that endogenous <em class=\"hl-argument\">TNF</em> may be partly <em class=\"hl-trigger\">involved</em> in the induction of CINC and <em class=\"hl-argument\">IL-6</em> in this zymosan inflammation.");
     }
 
-    @Test
-    public void highlightMerging2() {
-        final EventResponseProcessingService service = new EventResponseProcessingService(LoggerFactory.getLogger(EventPostProcessingService.class));
-        final Map<String, List<String>> sentenceHighlights = Map.of(EventRetrievalService.FIELD_EVENT_SENTENCE_TEXT, List.of("In addition, <em class=\"hl-argument\">FGFR4</em>-signaling activated the oncogenic SRC, ERK1/2 and <em class=\"hl-argument\">AKT</em> pathways in colon cancer cells and promoted an increase in cell survival."),
-                EventRetrievalService.FIELD_EVENT_SENTENCE_TEXT_TRIGGER, List.of("This decrease in the tumorigenic and invasive capabilities of colorectal cancer cells was accompanied by a <em class=\"hl-trigger\">decrease</em> of Snail, Twist and TGFβ gene <em class=\"hl-trigger\">expression</em> levels and an <em class=\"hl-trigger\">increase</em> of E-cadherin, causing a reversion to a more epithelial phenotype, in three different cell lines."));
-        final EventRetrievalResult result = service.getEventRetrievalResult(getESResponseWithHighlighting(sentenceHighlights));
-        assertThat(result.getEventList()).isNotNull().isNotEmpty();
-        final Event event = result.getEventList().get(0);
-        assertThat(event.getHlSentence()).isEqualTo("");
-    }
-
-
     private IElasticServerResponse getESResponseWithHighlighting(Map<String, List<String>> sentenceHighlights) {
         final IElasticServerResponse response = Mockito.mock(IElasticServerResponse.class, inv -> null);
 
