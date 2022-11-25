@@ -57,8 +57,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         try {
             int i = 0;
             for (FlattenedRelation rel : jCas.<FlattenedRelation>getAnnotationIndex(FlattenedRelation.type)) {
-                // exclude events where arguments are FamilyNames for now; we don't have IDs for them yet
-                if (rel.getArguments().size() > 1) {
+                if (rel.getArguments().size() > 0) {
                     ArrayFieldValue relationPairDocuments = (ArrayFieldValue) relationFieldValueGenerator.generateFieldValue(rel);
                     for (IFieldValue fv : relationPairDocuments) {
                         Document relDoc = (Document) fv;

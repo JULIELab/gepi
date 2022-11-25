@@ -12,6 +12,7 @@ import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.types.pubmed.Header;
 import de.julielab.jcore.types.pubmed.OtherID;
+import de.julielab.jcore.utility.JCoReTools;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.util.JCasUtil;
@@ -106,12 +107,28 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
         FlattenedRelation rel = (FlattenedRelation) fs;
         FSArray allArguments = rel.getArguments();
         LikelihoodIndicator likelihood = rel.getRootRelation().getLikelihood();
-        // Only a temporary solution: Set some rather arbitrary ID to family names so we can create relation documents from them
+        JCas jCas;
+        ArgumentMention mockArgument;
+        try {
+            jCas = rel.getCAS().getJCas();
+            // a static mock interaction partner for unary events
+            mockArgument = getMockArgument(jCas);
+        } catch (CASException e) {
+            throw new FieldGenerationException(e);
+        }
+        //  Set some rather arbitrary ID to family names so we can create relation documents from them
         // without causing exceptions. Family event partners can then be found in A-searches, at least
         setMockIdToFamilies(rel);
-        for (int i = 0; i < allArguments.size() - 1; ++i) {
-            for (int j = i + 1; j < allArguments.size(); ++j) {
-                FeatureStructure[] argPair = new FeatureStructure[]{allArguments.get(i), allArguments.get(j)};
+        for (int i = 0; i < allArguments.size(); ++i) {
+            for (int j = i; j < allArguments.size(); ++j) {
+                FeatureStructure[] argPair;
+                // is this a unary event?
+                if (j == i && allArguments.size() == 1)
+                    argPair = new FeatureStructure[]{allArguments.get(i), mockArgument};
+                else if (j > i)
+                    argPair = new FeatureStructure[]{allArguments.get(i), allArguments.get(j)};
+                else
+                    continue;
 
                 // Check if all arguments have been successfully mapped and if not, reject the argument pair
                 boolean argumentWithoutId = false;
@@ -139,7 +156,6 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     continue;
 
 
-
                 final Gene arg1Gene = (Gene) ((ArgumentMention) argPair[0]).getRef();
                 final Gene arg2Gene = (Gene) ((ArgumentMention) argPair[1]).getRef();
                 // An older version of the GNormPlus BioC Format reader did not set the Gene#componentId feature, so fall back to the resource entry, if necessary
@@ -154,7 +170,6 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                     for (int l = 0; l < arg2ResourceEntries.size() && arg2ResourceEntries.get(l) != null; ++l) {
                         Document document = new Document();
                         try {
-                            JCas jCas = rel.getCAS().getJCas();
                             String docId = getDocumentId(jCas);
                             FieldCreationUtils.addDocumentId(document, rel);
                             if (likelihood != null)
@@ -165,7 +180,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("source", docId.startsWith("PMC") ? "pmc" : "pubmed");
                             String arg1EntryIdPath = "/ref/resourceEntryList[" + k + "]/entryId";
                             String arg2EntryIdPath = "/ref/resourceEntryList[" + l + "]/entryId";
-                            document.addField("arguments", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1],argPair[0], argPair[1],argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath,arg1EntryIdPath, arg2EntryIdPath,arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter}, new UniqueFilter()));
+                            document.addField("arguments", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter}, new UniqueFilter()));
                             document.addField("argumentgeneids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, null, null));
                             document.addField("argumentconceptids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2tidReplaceFilter, geneFb.eg2tidReplaceFilter}, null));
                             document.addField("argumenttophomoids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2tophomoFilter, geneFb.eg2tophomoFilter}, null));
@@ -186,7 +201,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argument1homoprefname", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter));
                             document.addField("argument1matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                             document.addField("argument1genesource", createRawFieldValueForAnnotation(argPair[0], "/ref/componentId", geneComponentIdProcessingfilter));
-                            document.addField("argument1genemappingsource", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList["+k+"]/componentId", geneComponentIdProcessingfilter));
+                            document.addField("argument1genemappingsource", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList[" + k + "]/componentId", geneComponentIdProcessingfilter));
                             document.addField("argument2", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.gene2tid2atidAddonFilter));
                             document.addField("argument2geneid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, null));
                             document.addField("argument2conceptid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tidReplaceFilter));
@@ -198,13 +213,13 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argument2homoprefname", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter));
                             document.addField("argument2matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                             document.addField("argument2genesource", createRawFieldValueForAnnotation(argPair[1], "/ref/componentId", geneComponentIdProcessingfilter));
-                            document.addField("argument2genemappingsource", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList["+k+"]/componentId", geneComponentIdProcessingfilter));
+                            document.addField("argument2genemappingsource", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList[" + k + "]/componentId", geneComponentIdProcessingfilter));
                             document.addField("maineventtype", createRawFieldValueForAnnotation(rel.getRootRelation(), "/specificType", null));
                             document.addField("alleventtypes", Stream.of(rel.getRelations().toArray()).map(EventMention.class::cast).map(EventMention::getSpecificType).collect(Collectors.toSet()).toArray());
                             document.addField("containsfamily", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(ConceptMention::getSpecificType).anyMatch(st -> "FamilyName".equals(st) || "protein_familiy_or_group".equals(st)));
                             // reduce the short to the last element to make things a bit shorter (often, the component IDs are the fully qualified Java class name)
                             document.addField("relationsource", rel.getRootRelation().getComponentId());
-                            document.addField("genemappingsource", createRawFieldValueForParallelAnnotations(argPair, new String[]{"/ref/resourceEntryList["+k+"]/componentId", "/ref/resourceEntryList["+l+"]/componentId"}, null, geneComponentIdProcessingfilter));
+                            document.addField("genemappingsource", createRawFieldValueForParallelAnnotations(argPair, new String[]{"/ref/resourceEntryList[" + k + "]/componentId", "/ref/resourceEntryList[" + l + "]/componentId"}, null, geneComponentIdProcessingfilter));
                             document.addField("genesource", createRawFieldValueForAnnotations(argPair, new String[]{"/ref/componentId"}, null, geneComponentIdProcessingfilter));
                             document.addField("mixedgenesource", !arg1Gene.getComponentId().equals(arg2Gene.getComponentId()));
                             document.addField("mixedgenemappingsource", !arg1Gene.getResourceEntryList(k).getComponentId().equals(arg2Gene.getResourceEntryList(l).getComponentId()));
@@ -222,6 +237,17 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
             }
         }
         return relDocs;
+    }
+
+    private ArgumentMention getMockArgument(JCas jCas) {
+        final Gene gene = new Gene(jCas);
+        final ResourceEntry re = new ResourceEntry(jCas);
+        re.setEntryId("dummy");
+        re.setSource(getClass().getSimpleName() + " dummy interaction partner for a unary event.");
+        gene.setResourceEntryList(JCoReTools.addToFSArray(null, re));
+        final ArgumentMention argument = new ArgumentMention(jCas);
+        argument.setRef(gene);
+        return argument;
     }
 
     private String reduceToLastDottedPathElement(String dottedPath) {
