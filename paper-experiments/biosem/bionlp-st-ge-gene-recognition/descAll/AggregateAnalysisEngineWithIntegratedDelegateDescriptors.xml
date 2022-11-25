@@ -7,7 +7,97 @@
         
     <delegateAnalysisEngineSpecifiers>
                 
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.gnp.GNormPlusAnnotator-0">
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.annotationremoval.AnnotationRemovalAnnotator-0">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.annotationremoval.AnnotationRemovalAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>Event Annotation Remover</name>
+                                        
+                    <description>Removes annotations from the CAS that belong to one of the types specified as a parameter value in the descriptor.</description>
+                                        
+                    <version>2.6.0</version>
+                                        
+                    <vendor>JULIE Lab Jena, Germany</vendor>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>AnnotationTypes</name>
+                                                        
+                            <description>List of qualified UIMA type names for which all annotations should be removed from each CAS.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>true</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>AnnotationTypes</name>
+                                                        
+                            <value>
+                                                                
+                                <array>
+                                                                        
+                                    <string>de.julielab.jcore.types.EventTrigger</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.EventMention</string>
+                                                                    
+                                </array>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-all-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities/>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.gnp.GNormPlusAnnotator-1">
                         
             <analysisEngineDescription>
                                 
@@ -29,9 +119,9 @@
                                                 
                         <configurationParameter>
                                                         
-                            <name>AddGenes</name>
+                            <name>UseExistingGeneAnnotations</name>
                                                         
-                            <description>If set to true, all Gene annotations in the CAS will be added to the BioC documents. The default type used is de.julielab.jcore.types.Gene. This can be changed with the GeneTypeName parameter.</description>
+                            <description>If set to true, all Gene annotations in the CAS will be added to the BioC documents. The default type used is de.julielab.jcore.types.Gene. This can be changed with the InputGeneTypeName parameter.</description>
                                                         
                             <type>Boolean</type>
                                                         
@@ -43,9 +133,23 @@
                                                 
                         <configurationParameter>
                                                         
-                            <name>GeneTypeName</name>
+                            <name>InputGeneTypeName</name>
                                                         
-                            <description>The UIMA type denoting gene annotations that should be written into the BioC format when the AddGenes parameter is set to true.</description>
+                            <description>The UIMA type denoting gene annotations that should be taken from the CAS and written into the BioC format for GNormPlus to use instead of running its own gene recognition when the UseExistingGeneAnnotations parameter is set to true.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>OutputGeneTypeName</name>
+                                                        
+                            <description>The UIMA type denoting gene annotations that should be created by this component. Must by a sub type of de.julielab.jcore.types.ConceptMention. Defaults to de.julielab.jcore.types.Gene.</description>
                                                         
                             <type>String</type>
                                                         
@@ -103,7 +207,7 @@
                                                 
                         <nameValuePair>
                                                         
-                            <name>AddGenes</name>
+                            <name>UseExistingGeneAnnotations</name>
                                                         
                             <value>
                                                                 
@@ -115,7 +219,7 @@
                                                 
                         <nameValuePair>
                                                         
-                            <name>GeneTypeName</name>
+                            <name>OutputGeneTypeName</name>
                                                         
                             <value>
                                                                 
@@ -179,7 +283,7 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.bionlpgenesmerger.BioNLPGeneMerger-1">
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.bionlpgenesmerger.BioNLPGeneMerger-2">
                         
             <analysisEngineDescription>
                                 
@@ -252,6 +356,160 @@
             </analysisEngineDescription>
                     
         </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.biosem.BioSemEventAnnotator-3">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.biosem.BioSemEventAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>JCoRe BioSem Event Annotator</name>
+                                        
+                    <description>Adds annotations for event triggers and events according to the BioNLP Shared Task event definition.</description>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>ComponentId</name>
+                                                        
+                            <description>Optional. If set, the 'componentId' feature of the created annotations will be set to the value of this parameter.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>ComponentId</name>
+                                                        
+                            <value>
+                                                                
+                                <string>BioSemEventAnnotator</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-semantics-biology-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type>de.julielab.jcore.types.Gene</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs>
+                                                                
+                                <type>de.julielab.jcore.types.EventTrigger</type>
+                                                                
+                                <type>de.julielab.jcore.types.EventMention</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                                
+                <externalResourceDependencies>
+                                        
+                    <externalResourceDependency>
+                                                
+                        <key>TrainedDB</key>
+                                                
+                        <description>The BioSem database in which triggers and event rules have been learned. New predictions are made based on the rules in this database.</description>
+                                                
+                        <interfaceName>de.julielab.jcore.ae.biosem.DBUtilsProvider</interfaceName>
+                                                
+                        <optional>false</optional>
+                                            
+                    </externalResourceDependency>
+                                    
+                </externalResourceDependencies>
+                                
+                <resourceManagerConfiguration>
+                                        
+                    <externalResources>
+                                                
+                        <externalResource>
+                                                        
+                            <name>TrainedDB</name>
+                                                        
+                            <description/>
+                                                        
+                            <fileResourceSpecifier>
+                                                                
+                                <fileUrl>file:config/biosemconfig.properties</fileUrl>
+                                                            
+                            </fileResourceSpecifier>
+                                                        
+                            <implementationName>de.julielab.jcore.ae.biosem.DBUtilsProviderImpl</implementationName>
+                                                    
+                        </externalResource>
+                                            
+                    </externalResources>
+                                        
+                    <externalResourceBindings>
+                                                
+                        <externalResourceBinding>
+                                                        
+                            <key>TrainedDB</key>
+                                                        
+                            <resourceName>TrainedDB</resourceName>
+                                                    
+                        </externalResourceBinding>
+                                            
+                    </externalResourceBindings>
+                                    
+                </resourceManagerConfiguration>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
             
     </delegateAnalysisEngineSpecifiers>
         
@@ -267,9 +525,13 @@
                         
             <fixedFlow>
                                 
-                <node>de.julielab.jcore.ae.gnp.GNormPlusAnnotator-0</node>
+                <node>de.julielab.jcore.ae.annotationremoval.AnnotationRemovalAnnotator-0</node>
                                 
-                <node>de.julielab.jcore.ae.bionlpgenesmerger.BioNLPGeneMerger-1</node>
+                <node>de.julielab.jcore.ae.gnp.GNormPlusAnnotator-1</node>
+                                
+                <node>de.julielab.jcore.ae.bionlpgenesmerger.BioNLPGeneMerger-2</node>
+                                
+                <node>de.julielab.jcore.ae.biosem.BioSemEventAnnotator-3</node>
                             
             </fixedFlow>
                     

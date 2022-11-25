@@ -7,6 +7,12 @@
         
     <delegateAnalysisEngineSpecifiers>
                 
+        <delegateAnalysisEngine key="Event Annotation Remover">
+                        
+            <import location="Event Annotation Remover.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
         <delegateAnalysisEngine key="JCoRe GNormPlus Annotator">
                         
             <import location="JCoRe GNormPlus Annotator.xml"/>
@@ -16,6 +22,12 @@
         <delegateAnalysisEngine key="JCoRe BioNLP Gold and Predicted Genes Merge AE">
                         
             <import location="JCoRe BioNLP Gold and Predicted Genes Merge AE.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="JCoRe BioSem Event Annotator">
+                        
+            <import location="JCoRe BioSem Event Annotator.xml"/>
                     
         </delegateAnalysisEngine>
             
@@ -35,9 +47,13 @@
                         
             <fixedFlow>
                                 
+                <node>Event Annotation Remover</node>
+                                
                 <node>JCoRe GNormPlus Annotator</node>
                                 
                 <node>JCoRe BioNLP Gold and Predicted Genes Merge AE</node>
+                                
+                <node>JCoRe BioSem Event Annotator</node>
                             
             </fixedFlow>
                     

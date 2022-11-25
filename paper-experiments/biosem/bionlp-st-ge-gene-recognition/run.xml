@@ -4,8 +4,8 @@
         <runner>
             <name>CPERunner</name>
             <pipelinepath>.</pipelinepath>
-            <numthreads>1</numthreads>
-            <heapsize>12G</heapsize>
+            <numthreads>5</numthreads>
+            <heapsize>15G</heapsize>
             <numtoprocess/>
             <jvmoptions/>
         </runner>

@@ -28,7 +28,7 @@
 # tasks. Unfortunately, this is a C++ program and must be built depending
 # on the running environment. You will need to download the official GNormPlus
 # and follow the CRF++ build instructions. If you use the JULIE Lab resources,
-# copy the CRF++ folder from the GNormPlus distribution into the extracted
+# copy the "CRF" folder from the GNormPlus distribution into the extracted
 # JULIE Lab GNormPlus resources directory after the CRF++ program was built.
 
 set -eu
