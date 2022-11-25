@@ -1,5 +1,7 @@
 package de.julielab.gepi.indexing;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import de.julielab.jcore.consumer.es.*;
 import de.julielab.jcore.consumer.es.filter.ConstantOutputFilter;
 import de.julielab.jcore.consumer.es.filter.FilterChain;
@@ -9,6 +11,7 @@ import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.types.pubmed.OtherID;
 import de.julielab.jcore.utility.JCoReTools;
+import de.julielab.jcore.utility.index.JCoReOverlapAnnotationIndex;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.text.AnnotationFS;
@@ -47,6 +50,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     @Override
     public List<Document> createDocuments(JCas jCas) throws FieldGenerationException {
         List<Document> relDocs = new ArrayList<>();
+        Multimap<Sentence, Document> sentence2relDocs = HashMultimap.create();
         String docId = getDocumentId(jCas);
         Map<FlattenedRelation, Collection<Zone>> zoneIndex = JCasUtil.indexCovering(jCas, FlattenedRelation.class, Zone.class);
         Map<FlattenedRelation, Collection<Sentence>> sentIndex = JCasUtil.indexCovering(jCas, FlattenedRelation.class, Sentence.class);
@@ -66,8 +70,8 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                         Document sentenceDocument = null;
                         Collection<Sentence> overlappingSentences = sentIndex.get(rel);
                         if (argPairLiesWithinSentence(overlappingSentences, argPair)) {
-                            if (!overlappingSentences.isEmpty())
-                                sentenceDocument = createSentenceDocument(jCas, docId, i, overlappingSentences.stream().findAny().get(), argPair, rel);
+                            Sentence overlappingSentence = overlappingSentences.stream().findAny().get();
+                            sentenceDocument = createSentenceDocument(jCas, docId, i, overlappingSentence, argPair, rel);
                             // Likewise for the paragraph-like containing annotation of the relation
                             Document paragraphDocument = createParagraphDocument(jCas, docId, rel, argPair, zoneIndex);
 
@@ -81,6 +85,8 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                             relDoc.addField("paragraph", paragraphDocument);
 
                             relDocs.add(relDoc);
+                            if (overlappingSentence != null)
+                                sentence2relDocs.put(overlappingSentence, relDoc);
                         }
                     }
                 }
@@ -90,9 +96,89 @@ public class RelationDocumentGenerator extends DocumentGenerator {
             throw new FieldGenerationException(e);
         }
         mergeEqualRelDocs(relDocs);
+        filterAbbreviationDuplicates(sentence2relDocs, jCas);
         // remove the temporary field for the UIMA argument objects
         relDocs.forEach(d -> d.remove("ARGUMENT_FS"));
         return relDocs;
+    }
+
+    /**
+     * <p>Abbreviations consist of a long form immediately followed be the short form. This can cause duplicates of events that actually refer to the same entity. We here recognize such cases and remove the event that refers to the short form.</p>
+     * <p>This is done only if the short and long form genes have both received the same IDs.</p>
+     *
+     * @param sentence2relDocs
+     * @param jCas
+     */
+    private void filterAbbreviationDuplicates(Multimap<Sentence, Document> sentence2relDocs, JCas jCas) {
+        if (!sentence2relDocs.isEmpty()) {
+            JCoReOverlapAnnotationIndex<Abbreviation> abbreviationIndex = new JCoReOverlapAnnotationIndex<>(jCas, Abbreviation.type);
+            // Since event arguments can only occur in the same sentence we restrict ourselves to search duplicates within sentence boundaries.
+            for (Sentence sentence : sentence2relDocs.keySet()) {
+                Collection<Document> relDocs = sentence2relDocs.get(sentence);
+                if (!relDocs.isEmpty()) {
+                    // create a key consisting of the argument offsets, the mapped argument IDs and the main relation type.
+                    // We deem events to be equal that have those values in common (in this order).
+                    Map<String, Document> key2doc = new HashMap<>();
+                    Iterator<Document> docIt = relDocs.iterator();
+                    List<Document> documentsToRemove = new ArrayList<>();
+                    while (docIt.hasNext()) {
+                        Document document = docIt.next();
+                        String key = buildRelationKey(document, false);
+                        // Now use the key to find relations that have been extracted from multiple combinations of gene tagger, gene mapper and event extractor
+                        Document existingDoc = key2doc.get(key);
+                        if (existingDoc != null) {
+                            FeatureStructure[] argPair1 = ((ArrayFieldValue) existingDoc.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
+                            Gene g11 = (Gene) ((ArgumentMention) argPair1[0]).getRef();
+                            Gene g12 = (Gene) ((ArgumentMention) argPair1[1]).getRef();
+
+                            FeatureStructure[] argPair2 = ((ArrayFieldValue) document.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
+                            Gene g21 = (Gene) ((ArgumentMention) argPair2[0]).getRef();
+                            Gene g22 = (Gene) ((ArgumentMention) argPair2[1]).getRef();
+
+                            // compare first arguments in both directions
+                            boolean g11LF4g21 = isAbbreviationLongFormOf(g11, g21, abbreviationIndex);
+                            boolean g21LF4g11 = isAbbreviationLongFormOf(g21, g11, abbreviationIndex);
+                            // compare second arguments in both directions
+                            boolean g12LF4g22 = isAbbreviationLongFormOf(g12, g22, abbreviationIndex);
+                            boolean g22LF4g12 = isAbbreviationLongFormOf(g22, g12, abbreviationIndex);
+
+                            // Check if one of the arguments of the existingDoc - "doc1" - is a long form for the respective
+                            // argument of the current document, "doc2"
+                            // Then we would want to remove the current document because that would be the short form argument
+                            if (g11LF4g21 || g12LF4g22) {
+                                docIt.remove();
+                            } else if (g21LF4g11 || g22LF4g12) {
+                                key2doc.remove(key);
+                                key2doc.put(key, document);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * <p>Tests whether <tt>g1</tt> is the abbreviation long form of the abbreviation <tt>g2</tt> in the abbreviation definition expression.</p>
+     *
+     * @param g1
+     * @param g2
+     * @return
+     */
+    private boolean isAbbreviationLongFormOf(Gene g1, Gene g2, JCoReOverlapAnnotationIndex<Abbreviation> abbreviationIndex) {
+        final List<Abbreviation> abbreviations = abbreviationIndex.search(g2);
+        if (!abbreviations.isEmpty()) {
+            final Abbreviation abbreviation = abbreviations.get(0);
+            if (abbreviation.getDefinedHere()) {
+                final AbbreviationLongform longform = abbreviation.getTextReference();
+                // check if the longform overlaps the first gene
+                if (g1.getBegin() <= longform.getEnd() && g1.getEnd() >= longform.getBegin()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void mergeEqualRelDocs(List<Document> relDocs) {
@@ -102,18 +188,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         Iterator<Document> docIt = relDocs.iterator();
         while (docIt.hasNext()) {
             Document document = docIt.next();
-            FeatureStructure[] argPair = ((ArrayFieldValue) document.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
-            StringBuilder keyBuilder = new StringBuilder();
-            for (FeatureStructure fs : argPair) {
-                ArgumentMention am = (ArgumentMention) fs;
-                Gene g = (Gene) am.getRef();
-                keyBuilder.append(g.getBegin());
-                keyBuilder.append(g.getEnd());
-                keyBuilder.append(document.get("argument1geneid").toString());
-                keyBuilder.append(document.get("argument2geneid").toString());
-            }
-            keyBuilder.append(((RawToken) document.get("maineventtype")).getTokenValue().toString());
-            String key = keyBuilder.toString();
+            String key = buildRelationKey(document, true);
             // Now use the key to find relations that have been extracted from multiple combinations of gene tagger, gene mapper and event extractor
             Document existingDoc = key2doc.get(key);
             if (existingDoc != null) {
@@ -145,9 +220,25 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                 final TreeSet<RawToken> geneMappingSourceSet = geneMappingSourceValues.stream().map(RawToken.class::cast).collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(t -> t.getTokenValue().toString()))));
                 geneMappingSourceValues = new ArrayFieldValue(new ArrayList<>(geneMappingSourceSet));
 
+                // This actually sets a new field value instead of "adding" it because Document is a HashMap.
                 existingDoc.addField("relationsource", relationSourceValues);
                 existingDoc.addField("genesource", geneSourceValues);
                 existingDoc.addField("genemappingsource", geneMappingSourceValues);
+
+                final boolean existingMixedgenesource = Boolean.parseBoolean(existingDoc.get("mixedgenesource").toString());
+                final boolean existingMixedmappingsource = Boolean.parseBoolean(existingDoc.get("mixedgenemappingsource").toString());
+
+                final boolean currentMixedgenesource =    Boolean.parseBoolean(document.get("mixedgenesource").toString());
+                final boolean currentMixedmappingsource = Boolean.parseBoolean(document.get("mixedgenemappingsource").toString());
+
+                // It is not straight forward which value the merged document should get when one relation was mixed and the other was not.
+                // One can basically just decide: Is "mixed" dominant or "not mixed"? I.e. when one is mixed and the other
+                // is not, is the result mixed or is it not?
+                // We decide to make "not mixed" dominant. That means, if one single tagger found both arguments and
+                // assigned both IDs, there was a consent. Thus, for the merged result to be mixed, both original
+                // relations had to be mixed.
+                existingDoc.addField("mixedgenesource", existingMixedgenesource && currentMixedgenesource);
+                existingDoc.addField("mixedgenemappingsource", existingMixedmappingsource && currentMixedmappingsource);
 
                 // discard the current document as it has been merged into the existing one
                 docIt.remove();
@@ -155,6 +246,33 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                 key2doc.put(key, document);
             }
         }
+    }
+
+    /**
+     * <p>Creates a canonical key for a relation item.</p>
+     * <p>The key consists of the gene IDs of the arguments and the main event type.</p>
+     *
+     * @param document
+     * @param includeOffsets
+     * @return
+     */
+    @NotNull
+    private String buildRelationKey(Document document, boolean includeOffsets) {
+        FeatureStructure[] argPair = ((ArrayFieldValue) document.get("ARGUMENT_FS")).stream().map(RawToken.class::cast).map(t -> (FeatureStructure) t.getTokenValue()).toArray(FeatureStructure[]::new);
+        StringBuilder keyBuilder = new StringBuilder();
+        for (FeatureStructure fs : argPair) {
+            ArgumentMention am = (ArgumentMention) fs;
+            Gene g = (Gene) am.getRef();
+            if (includeOffsets) {
+                keyBuilder.append(g.getBegin());
+                keyBuilder.append(g.getEnd());
+            }
+            keyBuilder.append(document.get("argument1geneid").toString());
+            keyBuilder.append(document.get("argument2geneid").toString());
+        }
+        keyBuilder.append(((RawToken) document.get("maineventtype")).getTokenValue().toString());
+        String key = keyBuilder.toString();
+        return key;
     }
 
     /**
@@ -345,20 +463,23 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         token2.term = "xargumentx";
 
         final EventTrigger trigger = ((EventMention) relation.getRootRelation()).getTrigger();
-        PreanalyzedToken triggerToken = new PreanalyzedToken();
-        triggerToken.start = trigger.getBegin() - fullTextSpanStart;
-        triggerToken.end = trigger.getEnd() - fullTextSpanStart;
-        triggerToken.positionIncrement = 0;
-        triggerToken.term = "xtriggerx";
+        PreanalyzedToken triggerToken = null;
+        if (trigger != null) {
+            triggerToken = new PreanalyzedToken();
+            triggerToken.start = trigger.getBegin() - fullTextSpanStart;
+            triggerToken.end = trigger.getEnd() - fullTextSpanStart;
+            triggerToken.positionIncrement = 0;
+            triggerToken.term = "xtriggerx";
+        }
 
         final LikelihoodIndicator likelihood = relation.getRootRelation().getLikelihood();
         PreanalyzedToken likelihoodToken = null;
-        if (!likelihood.getLikelihood().equals("assertion")) {
+        if (likelihood != null && !likelihood.getLikelihood().equals("assertion")) {
             likelihoodToken = new PreanalyzedToken();
             likelihoodToken.start = likelihood.getBegin() - fullTextSpanStart;
             likelihoodToken.end = likelihood.getEnd() - fullTextSpanStart;
             likelihoodToken.positionIncrement = 0;
-            likelihoodToken.term = "xlike"+FieldCreationUtils.likelihoodValues.get(likelihood.getLikelihood())+"x";
+            likelihoodToken.term = "xlike" + FieldCreationUtils.likelihoodValues.get(likelihood.getLikelihood()) + "x";
         }
 
         if (token1.start < 0 || token1.end > fullTextSpanEnd - fullTextSpanStart) {
@@ -382,6 +503,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
 
         tokens.add(token1);
         tokens.add(token2);
+        if (triggerToken != null)
         tokens.add(triggerToken);
         if (likelihoodToken != null)
             tokens.add(likelihoodToken);

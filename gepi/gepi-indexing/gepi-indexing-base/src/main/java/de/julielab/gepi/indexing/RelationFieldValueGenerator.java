@@ -165,7 +165,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("source", docId.startsWith("PMC") ? "pmc" : "pubmed");
                             String arg1EntryIdPath = "/ref/resourceEntryList[" + k + "]/entryId";
                             String arg2EntryIdPath = "/ref/resourceEntryList[" + l + "]/entryId";
-                            document.addField("arguments", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1],argPair[0], argPair[1],argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath,arg1EntryIdPath, arg2EntryIdPath,arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter}, null));
+                            document.addField("arguments", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1],argPair[0], argPair[1],argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath,arg1EntryIdPath, arg2EntryIdPath,arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter}, new UniqueFilter()));
                             document.addField("argumentgeneids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, null, null));
                             document.addField("argumentconceptids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2tidReplaceFilter, geneFb.eg2tidReplaceFilter}, null));
                             document.addField("argumenttophomoids", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2tophomoFilter, geneFb.eg2tophomoFilter}, null));
@@ -206,8 +206,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("relationsource", rel.getRootRelation().getComponentId());
                             document.addField("genemappingsource", createRawFieldValueForParallelAnnotations(argPair, new String[]{"/ref/resourceEntryList["+k+"]/componentId", "/ref/resourceEntryList["+l+"]/componentId"}, null, geneComponentIdProcessingfilter));
                             document.addField("genesource", createRawFieldValueForAnnotations(argPair, new String[]{"/ref/componentId"}, null, geneComponentIdProcessingfilter));
-//                            document.addField("mixedgenesource", !arg1Gene.getComponentId().equals(arg2Gene.getComponentId()));
-//                            document.addField("mixedgenemappingsource", !arg1Gene.getResourceEntryList(k).getComponentId().equals(arg2Gene.getResourceEntryList(l).getComponentId()));
+                            document.addField("mixedgenesource", !arg1Gene.getComponentId().equals(arg2Gene.getComponentId()));
+                            document.addField("mixedgenemappingsource", !arg1Gene.getResourceEntryList(k).getComponentId().equals(arg2Gene.getResourceEntryList(l).getComponentId()));
                             document.addField("ARGUMENT_FS", argPair);
 
                             // filter out reflexive events
