@@ -114,6 +114,21 @@ public class RelationDocumentGeneratorTest {
         assertThat(doc.get("relationsource").toString()).isEqualTo("EventExtractor2");
     }
 
+    @NotNull
+    private RelationDocumentGenerator createRelationDocumentGenerator() {
+        GeneFilterBoard gfb = new GeneFilterBoard();
+        gfb.eg2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.eg2tophomoFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.egid2homoPrefNameReplaceFilter = new FilterChain();
+        gfb.egid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.gene2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        TextFilterBoard tfb = new TextFilterBoard();
+        FilterRegistry fr = Mockito.mock(FilterRegistry.class);
+        Mockito.when(fr.getFilterBoard(GeneFilterBoard.class)).thenReturn(gfb);
+        Mockito.when(fr.getFilterBoard(TextFilterBoard.class)).thenReturn(tfb);
+        return new RelationDocumentGenerator(fr);
+    }
+
     @Test
     public void generateFieldValueMixedGeneSource() throws Exception {
         // In this test we have three relations. The first two are equal to one another and are expected to be
@@ -199,19 +214,85 @@ public class RelationDocumentGeneratorTest {
         assertThat(doc.get("relationsource").toString()).isEqualTo("EventExtractor2");
     }
 
+    @Test
+    public void filterAbbreviationDupliactes() throws Exception {
+        RelationDocumentGenerator generator = createRelationDocumentGenerator();
+
+        JCas jCas = JCasFactory.createJCas("de.julielab.jcore.types.jcore-document-meta-pubmed-types", "de.julielab.jcore.types.jcore-semantics-biology-types", "de.julielab.jcore.types.extensions.jcore-semantics-mention-extension-types");
+        final Header h = new Header(jCas);
+        h.setDocId("123");
+        h.addToIndexes();
+        jCas.setDocumentText("IKK phosphorylates subunits of nuclear factor κB (NF-κB). As we said, IKK phosphorylates parts of NF-κB.");
+        new Sentence(jCas, 0, 57).addToIndexes();
+        new Sentence(jCas, 58, 104).addToIndexes();
+        // Create the abbreviation for NF-κB: one long form, two abbreviations that reference the long form. But only the
+        // first is a syntactic duplicate.
+        final AbbreviationLongform lf = new AbbreviationLongform(jCas, 31, 48);
+        final Abbreviation nfkb1 = new Abbreviation(jCas, 50, 55);
+        nfkb1.setDefinedHere(true);
+        nfkb1.setTextReference(lf);
+        nfkb1.addToIndexes();
+        final Abbreviation nfkb2 = new Abbreviation(jCas, 98, 103);
+        nfkb2.setTextReference(lf);
+        nfkb2.addToIndexes();
+
+        // Create the gene annotations.
+        final ArgumentMention ikk1 = createGeneArgument(jCas, 0, 3, "3551");
+        final ArgumentMention ikk2 = createGeneArgument(jCas, 70, 73, "3551");
+        final ArgumentMention nfkbLong = createGeneArgument(jCas, 31, 48, "FPLX_NFKB");
+        final ArgumentMention nfkbShort1 = createGeneArgument(jCas, 50, 55, "FPLX_NFKB");
+        final ArgumentMention nfkbShort2 = createGeneArgument(jCas, 98, 103, "FPLX_NFKB");
+
+        final FlattenedRelation feLong = getFlattenedRelation(jCas, getEventMention(jCas, 4, 18, "phosphorylation", ikk1, nfkbLong));
+        feLong.addToIndexes();
+        final FlattenedRelation feShort1 = getFlattenedRelation(jCas, getEventMention(jCas, 4, 18, "phosphorylation", ikk1, nfkbShort1));
+        feShort1.addToIndexes();
+        final FlattenedRelation feShort2 = getFlattenedRelation(jCas, getEventMention(jCas, 47, 88, "phosphorylation", ikk2, nfkbShort2));
+        feShort2.addToIndexes();
+
+        final List<Document> documents = generator.createDocuments(jCas);
+        // Although there were 3 events defined, 2 should remain because one should be merged.
+        assertThat(documents).hasSize(2);
+        assertThat(documents.get(0).get("argument1coveredtext").toString()).isEqualTo("IKK");
+        // The long form argument should remain
+        assertThat(documents.get(0).get("argument2coveredtext").toString()).isEqualTo("nuclear factor κB");
+
+        assertThat(documents.get(1).get("argument1coveredtext").toString()).isEqualTo("IKK");
+        assertThat(documents.get(1).get("argument2coveredtext").toString()).isEqualTo("NF-κB");
+    }
+
+    /**
+     * Creates the event trigger and EventMention at the given position with the given event type and arguments.
+     * @param jCas
+     * @param begin
+     * @param end
+     * @param eventType
+     * @param arguments
+     * @return
+     */
+    private EventMention getEventMention(JCas jCas, int begin, int end, String eventType, ArgumentMention... arguments) {
+        final EventTrigger trigger = new EventTrigger(jCas, begin, end);
+        trigger.setSpecificType(eventType);
+        final EventMention e = new EventMention(jCas, 4, 18);
+        e.setTrigger(trigger);
+        e.setSpecificType(trigger.getSpecificType());
+        e.setArguments(JCoReTools.addToFSArray(null, List.of(arguments)));
+        return e;
+    }
+
+    /**
+     * Takes a EventMention that does not have another EventMention as argument and creates a FlattenedRelation for it.
+     * @param jCas
+     * @param e1
+     * @return
+     */
     @NotNull
-    private RelationDocumentGenerator createRelationDocumentGenerator() {
-        GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.eg2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
-        gfb.eg2tophomoFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.egid2homoPrefNameReplaceFilter = new FilterChain();
-        gfb.egid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.gene2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
-        TextFilterBoard tfb = new TextFilterBoard();
-        FilterRegistry fr = Mockito.mock(FilterRegistry.class);
-        Mockito.when(fr.getFilterBoard(GeneFilterBoard.class)).thenReturn(gfb);
-        Mockito.when(fr.getFilterBoard(TextFilterBoard.class)).thenReturn(tfb);
-        return new RelationDocumentGenerator(fr);
+    private FlattenedRelation getFlattenedRelation(JCas jCas, EventMention e1) {
+        final FlattenedRelation fe1 = new FlattenedRelation(jCas, e1.getBegin(), e1.getEnd());
+        fe1.setArguments(e1.getArguments());
+        fe1.setRelations(JCoReTools.addToFSArray(null, e1));
+        fe1.setRootRelation(e1);
+        return fe1;
     }
 
 

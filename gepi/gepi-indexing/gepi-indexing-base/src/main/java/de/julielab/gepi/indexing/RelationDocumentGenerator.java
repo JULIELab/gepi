@@ -120,7 +120,6 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                     // We deem events to be equal that have those values in common (in this order).
                     Map<String, Document> key2doc = new HashMap<>();
                     Iterator<Document> docIt = relDocs.iterator();
-                    List<Document> documentsToRemove = new ArrayList<>();
                     while (docIt.hasNext()) {
                         Document document = docIt.next();
                         String key = buildRelationKey(document, false);
