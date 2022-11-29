@@ -14,16 +14,16 @@
         <t:grid source="eventSource" row="eventrow" model="tableModel" rowsPerPage="${rowsperpage}"
                 pagerPosition="bottom" inplace="true" empty="block:no_data_block" t:id="resultTable">
             <p:firstArgumentPreferredNameCell>
-                <a href="https://www.ncbi.nlm.nih.gov/gene/${eventrow.firstargumentgeneid}" target="_blank"
-                   data-toggle="tooltip" data-placement="top"
-                   title="Open gene ID ${eventrow.firstargumentgeneid} in NCBI Gene">
+                <a href="${getArgumentLink(1)}" target="_blank"
+                   data-bs-toggle="none" data-placement="top"
+                   title="Open new tab with more information about this interaction partner">
                     ${eventrow.firstArgumentPreferredName}
                 </a>
             </p:firstArgumentPreferredNameCell>
             <p:secondArgumentPreferredNameCell>
-                <a href="https://www.ncbi.nlm.nih.gov/gene/${eventrow.secondargumentgeneid}" target="_blank"
-                   data-toggle="tooltip" data-placement="top"
-                   title="Open gene ID ${eventrow.secondargumentgeneid} in NCBI Gene">
+                <a href="${getArgumentLink(2)}" target="_blank"
+                   data-bs-toggle="none" data-placement="top"
+                   title="Open new tab with more information about this interaction partner">
                     ${eventrow.secondArgumentPreferredName}
                 </a>
             </p:secondArgumentPreferredNameCell>

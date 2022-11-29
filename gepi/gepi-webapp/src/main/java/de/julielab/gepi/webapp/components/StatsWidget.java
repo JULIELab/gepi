@@ -42,7 +42,7 @@ public class StatsWidget extends GepiWidget {
 
     public int getNumberUniqueBSymbols() {
         try {
-            return (int) getPagedEsResult().get().getEventList().stream().map(Event::getSecondArgument).map(Argument::getPreferredName).distinct().count();
+            return (int) getPagedEsResult().get().getEventList().stream().filter(e -> e.getArity() > 1).map(Event::getSecondArgument).map(Argument::getPreferredName).distinct().count();
         } catch (InterruptedException | ExecutionException e) {
             return 0;
         }

@@ -195,7 +195,7 @@
                                 
                 <value>
                                         
-                    <string>gepi_0.2</string>
+                    <string>gepi_0.10</string>
                                     
                 </value>
                             
@@ -307,9 +307,9 @@
                 
         <externalResourceDependency>
                         
-            <key>tid2prefName</key>
+            <key>conceptid2prefName</key>
                         
-            <description>tid2prefName</description>
+            <description>conceptid2prefName</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
                         
@@ -541,13 +541,13 @@
                         
             <externalResource>
                                 
-                <name>tid2prefName</name>
+                <name>conceptid2prefName</name>
                                 
-                <description>tid2prefName</description>
+                <description>conceptid2prefName</description>
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2prefName.map.gz</url>
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/conceptid2prefName.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -645,9 +645,9 @@
                         
             <externalResourceBinding>
                                 
-                <key>tid2prefName</key>
+                <key>conceptid2prefName</key>
                                 
-                <resourceName>tid2prefName</resourceName>
+                <resourceName>conceptid2prefName</resourceName>
                             
             </externalResourceBinding>
                         

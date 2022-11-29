@@ -30,6 +30,7 @@ public class Event {
     private String paragraph;
     private String hlParagraph;
     private List<String> geneMappingSources;
+    private int arity;
 
     public String getHlParagraph() {
         return hlParagraph;
@@ -220,5 +221,13 @@ public class Event {
 
     public List<String> getGeneMappingSources() {
         return geneMappingSources;
+    }
+
+    public void setArity(int arity) {
+        this.arity = arity;
+    }
+
+    public int getArity() {
+        return arity;
     }
 }

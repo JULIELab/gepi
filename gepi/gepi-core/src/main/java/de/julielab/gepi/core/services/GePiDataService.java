@@ -115,7 +115,7 @@ public class GePiDataService implements IGePiDataService {
 
 
         // get the count for how often pairs appear
-        Map<Event, Integer> pairedArgCount = CollectionUtils.getCardinalityMap(evtList);
+        Map<Event, Integer> pairedArgCount = CollectionUtils.getCardinalityMap(evtList.stream().filter(e -> e.getArity() > 1).collect(Collectors.toList()));
 
         // put to json
         JSONArray nodes = new JSONArray();

@@ -47,7 +47,7 @@ public class InputListMappingTable {
             final Multimap<String, String> convertedItems = conversionResult.getConvertedItems();
             List<InputMapping> ret = new ArrayList<>();
             final Map<String, GepiGeneInfo> geneInfo = geneIdService.getGeneInfo(convertedItems.values());
-            for (String inputId : (Iterable<String>) () -> convertedItems.keySet().stream().sorted().iterator()) {
+            for (String inputId : (Iterable<String>) () -> convertedItems.keySet().stream().sorted(String.CASE_INSENSITIVE_ORDER).iterator()) {
                 if (maxTableSize >= 0 && ret.size() == maxTableSize)
                     break;
                 // If the input was gene names, it may well happen that it is not mapped to a single gene node

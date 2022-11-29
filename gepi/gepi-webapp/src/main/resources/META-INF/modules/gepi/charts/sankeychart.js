@@ -197,7 +197,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       }
       // Adapt the complete data to the current user settings and available canvas space.
       const the_data = data.prepare_data(this.preprocessed_data, this.settings.height, this.settings.min_node_height, this.settings.node_spacing, this.settings.show_other, max_other_height);
-
+       // if (this.orderType==='commonPartnersHarmonicMean')
+       console.log(the_data)
       const sankey = d3.sankey();
 
       console.log("Sankey size set to " + this.settings.width + " x " + this.settings.height + " with origin (0, 0).")

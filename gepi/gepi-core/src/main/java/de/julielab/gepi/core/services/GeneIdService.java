@@ -1,10 +1,15 @@
 package de.julielab.gepi.core.services;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
+import de.julielab.gepi.core.retrieval.data.GeneSymbolNormalization;
 import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.apache.tapestry5.ioc.annotations.Symbol;
@@ -12,8 +17,10 @@ import org.neo4j.driver.*;
 import org.neo4j.driver.Record;
 import org.slf4j.Logger;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +34,17 @@ public class GeneIdService implements IGeneIdService {
 
     private final Driver driver;
     private Logger log;
+    private LoadingCache<String, GepiGeneInfo> geneInfoCache = CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(30)).maximumSize(10000).build(new CacheLoader<>() {
+        @Override
+        public GepiGeneInfo load(String s) {
+            return getGeneInfoFromDatabase(List.of(s)).get(s);
+        }
+
+        @Override
+        public Map<String, GepiGeneInfo> loadAll(Iterable<? extends String> keys) throws Exception {
+            return getGeneInfoFromDatabase(keys);
+        }
+    });
 
     public GeneIdService(Logger log, @Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
         this.log = log;
@@ -127,7 +145,7 @@ public class GeneIdService implements IGeneIdService {
                         topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
                     }
                     time = System.currentTimeMillis() - time;
-                    log.info("Converted {} gene names to {} gene IDs in {} seconds.", searchInput.length, topAtids.size(), time/1000);
+                    log.info("Converted {} gene names to {} gene IDs in {} seconds.", searchInput.length, topAtids.size(), time / 1000);
                     return topAtids;
                 });
             }
@@ -155,7 +173,8 @@ public class GeneIdService implements IGeneIdService {
                     Record record;
                     Multimap<String, String> topAtids = HashMultimap.create();
 
-                    String[] searchInput = geneNames.map(String::toLowerCase).toArray(String[]::new);
+                    Set<String> geneNameSet = geneNames.collect(Collectors.toSet());
+                    String[] searchInput = geneNameSet.stream().map(GeneSymbolNormalization::normalize).toArray(String[]::new);
                     // get the highest element in the aggregation-hierarchy; the roots are those that are not elements of another aggregate
                     String cypher = "MATCH (c:CONCEPT) WHERE c.preferredName_lc IN $geneNames AND NOT ()-[:HAS_ELEMENT]->(c) RETURN c.preferredName_lc AS SOURCE_ID, c.id AS SEARCH_ID";
                     Result result = tx.run(
@@ -168,6 +187,16 @@ public class GeneIdService implements IGeneIdService {
                     }
                     time = System.currentTimeMillis() - time;
                     log.info("Converted {} gene names to {} aggregate gene IDs in {} seconds", searchInput.length, topAtids.size(), time / 1000);
+                    // Replace the normalized keys with the ones that the user actually specified. This is less confusing
+                    // when the ID mapping is shown on the web site.
+                    for (String originalInputName : geneNameSet) {
+                        final String normalizedInputName = GeneSymbolNormalization.normalize(originalInputName);
+                        final Collection<String> mappedIds = new ArrayList<>(topAtids.get(normalizedInputName));
+                        if (mappedIds != null) {
+                            topAtids.removeAll(normalizedInputName);
+                            topAtids.putAll(originalInputName, mappedIds);
+                        }
+                    }
                     return topAtids;
                 });
             }
@@ -213,7 +242,6 @@ public class GeneIdService implements IGeneIdService {
         return null;
     }
 
-
     @Override
     public CompletableFuture<Multimap<String, String>> convertGene2AggregateIds(Stream<String> input) {
         return CompletableFuture.supplyAsync(() -> {
@@ -248,6 +276,14 @@ public class GeneIdService implements IGeneIdService {
 
     @Override
     public Map<String, GepiGeneInfo> getGeneInfo(Iterable<String> conceptIds) {
+        try {
+            return geneInfoCache.getAll(conceptIds);
+        } catch (ExecutionException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private Map<String, GepiGeneInfo> getGeneInfoFromDatabase(Iterable<? extends String> conceptIds) {
         Map<String, GepiGeneInfo> geneInfo;
         try (Session session = driver.session()) {
             geneInfo = session.readTransaction(tx -> {

@@ -9,7 +9,7 @@
             <tr>
                 <th>${inputMappingLoopItem.input}</th>
                 <td class="${mappingFoundClass}">${inputMappingLoopItem.target}</td>
-                <td><span class="badge text-bg-primary">${inputMappingLoopItem.type}</span></td>
+                <td><a href="${inputMappingLoopItem.conceptSourceLink}" target="_blank"><span class="badge text-bg-primary" data-bs-toggle="default-tooltip" title="${inputMappingLoopItem.title}">${inputMappingLoopItem.type}</span></a></td>
             </tr>
         </t:loop>
     </table>

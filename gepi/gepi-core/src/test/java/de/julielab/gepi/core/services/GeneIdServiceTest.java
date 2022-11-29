@@ -3,6 +3,7 @@ package de.julielab.gepi.core.services;
 import com.google.common.collect.Multimap;
 import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 public class GeneIdServiceTest {
-    @Rule
+    @Rule()
     public Neo4jRule neo4j = new Neo4jRule().withFixture(graphDatabaseService -> {
         setupDB(graphDatabaseService);
         return null;
@@ -26,8 +27,8 @@ public class GeneIdServiceTest {
     @Test
     public void convertGeneNames2AggregateIds() throws Exception {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
-        final Multimap<String, String> idMap = geneIdService.convertGeneNames2AggregateIds(Stream.of("mtor", "akt1")).get();
-        assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("atid2", "tid2");
+        final Multimap<String, String> idMap = geneIdService.convertGeneNames2AggregateIds(Stream.of("MTOR", "akt1")).get();
+        assertThat(idMap.get("MTOR")).containsExactlyInAnyOrder("atid2", "tid2");
         assertThat(idMap.get("akt1")).containsExactly("atid3");
     }
 

@@ -121,6 +121,10 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_LIKELIHOOD = "likelihood";
 
+    public static final String FIELD_NUM_ARGUMENTS = "numarguments";
+
+    public static final String FIELD_VALUE_MOCK_ARGUMENT = "none";
+
     public static final String FIELD_GENE_MAPPING_SOURCE = "genemappingsource";
     public static final List<String> FIELDS_FOR_TABLE = Arrays.asList(
             FIELD_PMID,
@@ -136,15 +140,18 @@ public class EventRetrievalService implements IEventRetrievalService {
             FIELD_EVENT_ARG_MATCH_TYPES,
             FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
             FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-            FIELD_EVENT_ARG_TEXT
+            FIELD_EVENT_ARG_TEXT,
+            FIELD_NUM_ARGUMENTS
 //            ,
 //            FIELD_GENE_MAPPING_SOURCE
     );
     public static final List<String> FIELDS_FOR_CHARTS = Arrays.asList(
-            FIELD_EVENT_ARG_GENE_IDS,
+//            FIELD_EVENT_ARG_GENE_IDS,
             FIELD_EVENT_ARG_CONCEPT_IDS,
             FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
-            FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME
+            FIELD_EVENT_ARG_PREFERRED_NAME,
+            FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
+            FIELD_NUM_ARGUMENTS
     );
     private static final int SCROLL_SIZE = 2000;
     private Logger log;
@@ -460,7 +467,8 @@ public class EventRetrievalService implements IEventRetrievalService {
         List<Event> reorderedEvents = new ArrayList<>(eventResult.getEventList());
         for (Iterator<Event> it = reorderedEvents.iterator(); it.hasNext(); ) {
             Event e = it.next();
-            final Argument secondArg = e.getArgument(1);
+            if (e.getArity() > 1) {
+                final Argument secondArg = e.getArgument(1);
 //            if (idSet.contains(secondArg.getTopHomologyPreferredName()) || idSet.contains(secondArg.getHgncId()) || idSet.contains(secondArg.famplexId())) {
 //                List<Argument> arguments = e.getArguments();
 //                Argument tmp = arguments.get(0);
@@ -486,6 +494,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 //                arguments.set(0, arguments.get(inputIdPosition));
 //                arguments.set(inputIdPosition, tmp);
 //            }
+            }
         }
         eventResult.setEvents(reorderedEvents);
     }

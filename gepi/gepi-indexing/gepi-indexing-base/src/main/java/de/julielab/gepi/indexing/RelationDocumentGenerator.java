@@ -95,7 +95,8 @@ public class RelationDocumentGenerator extends DocumentGenerator {
             throw new FieldGenerationException(e);
         }
         mergeEqualRelDocs(relDocs);
-        filterAbbreviationDuplicates(sentence2relDocs, jCas);
+        final Set<Document> removedDocuments = filterAbbreviationDuplicates(sentence2relDocs, jCas);
+        relDocs = relDocs.stream().filter(d -> !removedDocuments.contains(d)).collect(Collectors.toList());
         // remove the temporary field for the UIMA argument objects
         relDocs.forEach(d -> d.remove("ARGUMENT_FS"));
         return relDocs;
@@ -104,11 +105,12 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     /**
      * <p>Abbreviations consist of a long form immediately followed be the short form. This can cause duplicates of events that actually refer to the same entity. We here recognize such cases and remove the event that refers to the short form.</p>
      * <p>This is done only if the short and long form genes have both received the same IDs.</p>
-     *
-     * @param sentence2relDocs
+     *  @param sentence2relDocs
      * @param jCas
+     * @return
      */
-    private void filterAbbreviationDuplicates(Multimap<Sentence, Document> sentence2relDocs, JCas jCas) {
+    private Set<Document> filterAbbreviationDuplicates(Multimap<Sentence, Document> sentence2relDocs, JCas jCas) {
+        Set<Document> removedDocuments = new TreeSet<>(Comparator.comparing(x -> System.identityHashCode(x)));
         if (!sentence2relDocs.isEmpty()) {
             JCoReOverlapAnnotationIndex<Abbreviation> abbreviationIndex = new JCoReOverlapAnnotationIndex<>(jCas, Abbreviation.type);
             // Since event arguments can only occur in the same sentence we restrict ourselves to search duplicates within sentence boundaries.
@@ -145,16 +147,22 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                             // Then we would want to remove the current document because that would be the short form argument
                             if (g11LF4g21 || g12LF4g22) {
                                 docIt.remove();
+                                removedDocuments.add(document);
+                                System.out.println("Removing " + g21.getCoveredText() + " - " + g22.getCoveredText());
                             } else if (g21LF4g11 || g22LF4g12) {
+                                System.out.println("Removing " + g11.getCoveredText() + " - " + g12.getCoveredText());
                                 key2doc.remove(key);
+                                removedDocuments.add(existingDoc);
                                 key2doc.put(key, document);
                             }
-
+                        } else {
+                            key2doc.put(key, document);
                         }
                     }
                 }
             }
         }
+        return removedDocuments;
     }
 
     /**

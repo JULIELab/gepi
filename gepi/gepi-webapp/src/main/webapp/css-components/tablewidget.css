@@ -13,8 +13,12 @@ select {
 
 #tableresult_widget table 
 
+.hl-argument {
+    background-color: #cde3ff
+}
+
 .hl-trigger {
-    background-color: #ff9c9c;
+    background-color: #d1a3ff;
 }
 
 .hl-filter {
@@ -22,23 +26,23 @@ select {
 }
 
 .hl-like1 {
-    background-color: #E020FA;
+    background-color: #ff7f77;
 }
 
 .hl-like2 {
-    background-color: #E020FA;
+    background-color: #c27550;
 }
 
 .hl-like3 {
-    background-color: #E020FA;
+    background-color: #dd9e60;
 }
 
 .hl-like4 {
-    background-color: #E020FA;
+    background-color: #ebc16d;
 }
 
 .hl-like5 {
-    background-color: #E020FA;
+    background-color: #E9da7e;
 }
 
 .symbol-background {

@@ -59,6 +59,10 @@
         "type": "keyword",
         "store": true
       },
+      "argumentconceptids2": {
+        "type": "keyword",
+        "store": true
+      },
       "argumenttophomoids": {
         "type": "keyword",
         "store": true
@@ -303,6 +307,10 @@
       },
       "mixedgenemappingsource": {
         "type": "boolean",
+        "store": true
+      },
+      "numarguments": {
+        "type": "byte",
         "store": true
       }
     }

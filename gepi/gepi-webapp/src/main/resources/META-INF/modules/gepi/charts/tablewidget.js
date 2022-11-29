@@ -36,6 +36,31 @@ define(["jquery", "bootstrap5/modal", "bootstrap5/tooltip"], function($, modal, 
 					title: "fulltext filter match"
 				});
 			})
+			$('.hl-like1').each(function() {
+				new Tooltip(this, {
+					title: "factuality level 'negation'"
+				});
+			})
+			$('.hl-like2').each(function() {
+				new Tooltip(this, {
+					title: "factuality level 'low'"
+				});
+			})
+			$('.hl-like3').each(function() {
+				new Tooltip(this, {
+					title: "factuality level 'investigation'"
+				});
+			})
+			$('.hl-like4').each(function() {
+				new Tooltip(this, {
+					title: "factuality level 'moderate'"
+				});
+			})
+			$('.hl-like5').each(function() {
+				new Tooltip(this, {
+					title: "factuality level 'high'"
+				});
+			})
 		}
 
 		// Register the tooltip-function with ajaxComplete because

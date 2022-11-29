@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 public class BeanModelEvent {
 
     private Event event;
-
+public Event getEvent() {
+    return event;
+}
     public BeanModelEvent(Event event) {
         this.event = event;
     }
@@ -110,23 +112,6 @@ public class BeanModelEvent {
                 throw new IllegalArgumentException("Illegal likelihood ordinal " + event.getLikelihood());
         }
         return "<div title=\""+likelihood+"\" data-bs-toggle=\"default-tooltip\" class=\"text-center\"><span class=\"symbol-background " + class1 + "\">&nbsp;</span><span class=\"symbol-background " + class2 + "\">&nbsp;</span><span class=\"symbol-background " + class3 + "\">&nbsp;</span></div>";
-
-//        switch (event.getLikelihood()) {
-//            case 1:
-//                return "negation";
-//            case 2:
-//                return "low";
-//            case 3:
-//                return "investigation";
-//            case 4:
-//                return "moderate";
-//            case 5:
-//                return "high";
-//            case 6:
-//                return "assertion";
-//            default:
-//                throw new IllegalArgumentException("Illegal likelihood ordinal " + event.getLikelihood());
-//        }
     }
 
     public String getFirstArgumentTextWithPreferredName() {

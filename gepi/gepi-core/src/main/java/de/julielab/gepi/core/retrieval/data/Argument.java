@@ -1,7 +1,12 @@
 package de.julielab.gepi.core.retrieval.data;
 
+import org.apache.commons.lang3.StringUtils;
+
+import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT;
+
 public class Argument implements Comparable<Argument> {
 
+    @Deprecated
     private String matchType;
     private String geneId;
     private String conceptId;
@@ -10,6 +15,7 @@ public class Argument implements Comparable<Argument> {
     private String preferredName;
     private String text;
     private ComparisonMode comparisonMode = ComparisonMode.TOP_HOMOLOGY_ID;
+    private GepiGeneInfo geneInfo;
 
     public Argument(String geneId, String conceptId, String topHomologyId, String text) {
         super();
@@ -37,7 +43,8 @@ public class Argument implements Comparable<Argument> {
     }
 
     public void setTopHomologyPreferredName(String topHomologyPreferredName) {
-        this.topHomologyPreferredName = topHomologyPreferredName.toUpperCase();
+        this.topHomologyPreferredName = StringUtils.isAllLowerCase(topHomologyPreferredName) && !topHomologyPreferredName.equals(FIELD_VALUE_MOCK_ARGUMENT) ? topHomologyPreferredName.toUpperCase() : topHomologyPreferredName;
+
     }
 
     public String getGeneId() {
@@ -67,11 +74,11 @@ public class Argument implements Comparable<Argument> {
     public String getPreferredName() {
         if (preferredName ==  null)
             throw new IllegalStateException("The preferredName field for Argument with concept id " + conceptId + " is null.");
-        return preferredName.toUpperCase();
+        return preferredName;
     }
 
     public void setPreferredName(String preferredName) {
-        this.preferredName = preferredName;
+        this.preferredName = StringUtils.isAllLowerCase(preferredName) && !preferredName.equals(FIELD_VALUE_MOCK_ARGUMENT) ? preferredName.toUpperCase() : preferredName;
     }
 
     public String getText() {
@@ -152,6 +159,14 @@ public class Argument implements Comparable<Argument> {
 
     public void setComparisonMode(ComparisonMode comparisonMode) {
         this.comparisonMode = comparisonMode;
+    }
+
+    public void setGeneInfo(GepiGeneInfo geneInfo) {
+        this.geneInfo = geneInfo;
+    }
+
+    public GepiGeneInfo getGeneInfo() {
+        return geneInfo;
     }
 
     public enum ComparisonMode {

@@ -342,7 +342,22 @@ function prepare_data(pre_data, total_height, min_height, padding, show_other, m
             misc_from,
             misc_to,
         } = filter_and_suffix_links(nodesNLinks.links, included_ids_from, included_ids_to, show_other);
+  
+        // The links might actually exclude some notes that we wanted to include before. This leads to dangeling nodes.
+        // The included nodes are a map from node name to 'true'. Create such a map from the unique node names that actually
+        // appear in the links
+        // [...new Set()]: https://stackoverflow.com/a/11911532/1314955
+        // reduce: https://stackoverflow.com/a/70299941/1314955
+        included_ids_from = [...new Set(filtered_links.map(link => link.source).map(s => s.substr(0,s.lastIndexOf("_"))))].reduce((map,name) => ({...map, [name]: true}), {});
+        included_ids_to =   [...new Set(filtered_links.map(link => link.target).map(t => t.substr(0,t.lastIndexOf("_"))))].reduce((map,name) => ({...map, [name]: true}), {});
         let filtered_nodes = filter_and_suffix_nodes(nodesNLinks, included_ids_from, included_ids_to, misc_from, misc_to);
+
+  // nodesInLinks = new Set();
+  //       for (let link : filtered_links) {
+  //           nodesInLinks.add(link.source.id);
+  //           nodesInLinks.add(link.target.id);
+  //       }
+  //       filtered_nodes = filtered_nodes.filter(node => nodesInLinks.has(node.id));
 
         return {
             nodes: filtered_nodes,

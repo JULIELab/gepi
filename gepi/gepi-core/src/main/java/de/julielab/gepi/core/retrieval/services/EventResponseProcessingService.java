@@ -5,6 +5,8 @@ import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
+import de.julielab.gepi.core.services.IGeneIdService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -26,6 +28,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
     @Inject
     private IEventPostProcessingService eventPPService;
     private Logger log;
+    @Inject
+    private IGeneIdService geneIdService;
 
     public EventResponseProcessingService(Logger log) {
         this.log = log;
@@ -64,10 +68,10 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                     .orElse(Collections.emptyList());
             List<Object> topHomologyIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS)
                     .orElse(Collections.emptyList());
-            List<Object> famplexIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_FAMPLEX_IDS)
-                    .orElse(Collections.emptyList());
-            List<Object> hgncGroupIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_HGNC_GROUP_IDS)
-                    .orElse(Collections.emptyList());
+//            List<Object> famplexIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_FAMPLEX_IDS)
+//                    .orElse(Collections.emptyList());
+//            List<Object> hgncGroupIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_HGNC_GROUP_IDS)
+//                    .orElse(Collections.emptyList());
             List<Object> argPrefNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_PREFERRED_NAME)
                     .orElse(Collections.emptyList());
             List<Object> argHomologyPrefNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME)
@@ -91,26 +95,38 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             List<String> sentenceLikelihood5Hl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_5);
             List<String> paragraphFilterHl = eventDocument.getHighlights().get(FIELD_EVENT_PARAGRAPH_TEXT_FILTER);
             List<String> geneMappingSources = eventDocument.getFieldValues(FIELD_GENE_MAPPING_SOURCE).orElse(Collections.emptyList()).stream().map(Object::toString).collect(Collectors.toList());
+            int eventArity = (int) eventDocument.getFieldValue(FIELD_NUM_ARGUMENTS).get();
             String eventId = eventDocument.getId();
 
-            int numArguments = geneIds.size();
-            List<Argument> arguments = new ArrayList<>();
+            // The index is shaped so that there are always two arguments. The second might is the mock argument
+            // for unary arguments.
+            int numArguments = 2;
+            List<Argument> arguments = new ArrayList<>(numArguments);
             for (int i = 0; i < numArguments; ++i) {
                 String conceptId = i < conceptIds.size() ? (String) conceptIds.get(i) : null;
                 String geneId = i < geneIds.size() ? (String) geneIds.get(i) : null;
                 String topHomologyId = i < topHomologyIds.size() ? (String) topHomologyIds.get(i) : null;
-                String famplexId = i < famplexIds.size() ? (String) famplexIds.get(i) : null;
-                String hgncGroupId = i < hgncGroupIds.size() ? (String) hgncGroupIds.get(i) : null;
+//                String famplexId = i < famplexIds.size() ? (String) famplexIds.get(i) : null;
+//                String hgncGroupId = i < hgncGroupIds.size() ? (String) hgncGroupIds.get(i) : null;
                 String text = i < texts.size() ? StringUtils.normalizeSpace((String) texts.get(i)) : null;
 
                 if (conceptId != null) {
-
                     // assert conceptId != null : "No concept ID received from event document with
                     // ID " + eventDocument.getId() + ":\n" + eventDocument;
                     assert geneId != null;
                     assert topHomologyId != null;
 
-                    arguments.add(new Argument(geneId, conceptId, topHomologyId, text));
+                    final Argument argument = new Argument(geneId, conceptId, topHomologyId, text);
+                    // We don't want to fetch the gene info for charts. For charts, we don't load the geneId,
+                    // so we use this as indicator.
+                    if (geneId != null) {
+                        try {
+                            argument.setGeneInfo(geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId));
+                        } catch (Exception e) {
+                            log.error("Could not load gene info for concept with ID {}", conceptId);
+                        }
+                    }
+                    arguments.add(argument);
                 } else {
                     log.warn(
                             "Came over event document where the concept Id of an argument missing. Document is skipped. This must be fixed in the index. The document has ID {}. Full document:\n{}", eventDocument.getId(),
@@ -120,6 +136,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             }
 
             Event event = new Event();
+            event.setArity(eventArity);
             // Only one ID is present currently
             pmid.ifPresent(event::setDocId);
             pmcid.ifPresent(event::setDocId);
@@ -167,6 +184,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 
     /**
      * <p>Convenience signature for {@link #mergeHighlighting(String...)}.</p>
+     *
      * @param highlights Lists of highlight string that might be null or empty as they come from the ElasticSearch document.
      * @return The merged highlights of all first list elements (additional items are ignored!) of each input list that is not blank.
      */
@@ -233,10 +251,10 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
         }
         // All tags processed. We now only miss the text from the beginning up to the first tag.
         reversedMergedHighlight.add(nonHighlightedString.substring(0, lastPos));
-        return IntStream.range(1, reversedMergedHighlight.size()+1).mapToObj(i -> reversedMergedHighlight.get(reversedMergedHighlight.size() - i)).collect(Collectors.joining());
+        return IntStream.range(1, reversedMergedHighlight.size() + 1).mapToObj(i -> reversedMergedHighlight.get(reversedMergedHighlight.size() - i)).collect(Collectors.joining());
     }
 
-    private int getMaxOffsetTagIndex(List<SortedMap<Integer,String>> tagMaps) {
+    private int getMaxOffsetTagIndex(List<SortedMap<Integer, String>> tagMaps) {
         int indexWithHightestOffsetTag = 0;
         int highestOffset = -1;
         for (int i = 0; i < tagMaps.size(); i++) {

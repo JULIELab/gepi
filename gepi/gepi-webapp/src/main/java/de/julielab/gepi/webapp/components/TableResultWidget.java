@@ -3,6 +3,7 @@ package de.julielab.gepi.webapp.components;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.BeanModelEvent;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.EventPagesDataSource;
@@ -122,16 +123,16 @@ public class TableResultWidget extends GepiWidget {
         tableModel = beanModelSource.createDisplayModel(BeanModelEvent.class, messages);
         tableModel.include(availableColumns.toArray(new String[0]));
 
-        tableModel.get("firstArgumentPreferredName").label("gene A symbol");
-        tableModel.get("secondArgumentPreferredName").label("gene B symbol");
-        tableModel.get("firstArgumentText").label("gene A text");
-        tableModel.get("secondArgumentText").label("gene B text");
-        tableModel.get("firstArgumentGeneId").label("gene A gene ID");
-        tableModel.get("secondArgumentGeneId").label("gene B gene ID");
+        tableModel.get("firstArgumentPreferredName").label("Gene A Symbol");
+        tableModel.get("secondArgumentPreferredName").label("Gene B Symbol");
+        tableModel.get("firstArgumentText").label("Gene A Text");
+        tableModel.get("secondArgumentText").label("Gene B Text");
+        tableModel.get("firstArgumentGeneId").label("Gene A Gene ID");
+        tableModel.get("secondArgumentGeneId").label("Gene B Gene ID");
 //        tableModel.get("firstArgumentMatchType").label("gene A match type");
 //        tableModel.get("secondArgumentMatchType").label("gene B match type");
-        tableModel.get("allEventTypes").label("relation types");
-        tableModel.get("docId").label("document id");
+        tableModel.get("allEventTypes").label("Relation Types");
+        tableModel.get("docId").label("Document ID");
 //        tableModel.get("eventId").label("event id");
 //        tableModel.get("geneMappingSources").label("gene tagger");
         // Disable the sorting buttons. Since we reorder the event arguments so that arguments from list A
@@ -176,6 +177,7 @@ public class TableResultWidget extends GepiWidget {
 //        tableModel.include(selectedColumns.toArray(String[]::new));
 //        ajaxResponseRenderer.addRender(gepiWidgetLayout.getBodyZone());
 //    }
+
     /**
      * When the form containing the filter elements is submitted, we want to re-render the table via AJAX
      */
@@ -257,6 +259,17 @@ public class TableResultWidget extends GepiWidget {
                 return "application/vnd.ms-excel";
             }
         };
+    }
+
+    public String getArgumentLink(int argPosition) {
+        GepiGeneInfo targetInfo = argPosition == 1 ? eventRow.getEvent().getFirstArgument().getGeneInfo() : eventRow.getEvent().getSecondArgument().getGeneInfo();
+        if (targetInfo == null)
+            return "#";
+        if (targetInfo.getLabels().contains("HGNC_GROUP"))
+            return "https://www.genenames.org/data/genegroup/#!/group"+targetInfo.getOriginalId();
+        if (targetInfo.getLabels().contains("FPLX"))
+            return "https://github.com/sorgerlab/famplex/";
+        return "https://www.ncbi.nlm.nih.gov/gene/"+targetInfo.getOriginalId();
     }
 
     public void afterRender() {

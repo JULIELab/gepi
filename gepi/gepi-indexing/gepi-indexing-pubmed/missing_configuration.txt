@@ -12,7 +12,5 @@ There are multiple external resources with name "tid2hgncgroups". UIMA will only
 
 There are multiple external resources with name "tid2atid". UIMA will only use the first definition.
 
-There are multiple external resources with name "tid2prefName". UIMA will only use the first definition.
-
 There are multiple external resources with name "egid2tid.map". UIMA will only use the first definition.
 
