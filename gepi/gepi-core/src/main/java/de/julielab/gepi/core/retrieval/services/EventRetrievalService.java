@@ -469,12 +469,12 @@ public class EventRetrievalService implements IEventRetrievalService {
             Event e = it.next();
             if (e.getArity() > 1) {
                 final Argument secondArg = e.getArgument(1);
-//            if (idSet.contains(secondArg.getTopHomologyPreferredName()) || idSet.contains(secondArg.getHgncId()) || idSet.contains(secondArg.famplexId())) {
-//                List<Argument> arguments = e.getArguments();
-//                Argument tmp = arguments.get(0);
-//                arguments.set(0, arguments.get(1));
-//                arguments.set(1, tmp);
-//            }
+            if (idSet.contains(secondArg.getGeneId()) || idSet.contains(secondArg.getTopHomologyId())) {
+                List<Argument> arguments = e.getArguments();
+                Argument tmp = arguments.get(0);
+                arguments.set(0, arguments.get(1));
+                arguments.set(1, tmp);
+            }
 //            int inputIdPosition = -1;
 //            for (int i = 0; i < e.getNumArguments(); ++i) {
 //                Argument g = e.getArgument(i);

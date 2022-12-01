@@ -3,10 +3,10 @@ package de.julielab.gepi.webapp.components;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
-import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.BeanModelEvent;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.EventPagesDataSource;
+import de.julielab.gepi.webapp.data.EventTypes;
 import de.julielab.gepi.webapp.data.FilteredGepiRequestData;
 import de.julielab.java.utilities.FileUtilities;
 import org.apache.tapestry5.*;
@@ -14,19 +14,11 @@ import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
 import org.apache.tapestry5.commons.Messages;
-import org.apache.tapestry5.commons.services.TypeCoercer;
-import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.http.Link;
 import org.apache.tapestry5.http.services.Response;
-import org.apache.tapestry5.internal.OptionModelImpl;
-import org.apache.tapestry5.internal.SelectModelImpl;
-import org.apache.tapestry5.internal.services.StringValueEncoder;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
-import org.apache.tapestry5.util.EnumSelectModel;
-import org.apache.tapestry5.util.EnumValueEncoder;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -40,7 +32,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 @Import(stylesheet = {"context:css-components/tablewidget.css"})
 public class TableResultWidget extends GepiWidget {
@@ -48,9 +39,9 @@ public class TableResultWidget extends GepiWidget {
     @Parameter
     protected EnumSet<InputMode> inputMode;
     @Property
-    List<GepiInput.EventTypes> eventTypes = List.of(GepiInput.EventTypes.values());
+    List<EventTypes> eventTypes = List.of(EventTypes.values());
     @Property
-    GepiInput.EventTypes filterEventType;
+    EventTypes filterEventType;
     @Property
     String filterArg1Symbol;
     @Property
@@ -265,7 +256,7 @@ public class TableResultWidget extends GepiWidget {
         GepiGeneInfo targetInfo = argPosition == 1 ? eventRow.getEvent().getFirstArgument().getGeneInfo() : eventRow.getEvent().getSecondArgument().getGeneInfo();
         if (targetInfo == null)
             return "#";
-        if (targetInfo.getLabels().contains("HGNC_GROUP"))
+        if (targetInfo.getLabels().contains("HGNC_GROUP") || targetInfo.getLabels().contains("AGGREGATE_FPLX_HGNC"))
             return "https://www.genenames.org/data/genegroup/#!/group"+targetInfo.getOriginalId();
         if (targetInfo.getLabels().contains("FPLX"))
             return "https://github.com/sorgerlab/famplex/";

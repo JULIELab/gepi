@@ -24,6 +24,8 @@ public class InputMapping {
     public String getType() {
         if (targetInfo == null)
             return "not found";
+        if (targetInfo.getLabels().contains("AGGREGATE_FPLX_HGNC"))
+            return "This concept exists in the FamPlex protein complex and family database and also in HGNC groups.";
         if (targetInfo.getLabels().contains("FPLX"))
             return "FamPlex Concept";
         if (targetInfo.getLabels().contains("HGNC_GROUP"))

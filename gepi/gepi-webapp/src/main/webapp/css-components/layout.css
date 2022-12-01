@@ -35,3 +35,7 @@ body.noScroll {
   top: 50%;
   transform: translateY(-50%);
 }
+
+.nav-item.active {
+    color: #ffffff;
+}

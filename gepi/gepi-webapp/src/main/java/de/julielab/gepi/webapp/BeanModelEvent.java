@@ -31,15 +31,20 @@ public Event getEvent() {
     }
 
     public String getFirstArgumentGeneId() {
-        return event.getFirstArgument().getGeneId();
+        return event.getFirstArgument().getGeneInfo().getOriginalId();
     }
 
     public String getSecondArgumentText() {
-        return event.getSecondArgument().getText();
+        return event.getArity() > 1 ? event.getSecondArgument().getText()  : "";
     }
 
     public String getSecondArgumentGeneId() {
-        return event.getSecondArgument().getGeneId();
+        try {
+            return event.getArity() > 1 ? event.getSecondArgument().getGeneInfo().getOriginalId() : "";
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public String getFirstArgumentPreferredName() {
@@ -47,17 +52,18 @@ public Event getEvent() {
     }
 
     public String getSecondArgumentPreferredName() {
-        return event.getSecondArgument().getPreferredName();
+        return event.getArity() > 1 ? event.getSecondArgument().getPreferredName() : "";
     }
 
     public String getMainEventType() {
         return event.getMainEventType();
     }
 
+    @Deprecated
     public String getFirstArgumentMatchType() {
         return event.getFirstArgument().getMatchType();
     }
-
+    @Deprecated
     public String getSecondArgumentMatchType() {
         return event.getSecondArgument().getMatchType();
     }
@@ -139,7 +145,7 @@ public Event getEvent() {
 
     public String getSecondArgumentTextWithPreferredName() {
         Argument argument = event.getSecondArgument();
-        if (null != argument)
+        if (null != argument && event.getArity() > 1)
             return argument.getText() + " (" + argument.getPreferredName() + ")";
         return "";
     }

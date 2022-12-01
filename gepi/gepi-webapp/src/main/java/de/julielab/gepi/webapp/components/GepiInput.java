@@ -11,6 +11,8 @@ import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalServic
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.webapp.base.TabPersistentField;
+import de.julielab.gepi.webapp.data.EventTypes;
+import de.julielab.gepi.webapp.data.GepiQueryParameters;
 import org.apache.tapestry5.*;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.commons.Messages;
@@ -166,12 +168,12 @@ public class GepiInput {
     @Parameter
     private GepiRequestData requestData;
 
-    void onActivate(EventContext eventContext) {
-        if (reset) {
-            log.debug("Reset is active, setting data to null.");
-            data = null;
-        }
-    }
+//    void onActivate(EventContext eventContext) {
+//        if (reset) {
+//            log.debug("Reset is active, setting data to null.");
+//            data = null;
+//        }
+//    }
 
     public void reset() {
         listATextAreaValue = "";
@@ -219,9 +221,27 @@ public class GepiInput {
     }
 
     void onSuccessFromInputForm() {
+        executeSearch();
+    }
+
+    public void executeSearch(GepiQueryParameters queryParameters, long dataSessionId) {
+        this.selectedEventTypes = queryParameters.getSelectedEventTypes();
+        this.listATextAreaValue = queryParameters.getListATextAreaValue();
+        this.listBTextAreaValue = queryParameters.getListBTextAreaValue();
+        this.taxId = queryParameters.getTaxId();
+        this.eventLikelihood = queryParameters.getEventLikelihood();
+        this.sentenceFilterString = queryParameters.getSentenceFilterString();
+        this.paragraphFilterString = queryParameters.getParagraphFilterString();
+        this.filterFieldsConnectionOperator = queryParameters.getFilterFieldsConnectionOperator();
+        this.sectionNameFilterString = queryParameters.getSectionNameFilterString();
+        this.dataSessionId = dataSessionId;
+        executeSearch();
+    }
+
+    public void executeSearch() {
         log.debug("Setting newsearch to true");
         newSearch = true;
-        List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
+        List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Regulation, EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
         if (selectedEventTypeNames.isEmpty())
             selectedEventTypeNames = EnumSet.allOf(EventTypes.class).stream().map(Enum::name).distinct().collect(Collectors.toList());
         boolean isAListPresent = listATextAreaValue != null && listATextAreaValue.trim().length() > 0;
@@ -300,7 +320,7 @@ public class GepiInput {
 
     private Future<IdConversionResult> convertToAggregateIds(String input, String taxId, String listName) {
         if (input != null) {
-            List<String> inputList = Stream.of(input.split("\n")).map(String::trim).collect(Collectors.toList());
+            List<String> inputList = Stream.of(input.split("[\n,]")).map(String::trim).collect(Collectors.toList());
             log.debug("Got {} input IDs from {}", inputList.size(), listName);
             IGeneIdService.IdType fromIdType = geneIdService.determineIdType(inputList.stream());
             log.debug("Identified input IDs of {} as: {}", listName, fromIdType);
@@ -313,8 +333,6 @@ public class GepiInput {
     private boolean resultPresent() {
         return dataService.getData(dataSessionId) != GePiData.EMPTY;
     }
-
-    public enum EventTypes {Regulation, Positive_regulation, Negative_regulation, Binding, Localization, Phosphorylation}
 
     public String getFulltextFilterTooltip() {
         return "The document context is stored with the interactions and can be used for filter purposes. The supported query syntax is described in the ElasticSearch <a target=\"_blank\" class=\"link-secondary\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-simple-query-string-query.html\">documentation</a>.";

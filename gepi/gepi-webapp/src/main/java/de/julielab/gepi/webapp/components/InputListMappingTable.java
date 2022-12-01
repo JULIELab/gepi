@@ -9,12 +9,15 @@ import de.julielab.gepi.webapp.data.InputMapping;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class InputListMappingTable {
+    @Inject
+    private Logger log;
     @Property
     private InputMapping inputMappingLoopItem;
 
@@ -41,9 +44,22 @@ public class InputListMappingTable {
         return inputMappingLoopItem.targetFound() ? "" : "text-danger";
     }
 
+    /**
+     *
+     * @return
+     */
+    public boolean hasOverflowItems() {
+        try {
+            return maxTableSize < getConversionResult().getSourceIds().size();
+        } catch (InterruptedException| ExecutionException e) {
+            log.error("Could not obtain conversion result for list {}", list, e);
+        }
+        return true;
+    }
+
     public List<InputMapping> getInputMapping() {
         try {
-            final IdConversionResult conversionResult = Optional.ofNullable(list.equalsIgnoreCase("a") ? requestData.getListAGePiIds() : requestData.getListBGePiIds()).orElse(CompletableFuture.completedFuture(IdConversionResult.of())).get();
+            final IdConversionResult conversionResult = getConversionResult();
             final Multimap<String, String> convertedItems = conversionResult.getConvertedItems();
             List<InputMapping> ret = new ArrayList<>();
             final Map<String, GepiGeneInfo> geneInfo = geneIdService.getGeneInfo(convertedItems.values());
@@ -80,5 +96,9 @@ public class InputListMappingTable {
             e.printStackTrace();
         }
         return Collections.emptyList();
+    }
+
+    private IdConversionResult getConversionResult() throws InterruptedException, ExecutionException {
+        return Optional.ofNullable(list.equalsIgnoreCase("a") ? requestData.getListAGePiIds() : requestData.getListBGePiIds()).orElse(CompletableFuture.completedFuture(IdConversionResult.of())).get();
     }
 }

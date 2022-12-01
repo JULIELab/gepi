@@ -4,6 +4,7 @@ import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.components.GepiInput;
+import de.julielab.gepi.webapp.data.GepiQueryParameters;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
@@ -53,7 +54,7 @@ public class Index {
     @Property
     @Persist(TabPersistentField.TAB)
     private GepiRequestData requestData;
-//    @Parameter
+    //    @Parameter
 //    private long dataSessionIdParameter;
 //    @Property
 //    @Persist(TabPersistentField.TAB)
@@ -84,19 +85,29 @@ public class Index {
     }
 
     void setupRender() {
-        if (requestData == null) {
-            dataSessionId = dataService.newSession();
-            log.debug("Current dataSessionId is 0, initializing GePi session with ID {}", dataSessionId);
-        } else {
-            log.debug("Existing dataSessionId is {}", dataSessionId);
-        }
         GePiData data = dataService.getData(dataSessionId);
         resultNonNullOnLoad = data != null && (data.getUnrolledResult4charts() != null || data.getAggregatedResult() != null);
     }
 
     // Handle call with an unwanted context
     Object onActivate(EventContext eventContext) {
-        return eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
+        if (requestData == null) {
+            dataSessionId = dataService.newSession();
+            log.debug("Current dataSessionId is 0, initializing GePi session with ID {}", dataSessionId);
+        } else {
+            log.debug("Existing dataSessionId is {}", dataSessionId);
+        }
+//        final Object ret = eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
+//        return ret;
+        final GepiQueryParameters gepiQueryParameters = new GepiQueryParameters(request);
+        if (gepiQueryParameters.isValidRequest()) {
+            log.info("Received valid query parameters for GePI search.");
+            gepiInput.executeSearch(gepiQueryParameters, dataSessionId);
+            return this;
+        } else {
+            log.debug("Query parameters did not contain a valid GePI search.");
+        }
+        return null;
     }
 
     void afterRender() {
@@ -107,6 +118,8 @@ public class Index {
             // and we can display the widgets.
             log.debug("Sending the ready signal for the widgets");
             javaScriptSupport.require("gepi/pages/index").invoke("readyForWidgets");
+        } else {
+            log.debug("No result present, not showing results but input form.");
         }
     }
 
@@ -122,7 +135,9 @@ public class Index {
     public boolean isResultPresent() {
         Future<EventRetrievalResult> esResult = getEsResult();
         Future<AggregatedEventsRetrievalResult> neo4jResult = getNeo4jResult();
-        return (esResult != null && esResult.isDone()) || (neo4jResult != null && neo4jResult.isDone());
+        final boolean resultPresent = (esResult != null && esResult.isDone()) || (neo4jResult != null && neo4jResult.isDone());
+        log.debug("Is result present: {}", resultPresent);
+        return resultPresent;
     }
 
     /**
@@ -184,8 +199,7 @@ public class Index {
                 AggregatedEventsRetrievalResult aggregatedEvents = data.getAggregatedResult().get();
                 log.debug("[{}] Obtained aggregated events retrieval result with {} events.", dataSessionId, aggregatedEvents.size());
                 jsonObject = dataService.getPairedArgsCount(aggregatedEvents);
-            }
-            else {
+            } else {
                 if (datasource.equals("relationCounts")) {
                     List<Event> eventList = data.getUnrolledResult4charts().get().getEventList();
                     log.debug("[{}] Obtained unrolled list of individual events of size {}.", dataSessionId, eventList.size());
@@ -260,7 +274,7 @@ public class Index {
 
     public int getPieSmColSize() {
         if (!isBList()) {
-            return 12-getStatsSmColSize();
+            return 12 - getStatsSmColSize();
         }
         // AB lists given
         return 6;
@@ -269,7 +283,7 @@ public class Index {
     public int getPieLgColSize() {
         if (!isAList()) {
             // no gene lists given
-            return 12-getStatsLgColSize();
+            return 12 - getStatsLgColSize();
         } else if (isAList() && !isBList()) {
             // only a list given
             return 6;
@@ -289,9 +303,8 @@ public class Index {
         if (!isAList()) {
             // no gene lists given
             return 4;
-        } else
-        if (!isBList()) {
-            return 12-getStatsXxxlColSize();
+        } else if (!isBList()) {
+            return 12 - getStatsXxxlColSize();
         }
         // AB lists given
         return 6;
@@ -301,8 +314,7 @@ public class Index {
         if (!isAList()) {
             // no gene lists given
             return 4;
-        } else
-        if (!isBList()) {
+        } else if (!isBList()) {
             return 6;
         }
         // AB lists given
@@ -313,8 +325,7 @@ public class Index {
         if (!isAList()) {
             // no gene lists given
             return 4;
-        } else
-        if (!isBList()) {
+        } else if (!isBList()) {
             return 4;
         }
         // AB lists given
@@ -368,7 +379,6 @@ public class Index {
         // only a list given
         return 6;
     }
-
 
 
     private boolean isAList() {

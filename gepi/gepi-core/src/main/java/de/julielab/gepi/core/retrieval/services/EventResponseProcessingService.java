@@ -121,7 +121,8 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                     // so we use this as indicator.
                     if (geneId != null) {
                         try {
-                            argument.setGeneInfo(geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId));
+                            final GepiGeneInfo geneInfo = geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
+                            argument.setGeneInfo(geneInfo);
                         } catch (Exception e) {
                             log.error("Could not load gene info for concept with ID {}", conceptId);
                         }

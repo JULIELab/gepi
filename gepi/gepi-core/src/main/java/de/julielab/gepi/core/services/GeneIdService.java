@@ -12,6 +12,7 @@ import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.GeneSymbolNormalization;
 import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.*;
 import org.neo4j.driver.Record;
@@ -289,7 +290,14 @@ public class GeneIdService implements IGeneIdService {
             geneInfo = session.readTransaction(tx -> {
                 Map<String, GepiGeneInfo> innerGeneInfo = new HashMap<>();
 
-                final String query = "MATCH (c:CONCEPT) WHERE c.id IN $conceptIds RETURN c.originalId,c.id,c.preferredName,c.synonyms,c.descriptions,labels(c)";
+                // Get the information about the genes.
+                // Slight special handling for FamPlex-HGNCGroup aggregates: we also retrieve the originalId_divergentProperty.
+                // The FamPlex-HGNCGroup aggregates have the originalId as copy_property. Thus, they obtain both original
+                // IDs from the FamPlex and HGNC Group element. However, we do not know which one ends up in the originalId
+                // property and which one in the divergent property. This depends on traversing order and is not determined
+                // beforehand. Get both properties so we can decide which one to use. FamPlex IDs are a readable name,
+                // HGNC Group IDs are numbers.
+                final String query = "MATCH (c:CONCEPT) WHERE c.id IN $conceptIds RETURN c.originalId,c.originalId_divergentProperty,c.id,c.preferredName,c.synonyms,c.descriptions,labels(c)";
                 final Value parameters = parameters("conceptIds", conceptIds);
                 Result result = tx.run(
                         query,
@@ -299,8 +307,13 @@ public class GeneIdService implements IGeneIdService {
                     Record record = result.next();
                     String conceptId = record.get("c.id").asString();
                     String originalId = record.get("c.originalId").asString();
+                    Value divergentOriginalId = record.get("c.originalId_divergentProperty");
                     String preferredName = record.get("c.preferredName").asString();
                     List<String> labels = record.get("labels(c)").asList(v -> v.asString());
+                    // For FamPlex-HGNCGroup aggregates, get the HGNC Group ID. For HGNC, we can give direct links
+                    // to the source.
+                    if (labels.contains("AGGREGATE_FPLX_HGNC") && !StringUtils.isNumeric(originalId))
+                        originalId = divergentOriginalId.asList(v -> v.asString()).stream().filter(StringUtils::isNumeric).limit(1).findAny().get();
                     innerGeneInfo.put(conceptId, GepiGeneInfo.builder().originalId(originalId).conceptId(conceptId).symbol(preferredName).labels(new HashSet<>(labels)).build());
                 }
                 return innerGeneInfo;

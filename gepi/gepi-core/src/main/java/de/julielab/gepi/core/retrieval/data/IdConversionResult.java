@@ -17,7 +17,6 @@ public class IdConversionResult {
     private List<String> sourceIds;
     private Multimap<String, String> convertedItems;
     private Set<String> unconvertedItems;
-
     public IdConversionResult(List<String> sourceIds, Multimap<String, String> idMapping, IGeneIdService.IdType from, IGeneIdService.IdType to) {
         convertedItems = idMapping;
         this.sourceIds = sourceIds;
@@ -35,6 +34,10 @@ public class IdConversionResult {
     public static IdConversionResult of(String... targetIds) {
         List<String> ids = List.of(targetIds);
         return of(ids);
+    }
+
+    public List<String> getSourceIds() {
+        return sourceIds;
     }
 
     public Set<String> getTargetIds() {

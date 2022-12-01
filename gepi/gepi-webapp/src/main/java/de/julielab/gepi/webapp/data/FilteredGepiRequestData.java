@@ -1,26 +1,21 @@
 package de.julielab.gepi.webapp.data;
 
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
-import de.julielab.gepi.webapp.components.GepiInput;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.concurrent.Future;
 
 public class FilteredGepiRequestData extends GepiRequestData {
 
-    private GepiInput.EventTypes eventTypeFilter;
+    private EventTypes eventTypeFilter;
     private String arg1SymbolFilter;
     private String arg1TextFilter;
     private String arg1IdFilter;
     private String arg2SymbolFilter;
     private String arg2TextFilter;
 
-    public GepiInput.EventTypes getEventTypeFilter() {
+    public EventTypes getEventTypeFilter() {
         return eventTypeFilter;
     }
 
-    public void setEventTypeFilter(GepiInput.EventTypes eventTypeFilter) {
+    public void setEventTypeFilter(EventTypes eventTypeFilter) {
         this.eventTypeFilter = eventTypeFilter;
     }
 

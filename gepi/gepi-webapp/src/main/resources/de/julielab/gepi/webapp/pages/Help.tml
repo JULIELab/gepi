@@ -1,0 +1,214 @@
+<html t:type="layout" title="Contact"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+
+    <body class="container-md">
+        <div class="row">
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 id="purpose-of-this-website">Purpose of this Web Site</h2>
+                        <p>
+                            This Web page offers the retrieval and display bio-molecular interactions that have been
+                            extracted from the scientific literature via text mining.
+                        </p>
+                        <p>The focus lies on interactions that involve genes, gene products, families, complexes and
+                            groups of genes. For the purpose of this service, no difference is made between genes and
+                            their products. Text mining algorithms are employed to search the text of documents from
+                            PubMed and the PubMed Central open access subset for mentions of interactions between these
+                            types of
+                            entities. Recognized interactions contain gene expression, phosphorylation, positive and
+                            negative regulation and physical binding events. For example, the sentence
+                            <div class="card mt-3 mb-3">
+                                <div class="card-body">
+                                    <blockquote class="blockquote mb-0">
+                                        <p class="fs-6">
+                                            In this study, we examined whether <span class="entity">gp41</span>-<span
+                                                class="trigger">induced
+                                        </span>
+                                            <span class="entity">
+                                                <it>IL-10</it>
+                                            </span>
+                                            <span class="trigger">up-regulation</span>
+                                            is <span class="trigger">mediated</span> by the previously described
+                                            synergistic <span class="trigger">activation</span> of cAMP and
+                                            <span class="entity">NF-kappaB</span> pathways.
+                                        </p>
+                                    </blockquote>
+                                </div>
+                                <div class="card-footer">
+                                    <a class="link-secondary" href="https://pubmed.ncbi.nlm.nih.gov/10089566/"
+                                       target="_blank">
+                                        <cite title="PMID10089566">PMID10089566</cite>
+                                    </a>
+                                </div>
+                            </div>
+                            contains the protein mentions <span class="entity">gp41</span> and <span
+                                    class="entity">IL-10</span> and the protein complex <span class="entity">NFkappaB</span>. Between those, several events
+                            describe the up-regulation of
+                            <span class="entity">
+                                <it>IL-10</it>
+                            </span>
+                            , indicated by the words <span class="trigger">induced</span>, <span class="trigger">
+                                up-regulation
+                            </span>, <span class="trigger">mediated</span> and <span class="trigger">activation</span>.
+                            For this service, the gene/protein names are recognized and regulation events are extracted.
+                            Focus on the gene/protein entities is given. Thus, although there are multiple regulations
+                            mentioned, the interaction is simplified to a single GePI database item that records the
+                            entities and the interaction/event types: <span class="entity">gp41</span> and <span
+                                    class="entity">IL-10
+                            </span> and <span class="trigger">(up-)regulation</span>. This is an example of a binary interaction between two proteins. Events can refer to a single entity and, thus, be unary. Frequent examples are phosphorylation events when the cause of the activation is either not mentioned or is not an entity in the scope of GePI. Consider the example
+
+                            <div class="card mt-3 mb-3">
+                                <div class="card-body">
+                                    <blockquote class="blockquote mb-0">
+                                        <p class="fs-6">
+                                            We have examined changes in <span class="entity">HS1</span> <span class="trigger">phosphorylation</span>[...]
+                                        </p>
+                                    </blockquote>
+                                </div>
+                                <div class="card-footer">
+                                    <a class="link-secondary" href="https://pubmed.ncbi.nlm.nih.gov/9794375/"
+                                       target="_blank">
+                                        <cite title="PMID9794375">PMID9794375</cite>
+                                    </a>
+                                </div>
+                            </div>
+                            where the <span class="trigger">phosophorylation</span> of an entity is discussed without the mention of another entity.
+                        </p>
+                        <p>
+                            Both, binary and unary events are included in the GePI search index. In result displays that require two interaction partners, unary events are either filtered out - e.g. for Sankey charts - or do not show second interaction partner information - e.g. the result table.
+
+                        </p>
+                        <h2 id="input-specification">Input Specification</h2>
+                        <p>At the heart of a GePI search lies the specification of one or two lists of genes, proteins or families, complexes and groups of them. Recognized names or IDs include all <a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/gene/">NCBI Gene</a> IDs and symbols, <a class="link-secondary" href="https://github.com/sorgerlab/famplex/">FamPlex</a> names and <a class="link-secondary" href="https://www.genenames.org/data/genegroup/#!/">HGNC Gene Group</a> names. The first list of identifiers will be called <em>List A</em> and the second one will be called <em>List B</em> all over the Web page.</p>
+                        <p><em>Open search.</em> When List A is specified but List B is not, this is called an open search. The result will contain interactions that have an item of List A as one interaction partner and any other interaction partner.</p>
+                        <h2 id="output-dashboard">Output Dashboard</h2>
+                        Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut
+                        aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit
+                        esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et
+                        iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait
+                        nulla facilisi.
+                        <h3 id="statistics">Statistics Element</h3>
+                        Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim
+                        placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam
+                        nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad
+                        minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
+                        commodo consequat.
+                        <h3 id="pie-chart">Pie Chart</h3>
+                        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel
+                        illum dolore eu feugiat nulla facilisis.
+                        <h3 id="bar-chart">Bar Chart</h3>
+                        At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
+                        takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+                        sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
+                        erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
+                        kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
+                        amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore dolores duo eirmod eos
+                        erat, et nonumy sed tempor et et invidunt justo labore Stet clita ea et gubergren, kasd magna no
+                        rebum. sanctus sea sed takimata ut vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum
+                        dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+                        dolore magna aliquyam erat.
+                        <h3 id="sankey-charts">Sankey Charts</h3>
+                        Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                        aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+                        clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor
+                        sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+                        dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+                        rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem
+                        ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
+                        labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+                        dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.
+                        <h4 id="sankey-chart-most-frequent">Most frequent Interactions Sankey Chart</h4>
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt
+                        ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+                        dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
+                        sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+                        invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
+                        justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+                        ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+                        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos
+                        et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus
+                        est Lorem ipsum dolor sit amet.
+                        <h4 id="sankey-chart-common-interaction-partners">Common Interaction Partners Sankey Chart</h4>
+                        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel
+                        illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui
+                        blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum
+                        dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
+                        dolore magna aliquam erat volutpat.
+                        <h3 id="result-table">Result Table</h3>
+                        Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut
+                        aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit
+                        esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et
+                        iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait
+                        nulla facilisi.
+                        <h4 id="result-download">Result Download</h4>
+                        Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim
+                        placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam
+                        nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad
+                        minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
+                        commodo
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card toc mt-3 mb-5 my-lg-0 ps-xl-3 mb-lg-5 text-muted">
+                    <div class="card-body">
+                        <strong class="d-none d-md-block h6 my-2">Contents</strong>
+                        <hr class="d-none d-md-block my-2"/>
+                        <div>
+                            <nav id="toc">
+                                <ul>
+                                    <li>
+                                        <a href="#purpose-of-this-website">Purpose of this Web site</a>
+                                    </li>
+                                    <li>
+                                        <a href="#input-specification">Input Specification</a>
+                                    </li>
+                                    <li>
+                                        <a href="#output-dashboard">Output Dasboard</a>
+                                        <ul>
+                                            <li>
+                                                <a href="#statistics">Statistics Element</a>
+                                            </li>
+                                            <li>
+                                                <a href="#pie-chart">Pie Chart</a>
+                                            </li>
+                                            <li>
+                                                <a href="#bar-chart">Bar Chart</a>
+                                            </li>
+                                            <li>
+                                                <a href="#sankey-charts">Sankey Charts</a>
+                                                <ul>
+                                                    <li>
+                                                        <a href="#sankey-chart-most-frequent">Most frequent Interactions
+                                                            Sankey Chart
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#sankey-chart-common-interaction-partners">Common
+                                                            Interaction Partners Sankey Chart
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="#result-table">Result Table</a>
+                                                <ul>
+                                                    <li>
+                                                        <a href="#result-download">Result Download</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>

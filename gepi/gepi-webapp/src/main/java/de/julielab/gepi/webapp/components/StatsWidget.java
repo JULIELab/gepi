@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 
@@ -107,5 +108,9 @@ public class StatsWidget extends GepiWidget {
     public boolean isBList() {
         return requestData.getInputMode().contains(InputMode.AB);
     }
+
+    @InjectComponent
+    @Property
+    private InputListMappingTable aMapping;
 
 }

@@ -5,9 +5,11 @@ import de.julielab.gepi.core.services.GepiCoreModule;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.state.GePiSessionState;
 import de.julielab.gepi.webapp.state.GePiSessionStateCreator;
+import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.commons.MappedConfiguration;
 import org.apache.tapestry5.commons.OrderedConfiguration;
+import org.apache.tapestry5.http.Link;
 import org.apache.tapestry5.http.services.*;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.ServiceBinder;
@@ -212,5 +214,32 @@ public class AppModule {
 //         executor.addJob(new IntervalSchedule(60000),
 //         "Event Statistics Calculation Job",
 //         statisticsCollector);
+    }
+
+    /**
+     * Redirect the user to the intended page when browsing through
+     * tapestry forms through browser history or over-eager autocomplete
+     */
+    public RequestExceptionHandler decorateRequestExceptionHandler(
+            final ComponentSource componentSource,
+            final Response response,
+            final RequestExceptionHandler oldHandler)
+    {
+        return new RequestExceptionHandler()
+        {
+            @Override
+            public void handleRequestException(Throwable exception) throws IOException
+            {
+                if (exception.getMessage() == null || !exception.getMessage().contains("Forms require that the request method be POST and that the t:formdata query parameter have values"))
+                {
+                    oldHandler.handleRequestException(exception);
+                    return;
+                }
+                ComponentResources cr = componentSource.getActivePage().getComponentResources();
+                Link link = cr.createEventLink("");
+                String uri = link.toRedirectURI().replaceAll(":", "");
+                response.sendRedirect(uri);
+            }
+        };
     }
 }
