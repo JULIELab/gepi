@@ -97,7 +97,7 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.gnp.GNormPlusAnnotator-1">
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.jsbd.main.SentenceAnnotator-1">
                         
             <analysisEngineDescription>
                                 
@@ -105,13 +105,15 @@
                                 
                 <primitive>true</primitive>
                                 
-                <annotatorImplementationName>de.julielab.jcore.ae.gnp.GNormPlusAnnotator</annotatorImplementationName>
+                <annotatorImplementationName>de.julielab.jcore.ae.jsbd.main.SentenceAnnotator</annotatorImplementationName>
                                 
                 <analysisEngineMetaData>
                                         
-                    <name>JCoRe GNormPlus Annotator</name>
+                    <name>JCoRe Sentence Annotator</name>
                                         
-                    <description>Wrapper for the JULIE Lab variant of the GNormPlus gene ID mapper.</description>
+                    <description>This is the UIMA Wrapper for the JULIE Sentence Boundary Detector.</description>
+                                        
+                    <version>2.6.0-SNAPSHOT</version>
                                         
                     <vendor>JULIE Lab Jena, Germany</vendor>
                                         
@@ -119,81 +121,89 @@
                                                 
                         <configurationParameter>
                                                         
-                            <name>UseExistingGeneAnnotations</name>
+                            <name>ModelFilename</name>
                                                         
-                            <description>If set to true, all Gene annotations in the CAS will be added to the BioC documents. The default type used is de.julielab.jcore.types.Gene. This can be changed with the InputGeneTypeName parameter.</description>
+                            <description>Filename for the trained JSBD model</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>Postprocessing</name>
+                                                        
+                            <description>Indicates whether postprocessing (and which filter) should be run. Default: no
+                    postprocessing</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>SentenceDelimiterTypes</name>
+                                                        
+                            <description>Qualified names of types that should never begin or end within a sentence. With other
+                    words, sentences should not begin within such a type but end after it or begin before it and end
+                    within or after it.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>true</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>CutAwayTypes</name>
+                                                        
+                            <description>An array of fully qualified type names. Document text covered by annotations of these types
+                    will be ignored from sentence splitting. This means that sentence splitting happens as if the
+                    covered text of these annotations would not exist in the text. This helps for references, for
+                    example, which otherwise might confuse the sentence splitting. A post-processing step tries to
+                    extend sentences include such annotations if they appear directly after the sentence (e.g.
+                    references: '...as Smith et al. have shown.1 Further text follows...').</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>true</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>MaximumSentenceLength</name>
+                                                        
+                            <description>Optional. If given, this parameter defines the maximum length in characters any sentence will have. If the machine learning algorithm produces sentences exceeding the given maximum length, they will be split first by newline and, if necessary, also at semicoli. If there are still too large sentences then, they will be split at whitespaces to stay within the given bound. Defaults to 0 which means no maximum length.</description>
+                                                        
+                            <type>Integer</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>AlwaysSplitAtNewlines</name>
+                                                        
+                            <description>Optional. If true, newlines are also used as sentence boundaries.</description>
                                                         
                             <type>Boolean</type>
-                                                        
-                            <multiValued>false</multiValued>
-                                                        
-                            <mandatory>false</mandatory>
-                                                    
-                        </configurationParameter>
-                                                
-                        <configurationParameter>
-                                                        
-                            <name>InputGeneTypeName</name>
-                                                        
-                            <description>The UIMA type denoting gene annotations that should be taken from the CAS and written into the BioC format for GNormPlus to use instead of running its own gene recognition when the UseExistingGeneAnnotations parameter is set to true.</description>
-                                                        
-                            <type>String</type>
-                                                        
-                            <multiValued>false</multiValued>
-                                                        
-                            <mandatory>false</mandatory>
-                                                    
-                        </configurationParameter>
-                                                
-                        <configurationParameter>
-                                                        
-                            <name>OutputGeneTypeName</name>
-                                                        
-                            <description>The UIMA type denoting gene annotations that should be created by this component. Must by a sub type of de.julielab.jcore.types.ConceptMention. Defaults to de.julielab.jcore.types.Gene.</description>
-                                                        
-                            <type>String</type>
-                                                        
-                            <multiValued>false</multiValued>
-                                                        
-                            <mandatory>false</mandatory>
-                                                    
-                        </configurationParameter>
-                                                
-                        <configurationParameter>
-                                                        
-                            <name>GNormPlusSetupFile</name>
-                                                        
-                            <description>File path or class path resource path to the setup.txt file for GNormPlus. If not specified, a default setup file is loaded that expects the Dictionary/ directory directly under the working directory, performs gene recognition with the CRF and thus expects the GNormPlus CRF directory directly under the working directory and maps the found genes to NCBI gene IDs for all organisms.</description>
-                                                        
-                            <type>String</type>
-                                                        
-                            <multiValued>false</multiValued>
-                                                        
-                            <mandatory>false</mandatory>
-                                                    
-                        </configurationParameter>
-                                                
-                        <configurationParameter>
-                                                        
-                            <name>FocusSpecies</name>
-                                                        
-                            <description>If given, all gene mentions are assigned to this NCBI taxonomy ID, i.e. species recognition is omitted.</description>
-                                                        
-                            <type>String</type>
-                                                        
-                            <multiValued>false</multiValued>
-                                                        
-                            <mandatory>false</mandatory>
-                                                    
-                        </configurationParameter>
-                                                
-                        <configurationParameter>
-                                                        
-                            <name>OutputDirectory</name>
-                                                        
-                            <description>Optional. If specified, the GNormPlus output files in BioC format will be saved to the given directory. In this way, this component can be used directly as a BioC XML writer through the GNormPlus algorithm.</description>
-                                                        
-                            <type>String</type>
                                                         
                             <multiValued>false</multiValued>
                                                         
@@ -207,11 +217,11 @@
                                                 
                         <nameValuePair>
                                                         
-                            <name>UseExistingGeneAnnotations</name>
+                            <name>ModelFilename</name>
                                                         
                             <value>
                                                                 
-                                <boolean>false</boolean>
+                                <string>de/julielab/jcore/ae/jsbd/model/jsbd-biomed-oversampled-abstracts-split-at-punctuation.mod.gz</string>
                                                             
                             </value>
                                                     
@@ -219,11 +229,33 @@
                                                 
                         <nameValuePair>
                                                         
-                            <name>OutputGeneTypeName</name>
+                            <name>SentenceDelimiterTypes</name>
                                                         
                             <value>
                                                                 
-                                <string>de.julielab.jcore.types.Protein</string>
+                                <array>
+                                                                        
+                                    <string>de.julielab.jcore.types.Title</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.AbstractText</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.AbstractSectionHeading</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.AbstractSection</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Section</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Paragraph</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Zone</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Caption</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Figure</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Table</string>
+                                                                    
+                                </array>
                                                             
                             </value>
                                                     
@@ -235,15 +267,15 @@
                                                 
                         <imports>
                                                         
+                            <import name="de.julielab.jcore.types.jcore-morpho-syntax-types"/>
+                                                        
                             <import name="de.julielab.jcore.types.jcore-document-structure-pubmed-types"/>
-                                                        
-                            <import name="de.julielab.jcore.types.jcore-semantics-biology-types"/>
-                                                        
-                            <import name="de.julielab.jcore.types.jcore-document-meta-pubmed-types"/>
                                                     
                         </imports>
                                             
                     </typeSystemDescription>
+                                        
+                    <typePriorities/>
                                         
                     <fsIndexCollection/>
                                         
@@ -255,9 +287,125 @@
                                                         
                             <outputs>
                                                                 
-                                <type>de.julielab.jcore.types.ConceptMention</type>
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Sentence</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                                
+                <resourceManagerConfiguration/>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.jtbd.main.TokenAnnotator-2">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.jtbd.main.TokenAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>JCoRe Token Annotator</name>
+                                        
+                    <description>for English in the Biomedical Domain</description>
+                                        
+                    <version>2.6.0-SNAPSHOT</version>
+                                        
+                    <vendor>JULIE Lab Jena, Germany</vendor>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>ModelFilename</name>
+                                                        
+                            <description>Filename for the trained JTBD model</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>UseDocText</name>
+                                                        
+                            <description>Defines if sentence annotation should be taken into account.</description>
+                                                        
+                            <type>Boolean</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>ModelFilename</name>
+                                                        
+                            <value>
                                                                 
-                                <type>de.julielab.jcore.types.Organism</type>
+                                <string>de/julielab/jcore/ae/jtbd/model/jtbd-biomed-original_mallet.gz</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-morpho-syntax-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Sentence</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Token</type>
                                                             
                             </outputs>
                                                         
@@ -283,7 +431,203 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.bionlpgenesmerger.BioNLPGeneMerger-2">
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.flairner.FlairNerAnnotator-3">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.flairner.FlairNerAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>Flair BioNLP Gene Tagger</name>
+                                        
+                    <description>This component starts a child process to a python interpreter and loads a Flair sequence tagging model. Sentences are taken from the CAS, sent to Flair for tagging and the results are written into the CAS. The annotation type to use can be configured. It must be a subtype of de.julielab.jcore.types.EntityMention. The tag of each entity is written to the specificType feature.</description>
+                                        
+                    <version>2.6.0</version>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>AnnotationType</name>
+                                                        
+                            <description>The UIMA type of which annotations should be created, e.g. de.julielab.jcore.types.EntityMention, of which the given type must be a subclass of. The tag of the entities is written to the specificType feature.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>FlairModel</name>
+                                                        
+                            <description>Path to the Flair sequence tagger model.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>PythonExecutable</name>
+                                                        
+                            <description>The path to the python executable. Required is a python verion &gt;=3.6. Defaults to 'python'.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>StoreEmbeddings</name>
+                                                        
+                            <description>Optional. Possible values: ALL, ENTITIES, NONE. The FLAIR SequenceTagger first computes the embeddings for each sentence and uses those as input for the actual NER algorithm. By default, the embeddings are not stored. By setting this parameter to ALL, the embeddings of all tokens of the sentence are retrieved from flair and stored in the embeddingVectors feature of each token. Setting the parameter to ENTITIES will restrict the embedding storage to those tokens which overlap with an entity recognized by FLAIR.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>GpuNumber</name>
+                                                        
+                            <description>Specifies the GPU device number to be used for FLAIR. This setting can be overwritten by the Java system property 'flairner.device'.</description>
+                                                        
+                            <type>Integer</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>ComponentId</name>
+                                                        
+                            <description>Specifies the componentId feature value given to the created annotations. Defaults to 'FlairNerAnnotator'.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>GpuNumber</name>
+                                                        
+                            <value>
+                                                                
+                                <integer>0</integer>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>AnnotationType</name>
+                                                        
+                            <value>
+                                                                
+                                <string>de.julielab.jcore.types.Protein</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>FlairModel</name>
+                                                        
+                            <value>
+                                                                
+                                <string>resources/bionlp-flair1024-ft100-hidden256.pt</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-morpho-syntax-types"/>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-semantics-biology-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type>de.julielab.jcore.types.Sentence</type>
+                                                                
+                                <type>de.julielab.jcore.types.Token</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs/>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.bionlpgenesmerger.BioNLPGeneMerger-4">
                         
             <analysisEngineDescription>
                                 
@@ -357,7 +701,7 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="de.julielab.jcore.ae.biosem.BioSemEventAnnotator-3">
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.biosem.BioSemEventAnnotator-5">
                         
             <analysisEngineDescription>
                                 
@@ -527,11 +871,15 @@
                                 
                 <node>de.julielab.jcore.ae.annotationremoval.AnnotationRemovalAnnotator-0</node>
                                 
-                <node>de.julielab.jcore.ae.gnp.GNormPlusAnnotator-1</node>
+                <node>de.julielab.jcore.ae.jsbd.main.SentenceAnnotator-1</node>
                                 
-                <node>de.julielab.jcore.ae.bionlpgenesmerger.BioNLPGeneMerger-2</node>
+                <node>de.julielab.jcore.ae.jtbd.main.TokenAnnotator-2</node>
                                 
-                <node>de.julielab.jcore.ae.biosem.BioSemEventAnnotator-3</node>
+                <node>de.julielab.jcore.ae.flairner.FlairNerAnnotator-3</node>
+                                
+                <node>de.julielab.jcore.ae.bionlpgenesmerger.BioNLPGeneMerger-4</node>
+                                
+                <node>de.julielab.jcore.ae.biosem.BioSemEventAnnotator-5</node>
                             
             </fixedFlow>
                     

@@ -13,9 +13,21 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="JCoRe GNormPlus Annotator">
+        <delegateAnalysisEngine key="JCoRe Sentence Annotator">
                         
-            <import location="JCoRe GNormPlus Annotator.xml"/>
+            <import location="JCoRe Sentence Annotator.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="JCoRe Token Annotator">
+                        
+            <import location="JCoRe Token Annotator.xml"/>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="Flair BioNLP Gene Tagger">
+                        
+            <import location="Flair BioNLP Gene Tagger.xml"/>
                     
         </delegateAnalysisEngine>
                 
@@ -49,7 +61,11 @@
                                 
                 <node>Event Annotation Remover</node>
                                 
-                <node>JCoRe GNormPlus Annotator</node>
+                <node>JCoRe Sentence Annotator</node>
+                                
+                <node>JCoRe Token Annotator</node>
+                                
+                <node>Flair BioNLP Gene Tagger</node>
                                 
                 <node>JCoRe BioNLP Gold and Predicted Genes Merge AE</node>
                                 

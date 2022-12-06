@@ -83,6 +83,7 @@ function evaluate {
         # The pipeline outputs multiple BioC XML files when multithreading is used. Collect the genelist from all of them.
         find ../data/output-bioc -name 'bioc_collection_*.xml' | xargs -I {} bash ../../evaldata-conversion-scripts/bioc2normalizedGenelist.sh {} >> pred.genelist
         getGoldGenelist $DATASET
+	echo "$(pwd): java -jar ../../julielab-entity-evaluator* -g gold.genelist -p pred.genelist"
         java -jar ../../julielab-entity-evaluator* -g gold.genelist -p pred.genelist
 }
 
@@ -102,7 +103,7 @@ if [[ "$DATASET" != "bc2" ]] && [[ "$DATASET" != "bc3" ]] && [[ "$DATASET" != "n
         exit 2;
 fi
 
-RUNNER_VERSION=0.5.0
+RUNNER_VERSION=0.5.1
 EVAL_VERSION=1.3.0
 XML_TOOLS_VERSION=0.6.5
 if [[ ! -f "jcore-pipeline-runner-base-$RUNNER_VERSION-cli-assembly.jar" ]] || [[ ! -f "jcore-pipeline-runner-cpe-$RUNNER_VERSION-jar-with-dependencies.jar" ]]; then

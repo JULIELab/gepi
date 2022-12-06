@@ -19,9 +19,9 @@
                         
             <configurationParameter>
                                 
-                <name>AddGenes</name>
+                <name>UseExistingGeneAnnotations</name>
                                 
-                <description>If set to true, all Gene annotations in the CAS will be added to the BioC documents. The default type used is de.julielab.jcore.types.Gene. This can be changed with the GeneTypeName parameter.</description>
+                <description>If set to true, all Gene annotations in the CAS will be added to the BioC documents. The default type used is de.julielab.jcore.types.Gene. This can be changed with the InputGeneTypeName parameter.</description>
                                 
                 <type>Boolean</type>
                                 
@@ -33,9 +33,23 @@
                         
             <configurationParameter>
                                 
-                <name>GeneTypeName</name>
+                <name>InputGeneTypeName</name>
                                 
-                <description>The UIMA type denoting gene annotations that should be written into the BioC format when the AddGenes parameter is set to true.</description>
+                <description>The UIMA type denoting gene annotations that should be taken from the CAS and written into the BioC format for GNormPlus to use instead of running its own gene recognition when the UseExistingGeneAnnotations parameter is set to true.</description>
+                                
+                <type>String</type>
+                                
+                <multiValued>false</multiValued>
+                                
+                <mandatory>false</mandatory>
+                            
+            </configurationParameter>
+                        
+            <configurationParameter>
+                                
+                <name>OutputGeneTypeName</name>
+                                
+                <description>The UIMA type denoting gene annotations that should be created by this component. Must by a sub type of de.julielab.jcore.types.ConceptMention. Defaults to de.julielab.jcore.types.Gene.</description>
                                 
                 <type>String</type>
                                 
@@ -93,7 +107,7 @@
                         
             <nameValuePair>
                                 
-                <name>AddGenes</name>
+                <name>UseExistingGeneAnnotations</name>
                                 
                 <value>
                                         
@@ -105,7 +119,19 @@
                         
             <nameValuePair>
                                 
-                <name>GeneTypeName</name>
+                <name>InputGeneTypeName</name>
+                                
+                <value>
+                                        
+                    <string>de.julielab.jcore.types.Gene</string>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>OutputGeneTypeName</name>
                                 
                 <value>
                                         
