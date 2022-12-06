@@ -186,9 +186,11 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argument1tophomoid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2tophomoFilter));
                             document.addField("argument1famplexid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2famplexFilter));
                             document.addField("argument1hgncgroupid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2hgncFilter));
+                            document.addField("argument1goids", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2gotidFilter));
                             document.addField("argument1coveredtext", createRawFieldValueForAnnotation(argPair[0], "/:coveredText()", null));
                             document.addField("argument1prefname", createRawFieldValueForFieldValue(document.getAsRawToken("argument1conceptid"), geneFb.conceptid2prefNameFilter));
                             document.addField("argument1homoprefname", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter));
+                            document.addField("argument1goprefnames", createRawFieldValueForFieldValue(document.getAsRawToken("argument1goids"), geneFb.conceptid2prefNameFilter));
                             document.addField("argument1matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                             document.addField("argument1genesource", createRawFieldValueForAnnotation(argPair[0], "/ref/componentId", geneComponentIdProcessingfilter));
                             document.addField("argument1genemappingsource", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList[" + k + "]/componentId", geneComponentIdProcessingfilter));
@@ -198,19 +200,22 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argument2tophomoid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tophomoFilter));
                             document.addField("argument2famplexid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2famplexFilter));
                             document.addField("argument2hgncgroupid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2hgncFilter));
+                            document.addField("argument2goids", createRawFieldValueForAnnotation(argPair[1], arg1EntryIdPath, geneFb.eg2gotidFilter));
                             document.addField("argument2coveredtext", createRawFieldValueForAnnotation(argPair[1], "/:coveredText()", null));
                             document.addField("argument2prefname", createRawFieldValueForFieldValue(document.getAsRawToken("argument2conceptid"), geneFb.conceptid2prefNameFilter));
                             document.addField("argument2homoprefname", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter));
+                            document.addField("argument2goprefnames", createRawFieldValueForFieldValue(document.getAsRawToken("argument2goids"), geneFb.conceptid2prefNameFilter));
                             document.addField("argument2matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
                             document.addField("argument2genesource", createRawFieldValueForAnnotation(argPair[1], "/ref/componentId", geneComponentIdProcessingfilter));
                             document.addField("argument2genemappingsource", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList[" + k + "]/componentId", geneComponentIdProcessingfilter));
 
-                            document.addField("arguments", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter}, new UniqueFilter()));
+                            document.addField("arguments", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter, geneFb.eg2gohypertidFilter, geneFb.eg2gohypertidFilter}, new UniqueFilter()));
                             document.addField("argumentgeneids", document.getAsRawToken("argument1geneid"), document.getAsRawToken("argument2geneid"));
                             document.addField("argumentconceptids", document.getAsRawToken("argument1conceptid"), document.getAsRawToken("argument2conceptid"));
                             document.addField("argumenttophomoids", document.getAsRawToken("argument1tophomoid"), document.getAsRawToken("argument2tophomoid"));
                             document.addField("argumentfamplexids", document.getAsArrayFieldValue("argument1famplexid"), document.getAsArrayFieldValue("argument2famplexid"));
                             document.addField("argumenthgncgroupids", document.getAsArrayFieldValue("argument1hgncgrouptid"), document.getAsArrayFieldValue("argument2hgncgroupid"));
+                            document.addField("argumentgoids", document.getAsArrayFieldValue("argument1gotids"), document.getAsArrayFieldValue("argument2gotids"));
                             document.addField("argumentcoveredtext", document.getAsRawToken("argument1coveredtext"), document.getAsRawToken("argument2coveredtext"));
                             document.addField("argumentprefnames", document.getAsRawToken("argument1prefname"), document.getAsRawToken("argument2prefname"));
                             document.addField("argumenthomoprefnames", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.egid2homoPrefNameReplaceFilter, geneFb.egid2homoPrefNameReplaceFilter}, null));
@@ -230,7 +235,21 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             // For ElasticSearch aggregations, we create terms in the form 'symbol1---symbol2'. We also sort the symbols so that the same pair of symbols is always stored in the same order.
                             // Then we can use ElasticSearch aggregations to count interactions occurrences instead of retrieving all documents and counting ourselves.
                             document.addField("aggregationvalue", document.getAsArrayFieldValue("argumenthomoprefnames").stream().map(IFieldValue::toString).sorted().collect(Collectors.joining("---")));
-                            document.addField("numarguments", argPair[1] == mockArgument ? 1 : 2);
+                            final ArrayFieldValue go1Values = document.getAsArrayFieldValue("argument1goprefnames");
+                            final ArrayFieldValue go2Values = document.getAsArrayFieldValue("argument2goprefnames");
+                            for (IFieldValue go1 : go1Values) {
+                                document.addField("aggregationvaluegogene", go1.toString() + "---" + document.getAsRawToken("argument2homoprefname").toString());
+                                for (IFieldValue go2 : go2Values) {
+                                    document.addField("aggregationvaluegenego", document.getAsRawToken("argument1homoprefname").toString() + "---" + go2.toString());
+                                    document.addField("aggregationvaluegogo", go1 + "---" + go2);
+                                }
+                            }
+                            if (go1Values.isEmpty()) {
+                                for (IFieldValue go2 : go2Values) {
+                                    document.addField("aggregationvaluegenego", document.getAsRawToken("argument1homoprefname").toString() + "---" + go2.toString());
+                                }
+                            }
+                                document.addField("numarguments", argPair[1] == mockArgument ? 1 : 2);
 
                             // filter out reflexive events
                             if (((ArrayFieldValue) document.get("argumenttophomoids")).stream().map(RawToken.class::cast).map(RawToken::getTokenValue).distinct().count() == 2) {

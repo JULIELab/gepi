@@ -3,12 +3,8 @@ package de.julielab.gepi.indexing;
 import de.julielab.jcore.consumer.es.ExternalResource;
 import de.julielab.jcore.consumer.es.FilterBoard;
 import de.julielab.jcore.consumer.es.filter.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -28,6 +24,10 @@ public class GeneFilterBoard extends FilterBoard {
     Map<String, String[]> tid2famplex;
     @ExternalResource(key = "tid2hgncgroups")
     Map<String, String[]> tid2hgncgroups;
+    @ExternalResource(key = "genetid2gotid")
+    Map<String, String[]> genetid2gotid;
+    @ExternalResource(key = "gotid2hypertid")
+    Map<String, String[]> gotid2hypertid;
     SingleAddonTermsFilter egid2tidAddonFilter;
     Filter gene2tid2atidAddonFilter;
     Filter egid2prefNameReplaceFilter;
@@ -37,6 +37,9 @@ public class GeneFilterBoard extends FilterBoard {
     Filter eg2famplexFilter;
     Filter eg2hgncFilter;
     Filter conceptid2prefNameFilter;
+    FilterChain eg2gotidFilter;
+    Filter gotid2gohypertidFilter;
+    Filter eg2gohypertidFilter;
 
     @Override
     public void setupFilters() {
@@ -48,6 +51,9 @@ public class GeneFilterBoard extends FilterBoard {
         eg2tophomoFilter = new FilterChain(eg2tidReplaceFilter, new ReplaceFilter(tid2tophomo));
         eg2famplexFilter = new FilterChain(eg2tophomoFilter, new AddonTermsFilter(tid2famplex, true, true));
         eg2hgncFilter = new FilterChain(eg2tophomoFilter, new AddonTermsFilter(tid2hgncgroups, true, true));
+        eg2gotidFilter = new FilterChain(eg2tidReplaceFilter, new AddonTermsFilter(genetid2gotid, true));
+        gotid2gohypertidFilter = new AddonTermsFilter(gotid2hypertid);
+        eg2gohypertidFilter = new FilterChain(eg2gotidFilter, gotid2gohypertidFilter);
         conceptid2prefNameFilter = new ReplaceFilter(conceptid2prefName);
     }
 }

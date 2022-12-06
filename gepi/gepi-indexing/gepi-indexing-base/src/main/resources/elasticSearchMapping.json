@@ -75,6 +75,10 @@
         "type": "keyword",
         "store": true
       },
+      "argumentgoids": {
+        "type": "keyword",
+        "store": true
+      },
       "argumentmatchtypes": {
         "type": "keyword",
         "store": true
@@ -102,6 +106,10 @@
         "type": "text",
         "store": true
       },
+      "argument1goprefnames": {
+        "type": "text",
+        "store": true
+      },
       "argument1conceptid": {
         "type": "keyword",
         "store": true
@@ -115,6 +123,10 @@
         "store": true
       },
       "argument1hgncgroupid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument1goids": {
         "type": "keyword",
         "store": true
       },
@@ -150,6 +162,10 @@
         "type": "text",
         "store": true
       },
+      "argument2goprefnames": {
+        "type": "text",
+        "store": true
+      },
       "argument2conceptid": {
         "type": "keyword",
         "store": true
@@ -163,6 +179,10 @@
         "store": true
       },
       "argument2hgncgroupid": {
+        "type": "keyword",
+        "store": true
+      },
+      "argument2goids": {
         "type": "keyword",
         "store": true
       },
