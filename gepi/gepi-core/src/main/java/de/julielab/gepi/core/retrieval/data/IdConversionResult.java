@@ -9,18 +9,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.julielab.gepi.core.services.IGeneIdService.IdType.UNKNOWN;
-
 public class IdConversionResult {
-    private IGeneIdService.IdType from;
     private IGeneIdService.IdType to;
-    private List<String> sourceIds;
+    private Collection<String> sourceIds;
     private Multimap<String, String> convertedItems;
     private Set<String> unconvertedItems;
-    public IdConversionResult(List<String> sourceIds, Multimap<String, String> idMapping, IGeneIdService.IdType from, IGeneIdService.IdType to) {
+    public IdConversionResult(Collection<String> sourceIds, Multimap<String, String> idMapping, IGeneIdService.IdType to) {
         convertedItems = idMapping;
         this.sourceIds = sourceIds;
-        this.from = from;
         this.to = to;
     }
 
@@ -28,7 +24,7 @@ public class IdConversionResult {
         Multimap<String, String> idMapping = HashMultimap.create();
         for (String id : targetIds)
             idMapping.put("dummysrc", id);
-        return new IdConversionResult(Collections.emptyList(), idMapping, UNKNOWN, IGeneIdService.IdType.GEPI_AGGREGATE);
+        return new IdConversionResult(Collections.emptyList(), idMapping, IGeneIdService.IdType.GEPI_AGGREGATE);
     }
 
     public static IdConversionResult of(String... targetIds) {
@@ -36,7 +32,7 @@ public class IdConversionResult {
         return of(ids);
     }
 
-    public List<String> getSourceIds() {
+    public Collection<String> getSourceIds() {
         return sourceIds;
     }
 
@@ -44,13 +40,7 @@ public class IdConversionResult {
         return convertedItems.values().stream().filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
-    public IGeneIdService.IdType getFrom() {
-        return from;
-    }
 
-    public void setFrom(IGeneIdService.IdType from) {
-        this.from = from;
-    }
 
     public IGeneIdService.IdType getTo() {
         return to;

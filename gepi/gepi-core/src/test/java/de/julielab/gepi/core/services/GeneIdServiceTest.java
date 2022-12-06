@@ -3,7 +3,6 @@ package de.julielab.gepi.core.services;
 import com.google.common.collect.Multimap;
 import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -11,11 +10,12 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.harness.junit.rule.Neo4jRule;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
+import static de.julielab.gepi.core.services.GeneIdService.FPLX_LABEL;
 import static org.assertj.core.api.Assertions.assertThat;
 public class GeneIdServiceTest {
     @Rule()
@@ -27,7 +27,7 @@ public class GeneIdServiceTest {
     @Test
     public void convertGeneNames2AggregateIds() throws Exception {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
-        final Multimap<String, String> idMap = geneIdService.convertGeneNames2AggregateIds(Stream.of("MTOR", "akt1")).get();
+        final Multimap<String, String> idMap = geneIdService.convertConceptNames2AggregateIds(Stream.of("MTOR", "akt1")).get();
         assertThat(idMap.get("MTOR")).containsExactlyInAnyOrder("atid2", "tid2");
         assertThat(idMap.get("akt1")).containsExactly("atid3");
     }
@@ -35,7 +35,7 @@ public class GeneIdServiceTest {
     @Test
     public void convertGene2AggregateIds() throws Exception {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
-        final Multimap<String, String> idMap = geneIdService.convertGene2AggregateIds(Stream.of("2475", "207", "56718")).get();
+        final Multimap<String, String> idMap = geneIdService.convertConcept2AggregateGepiIds(Stream.of("2475", "207", "56718"), FPLX_LABEL, "originalId").get();
         assertThat(idMap.get("2475")).containsExactlyInAnyOrder("atid2");
         assertThat(idMap.get("207")).containsExactly("atid3");
         assertThat(idMap.get("56718")).containsExactly("tid2");
@@ -79,6 +79,16 @@ public class GeneIdServiceTest {
         assertThat(geneInfo.get("atid2").getSymbol()).isEqualTo("mTOR");
         assertThat(geneInfo.get("atid2").getOriginalId()).isEqualTo("2475");
         assertThat(geneInfo.get("atid3").getSymbol()).isEqualTo("AKT1");
+    }
+
+    @Test
+    public void filterGeneIdsForTaxonomyIds() throws Exception {
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        // We expect the input genes to be filtered for the taxonomy IDs
+        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("2475", "56717", "324254", "56718"), IGeneIdService.IdType.GENE, IGeneIdService.IdType.GENE, Set.of("10090", "10116")).get();
+        final Multimap<String, String> convertedItems = conversionResult.getConvertedItems();
+        assertThat(convertedItems.size()).isEqualTo(2);
+        assertThat(convertedItems.keySet()).containsExactly("56717", "56718");
     }
 
     private void setupDB(GraphDatabaseService graphDatabaseService) {

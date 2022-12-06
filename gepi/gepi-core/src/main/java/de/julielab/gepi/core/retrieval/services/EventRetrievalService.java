@@ -218,14 +218,15 @@ public class EventRetrievalService implements IEventRetrievalService {
                 serverRqst.index = documentIndex;
                 serverRqst.rows = SCROLL_SIZE;
                 serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-                serverRqst.downloadCompleteResults = true;
-                if (!forCharts)
-                    serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
+                serverRqst.downloadCompleteResults = forCharts;
+                serverRqst.downloadCompleteResultsMethod = "searchAfter";
+                if (forCharts)
+                    serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
                 if (!forCharts) {
                     addHighlighting(serverRqst);
                 }
 
-                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier<>("BipartiteEvents");
+                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier<>("ClosedSearch");
                 carrier.addSearchServerRequest(serverRqst);
                 long time = System.currentTimeMillis();
                 searchServerComponent.process(carrier);
@@ -295,7 +296,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 log.trace("The A IDs are: {}", idSet);
                 SearchServerRequest serverCmd = getOpenSearchRequest(gepiRequestData, from, numRows, forCharts);
 
-                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OutsideEvents");
+                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OpenSearch");
                 carrier.addSearchServerRequest(serverCmd);
                 long time = System.currentTimeMillis();
                 log.debug("Sent server request");
@@ -329,19 +330,18 @@ public class EventRetrievalService implements IEventRetrievalService {
     public SearchServerRequest getOpenSearchRequest(GepiRequestData requestData, int from, int numRows, boolean forCharts) throws ExecutionException, InterruptedException {
         BoolQuery eventQuery = EventQueries.getOpenQuery(requestData);
 
-        boolean downloadCompleteResults = numRows == 0 || numRows == Integer.MAX_VALUE;
-
         SearchServerRequest serverRqst = new SearchServerRequest();
         serverRqst.query = eventQuery;
         serverRqst.index = documentIndex;
         serverRqst.start = from;
         serverRqst.rows = numRows;
-        if (downloadCompleteResults)
+        if (forCharts)
             serverRqst.rows = SCROLL_SIZE;
         serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-        serverRqst.downloadCompleteResults = downloadCompleteResults;
-        if (!forCharts)
-            serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
+        serverRqst.downloadCompleteResults = forCharts;
+        serverRqst.downloadCompleteResultsMethod = "searchAfter";
+        if (forCharts)
+            serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
         if (!forCharts) {
             addHighlighting(serverRqst);
         }
