@@ -6,6 +6,6 @@ Create and run a container based on the image:
 docker run -d --name elasticsearch-preanalyzed -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch-preanalyzed:<tag>
 
 And, finally, create an index:
-curl -XPUT http://localhost:9200/gepi_0.2 -H 'Content-Type: application/json' -d @../gepi-indexing-base/src/main/resources/elasticSearchMapping.json
+curl -XPUT http://localhost:9200/gepi_0.10 -H 'Content-Type: application/json' -d @../gepi-indexing-base/src/main/resources/elasticSearchMapping.json
 
-The index must then be filled with documents. Refer to *GePIN Development* section of the main GePIN README.md in the project root for details.
+The index must then be filled with documents. Refer to *GePI Development* section of the main GePI README.md in the project root for details.
