@@ -37,11 +37,11 @@
       },
       "arguments": {
         "type": "keyword",
-        "store": true
+        "store": false
       },
       "argumentgeneids": {
         "type": "keyword",
-        "store": true
+        "store": false
       },
       "argumentcoveredtext": {
         "type": "text",
@@ -67,19 +67,7 @@
         "type": "keyword",
         "store": true
       },
-      "argumentfamplexids": {
-        "type": "keyword",
-        "store": true
-      },
-      "argumenthgncgroupids": {
-        "type": "keyword",
-        "store": true
-      },
       "argumentgoids": {
-        "type": "keyword",
-        "store": true
-      },
-      "argumentmatchtypes": {
         "type": "keyword",
         "store": true
       },

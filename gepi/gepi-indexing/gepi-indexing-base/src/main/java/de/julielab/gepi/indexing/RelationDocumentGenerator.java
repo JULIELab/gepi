@@ -271,8 +271,8 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                 keyBuilder.append(g.getBegin());
                 keyBuilder.append(g.getEnd());
             }
-            keyBuilder.append(document.get("argument1geneid").toString());
-            keyBuilder.append(document.get("argument2geneid").toString());
+            keyBuilder.append(document.getAsArrayFieldValue("argumentgeneids").get(0).toString());
+            keyBuilder.append(document.getAsArrayFieldValue("argumentgeneids").get(1).toString());
         }
         keyBuilder.append(((RawToken) document.get("maineventtype")).getTokenValue().toString());
         String key = keyBuilder.toString();

@@ -43,6 +43,7 @@ public class GeneFilterBoard extends FilterBoard {
     Filter gotid2gohypertidFilter;
     Filter eg2gohypertidFilter;
     Filter egid2taxidReplaceFilter;
+    Filter eg2goprefnameFilter;
 
     @Override
     public void setupFilters() {
@@ -59,5 +60,6 @@ public class GeneFilterBoard extends FilterBoard {
         gotid2gohypertidFilter = new AddonTermsFilter(gotid2hypertid);
         eg2gohypertidFilter = new FilterChain(eg2gotidFilter, gotid2gohypertidFilter);
         conceptid2prefNameFilter = new ReplaceFilter(conceptid2prefName);
+        eg2goprefnameFilter = new FilterChain(eg2gotidFilter, conceptid2prefNameFilter);
     }
 }

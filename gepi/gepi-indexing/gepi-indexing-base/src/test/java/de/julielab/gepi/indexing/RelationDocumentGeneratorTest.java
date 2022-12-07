@@ -97,8 +97,8 @@ public class RelationDocumentGeneratorTest {
         Document doc = docs.get(0);
 
         assertThat(doc.get("argumentgeneids").toString()).isEqualTo("[id1, id2]");
-        assertThat(doc.get("argument1geneid").toString()).isEqualTo("id1");
-        assertThat(doc.get("argument2geneid").toString()).isEqualTo("id2");
+        assertThat(doc.getAsArrayFieldValue("argumentgeneids").get(0).toString()).isEqualTo("id1");
+        assertThat(doc.getAsArrayFieldValue("argumentgeneids").get(1).toString()).isEqualTo("id2");
         assertThat(doc.get("maineventtype").toString()).isEqualTo("regulation");
         // We should find both sources for genes, gene IDs and events in this document
         assertThat(doc.get("genesource").toString()).isEqualTo("[GeneTagger1, GeneTagger2]");
@@ -253,12 +253,12 @@ public class RelationDocumentGeneratorTest {
         final List<Document> documents = generator.createDocuments(jCas);
         // Although there were 3 events defined, 2 should remain because one should be merged.
         assertThat(documents).hasSize(2);
-        assertThat(documents.get(0).get("argument1coveredtext").toString()).isEqualTo("IKK");
+        assertThat(documents.get(0).getAsArrayFieldValue("argumentcoveredtext").get(0).toString()).isEqualTo("IKK");
         // The long form argument should remain
-        assertThat(documents.get(0).get("argument2coveredtext").toString()).isEqualTo("nuclear factor κB");
+        assertThat(documents.get(0).getAsArrayFieldValue("argumentcoveredtext").get(1).toString()).isEqualTo("nuclear factor κB");
 
-        assertThat(documents.get(1).get("argument1coveredtext").toString()).isEqualTo("IKK");
-        assertThat(documents.get(1).get("argument2coveredtext").toString()).isEqualTo("NF-κB");
+        assertThat(documents.get(1).getAsArrayFieldValue("argumentcoveredtext").get(0).toString()).isEqualTo("IKK");
+        assertThat(documents.get(1).getAsArrayFieldValue("argumentcoveredtext").get(1).toString()).isEqualTo("NF-κB");
     }
 
     /**

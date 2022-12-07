@@ -61,8 +61,6 @@ public class RelationFieldValueGeneratorTest {
 
         assertThat(doc.get("argumentgeneids").toString()).isEqualTo("[id2, id1]");
         assertThat(doc.get("aggregationvalue").toString()).isEqualTo("id1---id2");
-        assertThat(doc.get("argument1geneid").toString()).isEqualTo("id2");
-        assertThat(doc.get("argument2geneid").toString()).isEqualTo("id1");
         assertThat(doc.get("maineventtype").toString()).isEqualTo("regulation");
     }
 
@@ -108,8 +106,6 @@ public class RelationFieldValueGeneratorTest {
         assertThat(doc.get("argumentcoveredtext").toString()).isEqualTo("[Gene1, gene2]");
         assertThat(doc.get("argumentprefnames").toString()).isEqualTo("[id1, id3]");
         assertThat(doc.get("argumenthomoprefnames").toString()).isEqualTo("[id1, id3]");
-        assertThat(doc.get("argument1geneid").toString()).isEqualTo("id1");
-        assertThat(doc.get("argument2geneid").toString()).isEqualTo("id3");
         assertThat(doc.get("maineventtype").toString()).isEqualTo("regulation");
     }
 
@@ -195,8 +191,8 @@ public class RelationFieldValueGeneratorTest {
         Document doc = (Document) docs.get(0);
 
         assertThat(doc.get("argumentgeneids").toString()).isEqualTo("[id1, gene2]");
-        assertThat(doc.get("argument1geneid").toString()).isEqualTo("id1");
-        assertThat(doc.get("argument2geneid").toString()).isEqualTo("gene2");
+        assertThat(doc.getAsArrayFieldValue("argumentgeneids").get(0).toString()).isEqualTo("id1");
+        assertThat(doc.getAsArrayFieldValue("argumentgeneids").get(1).toString()).isEqualTo("gene2");
         assertThat(doc.get("maineventtype").toString()).isEqualTo("regulation");
     }
 
@@ -236,8 +232,6 @@ public class RelationFieldValueGeneratorTest {
         Document doc = (Document) docs.get(0);
 
         assertThat(doc.get("argumentgeneids").toString()).isEqualTo("[id1, none]");
-        assertThat(doc.get("argument1geneid").toString()).isEqualTo("id1");
-        assertThat(doc.get("argument2geneid").toString()).isEqualTo("none");
         assertThat(doc.get("maineventtype").toString()).isEqualTo("phosphorylation");
     }
 
