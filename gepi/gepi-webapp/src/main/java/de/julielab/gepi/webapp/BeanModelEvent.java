@@ -59,15 +59,6 @@ public Event getEvent() {
         return event.getMainEventType();
     }
 
-    @Deprecated
-    public String getFirstArgumentMatchType() {
-        return event.getFirstArgument().getMatchType();
-    }
-    @Deprecated
-    public String getSecondArgumentMatchType() {
-        return event.getSecondArgument().getMatchType();
-    }
-
     public String getGeneMappingSources() {
         return event.getGeneMappingSources().stream().collect(Collectors.joining(", "));
     }

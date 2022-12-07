@@ -1,6 +1,7 @@
 package de.julielab.gepi.webapp.components;
 
 import de.julielab.gepi.core.retrieval.data.*;
+import de.julielab.gepi.core.retrieval.services.EventRetrievalService;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.BeanModelEvent;
@@ -193,7 +194,7 @@ public class TableResultWidget extends GepiWidget {
     }
 
     public int getRowsPerPage() {
-        return 10;
+        return EventRetrievalService.DEFAULT_PAGE_SIZE;
     }
 
     public String getDocumentUrl() {
