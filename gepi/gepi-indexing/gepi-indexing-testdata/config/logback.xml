@@ -10,6 +10,7 @@
 	</appender>
 	<logger name="de.julielab.jcore.ae.genemapper.genemodel.GeneDocument" level="ERROR" />
 	<logger name="de.julielab.jcore.consumer.neo4jrelations.Neo4jRelationsConsumer" level="INFO"/>
+        <logger name="de.julielab.gepi.indexing.RelationDocumentGenerator" level="DEBUG"/>
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>

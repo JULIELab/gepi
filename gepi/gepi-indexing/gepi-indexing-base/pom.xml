@@ -29,6 +29,6 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-    <name>GePi Indexing</name>
+    <name>GePi Indexing Base</name>
 
 </project>

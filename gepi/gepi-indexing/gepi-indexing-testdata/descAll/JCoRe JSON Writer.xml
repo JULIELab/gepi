@@ -129,7 +129,79 @@
                     
         </configurationParameters>
                 
-        <configurationParameterSettings/>
+        <configurationParameterSettings>
+                        
+            <nameValuePair>
+                                
+                <name>FileOutput</name>
+                                
+                <value>
+                                        
+                    <boolean>false</boolean>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>OutputDestination</name>
+                                
+                <value>
+                                        
+                    <string>data/output-json</string>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>DocumentGenerators</name>
+                                
+                <value>
+                                        
+                    <array>
+                                                
+                        <string>de.julielab.gepi.indexing.RelationDocumentGenerator</string>
+                                            
+                    </array>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>FilterBoards</name>
+                                
+                <value>
+                                        
+                    <array>
+                                                
+                        <string>de.julielab.gepi.indexing.TextFilterBoard</string>
+                                                
+                        <string>de.julielab.gepi.indexing.GeneFilterBoard</string>
+                                            
+                    </array>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>GZIP</name>
+                                
+                <value>
+                                        
+                    <boolean>true</boolean>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                    
+        </configurationParameterSettings>
                 
         <typeSystemDescription/>
                 
@@ -177,9 +249,9 @@
                 
         <externalResourceDependency>
                         
-            <key>tid2prefName</key>
+            <key>conceptid2prefName</key>
                         
-            <description>tid2prefName</description>
+            <description>conceptid2prefName</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
                         
@@ -246,6 +318,42 @@
             <optional>false</optional>
                     
         </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>geneids2taxids</key>
+                        
+            <description>geneids2taxids</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>genetid2gotid</key>
+                        
+            <description>genetid2gotid</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>gotid2hypertid</key>
+                        
+            <description>gotid2hypertid</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
             
     </externalResourceDependencies>
         
@@ -281,13 +389,39 @@
                         
             <externalResource>
                                 
+                <name>tid2famplex</name>
+                                
+                <description>tid2famplex</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2famplex.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
                 <name>tid2topHomologyPrefName</name>
                                 
                 <description>tid2topHomologyPrefName</description>
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2topHomologyPrefName.map.gz</url>
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2topHomologyPrefName.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -313,7 +447,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2tophomo.map.gz</url>
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2tophomo.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -339,85 +473,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2atid.map.gz</url>
-                                        
-                    <resourceMetaData>
-                                                
-                        <name/>
-                                                
-                        <configurationParameters/>
-                                                
-                        <configurationParameterSettings/>
-                                            
-                    </resourceMetaData>
-                                    
-                </configurableDataResourceSpecifier>
-                                
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
-                            
-            </externalResource>
-                        
-            <externalResource>
-                                
-                <name>tid2prefName</name>
-                                
-                <description>tid2prefName</description>
-                                
-                <configurableDataResourceSpecifier>
-                                        
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2prefName.map.gz</url>
-                                        
-                    <resourceMetaData>
-                                                
-                        <name/>
-                                                
-                        <configurationParameters/>
-                                                
-                        <configurationParameterSettings/>
-                                            
-                    </resourceMetaData>
-                                    
-                </configurableDataResourceSpecifier>
-                                
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
-                            
-            </externalResource>
-                        
-            <externalResource>
-                                
-                <name>egid2tid.map</name>
-                                
-                <description>egid2tid.map</description>
-                                
-                <configurableDataResourceSpecifier>
-                                        
-                    <url>file:/var/data/gepi/es-consumer-resources/egid2tid.map.gz</url>
-                                        
-                    <resourceMetaData>
-                                                
-                        <name/>
-                                                
-                        <configurationParameters/>
-                                                
-                        <configurationParameterSettings/>
-                                            
-                    </resourceMetaData>
-                                    
-                </configurableDataResourceSpecifier>
-                                
-                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
-                            
-            </externalResource>
-                        
-            <externalResource>
-                                
-                <name>tid2famplex</name>
-                                
-                <description>tid2famplex</description>
-                                
-                <configurableDataResourceSpecifier>
-                                        
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2famplex.map.gz</url>
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2atid.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -443,7 +499,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/es-consumer-resources/tid2hgncgroups.map.gz</url>
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2hgncgroups.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -460,10 +516,148 @@
                 <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
                             
             </externalResource>
+                        
+            <externalResource>
+                                
+                <name>geneids2taxids</name>
+                                
+                <description>geneids2taxids</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/geneids2taxids.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>genetid2gotid</name>
+                                
+                <description>genetid2gotid</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/genetid2gotid.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>gotid2hypertid</name>
+                                
+                <description>gotid2hypertid</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/gotid2hypertid.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>conceptid2prefName</name>
+                                
+                <description>conceptid2prefName</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/conceptid2prefName.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>egid2tid.map</name>
+                                
+                <description>egid2tid.map</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/egid2tid.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
                     
         </externalResources>
                 
         <externalResourceBindings>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2famplex</key>
+                                
+                <resourceName>tid2famplex</resourceName>
+                            
+            </externalResourceBinding>
                         
             <externalResourceBinding>
                                 
@@ -499,14 +693,6 @@
                         
             <externalResourceBinding>
                                 
-                <key>tid2prefName</key>
-                                
-                <resourceName>tid2prefName</resourceName>
-                            
-            </externalResourceBinding>
-                        
-            <externalResourceBinding>
-                                
                 <key>tid2hgncgroups</key>
                                 
                 <resourceName>tid2hgncgroups</resourceName>
@@ -515,9 +701,33 @@
                         
             <externalResourceBinding>
                                 
-                <key>tid2famplex</key>
+                <key>geneids2taxids</key>
                                 
-                <resourceName>tid2famplex</resourceName>
+                <resourceName>geneids2taxids</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>genetid2gotid</key>
+                                
+                <resourceName>genetid2gotid</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>gotid2hypertid</key>
+                                
+                <resourceName>gotid2hypertid</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>conceptid2prefName</key>
+                                
+                <resourceName>conceptid2prefName</resourceName>
                             
             </externalResourceBinding>
                         

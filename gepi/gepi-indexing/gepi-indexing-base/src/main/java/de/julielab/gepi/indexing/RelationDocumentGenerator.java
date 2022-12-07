@@ -74,7 +74,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                             // Likewise for the paragraph-like containing annotation of the relation
                             Document paragraphDocument = createParagraphDocument(jCas, docId, rel, argPair, zoneIndex);
 
-                            // skip events extracted PMC abstracts when there exists a corresponding PubMed document
+                            // skip events extracted from PMC abstracts when there exists a corresponding PubMed document
                             if (paragraphDocument.containsKey("textscope") && paragraphDocument.get("textscope").toString().equals("abstract") && relDoc.get("source").toString().equals("pmc") && relDoc.containsKey("pmid")) {
                                 log.debug("DEBUG MESSAGE: Event with arguments ({}, {}) from document {} omitted because it appeared in the abstract and the PubMed document {} corresponds to it", relDoc.get("argument1coveredtext"), relDoc.get("argument2coveredtext"), docId, relDoc.get("pmid"));
                                 continue;
@@ -86,6 +86,8 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                             relDocs.add(relDoc);
                             if (overlappingSentence != null)
                                 sentence2relDocs.put(overlappingSentence, relDoc);
+                        } else {
+                            log.debug("Skipping interaction document {} because its arguments don't lie in the same sentence.", relDoc.getId());
                         }
                     }
                 }
@@ -148,10 +150,14 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                             if (g11LF4g21 || g12LF4g22) {
                                 docIt.remove();
                                 removedDocuments.add(document);
+                                if (log.isDebugEnabled())
+                                log.debug("Removing document {} because of abbreviation-duplicity: {}-{}-{}", document.getId(), g21.getCoveredText(), document.get("maineventtype"), g22.getCoveredText());
                             } else if (g21LF4g11 || g22LF4g12) {
                                 key2doc.remove(key);
                                 removedDocuments.add(existingDoc);
                                 key2doc.put(key, document);
+                                if (log.isDebugEnabled())
+                                log.debug("Removing document {} because of abbreviation-duplicity: {}-{}-{}", existingDoc.getId(), g11.getCoveredText(), existingDoc.get("maineventtype"), g12.getCoveredText());
                             }
                         } else {
                             key2doc.put(key, document);
@@ -246,6 +252,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
 
                 // discard the current document as it has been merged into the existing one
                 docIt.remove();
+                log.debug("Remove interaction with ID {} because it is a duplicate. It has been merged into the duplicate.", document.getId());
             } else {
                 key2doc.put(key, document);
             }

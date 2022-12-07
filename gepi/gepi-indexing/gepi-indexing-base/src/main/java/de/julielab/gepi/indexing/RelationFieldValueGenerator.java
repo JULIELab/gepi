@@ -74,6 +74,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
 
 
     public static final String UNARY_EVENT_MOCK_TEXT = "none";
+    public static final String DUMMY = "dummy";
     private final TextFilterBoard textFb;
     private final GeneFilterBoard geneFb;
     private final Filter geneComponentIdProcessingfilter;
@@ -112,8 +113,6 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
         ArgumentMention mockArgument;
         try {
             jCas = rel.getCAS().getJCas();
-            // a static mock interaction partner for unary events
-            mockArgument = getMockArgument(jCas);
         } catch (CASException e) {
             throw new FieldGenerationException(e);
         }
@@ -125,7 +124,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                 FeatureStructure[] argPair;
                 // is this a unary event?
                 if (j == i && allArguments.size() == 1)
-                    argPair = new FeatureStructure[]{allArguments.get(i), mockArgument};
+                    argPair = new FeatureStructure[]{allArguments.get(i), getMockArgument(jCas, (Annotation) allArguments.get(i))};
                 else if (j > i)
                     argPair = new FeatureStructure[]{allArguments.get(i), allArguments.get(j)};
                 else
@@ -220,8 +219,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             final String[] entryIdPathPair = {arg1EntryIdPath, arg2EntryIdPath};
                             document.addField("argumentgeneids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, null, null));
                             document.addField("argumenttaxids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.egid2taxidReplaceFilter, geneFb.egid2taxidReplaceFilter}, null));
-                            document.addField("argumentconceptids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.eg2tidReplaceFilter}, null));
-                            document.addField("argumenttophomoids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.eg2tophomoFilter}, null));
+                            document.addField("argumentconceptids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.eg2tidReplaceFilter, geneFb.eg2tidReplaceFilter}, null));
+                            document.addField("argumenttophomoids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.eg2tophomoFilter, geneFb.eg2tophomoFilter}, null));
 //                            document.addField("argumentfamplexids", document.getAsArrayFieldValue("argument1famplexid"), document.getAsArrayFieldValue("argument2famplexid"));
 //                            document.addField("argumenthgncgroupids", document.getAsArrayFieldValue("argument1hgncgroupid"), document.getAsArrayFieldValue("argument2hgncgroupid"));
                             document.addField("argumentgoids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.eg2gotidFilter, geneFb.eg2gotidFilter}, null));
@@ -258,13 +257,14 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                                     document.addField("aggregationvaluegenego", document.getAsRawToken("argument1homoprefname").toString() + "---" + go2.toString());
                                 }
                             }
-                                document.addField("numarguments", argPair[1] == mockArgument ? 1 : 2);
+                                document.addField("numarguments", DUMMY.equals(((ArgumentMention) argPair[1]).getRole()) ? 1 : 2);
 
                             // filter out reflexive events
                             if (((ArrayFieldValue) document.get("argumenttophomoids")).stream().map(RawToken.class::cast).map(RawToken::getTokenValue).distinct().count() == 2) {
                                 relDocs.add(document);
                             }
                         } catch (CASException e) {
+                            log.error("Could not create interaction document", e);
                             throw new FieldGenerationException(e);
                         }
                     }
@@ -274,14 +274,17 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
         return relDocs;
     }
 
-    private ArgumentMention getMockArgument(JCas jCas) {
-        final Gene gene = new Gene(jCas);
+    private ArgumentMention getMockArgument(JCas jCas, Annotation firstArgument) {
+        // We copy the offsets of the first argument to make sure they both end up in the same sentence.
+        // Otherwise, the RelationDocumentGenerator would filter it out.
+        final Gene gene = new Gene(jCas, firstArgument.getBegin(), firstArgument.getEnd());
         final ResourceEntry re = new ResourceEntry(jCas);
         re.setEntryId(UNARY_EVENT_MOCK_TEXT);
         re.setSource(getClass().getSimpleName() + " dummy interaction partner for a unary event.");
         gene.setResourceEntryList(JCoReTools.addToFSArray(null, re));
-        final ArgumentMention argument = new ArgumentMention(jCas);
+        final ArgumentMention argument = new ArgumentMention(jCas, gene.getBegin(), gene.getEnd());
         argument.setRef(gene);
+        argument.setRole(DUMMY);
         return argument;
     }
 
