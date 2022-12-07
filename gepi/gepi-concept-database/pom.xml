@@ -82,6 +82,11 @@
 		</dependency>
 		<dependency>
 			<groupId>de.julielab</groupId>
+			<artifactId>julielab-concept-creation-bioportal</artifactId>
+			<version>${concept-db-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.julielab</groupId>
 			<artifactId>julielab-concept-creation-famplex</artifactId>
 			<version>${concept-db-version}</version>
 		</dependency>

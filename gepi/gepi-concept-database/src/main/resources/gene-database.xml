@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
-<conceptdatabase xmlns="http://www.julielab.de/conceptdb"
+<conceptdatabase xmlns="https://www.julielab.de/conceptdb"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://www.julielab.de/conceptdb http://www.julielab.de/conceptdb/conceptdb-1.1.0.xsd http://www.julielab.de/conceptdb/concepts/ncbigene
-                 http://www.julielab.de/conceptdb/concepts/ncbigeneconcepts-1.1.0.xsd
-                 http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd
-                 http://www.julielab.de/conceptdb/exporter-1.1.0.xsd">
+                 xsi:schemaLocation="https://www.julielab.de/conceptdb https://www.julielab.de/conceptdb/conceptdb-1.1.0.xsd https://www.julielab.de/conceptdb/concepts/ncbigene
+                 https://www.julielab.de/conceptdb/concepts/ncbigeneconcepts-1.1.0.xsd
+                 https://www.julielab.de/conceptdb/facets/default https://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd
+                 https://julielab.de/conceptdb/concepts/bioportal https://julielab.de/conceptdb/concepts/bioportalconcepts-1.1.0.xsd
+                 https://www.julielab.de/conceptdb/exporter-1.1.0.xsd">
     <versioning>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.10.1-SNAPSHOT</version>
     </versioning>
     <connection>
-        <uri>http://darwin:7575</uri>
+        <uri>http://localhost:7575</uri>
         <user>neo4j</user>
-        <password>julielab</password>
+        <password>secret</password>
     </connection>
     <preparations>
         <operation>
@@ -30,35 +31,71 @@
                 <cypherquery>CREATE INDEX ON :CONCEPT(preferredName_lc)</cypherquery>
             </request>
         </operation>
+        <operation>
+            <request>
+                <cypherquery>CREATE INDEX ON :AGGREGATE(id)</cypherquery>
+            </request>
+        </operation>
     </preparations>
     <imports>
+        <import name="ontology_concepts">
+            <rest>
+                <restendpoint>/concepts/concept_manager/insert_concepts</restendpoint>
+                <httpmethod>POST</httpmethod>
+            </rest>
+            <concepts>
+                <creator xmlns="https://julielab.de/conceptdb/concepts/bioportal">
+                    <name>JulielabBioPortalToolsConceptCreator</name>
+                    <!-- This required the julielab-bioportal-tools to have run before to download the Gene Ontology
+                    and extracts its concepts in a custom JSON format -->
+                    <configuration>
+                        <path>extracted-ontology-concepts</path>
+                    </configuration>
+                </creator>
+            </concepts>
+            <facet>
+                <creator xmlns="https://www.julielab.de/conceptdb/facets/default">
+                    <configuration>
+                        <facetgroup>
+                            <name>BioMed</name>
+                        </facetgroup>
+                    </configuration>
+                </creator>
+            </facet>
+        </import>
         <import name="ncbi_gene_import">
             <rest>
                 <restendpoint>/concepts/concept_manager/insert_concepts</restendpoint>
                 <httpmethod>POST</httpmethod>
             </rest>
             <concepts>
-                <creator xmlns="http://www.julielab.de/conceptdb/concepts/ncbigene">
+                <creator xmlns="https://www.julielab.de/conceptdb/concepts/ncbigene">
                     <name>NCBIGeneConceptCreator</name>
                     <configuration>
-                        <basepath>/data/erik/geno/build/</basepath>
+                        <basepath/>
+                        <!-- The NCBI Gene database in the form of the gene_info file, downloaded from https://ftp.ncbi.nih.gov/gene/DATA/gene_info.gz -->
                         <gene_info>
-                            resources/gene_info_organism_filtered.gz
+                            /data/data_resources/biology/entrez/gene/gene_info.gz
                         </gene_info>
-                        <genedescriptions>
-                            resources/eg2summary
-                        </genedescriptions>
-                        <organismlist>
-                            makeResourcesAndIndicesTemp/all-species.taxid
-                        </organismlist>
-                        <organismnames>/data/data_resources/biology/ncbi_tax/names.dmp</organismnames>
-                        <homologene>deprecated</homologene>
-                        <gene_group>/data/data_resources/biology/entrez/gene/gene_orthologs.gz</gene_group>
+                        <!-- Optional file created by JULIE Lab Gene mapper that lists the NCBI Gene summaries for each gene ID. Tab separated, two columns, gene ID left, description text right.
+                             Unused in GePI. -->
+                        <genedescriptions/>
+                        <!-- List of NCBI Taxonomy IDs to optionally restrict the genes imported into Neo4j to these species. -->
+                        <organismlist/>
+                        <!-- names.dmp file from the NCBI Taxonomy to construct name specifiers -->
+                        <organismnames/>
+                        <!-- Gene ortholog information downloaded from https://ftp.ncbi.nih.gov/gene/DATA/gene_orthologs.gz -->
+                        <gene_orthologs>/data/data_resources/biology/entrez/gene/gene_orthologs.gz</gene_orthologs>
+                        <!-- ID mapping downloaded from UniProt https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/idmapping_selected.tab.gz -->
+                        <up_id_mapping>/data/data_resources/biology/idmapping/idmapping_selected.tab.gz</up_id_mapping>
+                        <gene2go>/data/data_resources/biology/entrez/gene/gene2go.gz</gene2go>
+                        <!-- must match the source that is given to the GO concepts by the GO importer. The BioPortal importer uses the base file name as the source name. -->
+                        <go_db_original_source_name>GO</go_db_original_source_name>
                     </configuration>
                 </creator>
             </concepts>
             <facet>
-                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
+                <creator xmlns="https://www.julielab.de/conceptdb/facets/default">
                     <name>DefaultFacetCreator</name>
                     <configuration>
                         <name>NCBI Gene</name>
@@ -86,13 +123,13 @@
                             famplex-import-files/grounding_map.tsv
                         </groundingmap>
                         <nameextensionrecords>
-                            famplex-import-files/expanded.dict
+                            famplex-import-files/specialist-extended-famplexrecords.txt
                         </nameextensionrecords>
                     </configuration>
                 </creator>
             </concepts>
             <facet>
-                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
+                <creator xmlns="https://www.julielab.de/conceptdb/facets/default">
                     <name>DefaultFacetCreator</name>
                     <configuration>
                         <name>FamPlex</name>
@@ -129,7 +166,7 @@
                 </creator>
             </concepts>
             <facet>
-                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
+                <creator xmlns="https://www.julielab.de/conceptdb/facets/default">
                     <name>DefaultFacetCreator</name>
                     <configuration>
                         <name>HGNC</name>
@@ -143,12 +180,72 @@
         </import>
     </imports>
     <operations>
+        <!-- Normally, the database will be empty when using this whole configuration file. This operation is only
+             needed when the aggregates have been built before and need to be changes. Thus, this is for development
+         purposes. -->
+        <operation name="delete_equal_name_aggregates">
+            <request>
+                <rest>
+                    <restendpoint>/concepts/concept_aggregate_manager/delete_aggregates</restendpoint>
+                    <httpmethod>DELETE</httpmethod>
+                </rest>
+                <parameters>
+                    <parameter name="aggregated_labels">
+                        <arrayitem>AGGREGATE_EQUAL_NAMES</arrayitem>
+                        <arrayitem>AGGREGATE_FPLX_HGNC</arrayitem>
+                    </parameter>
+                </parameters>
+            </request>
+        </operation>
+        <operation name="create_equal_name_aggregates">
+            <request>
+                <rest>
+                    <restendpoint>/concepts/concept_aggregate_manager/build_aggregates_by_preferred_name</restendpoint>
+                    <httpmethod>PUT</httpmethod>
+                </rest>
+                <parameters>
+                    <parameter name="labels">
+                        <arrayitem>ID_MAP_NCBI_GENES</arrayitem>
+                    </parameter>
+                </parameters>
+            </request>
+        </operation>
+        <operation name="create_fplx_hgnc_top_aggregates">
+            <request>
+                <rest>
+                    <restendpoint>/concepts/concept_aggregate_manager/build_aggregates_by_preferred_name</restendpoint>
+                    <httpmethod>PUT</httpmethod>
+                </rest>
+                <parameters>
+                    <parameter name="labels">
+                        <arrayitem>FPLX</arrayitem>
+                        <arrayitem>HGNC_GROUP</arrayitem>
+                    </parameter>
+                    <parameter name="aggregated_labels">
+                        <arrayitem>CONCEPT</arrayitem>
+                        <arrayitem>AGGREGATE_FPLX_HGNC</arrayitem>
+                    </parameter>
+                    <parameter name="copy_properties">
+                        <arrayitem>preferredName</arrayitem>
+                        <arrayitem>synonyms</arrayitem>
+                        <arrayitem>originalId</arrayitem>
+                        <arrayitem>originalSource</arrayitem>
+                    </parameter>
+                </parameters>
+            </request>
+        </operation>
         <operation name="copy_aggregate_properties">
             <request>
                 <rest>
                     <restendpoint>/concepts/concept_aggregate_manager/copy_aggregate_properties</restendpoint>
                     <httpmethod>PUT</httpmethod>
                 </rest>
+                <parameters>
+                    <parameter name="skip_existing_properties">true</parameter>
+                    <parameter name="aggregated_labels">
+                        <arrayitem>AGGREGATE</arrayitem>
+                    </parameter>
+                </parameters>
             </request>
         </operation>
         <operation name="copy_preferred_names_lowercase">
@@ -156,13 +253,19 @@
                 <!-- This requires the APOC core library to be installed -->
                 <cypherquery>CALL apoc.periodic.iterate("MATCH (c:CONCEPT) WHERE c.preferredName IS NOT null RETURN c",
                     "SET c.preferredName_lc =
-                    toLower(c.preferredName)",{batchSize:1000,iterateList:true,parallel:true,concurrency:50,retries:0})
+                    toLower(c.preferredName)",{batchSize:300,iterateList:true,parallel:true,concurrency:50,retries:0})
                     YIELD batches, total
                 </cypherquery>
             </request>
         </operation>
     </operations>
     <exports>
+        <export name="geneids2taxids">
+            <request>
+                <cypherquery>MATCH (c:ID_MAP_NCBI_GENES) RETURN c.originalId,c.taxId</cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/geneids2taxids.map.gz</outputfile>
+        </export>
         <export name="conceptids">
             <request>
                 <rest>
@@ -177,8 +280,10 @@
                     </parameter>
                 </parameters>
             </request>
-            <outputfile>es-consumer-resources/egid2tid.map</outputfile>
+            <outputfile>es-consumer-resources/egid2tid.map.gz</outputfile>
         </export>
+        <!-- Map from aggregate elements to their highest aggregate. This includes orthology aggregates but also
+            FamPlex / HGNC aggregates -->
         <export name="allgeneaggregates">
             <request>
                 <cypherquery>MATCH (th)-[:HAS_ELEMENT*]->(c:CONCEPT) WHERE (th:AGGREGATE_GENEGROUP OR
@@ -187,68 +292,123 @@
                     cid, REDUCE(acc=HEAD(atids), atid in TAIL(atids) | acc + "|" + atid)
                 </cypherquery>
             </request>
-            <outputfile>es-consumer-resources/tid2atid.map</outputfile>
+            <outputfile>es-consumer-resources/tid2atid.map.gz</outputfile>
         </export>
         <export name="tophomologyids">
             <request>
-                <cypherquery>MATCH (th:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE NOT c:AGGREGATE
+                <cypherquery>MATCH (th)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE (th:AGGREGATE_GENEGROUP OR th:AGGREGATE_TOP_ORTHOLOGY) AND NOT c:AGGREGATE
                     RETURN DISTINCT c.id,th.id
                 </cypherquery>
             </request>
-            <outputfile>es-consumer-resources/tid2tophomo.map</outputfile>
+            <outputfile>es-consumer-resources/tid2tophomo.map.gz</outputfile>
         </export>
         <export name="preferredNames">
             <request>
-                <cypherquery>MATCH (gene:ID_MAP_NCBI_GENES) return gene.id,gene.preferredName</cypherquery>
+                <cypherquery>MATCH (c:CONCEPT) WHERE c.preferredName IS NOT null RETURN c.id,c.preferredName</cypherquery>
             </request>
-            <outputfile>es-consumer-resources/tid2prefName.map</outputfile>
+            <outputfile>es-consumer-resources/conceptid2prefName.map.gz</outputfile>
         </export>
         <export name="preferredTophomologyNames">
             <request>
                 <cypherquery>MATCH (c:ID_MAP_NCBI_GENES) WITH c OPTIONAL MATCH
                     (c)-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) WITH c,a OPTIONAL MATCH
-                    (a)-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) RETURN DISTINCT c.id, COALESCE(top.preferredName,
-                    a.preferredName,
-                    c.preferredName)
+                    (a)-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) RETURN DISTINCT c.id AS id, COALESCE(top.preferredName,
+                    a.preferredName, c.preferredName) AS name
+                    UNION
+                    MATCH (f:FPLX) RETURN f.id AS id,f.preferredName AS name
+                    UNION
+                    MATCH (h:HGNC_GROUP) RETURN h.id AS id,h.preferredName AS name
+                    UNION
+                    MATCH (fh:AGGREGATE_FPLX_HGNC) RETURN fh.id AS id,fh.preferredName AS name
                 </cypherquery>
             </request>
-            <outputfile>es-consumer-resources/tid2topHomologyPrefName.map</outputfile>
+            <outputfile>es-consumer-resources/tid2topHomologyPrefName.map.gz</outputfile>
         </export>
-        <!-- Export a map from NCBI Gene tids to all the FamPlex concept tids it is directly or indirectly connected with -->
+        <!-- Export a map from top orthology aggregates - i.e. AGGREGATE_TOP_ORTHOLOGY atids if present or NCBI Gene tids for genes that are not part of an orthology cluster - to all the FamPlex concept tids it is directly or indirectly connected with.
+             Used for an AddOn filter on top of a tid2atid AddOn filter so we can add FamPlex concept IDs to orthology aggregates. Thus, although FamPlex is only about human genes, we make it species independent via orthology aggregates. -->
         <export name="tid2famplex">
             <request>
-                <cypherquery>MATCH p=(f:FPLX)&lt;-[:isa|partof*]-(c:ID_MAP_NCBI_GENES) WITH reverse([x IN nodes(p) |
-                    x.id]) AS idlist RETURN head(idlist),reduce(acc=head(tail(idlist)), fplxid IN tail(tail(idlist)) |
-                    acc + "|" + fplxid)
+                <!--
+                Result: Map from highest orthology aggregate to FamPlex or FamPlex-HGNC-equal-name-aggregate concepts connected with the orthology aggregate elements. Query explanation:
+                1. Get the path from a FamPlex concept to a non-aggregate gene. This path always exists for each FamPlex concept.
+                2. Get the optional AGGREGATE_FPLX_HGNC node. Might or might not exist.
+                3. Create a list for the path from the FamPlex/FPLX_HGNC node to the gene by concatenating the list with the FPLX_HGNC id or - if it not exists - with the empty list (via coalesce)
+                2. Then get a path from that gene to the highest genegroup or top-orthology aggregate. This path might not exist which we will handle in a second.
+                3. Get the node IDs from both paths while reversing the first ID list. We do this to get the order right from the perspective of the orthology aggregate. It is not actually important. Use COALESCE on the second list with a list that only contains the gene concept ID in case that path2 does not exist.
+                4. Return the orthology aggregate ID or, if that does not exist, the non-aggregate gene concept ID that we got through COALESCE. This is the "key" for the ElasticSearch AddOn filter for which this export is done.
+                5. As second part, return the list of FamPlex concepts that are connected to the orthology aggregate. Since the first path always ends in the non-aggregate gene concept node, we just need to get the elements list1[1..]
+                -->
+                <cypherquery>
+                    MATCH p=(f:FPLX)&lt;-[:isa*]-(c:ID_MAP_NCBI_GENES) WHERE (f)&lt;-[:HAS_ROOT_CONCEPT]-()
+                    WITH f,c,p OPTIONAL MATCH p2=(fh:AGGREGATE_FPLX_HGNC)-[:HAS_ELEMENT]-&gt;(f)
+                    WITH COALESCE(HEAD([n in nodes(p2) | n.id]),[])+[n in nodes(p) | n.id] AS fplxPathIds,c
+                    OPTIONAL MATCH p2=(c)&lt;-[:HAS_ELEMENT*]-(a) WHERE (a:AGGREGATE_GENEGROUP or a:AGGREGATE_TOP_ORTHOLOGY) AND (a)&lt;-[:HAS_ROOT_CONCEPT]-()
+                    WITH REVERSE(fplxPathIds) AS list1, COALESCE([x IN nodes(p2) | x.id],[c.id]) AS list2
+                    RETURN list2[-1],REDUCE(acc=list1[1], id IN list1[2..] | acc + "|" + id)
                 </cypherquery>
             </request>
-            <outputfile>es-consumer-resources/tid2famplex.map</outputfile>
+            <outputfile>es-consumer-resources/tid2famplex.map.gz</outputfile>
         </export>
         <export name="tid2hgncgroups">
             <request>
-                <!-- The 'not' clause is there to ensure that only paths from the highest HGNC group are returned; this avoids partial paths that are just subpaths of the longest one. -->
-                <cypherquery>MATCH p=(h:HGNC_GROUP)-[:IS_BROADER_THAN*]->(c:ID_MAP_NCBI_GENES) WHERE
-                    not((:HGNC_GROUP)-[:IS_BROADER_THAN]->(h)) WITH reverse([x IN nodes(p) | x.id]) AS idlist RETURN
-                    head(idlist),reduce(acc=head(tail(idlist)),hgncid in tail(tail(idlist)) | acc + "|" + hgncid)
+                <!-- Similar to the tid2famplex exporter above. -->
+                <cypherquery>
+                    MATCH p=(h:HGNC_GROUP)-[:IS_BROADER_THAN*]->(c:ID_MAP_NCBI_GENES) WHERE ()-[:HAS_ROOT_CONCEPT]->(h)
+                    WITH h,c,p OPTIONAL MATCH p2=(fh:AGGREGATE_FPLX_HGNC)-[:HAS_ELEMENT]-&gt;(h)
+                    WITH COALESCE(HEAD([n in nodes(p2) | n.id]),[])+[n in nodes(p) | n.id] AS hgncPathIds,c
+                    OPTIONAL MATCH p2=(c)&lt;-[:HAS_ELEMENT*]-(a) WHERE (a:AGGREGATE_GENEGROUP or a:AGGREGATE_TOP_ORTHOLOGY) AND (a)&lt;-[:HAS_ROOT_CONCEPT]-()
+                    WITH REVERSE(hgncPathIds) AS list1, COALESCE([x IN nodes(p2) | x.id],[c.id]) AS list2
+                    RETURN list2[-1],REDUCE(acc=list1[1], id IN list1[2..] | acc + "|" + id)
                 </cypherquery>
             </request>
-            <outputfile>es-consumer-resources/tid2hgncgroups.map</outputfile>
+            <outputfile>es-consumer-resources/tid2hgncgroups.map.gz</outputfile>
         </export>
-        <export name="tid2famplexnames">
+        <export name="genetid2gotid">
+            <request>
+                <!-- Map genes to their GO annotations. -->
+                <cypherquery>
+                    MATCH (g:ID_MAP_NCBI_GENES)-[:IS_ANNOTATED_WITH]->(go:GENE_ONTOLOGY) RETURN g.id,REDUCE(acc="", id IN collect(go.id) | acc + "|" + id)
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/genetid2gotid.map.gz</outputfile>
+        </export>
+        <!-- Create a file that maps each GO term to all their hypernyms -->
+        <export name="gotid2hypertid">
+            <request>
+                <rest>
+                    <restendpoint>/concepts/export/hypernyms</restendpoint>
+                    <httpmethod>GET</httpmethod>
+                </rest>
+                <parameters>
+                    <parameter name="facet_names">
+                        <arrayitem>gene_ontology</arrayitem>
+                    </parameter>
+                </parameters>
+            </request>
+            <outputfile>es-consumer-resources/gotid2hypertid.map.gz</outputfile>
+        </export>
+        <!-- Create a dictionary from FamPlex and HGNC group names to their internal database ID. This is used in GePI indexing to assign concept IDs to family name mentions. Those are not mapped by GNormPlus. -->
+        <export name="fplxhgncgroupnames2tid">
             <request>
                 <rest>
                     <restendpoint>/concepts/export/lingpipe_dictionary</restendpoint>
                     <httpmethod>GET</httpmethod>
                 </rest>
                 <parameters>
-                    <parameter name="label">FPLX</parameter>
+                    <!-- The order is important: through the 'unique' parameter we discard keys (=concept names) that already appear in the dictionary during construction. Thus, the aggregates get precedence and HGNC and FamPlex concepts are only included if they have no equal-named concept in the other database. -->
+                    <parameter name="labels">
+                        <arrayitem>AGGREGATE_FPLX_HGNC</arrayitem>
+                        <arrayitem>HGNC_GROUP</arrayitem>
+                        <arrayitem>FPLX</arrayitem>
+                    </parameter>
+                    <parameter name="unique_keys">true</parameter>
                 </parameters>
             </request>
             <decoding>
                 <base64>true</base64>
                 <gzip>true</gzip>
             </decoding>
-            <outputfile>processing-dictionaries/famplex.dict</outputfile>
+            <outputfile>processing-dictionaries/fplxhgncgroupnames.dict.gz</outputfile>
         </export>
     </exports>
 </conceptdatabase>
