@@ -235,9 +235,9 @@ public class RelationFieldValueGeneratorTest {
         assertThat(docs).hasSize(1);
         Document doc = (Document) docs.get(0);
 
-        assertThat(doc.get("argumentgeneids").toString()).isEqualTo("[id1, dummy]");
+        assertThat(doc.get("argumentgeneids").toString()).isEqualTo("[id1, none]");
         assertThat(doc.get("argument1geneid").toString()).isEqualTo("id1");
-        assertThat(doc.get("argument2geneid").toString()).isEqualTo("dummy");
+        assertThat(doc.get("argument2geneid").toString()).isEqualTo("none");
         assertThat(doc.get("maineventtype").toString()).isEqualTo("phosphorylation");
     }
 

@@ -12,6 +12,8 @@ public class GeneFilterBoard extends FilterBoard {
 
     @ExternalResource(key = "egid2tid")
     Map<String, String> egid2tid;
+    @ExternalResource(key = "geneids2taxids")
+    Map<String, String> egid2taxid;
     @ExternalResource(key = "tid2atid")
     Map<String, String[]> tid2atid;
     @ExternalResource(key = "conceptid2prefName")
@@ -40,10 +42,12 @@ public class GeneFilterBoard extends FilterBoard {
     FilterChain eg2gotidFilter;
     Filter gotid2gohypertidFilter;
     Filter eg2gohypertidFilter;
+    Filter egid2taxidReplaceFilter;
 
     @Override
     public void setupFilters() {
         egid2tidAddonFilter = new SingleAddonTermsFilter(egid2tid);
+        egid2taxidReplaceFilter = new ReplaceFilter(egid2taxid);
         gene2tid2atidAddonFilter = new FilterChain(egid2tidAddonFilter, new AddonTermsFilter(tid2atid));
         egid2prefNameReplaceFilter = new FilterChain(new ReplaceFilter(egid2tid), new ReplaceFilter(conceptid2prefName));
         egid2homoPrefNameReplaceFilter = new FilterChain(new ReplaceFilter(egid2tid), new ReplaceFilter(tid2homoPrefName));

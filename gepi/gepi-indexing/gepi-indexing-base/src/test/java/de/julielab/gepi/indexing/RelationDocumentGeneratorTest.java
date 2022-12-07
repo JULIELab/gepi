@@ -215,7 +215,7 @@ public class RelationDocumentGeneratorTest {
     }
 
     @Test
-    public void filterAbbreviationDupliactes() throws Exception {
+    public void filterAbbreviationDuplicates() throws Exception {
         RelationDocumentGenerator generator = createRelationDocumentGenerator();
 
         JCas jCas = JCasFactory.createJCas("de.julielab.jcore.types.jcore-document-meta-pubmed-types", "de.julielab.jcore.types.jcore-semantics-biology-types", "de.julielab.jcore.types.extensions.jcore-semantics-mention-extension-types");
@@ -247,7 +247,7 @@ public class RelationDocumentGeneratorTest {
         feLong.addToIndexes();
         final FlattenedRelation feShort1 = getFlattenedRelation(jCas, getEventMention(jCas, 4, 18, "phosphorylation", ikk1, nfkbShort1));
         feShort1.addToIndexes();
-        final FlattenedRelation feShort2 = getFlattenedRelation(jCas, getEventMention(jCas, 47, 88, "phosphorylation", ikk2, nfkbShort2));
+        final FlattenedRelation feShort2 = getFlattenedRelation(jCas, getEventMention(jCas, 74, 88, "phosphorylation", ikk2, nfkbShort2));
         feShort2.addToIndexes();
 
         final List<Document> documents = generator.createDocuments(jCas);
@@ -273,7 +273,7 @@ public class RelationDocumentGeneratorTest {
     private EventMention getEventMention(JCas jCas, int begin, int end, String eventType, ArgumentMention... arguments) {
         final EventTrigger trigger = new EventTrigger(jCas, begin, end);
         trigger.setSpecificType(eventType);
-        final EventMention e = new EventMention(jCas, 4, 18);
+        final EventMention e = new EventMention(jCas, begin, end);
         e.setTrigger(trigger);
         e.setSpecificType(trigger.getSpecificType());
         e.setArguments(JCoReTools.addToFSArray(null, List.of(arguments)));

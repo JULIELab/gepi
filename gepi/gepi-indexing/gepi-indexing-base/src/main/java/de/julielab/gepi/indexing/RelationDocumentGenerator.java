@@ -66,7 +66,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                         // We create the sentence as a document of its own. In the mapping we then could add it as
                         // an object or as a nested document. There is no need to make it a nested document so we will
                         // use the object mapping which performs better.
-                        Document sentenceDocument = null;
+                        Document sentenceDocument;
                         Collection<Sentence> overlappingSentences = sentIndex.get(rel);
                         if (argPairLiesWithinSentence(overlappingSentences, argPair)) {
                             Sentence overlappingSentence = overlappingSentences.stream().findAny().get();
@@ -148,9 +148,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                             if (g11LF4g21 || g12LF4g22) {
                                 docIt.remove();
                                 removedDocuments.add(document);
-                                System.out.println("Removing " + g21.getCoveredText() + " - " + g22.getCoveredText());
                             } else if (g21LF4g11 || g22LF4g12) {
-                                System.out.println("Removing " + g11.getCoveredText() + " - " + g12.getCoveredText());
                                 key2doc.remove(key);
                                 removedDocuments.add(existingDoc);
                                 key2doc.put(key, document);
