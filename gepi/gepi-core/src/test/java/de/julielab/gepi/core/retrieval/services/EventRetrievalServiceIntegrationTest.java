@@ -91,7 +91,7 @@ public class EventRetrievalServiceIntegrationTest {
         // this test refers to test file 10022233_FE6_0_1.json
         // both filter keywords, for sentence and paragraph, are present for the same event items
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("108")).withFilterFieldsConnectionOperator("AND").withSentenceFilterString("pertussis toxin").withParagraphFilterString("immune modulation"));
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("1268")).withFilterFieldsConnectionOperator("AND").withSentenceFilterString("pertussis toxin").withParagraphFilterString("immune modulation"));
         assertThat(outsideEvents.get().getEventList()).isNotEmpty();
         assertThat(outsideEvents.get().getEventList().get(0).getPmid()).isEqualTo("10022233");
     }
@@ -104,7 +104,7 @@ public class EventRetrievalServiceIntegrationTest {
         // paragraph of the latter.
         // Through the 'or' operator, we should get both
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("108", "3458")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"pertussis toxin\"").withParagraphFilterString("\"Heparinized blood\""));
+        CompletableFuture<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("1268", "3458")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"pertussis toxin\"").withParagraphFilterString("\"Heparinized blood\""));
         assertThat(outsideEvents.get().getEventList()).extracting(Event::getEventId).containsExactlyInAnyOrder("10022233_FE6_0_1", "10022233_FE7_0_1", "10022381_FE16_0_1");
     }
 
@@ -156,11 +156,11 @@ public class EventRetrievalServiceIntegrationTest {
 
     @Test
     public void testClosedSearchWithSentenceParagraphFilter() throws Exception {
-        // This tests uses 10049519_FE11_0_1.json and 10051468_FE0_0_1.json
+        // This tests uses 10049519_FE10_0.0_1.0 and 10051468_FE0_0_1.json
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("7124")).withListBGePiIds(IdConversionResult.of("3569","7351")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"neutrophil infiltration\"").withParagraphFilterString("\"regenerating mice\""));
+        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3569", "54315")).withListBGePiIds(IdConversionResult.of("7124","21926")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"neutrophil infiltration\"").withParagraphFilterString("\"regenerating mice\""));
         final List<Event> eventList = bipartiteEventsEvents.get().getEventList();
-        assertThat(eventList).extracting(Event::getEventId).containsExactlyInAnyOrder("10049519_FE11_0_1", "10051468_FE0_0_1");
+        assertThat(eventList).extracting(Event::getEventId).containsExactlyInAnyOrder("10049519_FE10_0.0_1.0", "10051468_FE0_0.0_1.0");
     }
 
     @Test

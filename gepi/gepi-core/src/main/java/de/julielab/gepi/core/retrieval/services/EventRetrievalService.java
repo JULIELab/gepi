@@ -42,20 +42,6 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS = "argumenttophomoids";
 
-    public static final String FIELD_EVENT_ARG_FAMPLEX_IDS = "argumentfamplexids";
-
-    public static final String FIELD_EVENT_ARG_HGNC_GROUP_IDS = "argumenthgncgroupids";
-
-    /**
-     * @deprecated The match type exact/fuzzy was an emergency categorization for the first GeNo version where
-     * there are exact and partial matches. A partial match is a match of a gene name that is not found in exactly in
-     * the NCBI Gene database but has only an overlap with an existing name. The evaluation scores for approximate
-     * matches were bad in the Weepingtree version so that we offered to omit them. In newer versions, this problem
-     * does not exist any more because we only use exact matches or are very restrictive on the partial matches.
-     */
-    @Deprecated
-    public static final String FIELD_EVENT_ARG_MATCH_TYPES = "argumentmatchtypes";
-
     public static final String FIELD_EVENT_ARG_TEXT = "argumentcoveredtext";
 
     public static final String FIELD_EVENT_ARG_PREFERRED_NAME = "argumentprefnames";
@@ -125,6 +111,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_VALUE_MOCK_ARGUMENT = "none";
 
+    public static final int DEFAULT_PAGE_SIZE = 10;
+
     public static final String FIELD_GENE_MAPPING_SOURCE = "genemappingsource";
     public static final List<String> FIELDS_FOR_TABLE = Arrays.asList(
             FIELD_PMID,
@@ -134,10 +122,9 @@ public class EventRetrievalService implements IEventRetrievalService {
             FIELD_EVENT_PARAGRAPH_TEXT,
             FIELD_EVENT_MAINEVENTTYPE,
             FIELD_EVENT_ALL_EVENTTYPES,
-            FIELD_EVENT_ARG_GENE_IDS,
+//            FIELD_EVENT_ARG_GENE_IDS,
             FIELD_EVENT_ARG_CONCEPT_IDS,
             FIELD_EVENT_ARG_PREFERRED_NAME,
-            FIELD_EVENT_ARG_MATCH_TYPES,
             FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
             FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS,
             FIELD_EVENT_ARG_TEXT,
@@ -170,7 +157,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     @Override
     public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, boolean forCharts) {
-        return getEvents(requestData, 0, Integer.MAX_VALUE, forCharts);
+        return getEvents(requestData, 0, DEFAULT_PAGE_SIZE, forCharts);
     }
 
     /**
@@ -251,7 +238,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     @Override
     public CompletableFuture<EventRetrievalResult> closedSearch(GepiRequestData requestData) {
-        return closedSearch(requestData, 0, Integer.MAX_VALUE, false);
+        return closedSearch(requestData, 0, DEFAULT_PAGE_SIZE, false);
     }
 
     /**
@@ -281,7 +268,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     @Override
     public CompletableFuture<EventRetrievalResult> openSearch(GepiRequestData requestData) {
-        return openSearch(requestData, 0, Integer.MAX_VALUE, false);
+        return openSearch(requestData, 0, DEFAULT_PAGE_SIZE, false);
     }
 
     @Override
@@ -317,13 +304,16 @@ public class EventRetrievalService implements IEventRetrievalService {
             } catch (InterruptedException | ExecutionException e) {
                 log.error("Could not retrieve the IDs for the query", e);
                 throw new RuntimeException(e);
+            } catch (Error error) {
+                error.printStackTrace();
+                throw error;
             }
         });
     }
 
     @Override
     public SearchServerRequest getOpenSearchRequest(GepiRequestData requestData) throws ExecutionException, InterruptedException {
-        return getOpenSearchRequest(requestData, 0, Integer.MAX_VALUE, false);
+        return getOpenSearchRequest(requestData, 0, DEFAULT_PAGE_SIZE, false);
     }
 
     @Override
@@ -402,19 +392,18 @@ public class EventRetrievalService implements IEventRetrievalService {
         return CompletableFuture.supplyAsync(() -> {
             BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData.getEventTypes(), requestData.getEventLikelihood(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString(), requestData.getFilterFieldsConnectionOperator());
 
-            boolean downloadCompleteResults = numRows == 0 || numRows == Integer.MAX_VALUE;
-
             SearchServerRequest serverRqst = new SearchServerRequest();
             serverRqst.query = eventQuery;
             serverRqst.index = documentIndex;
             serverRqst.start = from;
             serverRqst.rows = numRows;
-            if (downloadCompleteResults)
+            if (forCharts)
                 serverRqst.rows = SCROLL_SIZE;
             serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-            serverRqst.downloadCompleteResults = downloadCompleteResults;
-            if (!forCharts)
-                serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
+            serverRqst.downloadCompleteResults = forCharts;
+            serverRqst.downloadCompleteResultsMethod = "searchAfter";
+            if (forCharts)
+                serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
             if (!forCharts) {
                 addHighlighting(serverRqst);
             }

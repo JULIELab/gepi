@@ -6,8 +6,6 @@ import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIE
 
 public class Argument implements Comparable<Argument> {
 
-    @Deprecated
-    private String matchType;
     private String geneId;
     private String conceptId;
     private String topHomologyId;
@@ -23,19 +21,6 @@ public class Argument implements Comparable<Argument> {
         this.conceptId = conceptId;
         this.topHomologyId = topHomologyId;
         this.text = text;
-    }
-
-    public String getMatchType() {
-        return matchType;
-    }
-
-    /**
-     * <p>The type of string match of the gene mapper, exact or fuzzy.</p>
-     *
-     * @param matchType The gene mapper synonym match type for gene ID assignment.
-     */
-    public void setMatchType(String matchType) {
-        this.matchType = matchType;
     }
 
     public String getTopHomologyPreferredName() {

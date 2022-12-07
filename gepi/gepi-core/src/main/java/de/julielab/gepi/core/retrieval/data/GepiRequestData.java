@@ -22,6 +22,16 @@ public class GepiRequestData implements Cloneable {
     private String[] taxId;
     private String sectionNameFilterString;
 
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    private int pageSize = 10;
+
     public String[] getTaxId() {
         return taxId;
     }

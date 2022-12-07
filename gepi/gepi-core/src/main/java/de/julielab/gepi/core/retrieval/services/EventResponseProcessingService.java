@@ -68,10 +68,6 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                     .orElse(Collections.emptyList());
             List<Object> topHomologyIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS)
                     .orElse(Collections.emptyList());
-//            List<Object> famplexIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_FAMPLEX_IDS)
-//                    .orElse(Collections.emptyList());
-//            List<Object> hgncGroupIds = eventDocument.getFieldValues(FIELD_EVENT_ARG_HGNC_GROUP_IDS)
-//                    .orElse(Collections.emptyList());
             List<Object> argPrefNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_PREFERRED_NAME)
                     .orElse(Collections.emptyList());
             List<Object> argHomologyPrefNames = eventDocument.getFieldValues(FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME)
@@ -79,8 +75,6 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             List<Object> allEventTypes = eventDocument.getFieldValues(FIELD_EVENT_ALL_EVENTTYPES)
                     .orElse(Collections.emptyList());
             List<Object> texts = eventDocument.getFieldValues(FIELD_EVENT_ARG_TEXT).orElse(Collections.emptyList());
-            @Deprecated
-            List<Object> matchTypes = eventDocument.getFieldValues(FIELD_EVENT_ARG_MATCH_TYPES).orElse(Collections.emptyList());
             Optional<String> mainEventType = eventDocument.get(FIELD_EVENT_MAINEVENTTYPE);
             Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
             Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE_TEXT);
@@ -113,13 +107,13 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                 if (conceptId != null) {
                     // assert conceptId != null : "No concept ID received from event document with
                     // ID " + eventDocument.getId() + ":\n" + eventDocument;
-                    assert geneId != null;
+                    assert conceptId != null;
                     assert topHomologyId != null;
 
                     final Argument argument = new Argument(geneId, conceptId, topHomologyId, text);
-                    // We don't want to fetch the gene info for charts. For charts, we don't load the geneId,
+                    // We don't want to fetch the gene info for charts. For charts, we don't load the covered text field,
                     // so we use this as indicator.
-                    if (geneId != null) {
+                    if (text != null) {
                         try {
                             final GepiGeneInfo geneInfo = geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
                             argument.setGeneInfo(geneInfo);
@@ -162,20 +156,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                     event.getArgument(i).setPreferredName((String) argPrefNames.get(i));
                 if (!argHomologyPrefNames.isEmpty())
                     event.getArgument(i).setTopHomologyPreferredName((String) argHomologyPrefNames.get(i));
-                // legacy index support where the matchTypes do not exist
-                if (i < matchTypes.size() && !matchTypes.isEmpty())
-                    event.getArgument(i).setMatchType((String) matchTypes.get(i));
             }
-//            if (event.getHlSentence() != null) {
-//                Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getHlSentence());
-////                if (fulltextQueryHighlightedMatcher.find())
-////                    event.setSentenceMatchingFulltextQuery(true);
-//            }
-//            if (event.getHlParagraph() != null) {
-//                Matcher fulltextQueryHighlightedMatcher = FULLTEXT_QUERY_HIGHLIGHT_PATTERN.matcher(event.getHlParagraph());
-////                if (fulltextQueryHighlightedMatcher.find())
-////                    event.setParagraphMatchingFulltextQuery(true);
-//            }
             event.setSentenceMatchingFulltextQuery(sentenceFilterHl != null && !sentenceFilterHl.isEmpty());
             event.setParagraphMatchingFulltextQuery(paragraphFilterHl != null && !paragraphFilterHl.isEmpty());
             event.setGeneMappingSources(geneMappingSources);

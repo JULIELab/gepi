@@ -27,10 +27,8 @@ public class GePiDataServiceTest {
         e.setAllEventTypes(List.of("Binding"));
         Argument a1 = new Argument("g1", "c1", "h1", "arg1");
         a1.setPreferredName("arg1");
-        a1.setMatchType("fuzzy");
         Argument a2 = new Argument("g2", "c2", "h2", "arg2");
         a2.setPreferredName("arg2");
-        a2.setMatchType("fuzzy");
         e.setArguments(Arrays.asList(a1, a2));
         events.add(e);
         // Let's have this event twice
@@ -43,7 +41,6 @@ public class GePiDataServiceTest {
         e2.setAllEventTypes(List.of("Binding"));
         Argument a3 = new Argument("g3", "c3", "h3", "arg3");
         a3.setPreferredName("arg3");
-        a3.setMatchType("exact");
         e2.setArguments(Arrays.asList(a3, a2));
         // Lets have this one three times.
         events.add(e2);
@@ -66,7 +63,6 @@ public class GePiDataServiceTest {
         e4.setEventId("246_5");
         e4.setAllEventTypes(List.of("Binding"));
         Argument a6 = new Argument("g6", "c6", "h6", "arg6");
-        a6.setMatchType("fuzzy");
         a6.setPreferredName("arg6");
         e4.setArguments(Arrays.asList(a6, a3));
         events.add(e4);

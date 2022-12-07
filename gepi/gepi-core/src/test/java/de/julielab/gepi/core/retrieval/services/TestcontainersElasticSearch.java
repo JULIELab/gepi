@@ -31,7 +31,7 @@ public class TestcontainersElasticSearch {
         return new GenericContainer(
                 new ImageFromDockerfile("gepicoreestest", true)
                         .withFileFromClasspath("Dockerfile", "dockercontext/Dockerfile")
-                        .withFileFromClasspath("elasticsearch-mapper-preanalyzed-7.9.1-SNAPSHOT.zip", "dockercontext/elasticsearch-mapper-preanalyzed-7.9.1-SNAPSHOT.zip"))
+                        .withFileFromClasspath("elasticsearch-mapper-preanalyzed-7.17.7-SNAPSHOT.zip", "dockercontext/elasticsearch-mapper-preanalyzed-7.17.7-SNAPSHOT.zip"))
                 .withExposedPorts(9200)
                 .withEnv("cluster.name", TEST_CLUSTER)
                 .withEnv("discovery.type", "single-node");
