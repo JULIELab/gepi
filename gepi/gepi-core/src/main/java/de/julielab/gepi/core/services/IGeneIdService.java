@@ -4,13 +4,12 @@ import com.google.common.collect.Multimap;
 import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 public interface IGeneIdService {
-	Future<IdConversionResult> convert(Stream<String> stream, IdType from, IdType to, Collection<String> taxIds);
+	Future<IdConversionResult> convert(Stream<String> stream, IdType from, IdType to);
 
 	/**
 	 * This enumeration lists the kinds of IDs that GePi can work with.
@@ -38,7 +37,7 @@ public interface IGeneIdService {
 		 * 
 		 * @see <url>https://www.ncbi.nlm.nih.gov/gene</url>
 		 */
-		GENE, GENE_NAME, UNKNOWN,
+		GEPI_CONCEPT, GENE_NAME, UNKNOWN,
 		/**
 		 * The GePi-internal gene orthology aggregate IDs
 		 */
@@ -58,7 +57,7 @@ public interface IGeneIdService {
 		HGNC_GROUP
 	}
 
-	Future<IdConversionResult> convert(Stream<String> stream, IdType to, Collection<String> taxIds);
+	Future<IdConversionResult> convert(Stream<String> stream, IdType to);
 
 	Future<Stream<String>> convertUniprot2Gene(Stream<String> uniprotIds);
 

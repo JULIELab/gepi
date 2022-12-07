@@ -264,7 +264,7 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, eventLikelihood, listAGePiIds, listBGePiIds, taxId, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+        requestData = new GepiRequestData(selectedEventTypeNames, eventLikelihood, listAGePiIds, listBGePiIds, taxId.split("\\s*,\\s*"), sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
 //        if ((filterString != null && !filterString.isBlank())) {
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
@@ -322,8 +322,8 @@ public class GepiInput {
         if (input != null) {
             List<String> inputList = Stream.of(input.split("[\n,]")).map(String::trim).collect(Collectors.toList());
             log.debug("Got {} input IDs from {}", inputList.size(), listName);
-            IGeneIdService.IdType toIdType = taxId == null || taxId.isBlank() ? IGeneIdService.IdType.GEPI_AGGREGATE : IGeneIdService.IdType.GENE;
-            return geneIdService.convert(inputList.stream(),  toIdType, taxId == null || taxId.isBlank() ? Collections.emptyList() : List.of(taxId.split("\\s*,\\s*")));
+            IGeneIdService.IdType toIdType = taxId == null || taxId.isBlank() ? IGeneIdService.IdType.GEPI_AGGREGATE : IGeneIdService.IdType.GEPI_CONCEPT;
+            return geneIdService.convert(inputList.stream(),  toIdType);
         }
         return null;
     }

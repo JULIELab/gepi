@@ -34,21 +34,20 @@ def makeArgumentSymbolPivotTable(df, column, order):
     return givengenesfreq
 
 def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterString,sectionNameFilterString):
-    header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "arg1matchtype", "arg2matchtype", "relationtypes", "docid", "eventid", "fulltextmatchtype", "context"]
+    header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "relationtypes", "factuality", "docid", "eventid", "fulltextmatchtype", "context"]
     columndesc=[ 'Input gene symbol',
                  'Event partner gene symbol',
                  'the document text of the input gene in the found sentence',
                  'the document text of the event partner gene in the found sentence',
                  'Entrez ID the input gene',
                  'Entrez ID of the event partner gene',
-                 'Input gene match type',
-                 'Event partner gene match type',
                  'The type(s) of events the input gene and its event partner are involved in',
+                 'Factuality level of the event as determined by text expressions like "suggest", "may" etc.',
                  'PubMed or PMC document ID. PMC documents carry the "PMC" prefix.',
                  'Internal event ID. Useful to find unique identifiers for each event.',
                  'Place of fulltext filter match. Only applicable if filter terms were specified.',
                  'The textual context from the literature in which the event was found. That is the sentence enclosing the event by default. In case of a paragraph-level filter query this can also be the enclosing paragraph. This would then be indicated by the value of the fulltextmatchtype column.']
-    df = pd.read_csv(input, names=header,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object,'fulltextmatchtype':object},quoting=csv.QUOTE_NONE,keep_default_na=False)
+    df = pd.read_csv(input, names=header,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object,'fulltextmatchtype':object,'factuality':object},quoting=csv.QUOTE_NONE,keep_default_na=False)
     print(f'Read {len(df)} data rows from {input}.')
     # Remove duplicates in the event types and sort them alphabetically
     reltypes=df["relationtypes"]
@@ -56,7 +55,7 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
         types = list(set(reltypes.at[i].split(',')))
         reltypes.at[i]= ','.join(types)
     columnsorder=[ 'arg1symbol',  'arg2symbol', 'arg1text', 'arg2text', 'arg1entrezid', 'arg2entrezid',
-         'arg1matchtype',  'arg2matchtype', 'relationtypes','docid', 'eventid', 'fulltextmatchtype', 'context']
+          'relationtypes', 'factuality', 'docid', 'eventid', 'fulltextmatchtype', 'context']
     df = df[columnsorder]
     df = df.query('arg1entrezid != arg2entrezid')
     # Input genes argument counts
@@ -68,24 +67,27 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
           ('fuzzy', 'sum')]
 
     # Arg1 counts
-    givengenesfreq = makeArgumentSymbolPivotTable(df, 'arg1symbol', order)
-    givengenesfreq.rename(columns={'exact':'exact match', 'fuzzy':'fuzzy match'},inplace=True)
+    #givengenesfreq = makeArgumentSymbolPivotTable(df, 'arg1symbol', order)
+    #givengenesfreq.rename(columns={'exact':'exact match', 'fuzzy':'fuzzy match'},inplace=True)
+    givengenesfreq = df[['docId', 'arg1symbol']].groupby('arg1symbol').count()
     # Arg2 counts
-    othergenesfreq = makeArgumentSymbolPivotTable(df, 'arg2symbol', order)
-    othergenesfreq.rename(columns={'exact':'exact match', 'fuzzy':'fuzzy match'},inplace=True)
+    #othergenesfreq = makeArgumentSymbolPivotTable(df, 'arg2symbol', order)
+    #othergenesfreq.rename(columns={'exact':'exact match', 'fuzzy':'fuzzy match'},inplace=True)
+    othergenesfreq = df[['docId', 'arg2symbol']].groupby('arg2symbol').count()
     # Directionless counts
     bothgenesfreq = givengenesfreq.add(othergenesfreq, fill_value=0)
-    for o in [('exact match', 'exact match'),
-              ('exact match', 'fuzzy match'),
-              ('exact match',   'sum'),
-              ('fuzzy match', 'exact match'),
-              ('fuzzy match', 'fuzzy match'),
-              ('fuzzy match', 'sum')]:
-        if o in bothgenesfreq:
-            bothgenesfreq.sort_values(by=o,ascending=False,inplace=True)
-            break
+    #for o in [('exact match', 'exact match'),
+    #          ('exact match', 'fuzzy match'),
+    #          ('exact match',   'sum'),
+    #          ('fuzzy match', 'exact match'),
+    #          ('fuzzy match', 'fuzzy match'),
+    #          ('fuzzy match', 'sum')]:
+    #    if o in bothgenesfreq:
+    #        bothgenesfreq.sort_values(by=o,ascending=False,inplace=True)
+    #        break
     # Relation counts
-    relfreq = makeArgumentSymbolPivotTable(df, ['arg1symbol','arg2symbol'], order)
+    #relfreq = makeArgumentSymbolPivotTable(df, ['arg1symbol','arg2symbol'], order)
+    relfreq = df.pivot_table(values="docId", index=["arg1symbol", "arg2symbol"], aggfunc="count")
     relfreq.rename(columns={'docid':'numrelations'}, inplace=True)
     # Index resets
     othergenesfreq.reset_index(inplace=True)

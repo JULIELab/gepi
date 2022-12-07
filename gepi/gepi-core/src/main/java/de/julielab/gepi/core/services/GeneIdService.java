@@ -70,16 +70,14 @@ public class GeneIdService implements IGeneIdService {
     }
 
     @Override
-    public Future<IdConversionResult> convert(Stream<String> stream, IdType from, IdType to, Collection<String> taxIds) {
+    public Future<IdConversionResult> convert(Stream<String> stream, IdType from, @Deprecated IdType to) {
         return CompletableFuture.supplyAsync(() -> {
             List<String> sourceIds = stream.collect(Collectors.toList());
             Future<Multimap<String, String>> convertedIds;
-            if (to == IdType.GEPI_AGGREGATE) {
-                if (taxIds != null && !taxIds.isEmpty())
-                    throw new IllegalArgumentException("Input IDs should be converted to aggregates but there are also taxonomy IDs specified.");
+//            if (to == IdType.GEPI_AGGREGATE) {
                 if (from == IdType.GENE_NAME) {
                     convertedIds = convertConceptNames2AggregateIds(sourceIds.stream());
-                } else if (from == IdType.GENE) {
+                } else if (from == IdType.GEPI_CONCEPT) {
                     convertedIds = convertConcept2AggregateGepiIds(sourceIds.stream(), GENE_LABEL, "originalId");
                 } else if (from == IdType.FAMPLEX) {
                     convertedIds = convert2Gepi(sourceIds.stream(), FPLX_LABEL, "originalId");
@@ -100,39 +98,33 @@ public class GeneIdService implements IGeneIdService {
                 } else {
                     throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
                 }
-            } else if (to == IdType.GENE) {
-                if (taxIds != null && !taxIds.isEmpty()) {
-                    // Taxonomy IDs are given and so we search for specific gene items without orthology resolution.
-                    // The index contains the original gene IDs so we can use them, if it is convenient.
-                    if (from == IdType.GENE_NAME) {
-                        convertedIds = convertGeneNames2GeneIds(sourceIds.stream(), taxIds);
-                    } else if (from == IdType.GENE) {
-                        convertedIds = filterGeneIdsForTaxonomyIds(sourceIds.stream(), taxIds);
-                    } else if (from == IdType.FAMPLEX) {
-                        convertedIds = convert2Gepi(sourceIds.stream(), FPLX_LABEL, "originalId");
-                    } else if (from == IdType.HGNC_GROUP) {
-                        convertedIds = convert2Gepi(sourceIds.stream(), HGNC_LABEL, "originalId");
-                    } else if (from == IdType.UNIPROT_ACCESSION) {
-                        convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), UP_LABEL, "originalId");
-                    } else if (from == IdType.UNIPROT_MNEMONIC) {
-                        convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), UP_LABEL, "sourceIds1");
-                    } else if (from == IdType.ENSEMBL) {
-                        convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), ENSEMBL_LABEL, "originalId");
-                    } else if (from == IdType.HGNC) {
-                        convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), HGNC_LABEL, "originalId");
-                    } else if (from == IdType.GO) {
-                        // GO term GePI IDs are directly added to the index (in contrast to UP, ENSEMBL and HGNC IDs which are just mapped to their Gene IDs so we can search for the Gene IDs directly)
-                        // for the ability to resolve GO-hypernyms.
-                        convertedIds = convert2Gepi(sourceIds.stream(), GO_LABEL, "originalId");
-                    } else {
-                        throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
-                    }
-                } else {
-                    convertedIds = convertGeneNames2GeneIds(sourceIds.stream());
-                }
-            } else {
-                throw new IllegalArgumentException("To-ID type '" + to + "' is currently not supported.");
-            }
+//            } else if (to == IdType.GEPI_CONCEPT) {
+//                if (from == IdType.GENE_NAME) {
+//                    convertedIds = convertGeneNames2GeneIds(sourceIds.stream());
+//                } else if (from == IdType.GEPI_CONCEPT) {
+//                    convertedIds = filterGeneIdsForTaxonomyIds(sourceIds.stream(), taxIds);
+//                } else if (from == IdType.FAMPLEX) {
+//                    convertedIds = convert2Gepi(sourceIds.stream(), FPLX_LABEL, "originalId");
+//                } else if (from == IdType.HGNC_GROUP) {
+//                    convertedIds = convert2Gepi(sourceIds.stream(), HGNC_LABEL, "originalId");
+//                } else if (from == IdType.UNIPROT_ACCESSION) {
+//                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), UP_LABEL, "originalId");
+//                } else if (from == IdType.UNIPROT_MNEMONIC) {
+//                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), UP_LABEL, "sourceIds1");
+//                } else if (from == IdType.ENSEMBL) {
+//                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), ENSEMBL_LABEL, "originalId");
+//                } else if (from == IdType.HGNC) {
+//                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), HGNC_LABEL, "originalId");
+//                } else if (from == IdType.GO) {
+//                    // GO term GePI IDs are directly added to the index (in contrast to UP, ENSEMBL and HGNC IDs which are just mapped to their Gene IDs so we can search for the Gene IDs directly)
+//                    // for the ability to resolve GO-hypernyms.
+//                    convertedIds = convert2Gepi(sourceIds.stream(), GO_LABEL, "originalId");
+//                } else {
+//                    throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
+//                }
+//            } else {
+//                throw new IllegalArgumentException("To-ID type '" + to + "' is currently not supported.");
+//            }
             Future<Multimap<String, String>> finalConvertedIds = convertedIds;
             try {
                 Multimap<String, String> idMapping = finalConvertedIds.get();
@@ -173,13 +165,13 @@ public class GeneIdService implements IGeneIdService {
     }
 
     @Override
-    public Future<IdConversionResult> convert(Stream<String> stream, IdType to, Collection<String> taxIds) {
+    public Future<IdConversionResult> convert(Stream<String> stream, IdType to) {
         return CompletableFuture.supplyAsync(() -> {
             final Multimap<IdType, String> idsByType = determineIdTypes(stream);
             final List<Future<IdConversionResult>> convertedIds = new ArrayList<>();
             for (IdType from : idsByType.keySet()) {
                 final Collection<String> sourceIds = idsByType.get(from);
-                convertedIds.add(convert(sourceIds.stream(), from, to, taxIds));
+                convertedIds.add(convert(sourceIds.stream(), from, to));
 //            if (to == IdType.GEPI_AGGREGATE) {
 //                if (taxIds != null && !taxIds.isEmpty())
 //                    throw new IllegalArgumentException("Input IDs should be converted to aggregates but there are also taxonomy IDs specified.");
@@ -341,7 +333,7 @@ public class GeneIdService implements IGeneIdService {
         while (iterator.hasNext()) {
             String identifier = iterator.next();
             if (numericMatcher.reset(identifier).matches())
-                possiblyIdTypes.add(IdType.GENE);
+                possiblyIdTypes.add(IdType.GEPI_CONCEPT);
             else if (uniProtMnemonicMatcher.reset(identifier).matches())
                 possiblyIdTypes.add(IdType.UNIPROT_ACCESSION);
             else
@@ -373,7 +365,7 @@ public class GeneIdService implements IGeneIdService {
         final Matcher anyMatcher = NAME_PATTERN.matcher("");
         Multimap<IdType, String> idsByType = HashMultimap.create();
         Iterator<String> iterator = idStream.iterator();
-        Map<IdType, Matcher> matchers = Map.of(IdType.GENE, geneIdMatcher,
+        Map<IdType, Matcher> matchers = Map.of(IdType.GEPI_CONCEPT, geneIdMatcher,
                 IdType.UNIPROT_MNEMONIC, uniProtMnemonicMatcher,
                 IdType.UNIPROT_ACCESSION, uniProtAccessionMatcher,
                 IdType.GO, goMatcher,

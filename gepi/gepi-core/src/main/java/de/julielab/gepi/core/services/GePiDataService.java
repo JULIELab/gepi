@@ -262,7 +262,17 @@ public class GePiDataService implements IGePiDataService {
         if (!xlsFile.exists())
             throw new FileNotFoundException("The Excel file " + xlsFile.getAbsolutePath() + " does not exist.");
     }
+    protected static final HashMap<Integer, String> likelihoodNames;
 
+    static {
+        likelihoodNames = new HashMap<>();
+        likelihoodNames.put(1, "negation");
+        likelihoodNames.put(2, "low");
+        likelihoodNames.put(3, "investigation");
+        likelihoodNames.put(4, "moderate");
+        likelihoodNames.put(5, "high");
+        likelihoodNames.put(6, "assertion");
+    }
     private void writeOverviewTsvFile(List<Event> events, File file) throws IOException {
         log.debug("Writing event statistics tsv file to {}", file);
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, UTF_8))) {
@@ -274,9 +284,10 @@ public class GePiDataService implements IGePiDataService {
                 row.add(e.getSecondArgument().getText());
                 row.add(e.getFirstArgument().getGeneId());
                 row.add(e.getSecondArgument().getGeneId());
-                row.add(e.getFirstArgument().getMatchType());
-                row.add(e.getSecondArgument().getMatchType());
+//                row.add(e.getFirstArgument().getMatchType());
+//                row.add(e.getSecondArgument().getMatchType());
                 row.add(String.join(",", e.getAllEventTypes()));
+                row.add(likelihoodNames.get(e.getLikelihood()));
                 row.add(e.getDocId());
                 row.add(e.getEventId());
                 if (e.isSentenceMatchingFulltextQuery()) {
