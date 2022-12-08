@@ -79,6 +79,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
     private final GeneFilterBoard geneFb;
     private final Filter geneComponentIdProcessingfilter;
     private final Filter lastDottedPathElementFilter;
+    private final RegExFilter numberRegExFilter;
 
     public RelationFieldValueGenerator(FilterRegistry filterRegistry) {
         super(filterRegistry);
@@ -94,6 +95,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
         replaceMap.put("GeneMapper / QuercusMappingCore", "GeNo");
         replaceMap.put("GNormPlusFormatMultiplierReader", "GNormPlus");
         geneComponentIdProcessingfilter = new FilterChain(new RegExSplitFilter(","), lastDottedPathElementFilter, new ReplaceFilter(replaceMap), new UniqueFilter());
+        numberRegExFilter = new RegExFilter("[0-9]+", false);
     }
 
     /**
@@ -218,7 +220,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("arguments", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter, geneFb.eg2gohypertidFilter, geneFb.eg2gohypertidFilter}, new UniqueFilter()));
                             final String[] entryIdPathPair = {arg1EntryIdPath, arg2EntryIdPath};
                             document.addField("argumentgeneids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, null, null));
-                            document.addField("argumenttaxids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.egid2taxidReplaceFilter, geneFb.egid2taxidReplaceFilter}, null));
+                            document.addField("argumenttaxids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.egid2taxidReplaceFilter, geneFb.egid2taxidReplaceFilter}, numberRegExFilter));
                             document.addField("argumentconceptids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.eg2tidReplaceFilter, geneFb.eg2tidReplaceFilter}, null));
                             document.addField("argumenttophomoids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.eg2tophomoFilter, geneFb.eg2tophomoFilter}, null));
 //                            document.addField("argumentfamplexids", document.getAsArrayFieldValue("argument1famplexid"), document.getAsArrayFieldValue("argument2famplexid"));
