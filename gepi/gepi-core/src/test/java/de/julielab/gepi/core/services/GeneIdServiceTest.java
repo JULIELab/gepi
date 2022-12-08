@@ -33,19 +33,19 @@ public class GeneIdServiceTest {
     @Test
     public void convertGene2AggregateIds() throws Exception {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
-        final Multimap<String, String> idMap = geneIdService.convertConcept2AggregateGepiIds(Stream.of("2475", "207", "56718"), FPLX_LABEL, "originalId").get();
+        final Multimap<String, String> idMap = geneIdService.convertConcept2AggregateGepiIds(Stream.of("2475", "207", "56718"), "CONCEPT", "originalId").get();
         assertThat(idMap.get("2475")).containsExactlyInAnyOrder("atid2");
         assertThat(idMap.get("207")).containsExactly("atid3");
         assertThat(idMap.get("56718")).containsExactly("tid2");
     }
 
     @Test
-    public void convertGeneNames2GeneIds() throws Exception {
+    public void convertGeneNames2ConceptIds() throws Exception {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
         final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GEPI_CONCEPT).get();
         final Multimap<String, String> idMap = conversionResult.getConvertedItems();
-        assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("2475", "56717", "324254", "56718");
-        assertThat(idMap.get("akt1")).containsExactly("207", "11651");
+        assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("atid2", "tid2");
+        assertThat(idMap.get("akt1")).containsExactly("atid3");
     }
 
     @Test
@@ -53,18 +53,8 @@ public class GeneIdServiceTest {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
         final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GEPI_CONCEPT).get();
         final Multimap<String, String> idMap = conversionResult.getConvertedItems();
-        assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("2475");
-        assertThat(idMap.get("akt1")).containsExactly("207");
-    }
-
-    @Test
-    public void convertUnkownGeneNames() throws Exception {
-        // akt1 should be "unknown" because we restrict the search to taxId 7955 (Danio Rerio)
-        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
-        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GEPI_CONCEPT).get();
-        final Multimap<String, String> idMap = conversionResult.getConvertedItems();
-        assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("324254");
-        assertThat(conversionResult.getUnconvertedItems()).containsExactly("akt1");
+        assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("atid2", "tid2");
+        assertThat(idMap.get("akt1")).containsExactly("atid3");
     }
 
     @Test
@@ -77,16 +67,6 @@ public class GeneIdServiceTest {
         assertThat(geneInfo.get("atid2").getSymbol()).isEqualTo("mTOR");
         assertThat(geneInfo.get("atid2").getOriginalId()).isEqualTo("2475");
         assertThat(geneInfo.get("atid3").getSymbol()).isEqualTo("AKT1");
-    }
-
-    @Test
-    public void filterGeneIdsForTaxonomyIds() throws Exception {
-        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
-        // We expect the input genes to be filtered for the taxonomy IDs
-        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("2475", "56717", "324254", "56718"), IGeneIdService.IdType.GEPI_CONCEPT, IGeneIdService.IdType.GEPI_CONCEPT).get();
-        final Multimap<String, String> convertedItems = conversionResult.getConvertedItems();
-        assertThat(convertedItems.size()).isEqualTo(2);
-        assertThat(convertedItems.keySet()).containsExactly("56717", "56718");
     }
 
     private void setupDB(GraphDatabaseService graphDatabaseService) {

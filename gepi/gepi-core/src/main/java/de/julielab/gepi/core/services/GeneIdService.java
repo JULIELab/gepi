@@ -397,8 +397,8 @@ public class GeneIdService implements IGeneIdService {
                     Multimap<String, String> topAtids = HashMultimap.create();
 
                     String[] searchInput = input.toArray(String[]::new);
-                    final String query = "MATCH (c:$label) WHERE c.$idProperty IN $originalIds return c.originalId AS SOURCE_ID,c.id AS SEARCH_ID";
-                    final Value parameters = parameters("originalIds", searchInput, "label", label, "idProperty", idProperty);
+                    final String query = "MATCH (c:"+label+") WHERE c."+idProperty+" IN ids return c."+idProperty+" AS SOURCE_ID,c.id AS SEARCH_ID";
+                    final Value parameters = parameters("ids", searchInput);
                     Result result = tx.run(
                             query,
                             parameters);
@@ -424,8 +424,8 @@ public class GeneIdService implements IGeneIdService {
                     Multimap<String, String> topAtids = HashMultimap.create();
 
                     String[] searchInput = input.toArray(String[]::new);
-                    final String query = "MATCH (c:CONCEPT:$label) WHERE c.$idProperty IN $originalIds WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c.originalId AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
-                    final Value parameters = parameters("label", label, "originalIds", searchInput, "idProperty", idProperty);
+                    final String query = "MATCH (c:CONCEPT:"+label+") WHERE c."+idProperty+" IN $ids WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c."+idProperty+" AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
+                    final Value parameters = parameters( "ids", searchInput);
                     Result result = tx.run(
                             query,
                             parameters);
@@ -450,8 +450,8 @@ public class GeneIdService implements IGeneIdService {
                     Multimap<String, String> topAtids = HashMultimap.create();
 
                     String[] searchInput = input.toArray(String[]::new);
-                    final String query = "MATCH (:CONCEPT:$label)-[:IS_MAPPED_TO]->(c) WHERE c.$idProperty IN $ids WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c.originalId AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
-                    final Value parameters = parameters("label", label, "ids", searchInput, "idProperty", idProperty);
+                    final String query = "MATCH (:CONCEPT:"+label+")-[:IS_MAPPED_TO]->(c) WHERE c."+idProperty+" IN $ids WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c."+idProperty+" AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
+                    final Value parameters = parameters( "ids", searchInput);
                     Result result = tx.run(
                             query,
                             parameters);

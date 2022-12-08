@@ -69,11 +69,11 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
     # Arg1 counts
     #givengenesfreq = makeArgumentSymbolPivotTable(df, 'arg1symbol', order)
     #givengenesfreq.rename(columns={'exact':'exact match', 'fuzzy':'fuzzy match'},inplace=True)
-    givengenesfreq = df[['docId', 'arg1symbol']].groupby('arg1symbol').count()
+    givengenesfreq = df[['docid', 'arg1symbol']].groupby('arg1symbol').count()
     # Arg2 counts
     #othergenesfreq = makeArgumentSymbolPivotTable(df, 'arg2symbol', order)
     #othergenesfreq.rename(columns={'exact':'exact match', 'fuzzy':'fuzzy match'},inplace=True)
-    othergenesfreq = df[['docId', 'arg2symbol']].groupby('arg2symbol').count()
+    othergenesfreq = df[['docid', 'arg2symbol']].groupby('arg2symbol').count()
     # Directionless counts
     bothgenesfreq = givengenesfreq.add(othergenesfreq, fill_value=0)
     #for o in [('exact match', 'exact match'),
@@ -87,7 +87,7 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
     #        break
     # Relation counts
     #relfreq = makeArgumentSymbolPivotTable(df, ['arg1symbol','arg2symbol'], order)
-    relfreq = df.pivot_table(values="docId", index=["arg1symbol", "arg2symbol"], aggfunc="count")
+    relfreq = df.pivot_table(values="docid", index=["arg1symbol", "arg2symbol"], aggfunc="count")
     relfreq.rename(columns={'docid':'numrelations'}, inplace=True)
     # Index resets
     othergenesfreq.reset_index(inplace=True)
