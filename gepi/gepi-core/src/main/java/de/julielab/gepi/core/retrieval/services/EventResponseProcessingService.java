@@ -113,7 +113,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                     final Argument argument = new Argument(geneId, conceptId, topHomologyId, text);
                     // We don't want to fetch the gene info for charts. For charts, we don't load the covered text field,
                     // so we use this as indicator.
-                    if (text != null) {
+                    if (text != null && !FIELD_VALUE_MOCK_ARGUMENT.equals(conceptId)) {
                         try {
                             final GepiGeneInfo geneInfo = geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
                             argument.setGeneInfo(geneInfo);

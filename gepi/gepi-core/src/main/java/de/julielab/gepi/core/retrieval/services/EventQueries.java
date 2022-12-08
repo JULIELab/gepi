@@ -55,7 +55,7 @@ public class EventQueries {
 
         if (requestData.getEventTypes() != null && !requestData.getEventTypes().isEmpty()) {
             TermsQuery eventTypesQuery = new TermsQuery(new ArrayList<>(requestData.getEventTypes()));
-            eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
+            eventTypesQuery.field = FIELD_EVENT_ALL_EVENTTYPES;
             BoolClause eventTypeClause = new BoolClause();
             eventTypeClause.addQuery(eventTypesQuery);
             eventTypeClause.occur = FILTER;
@@ -102,7 +102,7 @@ public class EventQueries {
 
         if (eventTypes != null && !eventTypes.isEmpty()) {
             TermsQuery eventTypesQuery = new TermsQuery(new ArrayList<>(eventTypes));
-            eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
+            eventTypesQuery.field = FIELD_EVENT_ALL_EVENTTYPES;
             BoolClause eventTypeClause = new BoolClause();
             eventTypeClause.addQuery(eventTypesQuery);
             eventTypeClause.occur = FILTER;
@@ -148,7 +148,7 @@ public class EventQueries {
 
         if (!eventTypes.isEmpty()) {
             TermsQuery eventTypesQuery = new TermsQuery(new ArrayList<>(eventTypes));
-            eventTypesQuery.field = FIELD_EVENT_MAINEVENTTYPE;
+            eventTypesQuery.field = FIELD_EVENT_ALL_EVENTTYPES;
             BoolClause eventTypeClause = new BoolClause();
             eventTypeClause.addQuery(eventTypesQuery);
             eventTypeClause.occur = FILTER;
