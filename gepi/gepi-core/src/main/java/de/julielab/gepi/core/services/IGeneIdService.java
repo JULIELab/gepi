@@ -37,7 +37,7 @@ public interface IGeneIdService {
 		 * 
 		 * @see <url>https://www.ncbi.nlm.nih.gov/gene</url>
 		 */
-		GEPI_CONCEPT, GENE_NAME, UNKNOWN,
+		GENE_ID, GENE_NAME, UNKNOWN,
 		/**
 		 * The GePi-internal gene orthology aggregate IDs
 		 */

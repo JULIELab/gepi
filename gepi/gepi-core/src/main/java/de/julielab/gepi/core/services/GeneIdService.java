@@ -33,16 +33,16 @@ public class GeneIdService implements IGeneIdService {
 
 
     public static final Pattern GENE_ID_PATTERN = Pattern.compile("(gene:)?[0-9]+", Pattern.CASE_INSENSITIVE);
-    public static final Pattern UP_MNEMONIC_PATTERN = Pattern.compile("(up:)?[A-Z0-9]+_[A-Z0-9]+", Pattern.CASE_INSENSITIVE);
+    public static final Pattern UP_MNEMONIC_PATTERN = Pattern.compile("(up:|UP:)?[A-Z0-9]+_[A-Z0-9]+");
     // https://www.uniprot.org/help/accession_numbers
-    public static final Pattern UP_ACCESSION_PATTERN = Pattern.compile("(up:)?[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}", Pattern.CASE_INSENSITIVE);
-    public static final Pattern FPLX_PATTERN = Pattern.compile("fplx:.*", Pattern.CASE_INSENSITIVE);
-    public static final Pattern HGNCG_PATTERN = Pattern.compile("hgncg:.*", Pattern.CASE_INSENSITIVE);
-    public static final Pattern HGNC_PATTERN = Pattern.compile("hgnc:.*", Pattern.CASE_INSENSITIVE);
-    public static final Pattern GO_PATTERN = Pattern.compile("go:.*", Pattern.CASE_INSENSITIVE);
+    public static final Pattern UP_ACCESSION_PATTERN = Pattern.compile("(up:|UP:)?[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}");
+    public static final Pattern FPLX_PATTERN = Pattern.compile("(fplx:|FPLX:).*");
+    public static final Pattern HGNCG_PATTERN = Pattern.compile("(hgncg:|HGNCG:).*");
+    public static final Pattern HGNC_PATTERN = Pattern.compile("(hgnc:|HGNC:)HGNC:.*");
+    public static final Pattern GO_PATTERN = Pattern.compile("(go:|GO:)GO:.*");
     // https://www.ensembl.org/info/genome/stable_ids/index.html
-    public static final Pattern ENSEMBL_PATTERN = Pattern.compile("ens:ENS.+[0-9]+", Pattern.CASE_INSENSITIVE);
-    public static final Pattern NAME_PATTERN = Pattern.compile(".+", Pattern.CASE_INSENSITIVE);
+    public static final Pattern ENSEMBL_PATTERN = Pattern.compile("(ens:|ENS:)ENS.+[0-9]+");
+    public static final Pattern NAME_PATTERN = Pattern.compile(".+");
     public static final String GENE_LABEL = "ID_MAP_NCBI_GENES";
     public static final String FPLX_LABEL = "FPLX";
     public static final String HGNC_GROUP_LABEL = "HGNC_GROUP";
@@ -50,8 +50,11 @@ public class GeneIdService implements IGeneIdService {
     public static final String UP_LABEL = "UNIPROT";
     public static final String ENSEMBL_LABEL = "ENSEMBL";
     public static final String GO_LABEL = "GENE_ONTOLOGY";
-    private final Driver driver;
+    public static final String CONCEPT_LABEL = "CONCEPT";
+    public static final String PROP_ORGID = "originalId";
+    public static final String PROP_UP_ID = "`UniProtKB-ID`";
     private final Logger log;
+    private Driver driver;
     private final LoadingCache<String, GepiGeneInfo> geneInfoCache = CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(30)).maximumSize(10000).build(new CacheLoader<>() {
         @Override
         public GepiGeneInfo load(String s) {
@@ -66,7 +69,8 @@ public class GeneIdService implements IGeneIdService {
 
     public GeneIdService(Logger log, @Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
         this.log = log;
-        driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
+        if (boltUrl != null)
+            driver = GraphDatabase.driver(boltUrl, AuthTokens.basic("neo4j", "julielab"));
     }
 
     @Override
@@ -75,29 +79,29 @@ public class GeneIdService implements IGeneIdService {
             List<String> sourceIds = stream.collect(Collectors.toList());
             Future<Multimap<String, String>> convertedIds;
 //            if (to == IdType.GEPI_AGGREGATE) {
-                if (from == IdType.GENE_NAME) {
-                    convertedIds = convertConceptNames2AggregateIds(sourceIds.stream());
-                } else if (from == IdType.GEPI_CONCEPT) {
-                    convertedIds = convertConcept2AggregateGepiIds(sourceIds.stream(), GENE_LABEL, "originalId");
-                } else if (from == IdType.FAMPLEX) {
-                    convertedIds = convert2Gepi(sourceIds.stream(), FPLX_LABEL, "originalId");
-                } else if (from == IdType.HGNC_GROUP) {
-                    convertedIds = convert2Gepi(sourceIds.stream(), HGNC_GROUP_LABEL, "originalId");
-                } else if (from == IdType.UNIPROT_ACCESSION) {
-                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), UP_LABEL, "originalId");
-                } else if (from == IdType.UNIPROT_MNEMONIC) {
-                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), UP_LABEL, "sourceIds1");
-                } else if (from == IdType.ENSEMBL) {
-                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), ENSEMBL_LABEL, "originalId");
-                } else if (from == IdType.HGNC) {
-                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), HGNC_LABEL, "originalId");
-                } else if (from == IdType.GO) {
-                    // GO term GePI IDs are directly added to the index (in contrast to UP, ENSEMBL and HGNC IDs which are just mapped to their Gene IDs so we can search for the Gene IDs directly)
-                    // for the ability to resolve GO-hypernyms.
-                    convertedIds = convert2Gepi(sourceIds.stream(), GO_LABEL, "originalId");
-                } else {
-                    throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
-                }
+            if (from == IdType.GENE_NAME) {
+                convertedIds = convertConceptNames2AggregateIds(sourceIds.stream());
+            } else if (from == IdType.GENE_ID) {
+                convertedIds = convertConcept2AggregateGepiIds(sourceIds.stream(), GENE_LABEL, "originalId");
+            } else if (from == IdType.FAMPLEX) {
+                convertedIds = convert2Gepi(sourceIds.stream(), FPLX_LABEL, "originalId");
+            } else if (from == IdType.HGNC_GROUP) {
+                convertedIds = convert2Gepi(sourceIds.stream(), HGNC_GROUP_LABEL, "originalId");
+            } else if (from == IdType.UNIPROT_ACCESSION) {
+                convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), UP_LABEL, "originalId");
+            } else if (from == IdType.UNIPROT_MNEMONIC) {
+                convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), UP_LABEL, "sourceIds1");
+            } else if (from == IdType.ENSEMBL) {
+                convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), ENSEMBL_LABEL, "originalId");
+            } else if (from == IdType.HGNC) {
+                convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), HGNC_LABEL, "originalId");
+            } else if (from == IdType.GO) {
+                // GO term GePI IDs are directly added to the index (in contrast to UP, ENSEMBL and HGNC IDs which are just mapped to their Gene IDs so we can search for the Gene IDs directly)
+                // for the ability to resolve GO-hypernyms.
+                convertedIds = convert2Gepi(sourceIds.stream(), GO_LABEL, "originalId");
+            } else {
+                throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
+            }
 //            } else if (to == IdType.GEPI_CONCEPT) {
 //                if (from == IdType.GENE_NAME) {
 //                    convertedIds = convertGeneNames2GeneIds(sourceIds.stream());
@@ -281,6 +285,42 @@ public class GeneIdService implements IGeneIdService {
         return null;
     }
 
+    public Map<String, String> mapIdentifierToPrefix(Stream<String> idStream) {
+        Matcher geneIdMatcher = GENE_ID_PATTERN.matcher("");
+        Matcher uniProtMnemonicMatcher = UP_MNEMONIC_PATTERN.matcher("");
+        Matcher uniProtAccessionMatcher = UP_ACCESSION_PATTERN.matcher("");
+        Matcher goMatcher = GO_PATTERN.matcher("");
+        Matcher ensemblMatcher = ENSEMBL_PATTERN.matcher("");
+        Matcher famplexMatcher = FPLX_PATTERN.matcher("");
+        Matcher hgncgMatcher = HGNCG_PATTERN.matcher("");
+        Matcher hgncMatcher = HGNC_PATTERN.matcher("");
+        final Matcher anyMatcher = NAME_PATTERN.matcher("");
+        Map<String, String> prefixByIds = new HashMap<>();
+        Iterator<String> iterator = idStream.iterator();
+        List<Matcher> matchers = List.of(geneIdMatcher,
+                uniProtMnemonicMatcher,
+                uniProtAccessionMatcher,
+                goMatcher,
+                ensemblMatcher,
+                famplexMatcher,
+                hgncMatcher,
+                hgncgMatcher,
+                anyMatcher);
+        while (iterator.hasNext()) {
+            String identifier = iterator.next();
+            for (Matcher m : matchers) {
+                if (m.reset(identifier).matches()) {
+                    if (m.groupCount() > 0 && m.group(1) != null)
+                        prefixByIds.put(identifier.substring(m.end(1)), m.group(1));
+                    else
+                        prefixByIds.put(identifier, null);
+                    break;
+                }
+            }
+        }
+        return prefixByIds;
+    }
+
     @Override
     public CompletableFuture<Multimap<String, String>> convertConceptNames2AggregateIds(Stream<String> geneNames) {
         return CompletableFuture.supplyAsync(() -> {
@@ -333,7 +373,7 @@ public class GeneIdService implements IGeneIdService {
         while (iterator.hasNext()) {
             String identifier = iterator.next();
             if (numericMatcher.reset(identifier).matches())
-                possiblyIdTypes.add(IdType.GEPI_CONCEPT);
+                possiblyIdTypes.add(IdType.GENE_ID);
             else if (uniProtMnemonicMatcher.reset(identifier).matches())
                 possiblyIdTypes.add(IdType.UNIPROT_ACCESSION);
             else
@@ -365,7 +405,7 @@ public class GeneIdService implements IGeneIdService {
         final Matcher anyMatcher = NAME_PATTERN.matcher("");
         Multimap<IdType, String> idsByType = HashMultimap.create();
         Iterator<String> iterator = idStream.iterator();
-        Map<IdType, Matcher> matchers = Map.of(IdType.GEPI_CONCEPT, geneIdMatcher,
+        Map<IdType, Matcher> matchers = new LinkedHashMap<>(Map.of(IdType.GENE_ID, geneIdMatcher,
                 IdType.UNIPROT_MNEMONIC, uniProtMnemonicMatcher,
                 IdType.UNIPROT_ACCESSION, uniProtAccessionMatcher,
                 IdType.GO, goMatcher,
@@ -373,13 +413,13 @@ public class GeneIdService implements IGeneIdService {
                 IdType.FAMPLEX, famplexMatcher,
                 IdType.HGNC, hgncMatcher,
                 IdType.HGNC_GROUP, hgncgMatcher,
-                IdType.GENE_NAME, anyMatcher);
+                IdType.GENE_NAME, anyMatcher));
         while (iterator.hasNext()) {
             String identifier = iterator.next();
             for (IdType idType : matchers.keySet()) {
                 Matcher m = matchers.get(idType);
                 if (m.reset(identifier).matches()) {
-                    idsByType.put(idType, geneIdMatcher.groupCount() > 0 ? identifier.substring(m.end(1)) : identifier);
+                    idsByType.put(idType, identifier);
                     break;
                 }
             }
@@ -389,6 +429,7 @@ public class GeneIdService implements IGeneIdService {
 
     @Override
     public Future<Multimap<String, String>> convert2Gepi(Stream<String> input, String label, String idProperty) {
+        final Map<String, String> id2prefix = mapIdentifierToPrefix(input);
         return CompletableFuture.supplyAsync(() -> {
             try (Session session = driver.session()) {
 
@@ -396,8 +437,8 @@ public class GeneIdService implements IGeneIdService {
                     Record record;
                     Multimap<String, String> topAtids = HashMultimap.create();
 
-                    String[] searchInput = input.toArray(String[]::new);
-                    final String query = "MATCH (c:"+label+") WHERE c."+idProperty+" IN ids return c."+idProperty+" AS SOURCE_ID,c.id AS SEARCH_ID";
+                    String[] searchInput = id2prefix.keySet().toArray(new String[0]);
+                    final String query = "MATCH (c:" + label + ") WHERE c." + idProperty + " IN $ids return c." + idProperty + " AS SOURCE_ID,c.id AS SEARCH_ID";
                     final Value parameters = parameters("ids", searchInput);
                     Result result = tx.run(
                             query,
@@ -405,7 +446,9 @@ public class GeneIdService implements IGeneIdService {
 
                     while (result.hasNext()) {
                         record = result.next();
-                        topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
+                        final String sourceId = record.get("SOURCE_ID").asString();
+                        String prefix = id2prefix.get(sourceId) != null ? id2prefix.get(sourceId) : "";
+                        topAtids.put(prefix + sourceId, record.get("SEARCH_ID").asString());
                     }
                     return topAtids;
                 });
@@ -416,6 +459,7 @@ public class GeneIdService implements IGeneIdService {
 
     @Override
     public CompletableFuture<Multimap<String, String>> convertConcept2AggregateGepiIds(Stream<String> input, String label, String idProperty) {
+        final Map<String, String> id2prefix = mapIdentifierToPrefix(input);
         return CompletableFuture.supplyAsync(() -> {
             try (Session session = driver.session()) {
 
@@ -423,16 +467,18 @@ public class GeneIdService implements IGeneIdService {
                     Record record;
                     Multimap<String, String> topAtids = HashMultimap.create();
 
-                    String[] searchInput = input.toArray(String[]::new);
-                    final String query = "MATCH (c:CONCEPT:"+label+") WHERE c."+idProperty+" IN $ids WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c."+idProperty+" AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
-                    final Value parameters = parameters( "ids", searchInput);
+                    String[] searchInput = id2prefix.keySet().toArray(String[]::new);
+                    final String query = "MATCH (c:CONCEPT:" + label + ") WHERE c." + idProperty + " IN $ids WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c." + idProperty + " AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
+                    final Value parameters = parameters("ids", searchInput);
                     Result result = tx.run(
                             query,
                             parameters);
 
                     while (result.hasNext()) {
                         record = result.next();
-                        topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
+                        final String sourceId = record.get("SOURCE_ID").asString();
+                        String prefix = id2prefix.get(sourceId) != null ? id2prefix.get(sourceId) : "";
+                        topAtids.put(prefix + sourceId, record.get("SEARCH_ID").asString());
                     }
                     return topAtids;
                 });
@@ -441,7 +487,8 @@ public class GeneIdService implements IGeneIdService {
         });
     }
 
-    private CompletableFuture<Multimap<String, String>> convertMappedGene2AggregateGepiIds(Stream<String> input, String label, String idProperty) {
+    public CompletableFuture<Multimap<String, String>> convertMappedGene2AggregateGepiIds(Stream<String> input, String label, String idProperty) {
+        final Map<String, String> id2prefix = mapIdentifierToPrefix(input);
         return CompletableFuture.supplyAsync(() -> {
             try (Session session = driver.session()) {
 
@@ -449,16 +496,18 @@ public class GeneIdService implements IGeneIdService {
                     Record record;
                     Multimap<String, String> topAtids = HashMultimap.create();
 
-                    String[] searchInput = input.toArray(String[]::new);
-                    final String query = "MATCH (:CONCEPT:"+label+")-[:IS_MAPPED_TO]->(c) WHERE c."+idProperty+" IN $ids WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c."+idProperty+" AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
-                    final Value parameters = parameters( "ids", searchInput);
+                    String[] searchInput = id2prefix.keySet().toArray(String[]::new);
+                    final String query = "MATCH (n:CONCEPT:" + label + ")-[:IS_MAPPED_TO]->(c) WHERE n." + idProperty + " IN $ids WITH n,c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return n."+idProperty+" AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
+                    final Value parameters = parameters("ids", searchInput);
                     Result result = tx.run(
                             query,
                             parameters);
 
                     while (result.hasNext()) {
                         record = result.next();
-                        topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
+                        final String sourceId = record.get("SOURCE_ID").asString();
+                        String prefix = id2prefix.get(sourceId) != null ? id2prefix.get(sourceId) : "";
+                        topAtids.put(prefix + sourceId, record.get("SEARCH_ID").asString());
                     }
                     return topAtids;
                 });

@@ -264,7 +264,7 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, eventLikelihood, listAGePiIds, listBGePiIds, taxId.split("\\s*,\\s*"), sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+        requestData = new GepiRequestData(selectedEventTypeNames, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
 //        if ((filterString != null && !filterString.isBlank())) {
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
