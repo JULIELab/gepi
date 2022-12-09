@@ -38,10 +38,10 @@ public class GeneIdService implements IGeneIdService {
     public static final Pattern UP_ACCESSION_PATTERN = Pattern.compile("(up:|UP:)?[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}");
     public static final Pattern FPLX_PATTERN = Pattern.compile("(fplx:|FPLX:).*");
     public static final Pattern HGNCG_PATTERN = Pattern.compile("(hgncg:|HGNCG:).*");
-    public static final Pattern HGNC_PATTERN = Pattern.compile("(hgnc:|HGNC:)HGNC:.*");
-    public static final Pattern GO_PATTERN = Pattern.compile("(go:|GO:)GO:.*");
+    public static final Pattern HGNC_PATTERN = Pattern.compile("(hgnc:|HGNC:)?HGNC:.*");
+    public static final Pattern GO_PATTERN = Pattern.compile("(go:|GO:)?GO:.*");
     // https://www.ensembl.org/info/genome/stable_ids/index.html
-    public static final Pattern ENSEMBL_PATTERN = Pattern.compile("(ens:|ENS:)ENS.+[0-9]+");
+    public static final Pattern ENSEMBL_PATTERN = Pattern.compile("(ens:|ENS:)?ENS.+[0-9]+");
     public static final Pattern NAME_PATTERN = Pattern.compile(".+");
     public static final String GENE_LABEL = "ID_MAP_NCBI_GENES";
     public static final String FPLX_LABEL = "FPLX";
@@ -405,15 +405,16 @@ public class GeneIdService implements IGeneIdService {
         final Matcher anyMatcher = NAME_PATTERN.matcher("");
         Multimap<IdType, String> idsByType = HashMultimap.create();
         Iterator<String> iterator = idStream.iterator();
-        Map<IdType, Matcher> matchers = new LinkedHashMap<>(Map.of(IdType.GENE_ID, geneIdMatcher,
-                IdType.UNIPROT_MNEMONIC, uniProtMnemonicMatcher,
-                IdType.UNIPROT_ACCESSION, uniProtAccessionMatcher,
-                IdType.GO, goMatcher,
-                IdType.ENSEMBL, ensemblMatcher,
-                IdType.FAMPLEX, famplexMatcher,
-                IdType.HGNC, hgncMatcher,
-                IdType.HGNC_GROUP, hgncgMatcher,
-                IdType.GENE_NAME, anyMatcher));
+        Map<IdType, Matcher> matchers = new LinkedHashMap<>();
+        matchers.put(IdType.GENE_ID, geneIdMatcher);
+        matchers.put(IdType.UNIPROT_MNEMONIC, uniProtMnemonicMatcher);
+        matchers.put(IdType.UNIPROT_ACCESSION, uniProtAccessionMatcher);
+        matchers.put(IdType.GO, goMatcher);
+        matchers.put(IdType.ENSEMBL, ensemblMatcher);
+        matchers.put(IdType.FAMPLEX, famplexMatcher);
+        matchers.put(IdType.HGNC, hgncMatcher);
+        matchers.put(IdType.HGNC_GROUP, hgncgMatcher);
+        matchers.put(IdType.GENE_NAME, anyMatcher);
         while (iterator.hasNext()) {
             String identifier = iterator.next();
             for (IdType idType : matchers.keySet()) {
@@ -497,7 +498,7 @@ public class GeneIdService implements IGeneIdService {
                     Multimap<String, String> topAtids = HashMultimap.create();
 
                     String[] searchInput = id2prefix.keySet().toArray(String[]::new);
-                    final String query = "MATCH (n:CONCEPT:" + label + ")-[:IS_MAPPED_TO]->(c) WHERE n." + idProperty + " IN $ids WITH n,c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return n."+idProperty+" AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
+                    final String query = "MATCH (n:CONCEPT:" + label + ")-[:IS_MAPPED_TO]->(c) WHERE n." + idProperty + " IN $ids WITH n,c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return n." + idProperty + " AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
                     final Value parameters = parameters("ids", searchInput);
                     Result result = tx.run(
                             query,

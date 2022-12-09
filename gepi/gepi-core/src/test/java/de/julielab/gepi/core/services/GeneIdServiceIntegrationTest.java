@@ -85,6 +85,17 @@ public class GeneIdServiceIntegrationTest {
     }
 
     @Test
+    public void convert() throws Exception {
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("gene:2475", "GO:1234", "UP:MTOR_HUMAN"), IdType.GEPI_AGGREGATE).get();
+        final Multimap<String, String> idMap = conversionResult.getConvertedItems();
+        assertThat(idMap.keySet()).containsExactly("gene:2475", "GO:1234", "UP:MTOR_HUMAN");
+        assertThat(idMap.get("gene:2475")).isEqualTo("atid2");
+        assertThat(idMap.get("GO:1234")).isEqualTo("tid6");
+        assertThat(idMap.get("UP:MTOR_HUMAN")).isEqualTo("atid2");
+    }
+
+    @Test
     public void convertGeneNames2ConceptIds() throws Exception {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
         final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GENE_ID).get();
