@@ -21,30 +21,12 @@ public class GepiRequestData implements Cloneable {
     private int eventLikelihood;
     private String[] taxId;
     private String sectionNameFilterString;
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
     private int pageSize = 10;
-
-    public String[] getTaxId() {
-        return taxId;
-    }
-
-    public int getEventLikelihood() {
-        return eventLikelihood;
-    }
 
     public GepiRequestData(List<String> eventTypes, int eventLikelihood, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String[] taxId, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, long dataSessionId) {
         this.eventLikelihood = eventLikelihood;
         this.taxId = taxId;
         this.sectionNameFilterString = sectionNameFilterString;
-//        System.out.println("New RequestData with data session ID " + dataSessionId);
         this.eventTypes = eventTypes;
         this.listAGePiIds = listAGePiIds;
         this.listBGePiIds = listBGePiIds;
@@ -57,6 +39,22 @@ public class GepiRequestData implements Cloneable {
 
     public GepiRequestData() {
 
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public String[] getTaxId() {
+        return taxId;
+    }
+
+    public int getEventLikelihood() {
+        return eventLikelihood;
     }
 
     public String getSectionNameFilterString() {
@@ -102,16 +100,10 @@ public class GepiRequestData implements Cloneable {
         return eventTypes;
     }
 
-//    @Override
-//    public GepiRequestData clone()  {
-//        try {
-//            GepiRequestData clone = (GepiRequestData) super.clone();
-//            clone.eventTypes = new ArrayList<>(eventTypes);
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public GepiRequestData withTaxId(String... taxIds) {
+        this.taxId = taxIds;
+        return this;
+    }
 
     public GepiRequestData withEventTypes(List<String> eventTypes) {
         this.eventTypes = eventTypes;

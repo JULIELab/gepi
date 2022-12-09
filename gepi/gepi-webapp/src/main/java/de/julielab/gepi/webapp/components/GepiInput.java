@@ -249,8 +249,8 @@ public class GepiInput {
                 && listBTextAreaValue.trim().length() > 0;
         boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
         boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
-        Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, taxId, "listA");
-        Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, taxId, "listB");
+        Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
+        Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, "listB");
         if (isABSearchRequest) {
             inputMode = EnumSet.of(InputMode.AB);
         } else if (isAListPresent) {
@@ -318,11 +318,11 @@ public class GepiInput {
         }
     }
 
-    private Future<IdConversionResult> convertToAggregateIds(String input, String taxId, String listName) {
+    private Future<IdConversionResult> convertToAggregateIds(String input, String listName) {
         if (input != null) {
             List<String> inputList = Stream.of(input.split("[\n,]")).map(String::trim).collect(Collectors.toList());
             log.debug("Got {} input IDs from {}", inputList.size(), listName);
-            IGeneIdService.IdType toIdType = taxId == null || taxId.isBlank() ? IGeneIdService.IdType.GEPI_AGGREGATE : IGeneIdService.IdType.GEPI_CONCEPT;
+            IGeneIdService.IdType toIdType = IGeneIdService.IdType.GEPI_AGGREGATE;
             return geneIdService.convert(inputList.stream(),  toIdType);
         }
         return null;

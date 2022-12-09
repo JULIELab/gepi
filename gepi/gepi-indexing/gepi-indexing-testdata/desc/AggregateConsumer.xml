@@ -18,6 +18,12 @@
             <import location="JCoRe JSON Writer.xml"/>
                     
         </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="XMIWriter">
+                        
+            <import location="XMIWriter.xml"/>
+                    
+        </delegateAnalysisEngine>
             
     </delegateAnalysisEngineSpecifiers>
         
@@ -38,6 +44,8 @@
                 <node>JCoRe Database Checkpoint Writer</node>
                                 
                 <node>JCoRe JSON Writer</node>
+                                
+                <node>XMIWriter</node>
                             
             </fixedFlow>
                     

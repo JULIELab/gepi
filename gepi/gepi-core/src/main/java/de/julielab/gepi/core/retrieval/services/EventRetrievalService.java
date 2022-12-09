@@ -38,6 +38,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_ARG_GENE_IDS = "argumentgeneids";
 
+    public static final String FIELD_EVENT_TAX_IDS = "argumenttaxids";
+
     public static final String FIELD_EVENT_ARG_CONCEPT_IDS = "argumentconceptids";
 
     public static final String FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS = "argumenttophomoids";
@@ -108,6 +110,8 @@ public class EventRetrievalService implements IEventRetrievalService {
     public static final String FIELD_EVENT_LIKELIHOOD = "likelihood";
 
     public static final String FIELD_NUM_ARGUMENTS = "numarguments";
+
+
 
     public static final String FIELD_VALUE_MOCK_ARGUMENT = "none";
 
@@ -390,7 +394,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
-            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData.getEventTypes(), requestData.getEventLikelihood(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString(), requestData.getFilterFieldsConnectionOperator());
+            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData.getEventTypes(), requestData.getEventLikelihood(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString(), requestData.getFilterFieldsConnectionOperator(), requestData.getTaxId());
 
             SearchServerRequest serverRqst = new SearchServerRequest();
             serverRqst.query = eventQuery;

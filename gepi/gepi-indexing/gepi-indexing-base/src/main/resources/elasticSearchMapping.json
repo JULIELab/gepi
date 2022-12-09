@@ -43,6 +43,9 @@
         "type": "keyword",
         "store": false
       },
+      "argumenttaxids": {
+        "type": "keyword"
+      },
       "argumentcoveredtext": {
         "type": "text",
         "store": true

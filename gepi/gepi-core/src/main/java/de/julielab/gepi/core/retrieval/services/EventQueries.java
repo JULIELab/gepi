@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import static de.julielab.elastic.query.components.data.query.BoolClause.Occur.*;
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.*;
@@ -81,6 +82,14 @@ public class EventQueries {
         }
         if (requestData.getEventLikelihood() > 1)
             addEventLikelihoodFilter(eventQuery, requestData.getEventLikelihood());
+        if (requestData.getTaxId() != null && requestData.getTaxId().length > 0) {
+            final TermsQuery taxQuery = new TermsQuery(Arrays.stream(requestData.getTaxId()).collect(Collectors.toList()));
+            taxQuery.field = FIELD_EVENT_TAX_IDS;
+            BoolClause taxIdFilterClause = new BoolClause();
+            taxIdFilterClause.occur = FILTER;
+            taxIdFilterClause.addQuery(taxQuery);
+            eventQuery.addClause(taxIdFilterClause);
+        }
         return eventQuery;
     }
 
@@ -129,6 +138,14 @@ public class EventQueries {
         }
         if (requestData.getEventLikelihood() > 1)
             addEventLikelihoodFilter(eventQuery, requestData.getEventLikelihood());
+        if (requestData.getTaxId() != null && requestData.getTaxId().length > 0) {
+            final TermsQuery taxQuery = new TermsQuery(Arrays.stream(requestData.getTaxId()).collect(Collectors.toList()));
+            taxQuery.field = FIELD_EVENT_TAX_IDS;
+            BoolClause taxIdFilterClause = new BoolClause();
+            taxIdFilterClause.occur = FILTER;
+            taxIdFilterClause.addQuery(taxQuery);
+            eventQuery.addClause(taxIdFilterClause);
+        }
 
         return eventQuery;
     }
@@ -143,10 +160,10 @@ public class EventQueries {
         eventQuery.addClause(likelihoodFilterClause);
     }
 
-    public static BoolQuery getFulltextQuery(List<String> eventTypes, int eventLikelihood, String sentenceFilter, String paragraphFilter, String sectionNameFilter, String filterFieldsConnectionOperator) {
+    public static BoolQuery getFulltextQuery(List<String> eventTypes, int eventLikelihood, String sentenceFilter, String paragraphFilter, String sectionNameFilter, String filterFieldsConnectionOperator, String[] taxIds) {
         BoolQuery eventQuery = new BoolQuery();
 
-        if (!eventTypes.isEmpty()) {
+        if (eventTypes != null && !eventTypes.isEmpty()) {
             TermsQuery eventTypesQuery = new TermsQuery(new ArrayList<>(eventTypes));
             eventTypesQuery.field = FIELD_EVENT_ALL_EVENTTYPES;
             BoolClause eventTypeClause = new BoolClause();
@@ -172,6 +189,14 @@ public class EventQueries {
         eventQuery.addClause(fulltextClause);
         if (eventLikelihood > 1) {
             addEventLikelihoodFilter(eventQuery, eventLikelihood);
+        }
+        if (taxIds != null && taxIds.length > 0) {
+            final TermsQuery taxQuery = new TermsQuery(Arrays.stream(taxIds).collect(Collectors.toList()));
+            taxQuery.field = FIELD_EVENT_TAX_IDS;
+            BoolClause taxIdFilterClause = new BoolClause();
+            taxIdFilterClause.occur = FILTER;
+            taxIdFilterClause.addQuery(taxQuery);
+            eventQuery.addClause(taxIdFilterClause);
         }
         return eventQuery;
     }

@@ -2,6 +2,7 @@ package de.julielab.gepi.core.retrieval.services;
 
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import org.assertj.core.api.Assertions;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
@@ -15,6 +16,8 @@ import static org.apache.commons.lang3.concurrent.ConcurrentUtils.constantFuture
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+// we don't use the service at the moment and, for some reason, the tests are very slow
+@Ignore
 public class AggregatedEventsRetrievalTest {
     @Rule
     public Neo4jRule neo4j = new Neo4jRule().withFixture(graphDatabaseService -> {
