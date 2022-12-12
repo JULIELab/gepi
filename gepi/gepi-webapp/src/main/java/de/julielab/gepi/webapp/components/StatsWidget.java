@@ -22,9 +22,6 @@ public class StatsWidget extends GepiWidget {
 
     @Inject
     private IGePiDataService dataService;
-//    @Inject
-//    private IGeneIdService geneIdService;
-
     @Property
     private String viewMode;
     @Property

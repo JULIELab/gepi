@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-8">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body p-5">
                         <h2 id="purpose-of-this-website">Purpose of this Web Site</h2>
                         <p>
                             This Web page offers the retrieval and display bio-molecular interactions that have been

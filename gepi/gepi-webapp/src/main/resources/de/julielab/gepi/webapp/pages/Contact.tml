@@ -3,8 +3,29 @@
       xmlns:p="tapestry:parameter">
 
     <div class="container-md">
-        <h1>Contact</h1>
-        <p>For questions and comments please write to Erik Faessler at firstname.lastname at uni dash jena dot de.</p>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Contact</div>
+            </div>
+            <div class="card-body">
+                <p>
+                This Web site is a product of research conducted at the Friedrich-Schiller-University Jena in
+                the department of German Linguistics.
+                </p>
+                <p>
+                    Germanistische Sprachwissenschaft<br/>
+                    Friedrich-Schiller-Universität Jena<br/>
+                    Fürstengraben 30<br/>
+                    07745 Jena
+                </p>
+                <p>
+                    This work received funding from the BMBF e:Med initiative <a href="https://www.gesundheitsforschung-bmbf.de/de/gliopath-vergleich-der-stoffwechsel-und-signalwege-in-idh-mutierten-und-wildtyp-gliomen-4373.php" class="link-secondary">GlioPATH</a>
+                    (01ZX1402) and the BMBF <a href="https://www.medizininformatik-initiative.de/de/konsortien/smith" class="link-secondary">SMITH</a> project under grant 01ZZ1803G.
+                </p>
+                <p>For questions and comments please contact Erik Faessler at firstname.lastname at uni dash jena dot
+                    de.
+                </p>
+            </div>
+        </div>
     </div>
-
 </html>
