@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
-import de.julielab.gepi.core.services.IGeneIdService.IdType;
+import de.julielab.gepi.core.services.IdType;
 
 public interface IEventRetrievalService {
 	CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, boolean forCharts);

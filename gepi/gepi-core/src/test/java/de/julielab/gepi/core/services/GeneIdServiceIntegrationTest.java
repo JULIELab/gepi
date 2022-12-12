@@ -1,7 +1,7 @@
 package de.julielab.gepi.core.services;
 
 import com.google.common.collect.Multimap;
-import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
+import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.junit.Rule;
 import org.junit.Test;
@@ -98,7 +98,7 @@ public class GeneIdServiceIntegrationTest {
     @Test
     public void convertGeneNames2ConceptIds() throws Exception {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
-        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GENE_ID).get();
+        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IdType.GENE_NAME, IdType.GENE_ID).get();
         final Multimap<String, String> idMap = conversionResult.getConvertedItems();
         assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("atid2", "tid2");
         assertThat(idMap.get("akt1")).containsExactly("atid3");
@@ -107,17 +107,26 @@ public class GeneIdServiceIntegrationTest {
     @Test
     public void convertGeneNames2GeneIdsWithTaxIds() throws Exception {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
-        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GENE_ID).get();
+        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IdType.GENE_NAME, IdType.GENE_ID).get();
         final Multimap<String, String> idMap = conversionResult.getConvertedItems();
         assertThat(idMap.get("mtor")).containsExactlyInAnyOrder("atid2", "tid2");
         assertThat(idMap.get("akt1")).containsExactly("atid3");
     }
 
     @Test
+    public void conceptNameNormalization() throws Exception {
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("&aK t-1?/"), IdType.GENE_NAME, IdType.GENE_ID).get();
+        final Multimap<String, String> idMap = conversionResult.getConvertedItems();
+        assertThat(idMap.keySet()).containsExactlyInAnyOrder("&aK t-1?/");
+        assertThat(idMap.get("&aK t-1?/")).containsExactly("atid3");
+    }
+
+    @Test
     public void getGeneInfo() throws Exception {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
-        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IGeneIdService.IdType.GENE_NAME, IGeneIdService.IdType.GEPI_AGGREGATE).get();
-        final Map<String, GepiGeneInfo> geneInfo = geneIdService.getGeneInfo(conversionResult.getTargetIds());
+        final IdConversionResult conversionResult = geneIdService.convert(Stream.of("mtor", "akt1"), IdType.GENE_NAME, IdType.GEPI_AGGREGATE).get();
+        final Map<String, GepiConceptInfo> geneInfo = geneIdService.getGeneInfo(conversionResult.getTargetIds());
         assertThat(geneInfo).containsKeys("atid2", "atid3");
         assertThat(geneInfo.get("tid2").getSymbol()).isEqualTo("Mtor");
         assertThat(geneInfo.get("atid2").getSymbol()).isEqualTo("mTOR");
@@ -143,13 +152,13 @@ public class GeneIdServiceIntegrationTest {
         //  go(GO:1234,tid6)--h(tid0)
         //  go(GO:1234,tid6)--akth(tid3)
         final String testData = "CREATE (f:FACET {id:'fid0', name:'Genes'})," +
-                "(a:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_lc:'mtor',id:'atid0'})," +
-                "(a2:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_lc:'mtor',id:'atid1'})," +
-                "(t:AGGREGATE_TOP_ORTHOLOGY:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_lc:'mtor',id:'atid2',originalId:'2475'})," +
-                "(h:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mTOR',preferredName_lc:'mtor',originalId:'2475',id:'tid0',taxId:'9606'})," +
-                "(m:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_lc:'mtor',originalId:'56717',id:'tid1',taxId:'10090'}),"+
-                "(d:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mtor',preferredName_lc:'mtor',originalId:'324254',id:'tid1',taxId:'7955'}),"+
-                "(r:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_lc:'mtor',originalId:'56718',id:'tid2',taxId:'10116'})," +
+                "(a:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',id:'atid0'})," +
+                "(a2:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',id:'atid1'})," +
+                "(t:AGGREGATE_TOP_ORTHOLOGY:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',id:'atid2',originalId:'2475'})," +
+                "(h:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',originalId:'2475',id:'tid0',taxId:'9606'})," +
+                "(m:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_normalized:'mtor',originalId:'56717',id:'tid1',taxId:'10090'}),"+
+                "(d:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mtor',preferredName_normalized:'mtor',originalId:'324254',id:'tid1',taxId:'7955'}),"+
+                "(r:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_normalized:'mtor',originalId:'56718',id:'tid2',taxId:'10116'})," +
                 "(f)-[:HAS_ROOT_CONCEPT]->(t),"+
                 "(f)-[:HAS_ROOT_CONCEPT]->(r),"+
                 "(t)-[:HAS_ELEMENT]->(a),"+
@@ -157,9 +166,9 @@ public class GeneIdServiceIntegrationTest {
                 "(a)-[:HAS_ELEMENT]->(h),"+
                 "(a)-[:HAS_ELEMENT]->(m),"+
                 "(a2)-[:HAS_ELEMENT]->(d),"+
-                "(a3:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'AKT1',preferredName_lc:'akt1',id:'atid3'})," +
-                "(akth:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'AKT1',preferredName_lc:'akt1',originalId:'207',id:'tid3',taxId:'9606'}),"+
-                "(aktm:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Akt1',preferredName_lc:'akt1',originalId:'11651',id:'tid4',taxId:'10090'}),"+
+                "(a3:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'AKT1',preferredName_normalized:'akt1',id:'atid3'})," +
+                "(akth:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'AKT1',preferredName_normalized:'akt1',originalId:'207',id:'tid3',taxId:'9606'}),"+
+                "(aktm:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Akt1',preferredName_normalized:'akt1',originalId:'11651',id:'tid4',taxId:'10090'}),"+
                 "(f)-[:HAS_ROOT_CONCEPT]->(a3),"+
                 "(a3)-[:HAS_ELEMENT]->(akth),"+
                 "(a3)-[:HAS_ELEMENT]->(aktm),"+

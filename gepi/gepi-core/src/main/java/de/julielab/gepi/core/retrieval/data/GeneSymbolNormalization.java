@@ -5,6 +5,6 @@ package de.julielab.gepi.core.retrieval.data;
  */
 public class GeneSymbolNormalization {
     public static String normalize(String symbol) {
-        return symbol.toLowerCase();
+        return symbol.toLowerCase().replaceAll("\\p{P}+|\\s+", "");
     }
 }

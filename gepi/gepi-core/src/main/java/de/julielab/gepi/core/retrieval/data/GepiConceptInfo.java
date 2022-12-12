@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Builder
 @Getter
-public class GepiGeneInfo {
+public class GepiConceptInfo {
     private String conceptId;
     private String originalId;
     private String symbol;

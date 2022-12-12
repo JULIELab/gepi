@@ -9,7 +9,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.GeneSymbolNormalization;
-import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
+import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -55,14 +56,14 @@ public class GeneIdService implements IGeneIdService {
     public static final String PROP_UP_ID = "`UniProtKB-ID`";
     private final Logger log;
     private Driver driver;
-    private final LoadingCache<String, GepiGeneInfo> geneInfoCache = CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(30)).maximumSize(10000).build(new CacheLoader<>() {
+    private final LoadingCache<String, GepiConceptInfo> geneInfoCache = CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(30)).maximumSize(10000).build(new CacheLoader<>() {
         @Override
-        public GepiGeneInfo load(String s) {
+        public GepiConceptInfo load(String s) {
             return getGeneInfoFromDatabase(List.of(s)).get(s);
         }
 
         @Override
-        public Map<String, GepiGeneInfo> loadAll(Iterable<? extends String> keys) {
+        public Map<String, GepiConceptInfo> loadAll(Iterable<? extends String> keys) {
             return getGeneInfoFromDatabase(keys);
         }
     });
@@ -78,7 +79,6 @@ public class GeneIdService implements IGeneIdService {
         return CompletableFuture.supplyAsync(() -> {
             List<String> sourceIds = stream.collect(Collectors.toList());
             Future<Multimap<String, String>> convertedIds;
-//            if (to == IdType.GEPI_AGGREGATE) {
             if (from == IdType.GENE_NAME) {
                 convertedIds = convertConceptNames2AggregateIds(sourceIds.stream());
             } else if (from == IdType.GENE_ID) {
@@ -102,37 +102,11 @@ public class GeneIdService implements IGeneIdService {
             } else {
                 throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
             }
-//            } else if (to == IdType.GEPI_CONCEPT) {
-//                if (from == IdType.GENE_NAME) {
-//                    convertedIds = convertGeneNames2GeneIds(sourceIds.stream());
-//                } else if (from == IdType.GEPI_CONCEPT) {
-//                    convertedIds = filterGeneIdsForTaxonomyIds(sourceIds.stream(), taxIds);
-//                } else if (from == IdType.FAMPLEX) {
-//                    convertedIds = convert2Gepi(sourceIds.stream(), FPLX_LABEL, "originalId");
-//                } else if (from == IdType.HGNC_GROUP) {
-//                    convertedIds = convert2Gepi(sourceIds.stream(), HGNC_LABEL, "originalId");
-//                } else if (from == IdType.UNIPROT_ACCESSION) {
-//                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), UP_LABEL, "originalId");
-//                } else if (from == IdType.UNIPROT_MNEMONIC) {
-//                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), UP_LABEL, "sourceIds1");
-//                } else if (from == IdType.ENSEMBL) {
-//                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), ENSEMBL_LABEL, "originalId");
-//                } else if (from == IdType.HGNC) {
-//                    convertedIds = convertMappedGene2AggregateGepiIds(sourceIds.stream(), HGNC_LABEL, "originalId");
-//                } else if (from == IdType.GO) {
-//                    // GO term GePI IDs are directly added to the index (in contrast to UP, ENSEMBL and HGNC IDs which are just mapped to their Gene IDs so we can search for the Gene IDs directly)
-//                    // for the ability to resolve GO-hypernyms.
-//                    convertedIds = convert2Gepi(sourceIds.stream(), GO_LABEL, "originalId");
-//                } else {
-//                    throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
-//                }
-//            } else {
-//                throw new IllegalArgumentException("To-ID type '" + to + "' is currently not supported.");
-//            }
             Future<Multimap<String, String>> finalConvertedIds = convertedIds;
             try {
                 Multimap<String, String> idMapping = finalConvertedIds.get();
-                return new IdConversionResult(sourceIds, idMapping, to);
+                Map<String, IdType> input2IdType = sourceIds.stream().collect(Collectors.toMap(Function.identity(), x -> from));
+                return new IdConversionResult(sourceIds, idMapping, input2IdType, to);
             } catch (Exception e) {
                 log.error("Could not create an IdConversionResult instance", e);
                 throw new IllegalStateException(e);
@@ -161,7 +135,7 @@ public class GeneIdService implements IGeneIdService {
                         filteredGeneIds.put(record.get("SEARCH_ID").asString(), record.get("SEARCH_ID").asString());
                     }
                     time = System.currentTimeMillis() - time;
-                    log.info("Filtered {} gene IDs to {} gene IDs for tax IDs {} in {} seconds.", searchInput.length, filteredGeneIds.size(), taxIds, time / 1000);
+                    log.debug("Filtered {} gene IDs to {} gene IDs for tax IDs {} in {} seconds.", searchInput.length, filteredGeneIds.size(), taxIds, time / 1000);
                     return filteredGeneIds;
                 });
             }
@@ -171,118 +145,27 @@ public class GeneIdService implements IGeneIdService {
     @Override
     public Future<IdConversionResult> convert(Stream<String> stream, IdType to) {
         return CompletableFuture.supplyAsync(() -> {
+            long time = System.currentTimeMillis();
             final Multimap<IdType, String> idsByType = determineIdTypes(stream);
             final List<Future<IdConversionResult>> convertedIds = new ArrayList<>();
             for (IdType from : idsByType.keySet()) {
                 final Collection<String> sourceIds = idsByType.get(from);
                 convertedIds.add(convert(sourceIds.stream(), from, to));
-//            if (to == IdType.GEPI_AGGREGATE) {
-//                if (taxIds != null && !taxIds.isEmpty())
-//                    throw new IllegalArgumentException("Input IDs should be converted to aggregates but there are also taxonomy IDs specified.");
-//                if (from == IdType.GENE_NAME) {
-//                    convertedIds.add(convertGeneNames2AggregateIds(sourceIds.stream()));
-//                } else if (from == IdType.GENE) {
-//                    convertedIds.add(convertGene2AggregateIds(sourceIds.stream()));
-//                } else {
-//                    throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
-//                }
-//            } else if (to == IdType.GENE) {
-//                if (from == IdType.GENE_NAME) {
-//                    if (taxIds != null && !taxIds.isEmpty())
-//                        convertedIds.add(convertGeneNames2GeneIds(sourceIds.stream(), taxIds));
-//                    else
-//                        convertedIds.add(convertGeneNames2GeneIds(sourceIds.stream()));
-//                } else if (from == IdType.GENE) {
-//                    HashMultimap<String, String> map = HashMultimap.create();
-//                    sourceIds.forEach(id -> map.put(id, id));
-//                    convertedIds.add(CompletableFuture.completedFuture(map));
-//                } else {
-//                    throw new IllegalArgumentException("From-ID type '" + from + "' is currently not supported");
-//                }
-//            } else {
-//                throw new IllegalArgumentException("To-ID type '" + to + "' is currently not supported.");
-//            }
             }
             try {
                 Multimap<String, String> combinedIdMappings = HashMultimap.create();
-                for (var idMapping : convertedIds)
+                Map<String, IdType> typeById = new HashMap<>();
+                for (var idMapping : convertedIds) {
                     combinedIdMappings.putAll(idMapping.get().getConvertedItems());
-                return new IdConversionResult(idsByType.values(), combinedIdMappings, to);
+                    typeById.putAll(idMapping.get().getInputIdTypeMapping());
+                }
+                log.debug("Converted {} input IDs of possibly different types to {} IDs of type {} in {} seconds.", idsByType.values().size(), combinedIdMappings.size(), to, time / 1000);
+                return new IdConversionResult(idsByType.values(), combinedIdMappings, typeById, to);
             } catch (Exception e) {
                 log.error("Could not create an IdConversionResult instance", e);
                 throw new IllegalStateException(e);
             }
         });
-    }
-
-    private CompletableFuture<Multimap<String, String>> convertGeneNames2GeneIds(Stream<String> geneNames, Collection<String> taxIds) {
-        return CompletableFuture.supplyAsync(() -> {
-            try (Session session = driver.session()) {
-
-                return session.readTransaction(tx -> {
-                    long time = System.currentTimeMillis();
-                    Record record;
-                    Multimap<String, String> topAtids = HashMultimap.create();
-
-                    String[] searchInput = geneNames.map(String::toLowerCase).toArray(String[]::new);
-                    log.debug("Running query to map gene names to NCBI gene IDs.");
-                    String cypher = "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.preferredName_lc IN $geneNames AND n.taxId in $taxIds " +
-                            "RETURN DISTINCT n.preferredName_lc AS SOURCE_ID,n.originalId AS SEARCH_ID";
-                    Result result = tx.run(
-                            cypher,
-                            parameters("geneNames", searchInput, "taxIds", taxIds));
-
-                    while (result.hasNext()) {
-                        record = result.next();
-                        topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
-                    }
-                    time = System.currentTimeMillis() - time;
-                    log.info("Converted {} gene names to {} gene IDs for tax IDs {} in {} seconds.", searchInput.length, topAtids.size(), taxIds, time / 1000);
-                    return topAtids;
-                });
-            }
-        });
-    }
-
-    private CompletableFuture<Multimap<String, String>> convertGeneNames2GeneIds(Stream<String> geneNames) {
-        return CompletableFuture.supplyAsync(() -> {
-            try (Session session = driver.session()) {
-
-                return session.readTransaction(tx -> {
-                    long time = System.currentTimeMillis();
-                    Record record;
-                    Multimap<String, String> topAtids = HashMultimap.create();
-
-                    String[] searchInput = geneNames.map(String::toLowerCase).toArray(String[]::new);
-                    log.debug("Running query to map gene names to NCBI gene IDs.");
-                    String cypher = "MATCH (n:CONCEPT) WHERE n:ID_MAP_NCBI_GENES AND n.preferredName_lc IN $geneNames " +
-                            "RETURN DISTINCT n.preferredName_lc AS SOURCE_ID,n.originalId AS SEARCH_ID";
-                    Result result = tx.run(
-                            cypher,
-                            parameters("geneNames", searchInput));
-
-                    while (result.hasNext()) {
-                        record = result.next();
-                        topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
-                    }
-                    time = System.currentTimeMillis() - time;
-                    log.info("Converted {} gene names to {} gene IDs in {} seconds.", searchInput.length, topAtids.size(), time / 1000);
-                    return topAtids;
-                });
-            }
-        });
-    }
-
-    @Override
-    public Future<Stream<String>> convertUniprot2Gene(Stream<String> uniprotIds) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Future<Stream<String>> convertGene2Gepi(Stream<String> geneIds) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public Map<String, String> mapIdentifierToPrefix(Stream<String> idStream) {
@@ -333,7 +216,7 @@ public class GeneIdService implements IGeneIdService {
                     Set<String> geneNameSet = geneNames.collect(Collectors.toSet());
                     String[] searchInput = geneNameSet.stream().map(GeneSymbolNormalization::normalize).toArray(String[]::new);
                     // get the highest element in the aggregation-hierarchy; the roots are those that are not elements of another aggregate
-                    String cypher = "MATCH (c:CONCEPT) WHERE c.preferredName_lc IN $geneNames AND NOT ()-[:HAS_ELEMENT]->(c) RETURN c.preferredName_lc AS SOURCE_ID, c.id AS SEARCH_ID";
+                    String cypher = "MATCH (c:CONCEPT) WHERE c.preferredName_normalized IN $geneNames AND NOT ()-[:HAS_ELEMENT]->(c) RETURN c.preferredName_normalized AS SOURCE_ID, c.id AS SEARCH_ID";
                     Result result = tx.run(
                             cypher,
                             parameters("geneNames", searchInput));
@@ -343,7 +226,7 @@ public class GeneIdService implements IGeneIdService {
                         topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
                     }
                     time = System.currentTimeMillis() - time;
-                    log.info("Converted {} gene names to {} aggregate gene IDs in {} seconds", searchInput.length, topAtids.size(), time / 1000);
+                    log.debug("Converted {} concept names to {} aggregate gene IDs in {} seconds", searchInput.length, topAtids.size(), time / 1000);
                     // Replace the normalized keys with the ones that the user actually specified. This is less confusing
                     // when the ID mapping is shown on the web site.
                     for (String originalInputName : geneNameSet) {
@@ -433,8 +316,8 @@ public class GeneIdService implements IGeneIdService {
         final Map<String, String> id2prefix = mapIdentifierToPrefix(input);
         return CompletableFuture.supplyAsync(() -> {
             try (Session session = driver.session()) {
-
                 return session.readTransaction(tx -> {
+                    long time = System.currentTimeMillis();
                     Record record;
                     Multimap<String, String> topAtids = HashMultimap.create();
 
@@ -451,6 +334,8 @@ public class GeneIdService implements IGeneIdService {
                         String prefix = id2prefix.get(sourceId) != null ? id2prefix.get(sourceId) : "";
                         topAtids.put(prefix + sourceId, record.get("SEARCH_ID").asString());
                     }
+                    time = System.currentTimeMillis() - time;
+                    log.debug("Converted {} input IDs to {} concept IDs in {} seconds.", searchInput.length, topAtids.size(), time / 1000);
                     return topAtids;
                 });
 
@@ -465,6 +350,7 @@ public class GeneIdService implements IGeneIdService {
             try (Session session = driver.session()) {
 
                 return session.readTransaction(tx -> {
+                    long time = System.currentTimeMillis();
                     Record record;
                     Multimap<String, String> topAtids = HashMultimap.create();
 
@@ -481,6 +367,8 @@ public class GeneIdService implements IGeneIdService {
                         String prefix = id2prefix.get(sourceId) != null ? id2prefix.get(sourceId) : "";
                         topAtids.put(prefix + sourceId, record.get("SEARCH_ID").asString());
                     }
+                    time = System.currentTimeMillis() - time;
+                    log.debug("Converted {} input IDs to {} aggregate IDs in {} seconds.", searchInput.length, topAtids.size(), time / 1000);
                     return topAtids;
                 });
 
@@ -494,6 +382,7 @@ public class GeneIdService implements IGeneIdService {
             try (Session session = driver.session()) {
 
                 return session.readTransaction(tx -> {
+                    long time = System.currentTimeMillis();
                     Record record;
                     Multimap<String, String> topAtids = HashMultimap.create();
 
@@ -510,6 +399,8 @@ public class GeneIdService implements IGeneIdService {
                         String prefix = id2prefix.get(sourceId) != null ? id2prefix.get(sourceId) : "";
                         topAtids.put(prefix + sourceId, record.get("SEARCH_ID").asString());
                     }
+                    time = System.currentTimeMillis() - time;
+                    log.debug("Converted {} input IDs mapped to genes to {} aggregate IDs in {} seconds.", searchInput.length, topAtids.size(), time / 1000);
                     return topAtids;
                 });
 
@@ -518,7 +409,7 @@ public class GeneIdService implements IGeneIdService {
     }
 
     @Override
-    public Map<String, GepiGeneInfo> getGeneInfo(Iterable<String> conceptIds) {
+    public Map<String, GepiConceptInfo> getGeneInfo(Iterable<String> conceptIds) {
         try {
             return geneInfoCache.getAll(conceptIds);
         } catch (ExecutionException e) {
@@ -526,11 +417,11 @@ public class GeneIdService implements IGeneIdService {
         }
     }
 
-    private Map<String, GepiGeneInfo> getGeneInfoFromDatabase(Iterable<? extends String> conceptIds) {
-        Map<String, GepiGeneInfo> geneInfo;
+    private Map<String, GepiConceptInfo> getGeneInfoFromDatabase(Iterable<? extends String> conceptIds) {
+        Map<String, GepiConceptInfo> geneInfo;
         try (Session session = driver.session()) {
             geneInfo = session.readTransaction(tx -> {
-                Map<String, GepiGeneInfo> innerGeneInfo = new HashMap<>();
+                Map<String, GepiConceptInfo> innerGeneInfo = new HashMap<>();
 
                 // Get the information about the genes.
                 // Slight special handling for FamPlex-HGNCGroup aggregates: we also retrieve the originalId_divergentProperty.
@@ -556,7 +447,7 @@ public class GeneIdService implements IGeneIdService {
                     // to the source.
                     if (labels.contains("AGGREGATE_FPLX_HGNC") && !StringUtils.isNumeric(originalId))
                         originalId = divergentOriginalId.asList(Value::asString).stream().filter(StringUtils::isNumeric).limit(1).findAny().get();
-                    innerGeneInfo.put(conceptId, GepiGeneInfo.builder().originalId(originalId).conceptId(conceptId).symbol(preferredName).labels(new HashSet<>(labels)).build());
+                    innerGeneInfo.put(conceptId, GepiConceptInfo.builder().originalId(originalId).conceptId(conceptId).symbol(preferredName).labels(new HashSet<>(labels)).build());
                 }
                 return innerGeneInfo;
             });

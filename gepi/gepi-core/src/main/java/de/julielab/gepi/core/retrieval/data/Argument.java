@@ -13,7 +13,7 @@ public class Argument implements Comparable<Argument> {
     private String preferredName;
     private String text;
     private ComparisonMode comparisonMode = ComparisonMode.TOP_HOMOLOGY_ID;
-    private GepiGeneInfo geneInfo;
+    private GepiConceptInfo geneInfo;
 
     public Argument(String geneId, String conceptId, String topHomologyId, String text) {
         super();
@@ -146,11 +146,11 @@ public class Argument implements Comparable<Argument> {
         this.comparisonMode = comparisonMode;
     }
 
-    public void setGeneInfo(GepiGeneInfo geneInfo) {
+    public void setGeneInfo(GepiConceptInfo geneInfo) {
         this.geneInfo = geneInfo;
     }
 
-    public GepiGeneInfo getGeneInfo() {
+    public GepiConceptInfo getGeneInfo() {
         return geneInfo;
     }
 

@@ -212,8 +212,7 @@
             "analyzer": "postprocessing_for_preanalyzed_tokens",
             "store": true,
             "term_vector": "with_positions_offsets",
-            "norms": false,
-            "copy_to": ["sentence.text_arguments", "sentence.text_trigger", "sentence.text_likelihood_1", "sentence.text_likelihood_2", "sentence.text_likelihood_3", "sentence.text_likelihood_4", "sentence.text_likelihood_5"]
+            "norms": false
           },
           "text_arguments": {
             "type": "preanalyzed",

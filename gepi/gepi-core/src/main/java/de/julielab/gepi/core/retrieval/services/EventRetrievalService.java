@@ -87,9 +87,13 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_PARAGRAPH_TEXT = "paragraph.text";
 
-    public static final String FIELD_EVENT_SENTENCE_TEXT_FILTER = "sentence.text_filter";
+    public static final String FIELD_EVENT_SENTENCE_TEXT_FILTER = "sentence.text";
 
-    public static final String FIELD_EVENT_PARAGRAPH_TEXT_FILTER = "paragraph.text_filter";
+    public static final String FIELD_EVENT_PARAGRAPH_TEXT_FILTER = "paragraph.text";
+
+    public static final String FIELD_EVENT_SENTENCE_TEXT_ARGUMENTS = "sentence.text_arguments";
+
+    public static final String FIELD_EVENT_PARAGRAPH_TEXT_ARGUMENTS = "paragraph.text_arguments";
 
     public static final String FIELD_EVENT_SENTENCE_TEXT_TRIGGER = "sentence.text_trigger";
 
@@ -110,7 +114,6 @@ public class EventRetrievalService implements IEventRetrievalService {
     public static final String FIELD_EVENT_LIKELIHOOD = "likelihood";
 
     public static final String FIELD_NUM_ARGUMENTS = "numarguments";
-
 
 
     public static final String FIELD_VALUE_MOCK_ARGUMENT = "none";
@@ -201,18 +204,18 @@ public class EventRetrievalService implements IEventRetrievalService {
                 Set<String> idSetB = requestData.getListBGePiIds().get().getConvertedItems().values().stream().collect(Collectors.toSet());
 
                 log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idSetA.size(), idSetB.size());
+                if (log.isDebugEnabled())
+                    log.debug("Some A target IDs are: {}", requestData.getListAGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
+                if (log.isDebugEnabled())
+                    log.debug("Some B target IDs are: {}", requestData.getListBGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
 
                 BoolQuery eventQuery = EventQueries.getClosedQuery(requestData, idSetA, idSetB);
 
                 SearchServerRequest serverRqst = new SearchServerRequest();
                 serverRqst.query = eventQuery;
                 serverRqst.index = documentIndex;
-                serverRqst.rows = SCROLL_SIZE;
-                serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-                serverRqst.downloadCompleteResults = forCharts;
-                serverRqst.downloadCompleteResultsMethod = "searchAfter";
-                if (forCharts)
-                    serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
+                serverRqst.rows = numRows;
+                configureDeepPaging(serverRqst, forCharts);
                 if (!forCharts) {
                     addHighlighting(serverRqst);
                 }
@@ -220,8 +223,10 @@ public class EventRetrievalService implements IEventRetrievalService {
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier<>("ClosedSearch");
                 carrier.addSearchServerRequest(serverRqst);
                 long time = System.currentTimeMillis();
+                log.debug("Sent closed search server request");
                 searchServerComponent.process(carrier);
-
+                if (log.isDebugEnabled())
+                    log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis()-time) / 1000);
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
                         .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
@@ -284,15 +289,17 @@ public class EventRetrievalService implements IEventRetrievalService {
                 Set<String> idSet = gepiRequestData.getAListIdsAsSet();
 
                 log.debug("Retrieving outside events for {} A IDs", idSet.size());
-                log.trace("The A IDs are: {}", idSet);
+                if (log.isDebugEnabled())
+                    log.debug("Some A target IDs are: {}", gepiRequestData.getListAGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
                 SearchServerRequest serverCmd = getOpenSearchRequest(gepiRequestData, from, numRows, forCharts);
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OpenSearch");
                 carrier.addSearchServerRequest(serverCmd);
                 long time = System.currentTimeMillis();
-                log.debug("Sent server request");
+                log.debug("Sent open search server request");
                 searchServerComponent.process(carrier);
-                log.debug("Server answered. Reading results.");
+                if (log.isDebugEnabled())
+                log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis()-time) / 1000);
 
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
@@ -329,28 +336,34 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.index = documentIndex;
         serverRqst.start = from;
         serverRqst.rows = numRows;
-        if (forCharts)
-            serverRqst.rows = SCROLL_SIZE;
-        serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-        serverRqst.downloadCompleteResults = forCharts;
-        serverRqst.downloadCompleteResultsMethod = "searchAfter";
-        if (forCharts)
-            serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
+        configureDeepPaging(serverRqst, forCharts);
         if (!forCharts) {
             addHighlighting(serverRqst);
         }
         return serverRqst;
     }
 
+    private void configureDeepPaging(SearchServerRequest serverRqst, boolean forCharts) {
+        if (forCharts)
+            serverRqst.rows = SCROLL_SIZE;
+        serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
+        serverRqst.downloadCompleteResults = forCharts;
+        serverRqst.downloadCompleteResultsMethod = "scroll";
+        if (forCharts)
+            serverRqst.downloadCompleteResultsLimit = 10000;
+        if (forCharts)
+            serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
+    }
+
     private void addHighlighting(SearchServerRequest serverRqst) {
-        serverRqst.addHighlightCmd(getHighlightCommand("xargumentx", "hl-argument", FIELD_EVENT_SENTENCE_TEXT));
+        serverRqst.addHighlightCmd(getHighlightCommand("xargumentx", "hl-argument", FIELD_EVENT_SENTENCE_TEXT_ARGUMENTS));
         serverRqst.addHighlightCmd(getHighlightCommand("xtriggerx", "hl-trigger", FIELD_EVENT_SENTENCE_TEXT_TRIGGER));
         serverRqst.addHighlightCmd(getHighlightCommand("xlike1x", "hl-like1", FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_1));
         serverRqst.addHighlightCmd(getHighlightCommand("xlike2x", "hl-like2", FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_2));
         serverRqst.addHighlightCmd(getHighlightCommand("xlike3x", "hl-like3", FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_3));
         serverRqst.addHighlightCmd(getHighlightCommand("xlike4x", "hl-like4", FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_4));
         serverRqst.addHighlightCmd(getHighlightCommand("xlike5x", "hl-like5", FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_5));
-        serverRqst.addHighlightCmd(getHighlightCommand(null, "hl-filter", FIELD_EVENT_SENTENCE_TEXT_FILTER, FIELD_EVENT_PARAGRAPH_TEXT_FILTER));
+        serverRqst.addHighlightCmd(getHighlightCommand(null, "hl-filter", FIELD_EVENT_SENTENCE_TEXT, FIELD_EVENT_PARAGRAPH_TEXT));
     }
 
     /**
@@ -401,13 +414,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             serverRqst.index = documentIndex;
             serverRqst.start = from;
             serverRqst.rows = numRows;
-            if (forCharts)
-                serverRqst.rows = SCROLL_SIZE;
-            serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-            serverRqst.downloadCompleteResults = forCharts;
-            serverRqst.downloadCompleteResultsMethod = "searchAfter";
-            if (forCharts)
-                serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
+            configureDeepPaging(serverRqst, forCharts);
             if (!forCharts) {
                 addHighlighting(serverRqst);
             }
@@ -415,7 +422,10 @@ public class EventRetrievalService implements IEventRetrievalService {
             ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("FulltextFilteredEvents");
             carrier.addSearchServerRequest(serverRqst);
             long time = System.currentTimeMillis();
+            log.debug("Sent full-text search server request");
             searchServerComponent.process(carrier);
+            if (log.isDebugEnabled())
+                log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis()-time) / 1000);
 
             EventRetrievalResult eventResult = eventResponseProcessingService
                     .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
@@ -462,12 +472,12 @@ public class EventRetrievalService implements IEventRetrievalService {
             Event e = it.next();
             if (e.getArity() > 1) {
                 final Argument secondArg = e.getArgument(1);
-            if (idSet.contains(secondArg.getGeneId()) || idSet.contains(secondArg.getTopHomologyId())) {
-                List<Argument> arguments = e.getArguments();
-                Argument tmp = arguments.get(0);
-                arguments.set(0, arguments.get(1));
-                arguments.set(1, tmp);
-            }
+                if (idSet.contains(secondArg.getGeneId()) || idSet.contains(secondArg.getTopHomologyId())) {
+                    List<Argument> arguments = e.getArguments();
+                    Argument tmp = arguments.get(0);
+                    arguments.set(0, arguments.get(1));
+                    arguments.set(1, tmp);
+                }
 //            int inputIdPosition = -1;
 //            for (int i = 0; i < e.getNumArguments(); ++i) {
 //                Argument g = e.getArgument(i);

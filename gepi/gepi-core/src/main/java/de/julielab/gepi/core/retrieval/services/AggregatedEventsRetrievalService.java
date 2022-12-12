@@ -3,6 +3,7 @@ package de.julielab.gepi.core.retrieval.services;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.services.IGeneIdService;
+import de.julielab.gepi.core.services.IdType;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.*;
@@ -41,9 +42,9 @@ public class AggregatedEventsRetrievalService implements IAggregatedEventsRetrie
                 log.error("Could not retrieve the input IDs", e);
             }
             if (geneIdService != null) {
-                IGeneIdService.IdType idType = geneIdService.determineIdType(inputIds.stream());
+                IdType idType = geneIdService.determineIdType(inputIds.stream());
                 log.debug("Identified input IDs as {}", idType);
-                if (idType == IGeneIdService.IdType.GENE_NAME) {
+                if (idType == IdType.GENE_NAME) {
                     idProperty = "preferredName_lc";
                     inputIds = inputIds.stream().map(String::toLowerCase).collect(Collectors.toList());
                 }

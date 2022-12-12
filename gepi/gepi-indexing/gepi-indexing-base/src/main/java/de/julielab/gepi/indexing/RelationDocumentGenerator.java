@@ -388,7 +388,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         Document paragraphDocument = new Document(docId + "_par" + zoneIds.get(paragraphLike));
 
         log.trace("Creating preanalyzedFieldValue for paragraph");
-        PreanalyzedFieldValue preanalyzedFieldValue = makePreanalyzedFulltextFieldValue(jCas, paragraphLike, argPair, rel);
+        PreanalyzedFieldValue preanalyzedFieldValue = makePreanalyzedFulltextFieldValue(jCas, paragraphLike, argPair, rel, false);
         paragraphDocument.addField("text", preanalyzedFieldValue);
         paragraphDocument.addField("id", paragraphDocument.getId());
         paragraphDocument.addField("likelihood", FieldCreationUtils.getMeanLikelihood(paragraphLike));
@@ -418,9 +418,14 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         Document sentenceDocument = new Document(docId + "_" + sentence.getId());
 
         log.trace("Creating preanalyzedFieldValue for sentence");
-        PreanalyzedFieldValue preanalyzedFieldValue = makePreanalyzedFulltextFieldValue(jCas, sentence, argPair, rel);
-
-        sentenceDocument.addField("text", preanalyzedFieldValue);
+        sentenceDocument.addField("text", makePreanalyzedFulltextFieldValue(jCas, sentence, argPair, rel, false));
+        sentenceDocument.addField("text_arguments", makePreanalyzedFulltextFieldValue(jCas, sentence, argPair, rel, true));
+        sentenceDocument.addField("text_trigger", makePreanalyzedFulltextFieldValue(jCas, sentence, argPair, rel, true));
+        sentenceDocument.addField("text_likelihood_1", makePreanalyzedFulltextFieldValue(jCas, sentence, argPair, rel, true));
+        sentenceDocument.addField("text_likelihood_2", makePreanalyzedFulltextFieldValue(jCas, sentence, argPair, rel, true));
+        sentenceDocument.addField("text_likelihood_3", makePreanalyzedFulltextFieldValue(jCas, sentence, argPair, rel, true));
+        sentenceDocument.addField("text_likelihood_4", makePreanalyzedFulltextFieldValue(jCas, sentence, argPair, rel, true));
+        sentenceDocument.addField("text_likelihood_5", makePreanalyzedFulltextFieldValue(jCas, sentence, argPair, rel, true));
         sentenceDocument.addField("id", docId + "_" + (sentence.getId() != null ? sentence.getId() : i));
         sentenceDocument.addField("likelihood", FieldCreationUtils.getMeanLikelihood(sentence));
         return sentenceDocument;
@@ -433,16 +438,22 @@ public class RelationDocumentGenerator extends DocumentGenerator {
      * @param fullTextSpan The text containing annotation, i.e. the sentence or the paragraph-like FeatureStrucure.
      * @param argPair      The two arguments in focus that make up the current relation document.
      * @param relation     The relation being processed.
+     * @param indexOnlyEventMetatokens
      * @return A pre-computed field value for an ElasticSearch index field. That value is not further analyzed by ElasticSearch but stored as specified here.
      * @throws CASException If CAS access fails.
      */
-    private PreanalyzedFieldValue makePreanalyzedFulltextFieldValue(JCas jCas, AnnotationFS fullTextSpan, FeatureStructure[] argPair, FlattenedRelation relation) throws CASException {
-        FeaturePathSets featurePathSets = new FeaturePathSets();
-        featurePathSets.add(new FeaturePathSet(Token.type, Arrays.asList("/:coveredText()"), null, textFb.textTokensFilter));
-        featurePathSets.add(new FeaturePathSet(Abbreviation.type, Arrays.asList("/textReference:coveredText()"), null, textFb.textTokensFilter));
-        featurePathSets.add(new FeaturePathSet(Gene.type, Arrays.asList("/resourceEntryList/entryId"), null, new FilterChain(geneFb.gene2tid2atidAddonFilter, new UniqueFilter())));
+    private PreanalyzedFieldValue makePreanalyzedFulltextFieldValue(JCas jCas, AnnotationFS fullTextSpan, FeatureStructure[] argPair, FlattenedRelation relation, boolean indexOnlyEventMetatokens) throws CASException {
+            List<PreanalyzedToken> tokens;
+        if (!indexOnlyEventMetatokens) {
+            FeaturePathSets featurePathSets = new FeaturePathSets();
+            featurePathSets.add(new FeaturePathSet(Token.type, Arrays.asList("/:coveredText()"), null, textFb.textTokensFilter));
+            featurePathSets.add(new FeaturePathSet(Abbreviation.type, Arrays.asList("/textReference:coveredText()"), null, textFb.textTokensFilter));
+            featurePathSets.add(new FeaturePathSet(Gene.type, Arrays.asList("/resourceEntryList/entryId"), null, new FilterChain(geneFb.gene2tid2atidAddonFilter, new UniqueFilter())));
 //        featurePathSets.add(new FeaturePathSet(FlattenedRelation.type, Arrays.asList("/rootRelation/specificType"), null, constantTriggerFilter));
-        List<PreanalyzedToken> tokens = relationFieldValueGenerator.getTokensForAnnotationIndexes(featurePathSets, null, true, PreanalyzedToken.class, fullTextSpan, null, jCas);
+            tokens = relationFieldValueGenerator.getTokensForAnnotationIndexes(featurePathSets, null, true, PreanalyzedToken.class, fullTextSpan, null, jCas);
+        } else {
+            tokens = new ArrayList<>();
+        }
         // We only want the special highlighting term xargumentx for the actual two arguments of the
         // current relation. Thus we need to interlace the argument terms with the sentence terms.
         addArgumentAndTriggerTokens(tokens, argPair, fullTextSpan.getBegin(), fullTextSpan.getEnd(), relation);

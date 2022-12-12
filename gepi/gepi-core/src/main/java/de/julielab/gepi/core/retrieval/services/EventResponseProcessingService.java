@@ -5,7 +5,7 @@ import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
+import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.services.IGeneIdService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.annotations.Log;
@@ -79,9 +79,9 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
             Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE_TEXT);
             Optional<String> paragraph = eventDocument.get(FIELD_EVENT_PARAGRAPH_TEXT);
-            List<String> sentenceArgumentHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT);
+            List<String> sentenceArgumentHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_ARGUMENTS);
             List<String> sentenceTriggerHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_TRIGGER);
-            List<String> sentenceFilterHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_FILTER);
+            List<String> sentenceFilterHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT);
             List<String> sentenceLikelihood1Hl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_1);
             List<String> sentenceLikelihood2Hl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_2);
             List<String> sentenceLikelihood3Hl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_LIKELIHOOD_3);
@@ -115,7 +115,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                     // so we use this as indicator.
                     if (text != null && !FIELD_VALUE_MOCK_ARGUMENT.equals(conceptId)) {
                         try {
-                            final GepiGeneInfo geneInfo = geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
+                            final GepiConceptInfo geneInfo = geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
                             argument.setGeneInfo(geneInfo);
                         } catch (Exception e) {
                             log.error("Could not load gene info for concept with ID {}", conceptId);

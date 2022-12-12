@@ -117,6 +117,15 @@ public class EventQueries {
             eventTypeClause.occur = FILTER;
             eventQuery.addClause(eventTypeClause);
         }
+        if (!requestData.isIncludeUnary()) {
+            final TermQuery tq = new TermQuery();
+            tq.term = 2;
+            tq.field = FIELD_NUM_ARGUMENTS;
+            final BoolClause numArgsClause = new BoolClause();
+            numArgsClause.addQuery(tq);
+            numArgsClause.occur = FILTER;
+            eventQuery.addClause(numArgsClause);
+        }
 
         BoolQuery filterQuery = new BoolQuery();
         BoolClause.Occur sentenceParagraphOccur = requestData.getFilterFieldsConnectionOperator().equalsIgnoreCase("and") ? MUST : SHOULD;
