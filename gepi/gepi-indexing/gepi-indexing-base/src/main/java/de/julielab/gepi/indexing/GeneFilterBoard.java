@@ -47,11 +47,12 @@ public class GeneFilterBoard extends FilterBoard {
 
     @Override
     public void setupFilters() {
+        conceptid2prefNameFilter = new ReplaceFilter(conceptid2prefName);
         egid2tidAddonFilter = new SingleAddonTermsFilter(egid2tid);
         egid2taxidReplaceFilter = new ReplaceFilter(egid2taxid);
         gene2tid2atidAddonFilter = new FilterChain(egid2tidAddonFilter, new AddonTermsFilter(tid2atid));
         egid2prefNameReplaceFilter = new FilterChain(new ReplaceFilter(egid2tid), new ReplaceFilter(conceptid2prefName));
-        egid2homoPrefNameReplaceFilter = new FilterChain(new ReplaceFilter(egid2tid), new ReplaceFilter(tid2homoPrefName));
+        egid2homoPrefNameReplaceFilter = new FilterChain(new ReplaceFilter(egid2tid), new ReplaceFilter(tid2homoPrefName),conceptid2prefNameFilter);
         eg2tidReplaceFilter = new ReplaceFilter(egid2tid);
         eg2tophomoFilter = new FilterChain(eg2tidReplaceFilter, new ReplaceFilter(tid2tophomo));
         eg2famplexFilter = new FilterChain(eg2tophomoFilter, new AddonTermsFilter(tid2famplex, true, true));
@@ -59,7 +60,6 @@ public class GeneFilterBoard extends FilterBoard {
         eg2gotidFilter = new FilterChain(eg2tidReplaceFilter, new AddonTermsFilter(genetid2gotid, true));
         gotid2gohypertidFilter = new AddonTermsFilter(gotid2hypertid);
         eg2gohypertidFilter = new FilterChain(eg2gotidFilter, gotid2gohypertidFilter);
-        conceptid2prefNameFilter = new ReplaceFilter(conceptid2prefName);
         eg2goprefnameFilter = new FilterChain(eg2gotidFilter, conceptid2prefNameFilter);
     }
 }

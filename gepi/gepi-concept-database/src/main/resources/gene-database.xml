@@ -314,18 +314,10 @@
             </request>
             <outputfile>es-consumer-resources/conceptid2prefName.map.gz</outputfile>
         </export>
-        <export name="preferredTophomologyNames">
+        <export name="genetid2orthologyatid">
             <request>
-                <cypherquery>MATCH (c:ID_MAP_NCBI_GENES) WITH c OPTIONAL MATCH
-                    (c)-[:HAS_ELEMENT]-(a:AGGREGATE_GENEGROUP) WITH c,a OPTIONAL MATCH
-                    (a)-[:HAS_ELEMENT]-(top:AGGREGATE_TOP_ORTHOLOGY) RETURN DISTINCT c.id AS id, COALESCE(top.preferredName,
-                    a.preferredName, c.preferredName) AS name
-                    UNION
-                    MATCH (f:FPLX) RETURN f.id AS id,f.preferredName AS name
-                    UNION
-                    MATCH (h:HGNC_GROUP) RETURN h.id AS id,h.preferredName AS name
-                    UNION
-                    MATCH (fh:AGGREGATE_FPLX_HGNC) RETURN fh.id AS id,fh.preferredName AS name
+                <cypherquery>
+                    MATCH (c:ID_MAP_NCBI_GENES)&lt;-[:HAS_ELEMENT*]-(a) WHERE a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY AND NOT exists((a)&lt;-[:HAS_ELEMENT]-()) RETURN c.id, a.preferredName AS name
                 </cypherquery>
             </request>
             <outputfile>es-consumer-resources/tid2topHomologyPrefName.map.gz</outputfile>
