@@ -212,35 +212,57 @@
             "analyzer": "postprocessing_for_preanalyzed_tokens",
             "store": true,
             "term_vector": "with_positions_offsets",
-            "norms": false
+            "norms": false,
+            "copy_to": ["sentence.text_arguments", "sentence.text_trigger", "sentence.text_likelihood_1", "sentence.text_likelihood_2", "sentence.text_likelihood_3", "sentence.text_likelihood_4", "sentence.text_likelihood_5"]
           },
-          "text_filter": {
-            "type": "alias",
-            "path": "sentence.text"
+          "text_arguments": {
+            "type": "preanalyzed",
+            "analyzer": "keyword",
+            "term_vector": "with_positions_offsets",
+            "norms": false,
+            "store": true
           },
           "text_trigger": {
-            "type": "alias",
-            "path": "sentence.text"
+            "type": "preanalyzed",
+            "analyzer": "keyword",
+            "term_vector": "with_positions_offsets",
+            "norms": false,
+            "store": true
           },
           "text_likelihood_1": {
-            "type": "alias",
-            "path": "sentence.text"
+            "type": "preanalyzed",
+            "analyzer": "keyword",
+            "term_vector": "with_positions_offsets",
+            "norms": false,
+            "store": true
           },
           "text_likelihood_2": {
-            "type": "alias",
-            "path": "sentence.text"
+            "type": "preanalyzed",
+            "analyzer": "keyword",
+            "term_vector": "with_positions_offsets",
+            "norms": false,
+            "store": true
           },
           "text_likelihood_3": {
-            "type": "alias",
-            "path": "sentence.text"
+            "type": "preanalyzed",
+            "analyzer": "keyword",
+            "term_vector": "with_positions_offsets",
+            "norms": false,
+            "store": true
           },
           "text_likelihood_4": {
-            "type": "alias",
-            "path": "sentence.text"
+            "type": "preanalyzed",
+            "analyzer": "keyword",
+            "term_vector": "with_positions_offsets",
+            "norms": false,
+            "store": true
           },
           "text_likelihood_5": {
-            "type": "alias",
-            "path": "sentence.text"
+            "type": "preanalyzed",
+            "analyzer": "keyword",
+            "term_vector": "with_positions_offsets",
+            "norms": false,
+            "store": true
           },
           "id": {
             "type": "keyword",
@@ -260,14 +282,6 @@
             "store": true,
             "term_vector": "with_positions_offsets",
             "norms": false
-          },
-          "text_filter": {
-            "type": "alias",
-            "path": "paragraph.text"
-          },
-          "text_trigger": {
-            "type": "alias",
-            "path": "paragraph.text"
           },
           "id": {
             "type": "keyword",
