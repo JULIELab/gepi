@@ -42,8 +42,7 @@ public Event getEvent() {
         try {
             return event.getArity() > 1 ? event.getSecondArgument().getGeneInfo().getOriginalId() : "";
         } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            throw new IllegalStateException("Accessing the second event argument of event " + event.getEventId() + " failed. Event arity is " + event.getArity() + ", second argument is " + event.getSecondArgument() + " and geneInfo of the second argument is " + (event.getSecondArgument() != null ? event.getSecondArgument().getGeneId() : "<second argument is null>"));
         }
     }
 

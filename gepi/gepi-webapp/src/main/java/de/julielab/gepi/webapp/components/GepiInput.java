@@ -3,6 +3,7 @@ package de.julielab.gepi.webapp.components;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -10,6 +11,7 @@ import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
+import de.julielab.gepi.core.services.IdType;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.data.EventTypes;
 import de.julielab.gepi.webapp.data.GepiQueryParameters;
@@ -138,6 +140,10 @@ public class GepiInput {
     @Property
     private String sectionNameFilterString;
 
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private boolean includeUnary;
+
     /**
      * This is not an ID for the servlet session but to the current data state.
      */
@@ -264,7 +270,7 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
 //        if ((filterString != null && !filterString.isBlank())) {
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
@@ -274,8 +280,8 @@ public class GepiInput {
 //        }
         final String[] aLines = listATextAreaValue != null ? listATextAreaValue.split("\n") : new String[0];
         final String[] bLines = listBTextAreaValue != null ? listBTextAreaValue.split("\n") : new String[0];
-        log.info("[{}] A, first elements: {}", dataSessionId, Arrays.asList(aLines).subList(0, Math.min(5, aLines.length)));
-        log.info("[{}] B, first elements: {}", dataSessionId, Arrays.asList(bLines).subList(0, Math.min(5, bLines.length)));
+        log.info("[{}] A input, first elements: {}", dataSessionId, Arrays.asList(aLines).subList(0, Math.min(5, aLines.length)));
+        log.info("[{}] B input, first elements: {}", dataSessionId, Arrays.asList(bLines).subList(0, Math.min(5, bLines.length)));
         log.info("[{}] taxIds: {}", dataSessionId, taxId);
         log.info("[{}] sentence filter: {}", dataSessionId, sentenceFilterString);
         log.info("[{}] paragraph filter: {}", dataSessionId, paragraphFilterString);
@@ -320,9 +326,9 @@ public class GepiInput {
 
     private Future<IdConversionResult> convertToAggregateIds(String input, String listName) {
         if (input != null) {
-            List<String> inputList = Stream.of(input.split("[\n,]")).map(String::trim).collect(Collectors.toList());
+            List<String> inputList = Stream.of(input.split("[\n,]")).map(String::trim).filter(Predicate.not(String::isBlank)).collect(Collectors.toList());
             log.debug("Got {} input IDs from {}", inputList.size(), listName);
-            IGeneIdService.IdType toIdType = IGeneIdService.IdType.GEPI_AGGREGATE;
+            IdType toIdType = IdType.GEPI_AGGREGATE;
             return geneIdService.convert(inputList.stream(),  toIdType);
         }
         return null;

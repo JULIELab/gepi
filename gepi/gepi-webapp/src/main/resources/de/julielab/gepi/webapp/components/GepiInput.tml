@@ -82,13 +82,18 @@
             <div class="card-body" id="eventtypediv">
                 <t:checklist t:id="eventtypes" selected="selectedeventtypes" encoder="eventtypeencoder"
                              model="eventtypemodel" t-checklist-row="testzeugs"/>
+            </div><!--Include event descriptions without a second interaction partner:-->
+            <div class="text-center">
+                <t:checkbox t:id="includeUnary" id="includeUnary" value="includeUnary" class="btn-check"/>
+                <t:label for="includeUnary" class="btn btn-outline-primary mb-2"  data-bs-toggle="default-tooltip"
+                         title="Molecular event descriptions do often not mention an interaction partner or the cause of the event is not another gene or protein, e.g. 'phosphorylation of human p65'.">Include single gene events</t:label>
             </div>
         </div>
         <div class="card">
             <h6 class="card-header text-center">Filter the result by factuality of the interactions
                 <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
                         data-bs-toggle="default-tooltip"
-                        title="Factuality means whether an interaction is described as actually happening, not happening or possibly happening on a likelihood scale."/>
+                        title="Factuality means whether an interaction is described as actually happening, not happening or possibly happening on a likelihood scale. This selection allows to specify the lowest factuality level to be returned."/>
             </h6>
             <div class="card-body mx-auto">
                 <div class="btn-group" role="group"

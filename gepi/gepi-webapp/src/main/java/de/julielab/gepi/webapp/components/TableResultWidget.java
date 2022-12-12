@@ -254,7 +254,7 @@ public class TableResultWidget extends GepiWidget {
     }
 
     public String getArgumentLink(int argPosition) {
-        GepiGeneInfo targetInfo = argPosition == 1 ? eventRow.getEvent().getFirstArgument().getGeneInfo() : eventRow.getEvent().getSecondArgument().getGeneInfo();
+        GepiConceptInfo targetInfo = argPosition == 1 ? eventRow.getEvent().getFirstArgument().getGeneInfo() : eventRow.getEvent().getSecondArgument().getGeneInfo();
         if (targetInfo == null)
             return "#";
         if (targetInfo.getLabels().contains("HGNC_GROUP") || targetInfo.getLabels().contains("AGGREGATE_FPLX_HGNC"))

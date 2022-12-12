@@ -1,7 +1,7 @@
 package de.julielab.gepi.webapp.components;
 
 import com.google.common.collect.Multimap;
-import de.julielab.gepi.core.retrieval.data.GepiGeneInfo;
+import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import de.julielab.gepi.core.services.IGeneIdService;
@@ -62,7 +62,7 @@ public class InputListMappingTable {
             final IdConversionResult conversionResult = getConversionResult();
             final Multimap<String, String> convertedItems = conversionResult.getConvertedItems();
             List<InputMapping> ret = new ArrayList<>();
-            final Map<String, GepiGeneInfo> geneInfo = geneIdService.getGeneInfo(convertedItems.values());
+            final Map<String, GepiConceptInfo> geneInfo = geneIdService.getGeneInfo(convertedItems.values());
             for (String inputId : (Iterable<String>) () -> convertedItems.keySet().stream().sorted(String.CASE_INSENSITIVE_ORDER).iterator()) {
                 if (maxTableSize >= 0 && ret.size() == maxTableSize)
                     break;
@@ -73,9 +73,9 @@ public class InputListMappingTable {
                 // belong to some organism that was not yet accounted for in gene_orthologs. This is a technical detail
                 // and the user should not be burdened with it. So, find the best representative, which should be
                 // the aggregate, if we have one.
-                GepiGeneInfo mappedRepresentative = null;
+                GepiConceptInfo mappedRepresentative = null;
                 for (String mappedId : convertedItems.get(inputId)) {
-                    final GepiGeneInfo info = geneInfo.get(mappedId);
+                    final GepiConceptInfo info = geneInfo.get(mappedId);
                     // Use the first item as representative, it is as good as any - except if we have an aggregate.
                     if (mappedRepresentative == null)
                         mappedRepresentative = info;

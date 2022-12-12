@@ -22,7 +22,6 @@ public class BarChartWidget extends GepiWidget {
     @InjectComponent("gepiwidgetlayout")
     private GepiWidgetLayout component;
 
-    @Log
     void afterRender() {
         if (component.isResultLoading() || component.isResultAvailable()) {
             javaScriptSupport.require("gepi/charts/barchart").with(elementId, component.getWidgetSettings());

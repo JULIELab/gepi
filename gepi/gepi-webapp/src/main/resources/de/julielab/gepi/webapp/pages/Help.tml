@@ -1,4 +1,4 @@
-<html t:type="layout" title="Contact"
+<html t:type="layout" title="Help"
       xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
 
     <body class="container-md">
@@ -11,7 +11,8 @@
                             This Web page offers the retrieval and display bio-molecular interactions that have been
                             extracted from the scientific literature via text mining.
                         </p>
-                        <p>The focus lies on interactions that involve genes, gene products, families, complexes and
+                        <p>
+                            The focus lies on interactions that involve genes, gene products, families, complexes and
                             groups of genes. For the purpose of this service, no difference is made between genes and
                             their products. Text mining algorithms are employed to search the text of documents from
                             PubMed and the PubMed Central open access subset for mentions of interactions between these
@@ -62,7 +63,8 @@
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
                                         <p class="fs-6">
-                                            We have examined changes in <span class="entity">HS1</span> <span class="trigger">phosphorylation</span>[...]
+                                            We have examined changes in <span class="entity">HS1
+                                        </span> <span class="trigger">phosphorylation</span>[...]
                                         </p>
                                     </blockquote>
                                 </div>
@@ -77,11 +79,154 @@
                         </p>
                         <p>
                             Both, binary and unary events are included in the GePI search index. In result displays that require two interaction partners, unary events are either filtered out - e.g. for Sankey charts - or do not show second interaction partner information - e.g. the result table.
-
                         </p>
                         <h2 id="input-specification">Input Specification</h2>
-                        <p>At the heart of a GePI search lies the specification of one or two lists of genes, proteins or families, complexes and groups of them. Recognized names or IDs include all <a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/gene/">NCBI Gene</a> IDs and symbols, <a class="link-secondary" href="https://github.com/sorgerlab/famplex/">FamPlex</a> names and <a class="link-secondary" href="https://www.genenames.org/data/genegroup/#!/">HGNC Gene Group</a> names. The first list of identifiers will be called <em>List A</em> and the second one will be called <em>List B</em> all over the Web page.</p>
-                        <p><em>Open search.</em> When List A is specified but List B is not, this is called an open search. The result will contain interactions that have an item of List A as one interaction partner and any other interaction partner.</p>
+                        <p>
+                            At the heart of a GePI search lies the specification of one or two lists of genes, proteins or families, complexes and groups of them. Recognized names or IDs include
+                            <ul>
+                                <li><a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/gene/">NCBI Gene</a> IDs and symbols</li>
+                                <li><a class="link-secondary" href="https://www.ensembl.org/">Ensembl Gene IDs</a></li>
+                                <li><a class="link-secondary" href="https://www.genenames.org/">HGNC Gene IDs</a></li>
+                                <li><a class="link-secondary" href="https://www.uniprot.org/">UniProtKB</a> Accession and IDs/mnemonic</li>
+                                <li><a class="link-secondary" href="https://www.genenames.org/data/genegroup/#!/">HGNC Gene Group</a> IDs and names</li>
+                                <li><a class="link-secondary" href="https://github.com/sorgerlab/famplex/">FamPlex</a> IDs and names</li>
+                            </ul>
+                            The first list of identifiers will be called <em>List A</em> or <em>A-List</em> and the second one will be called <em>List B</em> or <em>B-List</em> all over the Web page.
+                        </p>
+                        <h3 id="search-types">Search types</h3>
+                        <p>
+                            <em>Open search.</em> When List A is specified but List B is not, this is called an open search because the set of possible interaction partners is left open. The result will contain interactions that have an item of List A as one interaction partner and any other interaction partner. No events will be returned where both interaction partners belong to List A. If this should be allowed, a closed search can be performed where List A and List B are set to the same list of identifiers.
+                        </p>
+                        <p>
+                            <em>Closed search.</em> When List A and List B are provided, this is called a closed search because a closed set of interaction partners has been defined. Result interactions will always contain one interaction partner from List A and one from List B. Entries are allowed to exist in both lists. No events will be returned that contain the same gene as both interaction partners.
+                        </p>
+                        <p>
+                            <em>Full-text search.</em> It is possible to omit specification of List A and List B completely if at least one of the three full-text filter fields is given input to. The result will contain the interactions that appeared in the sentences or paragraphs that match the respective full-text query. The section heading search works a bit different. All interactions in the database store the names of the sections or subsections they are contained in. As an example, consider the following section structure.
+                            <div class="card mt-3 mb-3">
+                                <div class="card-header">
+                                    <div class="card-title">BMP-6 inhibits growth of mature human B cells; induction of Smad phosphorylation and upregulation of Id1</div>
+                                </div>
+                                <div class="card-body">
+                                    <blockquote class="blockquote mb-0">
+                                            <h4>Abstract</h4>
+                                               <p class="fs-6">
+                                                  [...]
+                                               </p>
+                                            <h4>Results</h4>
+                                               <p class="fs-6">
+                                                [...]
+                                              </p>
+                                            <h5>BMP-6 induces phosphorylation of Smad1/5/8</h5>
+                                               <p class="fs-6">
+                                                 [...]
+                                              </p>
+                                            <h5>BMP-6 induces upregulation of Id1</h5>
+                                            <p class="fs-6">
+                                                Next, we wanted to explore whether the
+                                                    <span class="entity">BMP-6
+                                                    </span>
+                                                    <span class="trigger">induced
+                                                    </span>
+                                                    <span class="trigger">phosphorylation</span>
+                                                of
+                                                    <span class="entity">Smad 1/5/8</span>
+                                                also could induce transcriptional changes of target genes.
+                                            </p>
+                                    </blockquote>
+                                </div>
+                                <div class="card-footer">
+                                    <a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1134658/"
+                                       target="_blank">
+                                        <cite title="PMC1134658">PMC1134658</cite>
+                                    </a>
+                                </div>
+                            </div>
+                            The interaction between <span class="entity">BMP-6</span> and <span class="entity">Smas 1/5/8</span> is mentioned in the Results subsection named <em>BMP-6 induces upregulation of Id1</em> of PMC1134658. The database entry for this interaction stores all headings and titles up to the document title:
+                            <ul>
+                                <li>BMP-6 induces upregulation of Id1 <span class="badge text-bg-secondary">subsection heading</span></li>
+                                <li>Results <span class="badge text-bg-secondary">section heading</span></li>
+                                <li>BMP-6 inhibits growth of mature human B cells; induction of Smad phosphorylation and upregulation of Id1 <span class="badge text-bg-secondary">article title</span></li>
+                            </ul>
+                            Of note, the subheading <em>BMP-6 induces phosphorylation of Smad1/5/8</em> is not included in the list because it does not contain the interaction but exists on the same section sub-level as <em>BMP-6 induces upregulation of Id1</em>.
+                        </p>
+                        <h3 id="filter-types">Filter types</h3>
+                        <p>
+                            <em>Result filters.</em> A GePI search can be filtered for species via NCBI Taxonomy identifiers, interaction types, and factuality level.
+                            These filters cannot constitute searches of their own but exist to solely to restrict the search defined by the methods described above.
+                        </p>
+                        <p>
+                            <em>Taxonomy filter.</em>A comma-separated list of NCBI Taxonomy IDs may be provided to filter on the interaction partners.
+                            NCBI Gene entries are always assigned a exactly one taxonomy ID. The GePI text processing pipeline also assigns species to protein families
+                            based on the species discussed in the respective document. The species are stored as taxonomy IDs in the interaction database and
+                            also used for species filter purposes. In case no species is mentioned at all - which commonly happens in PubMed abstracts - the human
+                            taxonomy ID 9606 is assigned as this the most frequent organism discussed in PubMed.
+                        </p>
+                        <p>
+                            <em>Interaction types filter.</em> By default, interactions of all types are included into a search result. This selection can be reduced to focus on specific interaction types, e.g. phosphorylation events regarding the input gene lists.
+                        </p>
+                        <p>
+                            <em>Inclusion of single gene events.</em> The interaction extraction algorithm frequently finds molecular event descriptions that refer to a single gene without further interaction partners as described in <a href="#purpose-of-this-website">Purpose of this Web site</a>.</p>
+                            These unary events are excluded from the search results by default. They will be included if the button is activated.
+                        <p>
+                            <em>Factuality level filter.</em> Reports of molecular interactions may include words or phrases to express a restriction on factuality of an interaction description meaning that the described interaction might or might not have been observed. Consider the following example.
+                            <div class="card mt-3 mb-3">
+                                <div class="card-body">
+                                    <blockquote class="blockquote mb-0">
+                                        <p class="fs-6">
+                                            Next, we wanted to <span class="likelihood">explore whether</span> the
+                                            <span class="entity">BMP-6
+                                            </span>
+                                            <span class="trigger">induced
+                                            </span>
+                                            <span class="trigger">phosphorylation</span>
+                                            of
+                                            <span class="entity">Smad 1/5/8</span>
+                                            also could induce transcriptional changes of target genes.
+                                        </p>
+                                    </blockquote>
+                                </div>
+                                <div class="card-footer">
+                                    <a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1134658/"
+                                       target="_blank">
+                                        <cite title="PMC1134658">PMC1134658</cite>
+                                    </a>
+                                </div>
+                            </div>
+                            The words <span class="likelihood">explore</span> and <span class="likelihood">whether</span> express at this specific position in text that the interaction between <span class="entity">BMP-6</span> and <span class="entity">Smad 1/5/6</span> is not reported
+                            as a fact but stands to be investigated. To control the degree of factuality of returned interactions, GePI offers six filter levels.
+                            <table class="table">
+                                <tr>
+                                    <th>factuality level name</th><th>description</th><th>example expression</th>
+                                </tr>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <td><span class="badge text-bg-secondary">negation</span></td><td>assertive statement about an interaction not taking place</td><td>not, absent, fail</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge text-bg-secondary">low</span></td><td>indication of disbelief that an interaction is taking place</td><td>unlikely</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge text-bg-secondary">investigation</span></td><td>intention or possibility for examination of an interaction</td><td>assess, explore</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge text-bg-secondary">moderate</span></td><td>existing hints to an interaction but no affirmation</td><td>may, possibly</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge text-bg-secondary">high</span></td><td>prior knowledge, e.g. experiments, that points to the existence of an interaction</td><td>imply, indicate that</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge text-bg-secondary">assertion</span></td><td>assertive statement about an interaction, absence of words that restrict the factuality</td><td class="text-center"><!-- long dash -->&#8212;</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            The selection of a factuality item filters interactions to be assigned the selected or a higher - more assertive - factuality level. Thus, selecting <span class="badge text-bg-secondary">moderate</span> will allow interactions
+                            with <span class="badge text-bg-secondary">moderate</span>, <span class="badge text-bg-secondary">high</span> and <span class="badge text-bg-secondary">assertion</span> factuality levels to be included in the result. Thus, the default
+                            selection lies on <span class="badge text-bg-secondary">negation</span> which does not impose any factuality restriction.
+                        </p>
+                        <p>
+                            <em>full-text filters.</em> The full-text fields can be used to start a search on their own or they can serve as a filter for the results of specified A-List and B-List genes. Then, only interactions will be returned that adhere
+                            to the gene list specification and also match the provided full-text filters.
+                        </p>
                         <h2 id="output-dashboard">Output Dashboard</h2>
                         Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut
                         aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit
@@ -163,6 +308,10 @@
                                     </li>
                                     <li>
                                         <a href="#input-specification">Input Specification</a>
+                                        <ul>
+                                            <li><a href="#search-types">Search types</a></li>
+                                            <li><a href="#filter-types">Filter types</a></li>
+                                        </ul>
                                     </li>
                                     <li>
                                         <a href="#output-dashboard">Output Dasboard</a>

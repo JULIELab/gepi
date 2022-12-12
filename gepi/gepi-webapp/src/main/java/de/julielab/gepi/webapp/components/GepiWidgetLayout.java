@@ -132,7 +132,6 @@ final public class GepiWidgetLayout {
         return !useTapestryZoneUpdates || isResultAvailable();
     }
 
-    @Log
     public boolean isResultLoading() {
         if (!waitForData)
             return false;
@@ -185,7 +184,6 @@ final public class GepiWidgetLayout {
         ajaxResponseRenderer.addRender(widgetZone);
     }
 
-    @Log
     void onLoad() {
         if (useTapestryZoneUpdates) {
             javaScriptSupport.require("gepi/components/widgetManager").invoke("refreshWidget")
@@ -205,7 +203,7 @@ final public class GepiWidgetLayout {
     public Zone getBodyZone() {
         return (Zone) resources.getEmbeddedComponent("widgetZone");
     }
-    @Log
+
     public boolean isLarge() {
         return viewMode.equals(ViewMode.LARGE.name().toLowerCase());
     }
