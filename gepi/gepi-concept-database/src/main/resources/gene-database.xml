@@ -28,7 +28,7 @@
         </operation>
         <operation>
             <request>
-                <cypherquery>CREATE INDEX ON :CONCEPT(preferredName_lc)</cypherquery>
+                <cypherquery>CREATE INDEX ON :CONCEPT(preferredName_normalized)</cypherquery>
             </request>
         </operation>
         <operation>
@@ -197,6 +197,16 @@
                 </parameters>
             </request>
         </operation>
+        <operation name="set_normalized_preferred_name">
+            <request>
+                <!-- This requires the APOC core library to be installed -->
+                <cypherquery>CALL apoc.periodic.iterate("MATCH (c:CONCEPT) WHERE c.preferredName IS NOT null RETURN c",
+                    "SET c.preferredName_normalized =
+                    toLower(apoc.text.replace(c.preferredName, '\\p{P}+|\\s+', ''))",{batchSize:300,iterateList:true,parallel:true,concurrency:10,retries:0})
+                    YIELD batches, total
+                </cypherquery>
+            </request>
+        </operation>
         <operation name="create_equal_name_aggregates">
             <request>
                 <rest>
@@ -207,6 +217,12 @@
                     <parameter name="labels">
                         <arrayitem>ID_MAP_NCBI_GENES</arrayitem>
                     </parameter>
+                    <parameter name="copy_properties">
+                        <arrayitem>preferredName</arrayitem>
+                        <arrayitem>preferredName_normalized</arrayitem>
+                        <arrayitem>synonyms</arrayitem>
+                    </parameter>
+                    <parameter name="name_property">preferredName_normalized</parameter>
                 </parameters>
             </request>
         </operation>
@@ -246,16 +262,6 @@
                         <arrayitem>AGGREGATE</arrayitem>
                     </parameter>
                 </parameters>
-            </request>
-        </operation>
-        <operation name="copy_preferred_names_lowercase">
-            <request>
-                <!-- This requires the APOC core library to be installed -->
-                <cypherquery>CALL apoc.periodic.iterate("MATCH (c:CONCEPT) WHERE c.preferredName IS NOT null RETURN c",
-                    "SET c.preferredName_lc =
-                    toLower(c.preferredName)",{batchSize:300,iterateList:true,parallel:true,concurrency:50,retries:0})
-                    YIELD batches, total
-                </cypherquery>
             </request>
         </operation>
     </operations>
