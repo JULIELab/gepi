@@ -349,10 +349,10 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
         serverRqst.downloadCompleteResults = forCharts;
         serverRqst.downloadCompleteResultsMethod = "scroll";
-        if (forCharts)
+        if (forCharts) {
             serverRqst.downloadCompleteResultsLimit = 10000;
-        if (forCharts)
             serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
+        }
     }
 
     private void addHighlighting(SearchServerRequest serverRqst) {
