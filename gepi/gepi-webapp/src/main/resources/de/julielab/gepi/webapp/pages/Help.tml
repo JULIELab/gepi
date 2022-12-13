@@ -6,6 +6,9 @@
             <div class="col-8">
                 <div class="card">
                     <div class="card-body p-5">
+                        <!-- IDEE: Link anbieten, der ein vorausgefülltes Query-Formular in einem neuen Tab öffnet und
+                        dessen Suchergebniss auch direkt genutzt werden können, um sich das  Dashboard anzusehen, während
+                        man das hier liest -->
                         <h2 id="purpose-of-this-website">Purpose of this Web Site</h2>
                         <p>
                             This Web page offers the retrieval and display bio-molecular interactions that have been
@@ -100,7 +103,7 @@
                         <p>
                             <em>Closed search.</em> When List A and List B are provided, this is called a closed search because a closed set of interaction partners has been defined. Result interactions will always contain one interaction partner from List A and one from List B. Entries are allowed to exist in both lists. No events will be returned that contain the same gene as both interaction partners.
                         </p>
-                        <p>
+                        <p id="full-text-details">
                             <em>Full-text search.</em> It is possible to omit specification of List A and List B completely if at least one of the three full-text filter fields is given input to. The result will contain the interactions that appeared in the sentences or paragraphs that match the respective full-text query. The section heading search works a bit different. All interactions in the database store the names of the sections or subsections they are contained in. As an example, consider the following section structure.
                             <div class="card mt-3 mb-3">
                                 <div class="card-header">
@@ -167,7 +170,7 @@
                         <p>
                             <em>Inclusion of single gene events.</em> The interaction extraction algorithm frequently finds molecular event descriptions that refer to a single gene without further interaction partners as described in <a href="#purpose-of-this-website">Purpose of this Web site</a>.</p>
                             These unary events are excluded from the search results by default. They will be included if the button is activated.
-                        <p>
+                        <p id="factuality-filter">
                             <em>Factuality level filter.</em> Reports of molecular interactions may include words or phrases to express a restriction on factuality of an interaction description meaning that the described interaction might or might not have been observed. Consider the following example.
                             <div class="card mt-3 mb-3">
                                 <div class="card-body">
@@ -225,73 +228,155 @@
                         </p>
                         <p>
                             <em>full-text filters.</em> The full-text fields can be used to start a search on their own or they can serve as a filter for the results of specified A-List and B-List genes. Then, only interactions will be returned that adhere
-                            to the gene list specification and also match the provided full-text filters.
+                            to the gene list specification and also match the provided full-text filters. See <a href="#full-text-details" class="link-secondary">full-text search</a> for information about the exact full-text query mechanisms.
                         </p>
                         <h2 id="output-dashboard">Output Dashboard</h2>
-                        Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut
-                        aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit
-                        esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et
-                        iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait
-                        nulla facilisi.
+                        <p>
+                            Upon successful submission of query, die input panel disappears to left of the screen. A handle
+                            bar remains that can be clicked on to slide it back into view.
+                        </p>
+                        <p>
+                            Subsequently, the result dashboard is displayed. It offers basic statistics about the search
+                            query itself and the resulting interactions, a number of data visualizations and a table that
+                            contains the individual interactions with their textual reference.
+                        </p>
+                        <p>
+                            The gene and protein interaction partners are grouped into orthologous clusters
+                            as far as the underlying resources contain such cluster information. Additionally,
+                            items with the same NCBI Gene symbol are collapsed into a single group since they would
+                            obtain the same label anyway. Thus, gene names appear only once in charts and aggregated
+                            statistics instead of once for each species in the result data.
+                            In case of invalid name mergings, multiple separate GePI queries
+                            are recommended that specify only one of the separate but equal-named genes, respectively.
+                        </p>
+                        <p id="interaction-partner-order">
+                            Almost all information on the dashboard refers to A-List or B-List interaction partners,
+                            even if one or both of the lists may actually be empty. In case of a pure full-text search
+                            where List A and List B are empty, the
+                            A- and B order refers to the textual order that the interaction have in a specific place
+                            in the searched literature. If List A or both lists are specified, all interactions are
+                            re-ordered such that the
+                            interaction partner that is part of the A-List appears first before calculating the
+                            statistics and visualizations. In open search scenarios - when only List A is non-empty - the
+                            B-List items
+                            represent the 'other' retrieved interaction partners that were not part of the query.
+                        </p>
+                        <p>
+                            In the following, the different dashboard elements are explained.
+                        </p>
                         <h3 id="statistics">Statistics Element</h3>
-                        Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim
-                        placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam
-                        nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad
-                        minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
-                        commodo consequat.
+                        <p>
+                            The Statistics dashboard element offers insight into the number of results, the most
+                            frequent interaction partners and how the input query elements were recognized by the
+                            Web application. The search input tables are shown for the non-empty input lists. Thus,
+                            zero, one or two tables may be displayed for a given query.
+                        </p>
+                        <p>
+                            The search input tables offer insight into the database entry an input was mapped to
+                            and reports inputs that could not be recognized at all. In case of unrecognized items,
+                            refer to <a href="#input-specification">Input Specification</a> for information
+                            about accepted names and IDs.
+                        </p>
                         <h3 id="pie-chart">Pie Chart</h3>
-                        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel
-                        illum dolore eu feugiat nulla facilisis.
+                        <p>
+                            The Pie Chart dashboard element offers a quick overview of the most frequent interaction
+                            partners. There are two tabs that allow to switch between the display of
+                            <a href="#interaction-partner-order" class="link-seconary">A or B interaction partners</a> and an input field
+                            for the specification of the top N most frequent interaction partners to show. There is
+                            always an additional Pie slice that carries the 'others' label. That slice accumulates
+                            the frequency of all the interaction partners beyond the top N. In this way, the Pie Chart
+                            slice proportions correspond to the actual proportion in the data.
+                        </p>
+                        <p>
+                            For open searches or large input lists, the Pie Chart may become consumed by the 'others'
+                            slice. In this case, a look on the <a href="#bar-chart" class="link-secondary">Bar Chart</a>
+                            is recommended. Since a Bar Chart does not necessarily display a part-whole relationship,
+                            the 'others' bar may be switched off there to leave room for the top N interaction partners.
+                        </p>
+                        <p>
+                            Note that that smallest Pie Slices may not receive a callout with the name of the respective
+                            interaction partner due to spacial collision reasons.
+                            Hover the mouse cursor over such slices to see a tooltip that will
+                            provide the name.
+                        </p>
                         <h3 id="bar-chart">Bar Chart</h3>
-                        At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-                        takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
-                        sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
-                        erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
-                        kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
-                        amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore dolores duo eirmod eos
-                        erat, et nonumy sed tempor et et invidunt justo labore Stet clita ea et gubergren, kasd magna no
-                        rebum. sanctus sea sed takimata ut vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum
-                        dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-                        dolore magna aliquyam erat.
+                        <p>
+                            Similar to the <a href="#pie-chart" class="link-secondary">Pie Chart</a>, the Bar Chart
+                            displays the most frequent interaction partners, either from
+                            <a href="#interaction-partner-order" class="link-seconary">List A or List B.</a>
+                            It also allows to switch between lists and the specification of the number of interaction
+                            partners to display in one chart.
+                        </p>
+                        <p>
+                            The Bar Chart allows to display or hide the special 'others' bar through the drop-down menu next
+                            to it. This bar accumulates the frequencies of all the interaction partners that are not
+                            contained in the top N most frequent interactions partners that are currently shown. For
+                            open searches or large closed searches, this bar may dominate the whole plot in which case
+                            it is recommended to hide it.
+                        </p>
+                        <p>The bars show tooltips upon hovering the mouse cursor over them, showing the gene name
+                        and frequency.</p>
                         <h3 id="sankey-charts">Sankey Charts</h3>
-                        Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
-                        aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-                        clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor
-                        sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-                        dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-                        rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem
-                        ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-                        labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
-                        dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.
+                        <p>
+                            The Sankey Charts show interaction instead of interaction partner distributions. All
+                            interactions with the same arguments in the same
+                            <a href="interaction-partner-order" class="link-secondary">A-B order</a>
+                            are accumulated to obtain the frequency of an interaction
+                            in the result set. Sankey Charts leverage the frequency information to vary the thickness
+                            of an edge between two gene symbol nodes as well as the size of the node. The more frequent
+                            an interaction appears in the result, the thicker its edge is shown. Gene symbols that
+                            participate very frequently in interactions are correspondingly larger. For each gene, the
+                            Sankey Charts show the proportion of its interaction to other genes in the result set.
+                        </p>
+                        <p>
+                            When a Sankey Chart is enlarged using the respective button in its header,
+                            additional control items will be shown to change the space between the nodes and
+                            whether or not to display the 'other' nodes. These nodes represent the accumulated
+                            frequencies of the interaction partners that are not explicitly shown in the chart.
+                            For open searches or large closed searches, these nodes can get overly large.
+                            It is recommended to deactivate the nodes in such cases but to keep in mind that
+                            this truncates interactions from the Chart and skews the proportional aspect
+                            of the visualization.
+                        </p>
                         <h4 id="sankey-chart-most-frequent">Most frequent Interactions Sankey Chart</h4>
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt
-                        ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
-                        dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
-                        sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-                        invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
-                        justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-                        ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos
-                        et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus
-                        est Lorem ipsum dolor sit amet.
+                        <p>
+                            The Most frequent Interactions Sankey Chart aggregates all result interactions as described
+                            above and displays the most frequent ones.
+                        </p>
                         <h4 id="sankey-chart-common-interaction-partners">Common Interaction Partners Sankey Chart</h4>
-                        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel
-                        illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui
-                        blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum
-                        dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
-                        dolore magna aliquam erat volutpat.
+                        <p>
+                            The Common Interaction Partners Sankey Chart also aggregates over all result interactions
+                            like the Most frequent Interactions Sankey Chart but orders the interactions differently
+                            to determine the top N items for display. The aim is to elevate those genes that
+                            connect two other genes through interactions in high frequency. The resulting view
+                            features indirect connections between two genes through such a third gene they both
+                            are often described to interact with in the literature.
+                        </p>
                         <h3 id="result-table">Result Table</h3>
-                        Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut
-                        aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit
-                        esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et
-                        iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait
-                        nulla facilisi.
+                        <p>
+                            The table displays the interactions as they were extracted from the Literature
+                            providing the source document ID and the specific text portion that contains
+                            the interaction description. The table can be browsed using the paging buttons at the bottom.
+                        </p>
+                        <p>
+                            It shows the interaction partner symbols and IDs as recognized during automated literature processing
+                            via natural language processing (NLP) techniques, their actual text string in the document,
+                            their <a href="#factuality-filter">factuality rating</a> and the sentence from the
+                            document that contains the description of the interaction. If a full-text filter was
+                            set on paragraph level, a portion of the paragraph containing the filter query is also given.
+                        </p>
                         <h4 id="result-download">Result Download</h4>
-                        Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim
-                        placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam
-                        nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad
-                        minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
-                        commodo
+                        <p>
+                            The result table offer the download of the complete interaction result set in Excel format.
+                            The Download button in header bar of the result dashboard element starts the assembly
+                            of the data. For large result sets, this may take several minutes.
+                            <!-- TODO link anbieten, um  die datei  später herunter laden zu können -->
+                        </p>
+                        <p>
+                            The final Excel file will contain every interaction item with gene IDs, document IDs,
+                            factuality ratings and textual references. Additionally, basic statistics about interaction
+                            and interaction partner frequencies are included in separate sheets.
+                        </p>
                     </div>
                 </div>
             </div>
