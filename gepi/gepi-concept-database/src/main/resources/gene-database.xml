@@ -246,8 +246,6 @@
                         <arrayitem>preferredName</arrayitem>
                         <arrayitem>preferredName_normalized</arrayitem>
                         <arrayitem>synonyms</arrayitem>
-                        <arrayitem>originalId</arrayitem>
-                        <arrayitem>originalSource</arrayitem>
                     </parameter>
                 </parameters>
             </request>
@@ -274,53 +272,49 @@
             </request>
             <outputfile>es-consumer-resources/geneids2taxids.map.gz</outputfile>
         </export>
-        <export name="conceptids">
-            <request>
-                <rest>
-                    <restendpoint>/concepts/export/concept_id_mapping</restendpoint>
-                    <httpmethod>GET</httpmethod>
-                </rest>
-                <parameters>
-                    <parameter name="source_id_property">originalId</parameter>
-                    <parameter name="target_id_property">id</parameter>
-                    <parameter name="labels" toescapedjson="false">
-                        <arrayitem>ID_MAP_NCBI_GENES</arrayitem>
-                    </parameter>
-                </parameters>
-            </request>
-            <outputfile>es-consumer-resources/egid2tid.map.gz</outputfile>
-        </export>
-        <export name="hgncg_fplx_conceptids">
+        <export name="orgid2tid">
             <request>
                 <cypherquery>
-                    MATCH (h:HGNC_GROUP) RETURN h.originalSource+":"+h.originalId AS orgId,h.id AS id
+                    MATCH (c) WHERE c:ID_MAP_NCBI_GENES RETURN c.originalId AS orgId,c.id AS id
                     UNION
-                    MATCH (f:FPLX) RETURN f.originalSource+":"+f.originalId AS orgId,f.id AS id
+                    MATCH (c) WHERE c:FPLX OR c:HGNC_GROUP RETURN c.originalSource+":"+c.originalId AS orgId,c.id AS id
                 </cypherquery>
             </request>
-            <outputfile>es-consumer-resources/hgncg_fplx_orgid2tid.map.gz</outputfile>
+            <outputfile>es-consumer-resources/orgid2tid.map.gz</outputfile>
         </export>
-        <!-- Map from aggregate elements to their highest aggregate. This includes orthology aggregates but also
+        <!-- Map from aggregate elements to all their aggregates, direct or indirect. This includes orthology aggregates but also
             FamPlex / HGNC aggregates -->
-        <export name="allgeneaggregates">
+        <export name="allconceptaggregates">
             <request>
-                <cypherquery>MATCH (th)-[:HAS_ELEMENT*]->(c:CONCEPT) WHERE (th:AGGREGATE_GENEGROUP OR
-                    th:AGGREGATE_TOP_ORTHOLOGY) AND NOT c:AGGREGATE with c.id as cid,COLLECT(DISTINCT th.id) AS atids
+                <cypherquery>MATCH (top:AGGREGATE)-[:HAS_ELEMENT*]->(c:CONCEPT) WHERE NOT exists(()-[:HAS_ELEMENT]->(top))
+                    AND NOT c:AGGREGATE with c.id as cid,COLLECT(DISTINCT top.id) AS atids
                     RETURN
                     cid, REDUCE(acc=HEAD(atids), atid in TAIL(atids) | acc + "|" + atid)
                 </cypherquery>
             </request>
-            <outputfile>es-consumer-resources/tid2atid.map.gz</outputfile>
+            <outputfile>es-consumer-resources/tid2atidaddon.map.gz</outputfile>
         </export>
-        <export name="tophomologyids">
+        <!-- Direct map from lowest aggregate element to highest aggregate -->
+        <export name="tid2atiddirect">
             <request>
-                <cypherquery>MATCH (th)-[:HAS_ELEMENT*1..5]->(c:CONCEPT) WHERE (th:AGGREGATE_GENEGROUP OR th:AGGREGATE_TOP_ORTHOLOGY) AND NOT c:AGGREGATE
-                    RETURN DISTINCT c.id,th.id
+                <cypherquery>
+                    MATCH (a)-[:HAS_ELEMENT]->(c:CONCEPT) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY OR a:AGGREGATE_FPLX_HGNC) AND NOT c:AGGREGATE
+                    AND NOT exists(()-[:HAS_ELEMENT]->(a))
+                    RETURN DISTINCT c.id AS conceptId,a.id AS aggregateId
                 </cypherquery>
             </request>
-            <outputfile>es-consumer-resources/tid2tophomo.map.gz</outputfile>
+            <outputfile>es-consumer-resources/tid2atiddirect.map.gz</outputfile>
         </export>
-        <export name="preferredNames">
+        <!-- Direct map from concepts to their equal-name aggregates -->
+        <export name="tid2equalnameatid">
+            <request>
+                <cypherquery>
+                    MATCH (a:AGGREGATE_EQUAL_NAMES)-[:HAS_ELEMENT]->(c:CONCEPT) RETURN DISTINCT c.id AS conceptId,a.id AS aggregateId
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/tid2equalnameatid.map.gz</outputfile>
+        </export>
+        <export name="conceptid2prefName">
             <request>
                 <cypherquery>
                     MATCH (h:HGNC_GROUP) RETURN h.originalSource+":"+h.originalId AS id,h.preferredName AS name
@@ -332,13 +326,15 @@
             </request>
             <outputfile>es-consumer-resources/conceptid2prefName.map.gz</outputfile>
         </export>
-        <export name="genetid2orthologyprefname">
+        <export name="tid2topaggprefname">
             <request>
                 <cypherquery>
-                    MATCH (c:ID_MAP_NCBI_GENES)&lt;-[:HAS_ELEMENT*]-(a) WHERE a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY AND NOT exists((a)&lt;-[:HAS_ELEMENT]-()) RETURN c.id, a.preferredName AS name
+                    MATCH (a)-[:HAS_ELEMENT]->(c:CONCEPT) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY OR a:AGGREGATE_FPLX_HGNC) AND NOT c:AGGREGATE
+                    AND NOT exists(()-[:HAS_ELEMENT]->(a))
+                    RETURN DISTINCT c.id AS conceptId,a.preferredName AS aggregateName
                 </cypherquery>
             </request>
-            <outputfile>es-consumer-resources/tid2topHomologyPrefName.map.gz</outputfile>
+            <outputfile>es-consumer-resources/tid2topaggprefname.map.gz</outputfile>
         </export>
         <!-- Export a map from top orthology aggregates - i.e. AGGREGATE_TOP_ORTHOLOGY atids if present or NCBI Gene tids for genes that are not part of an orthology cluster - to all the FamPlex concept tids it is directly or indirectly connected with.
              Used for an AddOn filter on top of a tid2atid AddOn filter so we can add FamPlex concept IDs to orthology aggregates. Thus, although FamPlex is only about human genes, we make it species independent via orthology aggregates. -->
@@ -379,6 +375,15 @@
             </request>
             <outputfile>es-consumer-resources/tid2hgncgroups.map.gz</outputfile>
         </export>
+        <!-- covered by tophomologyids -->
+<!--        <export name="hgncfplxconceptid2equalnameaggregatesatid">-->
+<!--            <request>-->
+<!--                <cypherquery>-->
+<!--                    MATCH (a:AGGREGATE_FPLX_HGNC)-[:HAS_ELEMENT]->(c) RETURN c.id,a.id-->
+<!--                </cypherquery>-->
+<!--            </request>-->
+<!--            <outputfile>es-consumer-resources/hgncfplxconceptid2equalnameaggregatesatid.map.gz</outputfile>-->
+<!--        </export>-->
         <export name="genetid2gotid">
             <request>
                 <!-- Map genes to their GO annotations. -->
@@ -411,15 +416,13 @@
                     <httpmethod>GET</httpmethod>
                 </rest>
                 <parameters>
-                    <!-- The order is important: through the 'unique' parameter we discard keys (=concept names) that already appear in the dictionary during construction. Thus, the aggregates get precedence and HGNCG and FamPlex concepts are only included if they have no equal-named concept in the other database. -->
                     <parameter name="labels">
-                        <arrayitem>AGGREGATE_FPLX_HGNC</arrayitem>
                         <arrayitem>HGNC_GROUP</arrayitem>
                         <arrayitem>FPLX</arrayitem>
                     </parameter>
                     <parameter name="add_source_prefix">true</parameter>
                     <parameter name="source_id_property">originalId</parameter>
-                    <parameter name="unique_keys">true</parameter>
+                    <parameter name="unique_keys">false</parameter>
                 </parameters>
             </request>
             <outputfile>processing-dictionaries/fplxhgncgroupnames.dict.gz</outputfile>

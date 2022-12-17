@@ -13,7 +13,6 @@ import de.julielab.jcore.types.pubmed.Header;
 import de.julielab.jcore.utility.JCoReTools;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.cas.FSArray;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -28,11 +27,12 @@ public class RelationFieldValueGeneratorTest {
     @Test
     public void generateFieldValue() throws Exception {
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.eg2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
-        gfb.eg2tophomoFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.egid2homoPrefNameReplaceFilter = new FilterChain();
-        gfb.egid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.gene2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2topaggprefname = new FilterChain();
+        gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.egid2taxidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         TextFilterBoard tfb = new TextFilterBoard();
         FilterRegistry fr = Mockito.mock(FilterRegistry.class);
         Mockito.when(fr.getFilterBoard(GeneFilterBoard.class)).thenReturn(gfb);
@@ -69,11 +69,12 @@ public class RelationFieldValueGeneratorTest {
     @Test
     public void generateFieldValueMultipleGeneIds() throws Exception {
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.eg2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
-        gfb.eg2tophomoFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.egid2homoPrefNameReplaceFilter = new FilterChain();
-        gfb.egid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.gene2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2topaggprefname = new FilterChain();
+        gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.egid2taxidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         TextFilterBoard tfb = new TextFilterBoard();
         FilterRegistry fr = Mockito.mock(FilterRegistry.class);
         Mockito.when(fr.getFilterBoard(GeneFilterBoard.class)).thenReturn(gfb);
@@ -115,11 +116,12 @@ public class RelationFieldValueGeneratorTest {
     public void generateFieldValueMergedGenes() throws Exception {
         // The GepiGeneMerger creates componentIds that are actually multiple, comma separated IDs
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.eg2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
-        gfb.eg2tophomoFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.egid2homoPrefNameReplaceFilter = new FilterChain();
-        gfb.egid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.gene2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2topaggprefname = new FilterChain();
+        gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.egid2taxidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         TextFilterBoard tfb = new TextFilterBoard();
         FilterRegistry fr = Mockito.mock(FilterRegistry.class);
         Mockito.when(fr.getFilterBoard(GeneFilterBoard.class)).thenReturn(gfb);
@@ -159,11 +161,11 @@ public class RelationFieldValueGeneratorTest {
     @Test
     public void generateFieldValueWithFamily() throws Exception {
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.eg2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
-        gfb.eg2tophomoFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.egid2homoPrefNameReplaceFilter = new FilterChain();
-        gfb.egid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.gene2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2topaggprefname = new FilterChain();
+        gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
         gfb.egid2taxidReplaceFilter = new ReplaceFilter(Map.of("id1", "9606"));
         TextFilterBoard tfb = new TextFilterBoard();
         FilterRegistry fr = Mockito.mock(FilterRegistry.class);
@@ -205,11 +207,12 @@ public class RelationFieldValueGeneratorTest {
     @Test
     public void generateUnaryFieldValue() throws Exception {
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.eg2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
-        gfb.eg2tophomoFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.egid2homoPrefNameReplaceFilter = new FilterChain();
-        gfb.egid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.gene2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2topaggprefname = new FilterChain();
+        gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.egid2taxidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         TextFilterBoard tfb = new TextFilterBoard();
         FilterRegistry fr = Mockito.mock(FilterRegistry.class);
         Mockito.when(fr.getFilterBoard(GeneFilterBoard.class)).thenReturn(gfb);

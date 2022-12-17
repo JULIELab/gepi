@@ -27,7 +27,7 @@ public class GePiFamplexIdAssigner extends JCasAnnotator_ImplBase {
     /**
      * Gene names that are not clearly a group or family. In those cases we let the GNormPlus class decide.
      */
-    private Set<String> difficultCases = Set.of("p53");
+    private Pattern difficultCases = Pattern.compile("(p[0-9]+)|(il-?[0-9]+)|(cd[0-9]+)]", Pattern.CASE_INSENSITIVE);
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -44,7 +44,7 @@ public class GePiFamplexIdAssigner extends JCasAnnotator_ImplBase {
                 conceptGazetteerGenes.index(g);
                 // I decided to ignore the GNP tagging in most cases and just match the names from FamPlex and HGNC because it just looks right in the data.
                 // the "familiy" is a consistent typo in ProGene
-            else if (!difficultCases.contains(g.getCoveredText().toLowerCase()) || (g.getSpecificType() != null && (g.getSpecificType().equalsIgnoreCase("familyname") || g.getSpecificType().equalsIgnoreCase("protein_familiy_or_group")))) {
+            else if (!difficultCases.matcher(g.getCoveredText()).matches() || (g.getSpecificType() != null && (g.getSpecificType().equalsIgnoreCase("familyname") || g.getSpecificType().equalsIgnoreCase("protein_familiy_or_group")))) {
                 familyGenes.add(g);
             }
         }

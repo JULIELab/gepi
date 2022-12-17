@@ -182,7 +182,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("source", docId.startsWith("PMC") ? "pmc" : "pubmed");
                             String arg1EntryIdPath = "/ref/resourceEntryList[" + k + "]/entryId";
                             String arg2EntryIdPath = "/ref/resourceEntryList[" + l + "]/entryId";
-                            document.addField("argument1", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.gene2tid2atidAddonFilter));
+                            document.addField("argument1", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.orgid2tid2atidAddonFilter));
 //                            document.addField("argument1geneid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, null));
 //                            document.addField("argument1taxid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2taxidReplaceFilter));
 //                            document.addField("argument1conceptid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2tidReplaceFilter));
@@ -192,14 +192,14 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
 //                            document.addField("argument1goids", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2gotidFilter));
 //                            document.addField("argument1coveredtext", createRawFieldValueForAnnotation(argPair[0], "/:coveredText()", null));
 //                            document.addField("argument1prefname", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2prefNameReplaceFilter));
-                            final IFieldValue arg1HomoPrefNameValue = createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter);
+                            final IFieldValue arg1HomoPrefNameValue = createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.orgid2topaggprefname);
 //                            document.addField("argument1homoprefname", arg1HomoPrefNameValue);
                             final IFieldValue arg1GoPrefnames = createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2goprefnameFilter);
                             document.addField("argument1goprefnames", arg1GoPrefnames);
 //                            document.addField("argument1matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
 //                            document.addField("argument1genesource", createRawFieldValueForAnnotation(argPair[0], "/ref/componentId", geneComponentIdProcessingfilter));
 //                            document.addField("argument1genemappingsource", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList[" + k + "]/componentId", geneComponentIdProcessingfilter));
-                            document.addField("argument2", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.gene2tid2atidAddonFilter));
+                            document.addField("argument2", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.orgid2tid2atidAddonFilter));
 //                            document.addField("argument2geneid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, null));
 //                            document.addField("argument2taxid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2taxidReplaceFilter));
 //                            document.addField("argument2conceptid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tidReplaceFilter));
@@ -209,7 +209,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
 //                            document.addField("argument2goids", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2gotidFilter));
 //                            document.addField("argument2coveredtext", createRawFieldValueForAnnotation(argPair[1], "/:coveredText()", null));
 //                            document.addField("argument2prefname", createRawFieldValueForFieldValue(document.getAsRawToken("argument2conceptid"), geneFb.conceptid2prefNameFilter));
-                            final IFieldValue arg2HomoPrefNameValue = createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2homoPrefNameReplaceFilter);
+                            final IFieldValue arg2HomoPrefNameValue = createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.orgid2topaggprefname);
 //                            document.addField("argument2homoprefname", arg2HomoPrefNameValue);
                             final IFieldValue arg2GoPrefnames = createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2goprefnameFilter);
                             document.addField("argument2goprefnames", arg2GoPrefnames);
@@ -217,9 +217,9 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
 //                            document.addField("argument2genesource", createRawFieldValueForAnnotation(argPair[1], "/ref/componentId", geneComponentIdProcessingfilter));
 //                            document.addField("argument2genemappingsource", createRawFieldValueForAnnotation(argPair[1], "/ref/resourceEntryList[" + k + "]/componentId", geneComponentIdProcessingfilter));
 
-                            document.addField("arguments", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.gene2tid2atidAddonFilter, geneFb.gene2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter, geneFb.eg2gohypertidFilter, geneFb.eg2gohypertidFilter}, new UniqueFilter()));
+                            document.addField("arguments", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.orgid2tid2atidAddonFilter, geneFb.orgid2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter, geneFb.eg2gohypertidFilter, geneFb.eg2gohypertidFilter}, new UniqueFilter()));
                             final String[] entryIdPathPair = {arg1EntryIdPath, arg2EntryIdPath};
-                            document.addField("argumentgeneids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, null, null));
+                            document.addField("argumentgeneids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, null, geneFb.fplxHgncConcatenatedIdSplitFilter));
                             document.addField("argumenttaxids", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1], argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath, "/ref/species", "/ref/species"}, new Filter[]{geneFb.egid2taxidReplaceFilter, geneFb.egid2taxidReplaceFilter, defaultTaxFilter, defaultTaxFilter}, uniqueNumberRegExFilter));
                             // Add the tax IDs given to FamilyNames. This a bit tricky because the document won't
                             // store empty values so we need to be careful with null values.
@@ -232,14 +232,14 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
 //                            argumenttaxids.addFlattened(createRawFieldValueForParallelAnnotations(argPair, new String[]{"/ref/species", "/ref/species"}, null, numberRegExFilter));
 //                            if (argumenttaxidsNull)
 //                                document.addField("argumenttaxids", argumenttaxids);
-                            document.addField("argumentconceptids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.eg2tidReplaceFilter, geneFb.eg2tidReplaceFilter}, null));
-                            document.addField("argumenttophomoids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.eg2tophomoFilter, geneFb.eg2tophomoFilter}, null));
+                            document.addField("argumentconceptids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.orgid2tidReplaceFilter, geneFb.orgid2tidReplaceFilter}, null));
+                            document.addField("argumenttophomoids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.orgid2topaggFilter, geneFb.orgid2topaggFilter}, null));
 //                            document.addField("argumentfamplexids", document.getAsArrayFieldValue("argument1famplexid"), document.getAsArrayFieldValue("argument2famplexid"));
 //                            document.addField("argumenthgncgroupids", document.getAsArrayFieldValue("argument1hgncgroupid"), document.getAsArrayFieldValue("argument2hgncgroupid"));
                             document.addField("argumentgoids", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.eg2gotidFilter, geneFb.eg2gotidFilter}, null));
                             document.addField("argumentcoveredtext", createRawFieldValueForParallelAnnotations(argPair, new String[]{"/:coveredText()", "/:coveredText()"}, null, null));
                             document.addField("argumentprefnames", createRawFieldValueForFieldValue(document.getAsArrayFieldValue("argumentconceptids"), geneFb.conceptid2prefNameFilter));
-                            document.addField("argumenthomoprefnames", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.egid2homoPrefNameReplaceFilter, geneFb.egid2homoPrefNameReplaceFilter}, null));
+                            document.addField("argumenthomoprefnames", createRawFieldValueForParallelAnnotations(argPair, entryIdPathPair, new Filter[]{geneFb.orgid2topaggprefname, geneFb.orgid2topaggprefname}, null));
 //                            document.addField("argumentconceptprefnames", createRawFieldValueForParallelAnnotations(argPair, new String[]{arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.eg2top, geneFb.egid2homoPrefNameReplaceFilter}, null));
 //                            document.addField("argumentmatchtypes", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
 
@@ -267,7 +267,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             }
                             if (go1Values.isEmpty()) {
                                 for (IFieldValue go2 : go2Values) {
-                                    document.addField("aggregationvaluegenego", document.getAsRawToken("argument1homoprefname").toString() + "---" + go2.toString());
+                                    document.addField("aggregationvaluegenego", arg1HomoPrefNameValue.toString() + "---" + go2.toString());
                                 }
                             }
                             document.addField("numarguments", DUMMY.equals(((ArgumentMention) argPair[1]).getRole()) ? 1 : 2);

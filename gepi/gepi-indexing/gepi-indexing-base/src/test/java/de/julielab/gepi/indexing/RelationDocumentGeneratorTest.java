@@ -1,6 +1,5 @@
 package de.julielab.gepi.indexing;
 
-import de.julielab.java.utilities.FileUtilities;
 import de.julielab.jcore.consumer.es.FilterRegistry;
 import de.julielab.jcore.consumer.es.filter.AddonTermsFilter;
 import de.julielab.jcore.consumer.es.filter.FilterChain;
@@ -10,15 +9,12 @@ import de.julielab.jcore.types.*;
 import de.julielab.jcore.types.ext.FlattenedRelation;
 import de.julielab.jcore.types.pubmed.Header;
 import de.julielab.jcore.utility.JCoReTools;
-import org.apache.uima.UIMAException;
-import org.apache.uima.cas.impl.XmiCasDeserializer;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.jcas.JCas;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -117,11 +113,12 @@ public class RelationDocumentGeneratorTest {
     @NotNull
     private RelationDocumentGenerator createRelationDocumentGenerator() {
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.eg2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
-        gfb.eg2tophomoFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.egid2homoPrefNameReplaceFilter = new FilterChain();
-        gfb.egid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
-        gfb.gene2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2topaggprefname = new FilterChain();
+        gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.orgid2tid2atidAddonFilter = new AddonTermsFilter(Collections.emptyMap());
+        gfb.egid2taxidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         TextFilterBoard tfb = new TextFilterBoard();
         FilterRegistry fr = Mockito.mock(FilterRegistry.class);
         Mockito.when(fr.getFilterBoard(GeneFilterBoard.class)).thenReturn(gfb);

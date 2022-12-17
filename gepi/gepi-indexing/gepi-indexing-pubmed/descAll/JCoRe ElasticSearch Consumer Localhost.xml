@@ -181,7 +181,7 @@
                                         
                     <array>
                                                 
-                        <string>http://localhost:9200</string>
+                        <string>http://localhost:9201</string>
                                             
                     </array>
                                     
@@ -195,7 +195,7 @@
                                 
                 <value>
                                         
-                    <string>gepi_0.10</string>
+                    <string>gepi_1.0</string>
                                     
                 </value>
                             
@@ -283,9 +283,9 @@
                 
         <externalResourceDependency>
                         
-            <key>egid2tid</key>
+            <key>orgid2tid</key>
                         
-            <description>egid2tid</description>
+            <description>orgid2tid</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
                         
@@ -681,13 +681,13 @@
                         
             <externalResource>
                                 
-                <name>egid2tid.map</name>
+                <name>orgid2tid.map</name>
                                 
-                <description>egid2tid.map</description>
+                <description>orgid2tid.map</description>
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/egid2tid.map.gz</url>
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/orgid2tid.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -727,9 +727,9 @@
                         
             <externalResourceBinding>
                                 
-                <key>egid2tid</key>
+                <key>orgid2tid</key>
                                 
-                <resourceName>egid2tid.map</resourceName>
+                <resourceName>orgid2tid.map</resourceName>
                             
             </externalResourceBinding>
                         

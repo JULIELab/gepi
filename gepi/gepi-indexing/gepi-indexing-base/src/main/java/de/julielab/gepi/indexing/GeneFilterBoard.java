@@ -10,20 +10,18 @@ import static java.util.stream.Collectors.toMap;
 
 public class GeneFilterBoard extends FilterBoard {
 
-    @ExternalResource(key = "egid2tid")
-    Map<String, String> egid2tid;
-    @ExternalResource(key = "hgncg_fplx_orgid2tid")
-    Map<String, String> hgncg_fplx_orgid2tid;
+    @ExternalResource(key = "orgid2tid")
+    Map<String, String> orgid2tid;
     @ExternalResource(key = "geneids2taxids")
     Map<String, String> egid2taxid;
     @ExternalResource(key = "tid2atid")
     Map<String, String[]> tid2atid;
     @ExternalResource(key = "conceptid2prefName")
     Map<String, String> conceptid2prefName;
-    @ExternalResource(key = "tid2topHomologyPrefName")
-    Map<String, String> tid2homoPrefName;
-    @ExternalResource(key = "tid2tophomo")
-    Map<String, String> tid2tophomo;
+    @ExternalResource(key = "tid2topaggprefname")
+    Map<String, String> tid2topaggPrefName;
+    @ExternalResource(key = "tid2atiddirect")
+    Map<String, String> tid2atiddirect;
     @ExternalResource(key = "tid2famplex")
     Map<String, String[]> tid2famplex;
     @ExternalResource(key = "tid2hgncgroups")
@@ -32,12 +30,12 @@ public class GeneFilterBoard extends FilterBoard {
     Map<String, String[]> genetid2gotid;
     @ExternalResource(key = "gotid2hypertid")
     Map<String, String[]> gotid2hypertid;
-    SingleAddonTermsFilter egid2tidAddonFilter;
-    Filter gene2tid2atidAddonFilter;
-    Filter egid2prefNameReplaceFilter;
-    Filter eg2tidReplaceFilter;
-    Filter eg2tophomoFilter;
-    FilterChain egid2homoPrefNameReplaceFilter;
+    Filter orgid2tidAddonFilter;
+    Filter orgid2tid2atidAddonFilter;
+    Filter orgid2prefNameReplaceFilter;
+    Filter orgid2tidReplaceFilter;
+    Filter orgid2topaggFilter;
+    FilterChain orgid2topaggprefname;
     Filter eg2famplexFilter;
     Filter eg2hgncFilter;
     Filter conceptid2prefNameFilter;
@@ -46,23 +44,24 @@ public class GeneFilterBoard extends FilterBoard {
     Filter eg2gohypertidFilter;
     Filter egid2taxidReplaceFilter;
     Filter eg2goprefnameFilter;
-    Filter hgncgFplxOrgid2tidReplaceFilter;
+    Filter tid2atidAddonFilter;
+    Filter fplxHgncConcatenatedIdSplitFilter;
 
     @Override
     public void setupFilters() {
-        final ReplaceFilter egid2tidFilter = new ReplaceFilter(egid2tid);
+        fplxHgncConcatenatedIdSplitFilter = new RegExSplitFilter("---");
+        orgid2tidReplaceFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, new ReplaceFilter(orgid2tid));
         conceptid2prefNameFilter = new ReplaceFilter(conceptid2prefName);
-        egid2tidAddonFilter = new SingleAddonTermsFilter(egid2tid);
+        orgid2tidAddonFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, new SingleAddonTermsFilter(orgid2tid));
         egid2taxidReplaceFilter = new ReplaceFilter(egid2taxid);
-        gene2tid2atidAddonFilter = new FilterChain(egid2tidAddonFilter, new AddonTermsFilter(tid2atid));
-        egid2prefNameReplaceFilter = new FilterChain(egid2tidFilter, new ReplaceFilter(conceptid2prefName));
-        hgncgFplxOrgid2tidReplaceFilter = new ReplaceFilter(hgncg_fplx_orgid2tid);
-        eg2tidReplaceFilter = new FilterChain(egid2tidFilter, hgncgFplxOrgid2tidReplaceFilter);
-        egid2homoPrefNameReplaceFilter = new FilterChain(eg2tidReplaceFilter, hgncgFplxOrgid2tidReplaceFilter, new ReplaceFilter(tid2homoPrefName),conceptid2prefNameFilter);
-        eg2tophomoFilter = new FilterChain(eg2tidReplaceFilter, new ReplaceFilter(tid2tophomo));
-        eg2famplexFilter = new FilterChain(eg2tophomoFilter, new AddonTermsFilter(tid2famplex, true, true));
-        eg2hgncFilter = new FilterChain(eg2tophomoFilter, new AddonTermsFilter(tid2hgncgroups, true, true));
-        eg2gotidFilter = new FilterChain(eg2tidReplaceFilter, new AddonTermsFilter(genetid2gotid, true));
+        tid2atidAddonFilter = new AddonTermsFilter(tid2atid);
+        orgid2tid2atidAddonFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2tidAddonFilter, tid2atidAddonFilter);
+        orgid2prefNameReplaceFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2tidReplaceFilter, conceptid2prefNameFilter);
+        orgid2topaggprefname = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2tidReplaceFilter, new ReplaceFilter(tid2topaggPrefName), conceptid2prefNameFilter);
+        orgid2topaggFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2tidReplaceFilter, new ReplaceFilter(tid2atiddirect));
+        eg2famplexFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2topaggFilter, new AddonTermsFilter(tid2famplex, true, true));
+        eg2hgncFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2topaggFilter, new AddonTermsFilter(tid2hgncgroups, true, true));
+        eg2gotidFilter = new FilterChain(orgid2tidReplaceFilter, new AddonTermsFilter(genetid2gotid, true, true));
         gotid2gohypertidFilter = new AddonTermsFilter(gotid2hypertid);
         eg2gohypertidFilter = new FilterChain(eg2gotidFilter, gotid2gohypertidFilter);
         eg2goprefnameFilter = new FilterChain(eg2gotidFilter, conceptid2prefNameFilter);
