@@ -124,7 +124,7 @@ public class Index {
     }
 
     private Future<EventRetrievalResult> getEsResult() {
-        System.out.println("persistent dataSessionId for getEsResult " + dataSessionId);
+        log.debug("persistent dataSessionId for getEsResult: {}", dataSessionId);
         return dataService.getData(dataSessionId).getUnrolledResult4charts();
     }
 

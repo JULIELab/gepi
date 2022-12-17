@@ -87,3 +87,7 @@ hr.medium.bottom {
 hr.medium.top {
     margin-top: 10px;
 }
+
+#examples div button:not(:first-child) {
+    margin-left: .5rem;
+}

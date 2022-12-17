@@ -202,7 +202,6 @@ public class GepiInput {
     }
 
     void setupRender() {
-        log.warn("{}", inputMode);
         if (filterFieldsConnectionOperator == null)
             filterFieldsConnectionOperator = "AND";
         if (eventLikelihood == null)
@@ -317,7 +316,7 @@ public class GepiInput {
 
     void afterRender() {
         javaScriptSupport.require("gepi/components/gepiinput").invoke("initialize").with(resultPresent());
-        log.debug("Result present: " + resultPresent());
+        log.debug("Result present: {}; newSearch: {}", resultPresent(), newSearch);
         if (resultPresent() && newSearch) {
             log.debug("Sending JS call to show the output widgets.");
             javaScriptSupport.require("gepi/components/gepiinput").invoke("showOutput");

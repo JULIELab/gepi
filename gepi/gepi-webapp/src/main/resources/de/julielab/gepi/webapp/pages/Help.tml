@@ -87,12 +87,12 @@
                         <p>
                             At the heart of a GePI search lies the specification of one or two lists of genes, proteins or families, complexes and groups of them. Recognized names or IDs include
                             <ul>
-                                <li><a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/gene/">NCBI Gene</a> IDs and symbols</li>
-                                <li><a class="link-secondary" href="https://www.ensembl.org/">Ensembl Gene IDs</a></li>
-                                <li><a class="link-secondary" href="https://www.genenames.org/">HGNC Gene IDs</a></li>
-                                <li><a class="link-secondary" href="https://www.uniprot.org/">UniProtKB</a> Accession and IDs/mnemonic</li>
-                                <li><a class="link-secondary" href="https://www.genenames.org/data/genegroup/#!/">HGNC Gene Group</a> IDs and names</li>
-                                <li><a class="link-secondary" href="https://github.com/sorgerlab/famplex/">FamPlex</a> IDs and names</li>
+                                <li><a class="link-secondary" target="_blank" href="https://www.ncbi.nlm.nih.gov/gene/">NCBI Gene</a> IDs and symbols</li>
+                                <li><a class="link-secondary" target="_blank" href="https://www.ensembl.org/">Ensembl Gene IDs</a></li>
+                                <li><a class="link-secondary" target="_blank" href="https://www.genenames.org/">HGNC Gene IDs</a></li>
+                                <li><a class="link-secondary" target="_blank" href="https://www.uniprot.org/">UniProtKB</a> Accession and IDs/mnemonic</li>
+                                <li><a class="link-secondary" target="_blank" href="https://www.genenames.org/data/genegroup/#!/">HGNC Gene Group</a> IDs and names</li>
+                                <li><a class="link-secondary" target="_blank" href="https://github.com/sorgerlab/famplex/">FamPlex</a> IDs and names</li>
                             </ul>
                             The first list of identifiers will be called <em>List A</em> or <em>A-List</em> and the second one will be called <em>List B</em> or <em>B-List</em> all over the Web page.
                         </p>

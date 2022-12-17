@@ -239,16 +239,22 @@ public class GePiDataService implements IGePiDataService {
 
     @Override
     public File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException {
-        log.debug("Creating event statistics Excel file for dataSessionId {}", dataSessionId);
+        long time = System.currentTimeMillis();
+        log.info("Creating event statistics Excel file for dataSessionId {}", dataSessionId);
         File tsvFile = getTempTsvDataFile(dataSessionId);
+        log.info("Tmp TSV: {}", tsvFile);
         File xlsFile = getTempXlsDataFile(dataSessionId);
+        log.info("Tmp XLS: {}", xlsFile);
         writeOverviewTsvFile(events, tsvFile);
         createExcelSummaryFile(tsvFile, xlsFile, inputMode, sentenceFilterString, paragraphFilterString, sectionNameFilterString);
+        time = System.currentTimeMillis() - time;
+        log.info("Excel sheet creation took {} seconds", time/1000);
         return xlsFile;
     }
 
     private void createExcelSummaryFile(File tsvFile, File xlsFile, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException {
         ProcessBuilder builder = new ProcessBuilder().command("python3", "-c", excelResultCreationScript, tsvFile.getAbsolutePath(), xlsFile.getAbsolutePath(), inputMode.stream().map(InputMode::name).collect(Collectors.joining(" ")), sentenceFilterString != null ? sentenceFilterString : "<none>", paragraphFilterString != null ? paragraphFilterString : "<none>", sectionNameFilterString != null ? sectionNameFilterString : "<none>");
+        log.info("xls builder command: {}", builder.command());
         Process process = builder.start();
         InputStream processInput = process.getInputStream();
         InputStream processErrors = process.getErrorStream();

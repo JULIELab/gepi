@@ -11,6 +11,7 @@ import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.GeneSymbolNormalization;
 import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
+import de.julielab.gepi.core.retrieval.services.EventRetrievalService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.*;
@@ -23,10 +24,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.neo4j.driver.Values.parameters;
 
@@ -159,7 +162,8 @@ public class GeneIdService implements IGeneIdService {
                     combinedIdMappings.putAll(idMapping.get().getConvertedItems());
                     typeById.putAll(idMapping.get().getInputIdTypeMapping());
                 }
-                log.debug("Converted {} input IDs of possibly different types to {} IDs of type {} in {} seconds.", idsByType.values().size(), combinedIdMappings.size(), to, time / 1000);
+                time = System.currentTimeMillis() - time;
+                log.info("Converted {} input IDs of possibly different types to {} IDs of type {} in {} seconds.", idsByType.values().size(), combinedIdMappings.size(), to, time / 1000);
                 return new IdConversionResult(idsByType.values(), combinedIdMappings, typeById, to);
             } catch (Exception e) {
                 log.error("Could not create an IdConversionResult instance", e);
@@ -412,8 +416,8 @@ public class GeneIdService implements IGeneIdService {
     public Map<String, GepiConceptInfo> getGeneInfo(Iterable<String> conceptIds) {
         try {
             return geneInfoCache.getAll(conceptIds);
-        } catch (ExecutionException e) {
-            throw new IllegalStateException(e);
+        } catch (Exception e) {
+            throw new IllegalStateException("Error while trying to retrieve geneInfo for conceptIds " + String.join(", ", conceptIds), e);
         }
     }
 

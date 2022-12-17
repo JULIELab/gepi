@@ -1,0 +1,54 @@
+<html t:type="layout" title="Contact"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+
+    <div class="container-md">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Frequently Asked Questions</div>
+            </div>
+            <div class="card-body">
+                <dl>
+                    <dt>
+                        Which NLP tools are used in GePI to find molecular interactions in the literature?
+                    </dt>
+                    <dd>
+                        <ul>
+                            <li>Basic linguistic processing: JCoRe</li>
+                            <li>Gene recognition: Adapted JULIE Lab version of GNormPlus</li>
+                            <li>Interaction extraction: BioSem</li>
+                            <li>Factuality assessment: JCoRe component basing on work of Christine Engelmann</li>
+                        </ul>
+                    </dd>
+                    <dt>
+                        Can I do the NLP processing on my own?
+                    </dt>
+                    <dd>
+                        All the required components and code is freely available. However, PubMed and PubMed central
+                        (open access subset) are large text repositories and their processing required significant
+                        computational resources for reasonable processing times. As a rule of thumb, 50-60 CPU cores
+                        and machines with at least 64GB of memory are recommended. Depending on the quality of the hardware,
+                        lower resources might still be adequate. The  GePI pipeline has actually rather modest
+                        requirements on hardware, for example, no GPUs are needed.
+                    </dd>
+                    <dt>
+                        Which technology is used for GePI?
+                    </dt>
+                    <dd>
+                        <ul><!-- TODO URLs -->
+                            <li>NLP pipeline: UIMA</li><!-- TODO link zum  NLP teil  oben -->
+                            <li>Neo4j 4.4</li>
+                            <li>ElasticSearch 7.17</li>
+                            <li>Tapestry 5.8</li>
+                        </ul>
+                    </dd>
+                    <dt>
+                        Is GePI open source?
+                    </dt>
+                    <dl>
+                        Yes! The complete GePI source code is available on GitHub at <!-- TODO -->
+                    </dl>
+                </dl>
+            </div>
+        </div>
+    </div>
+</html>

@@ -47,7 +47,6 @@ public class StatsWidget extends GepiWidget {
     }
 
     public long getNumberUniqueABPairs() {
-        // TODO unique on what level? The current default is the preferred name. But it really depends, it could also be on gene ID level which would be much more
         try {
             return getPagedEsResult().get().getEventList().stream().map(e -> e.getFirstArgument().getPreferredName() + "-" + e.getSecondArgument().getPreferredName()).distinct().count();
         } catch (InterruptedException | ExecutionException e) {

@@ -44,9 +44,10 @@ public class EventPagesDataSource implements GridDataSource {
         try {
             if (events.get().getStartRow() != i || events.get().getEndRow() != i1) {
                 events = eventRetrievalService.getEvents(requestData, i, i1 - i + 1, false);
-                log.debug("Received {} events where {} events were requested. From {} to {}.", events.get().getEventList().size(), i1 - i + 1, i1, i);
+                log.debug("Received {} events where {} events were requested. From {} to {}.", events.get().getEventList().size(), i1 - i + 1, i, i+i1);
+                log.info("Returning events from {} to {}", i, i+i1);
             } else {
-                log.debug("Used {} events from the existing result where {} events were requested. From {} to {}.", events.get().getEventList().size(), i1 - i + 1, i, i1);
+                log.debug("Used {} events from the existing result where {} events were requested. From {} to {}.", events.get().getEventList().size(), i1 - i + 1, i, i+i1);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

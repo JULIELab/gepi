@@ -11,8 +11,6 @@
 <!--                    <t:eventlink event="download" role="button" class="float-right widget-tool-symbol widget-download" data-bs-toggle="modal" data-bs-target="#downloadModal"/>-->
 <!--                    <button type="button" class="btn btn-outline-light float-right widget-tool-symbol widget-download" data-bs-toggle="modal" data-bs-target="#downloadModal"/>-->
                     <button type="button" id="downloadButton" class="btn btn-outline-light float-right widget-tool-symbol widget-download"/>
-
-
                 </t:if>
             </div>
             <t:zone t:id="widgetZone" id="${zoneid}" class="h-100">

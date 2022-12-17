@@ -11,11 +11,13 @@ import java.util.stream.Collectors;
 public class BeanModelEvent {
 
     private Event event;
-public Event getEvent() {
-    return event;
-}
+
     public BeanModelEvent(Event event) {
         this.event = event;
+    }
+
+    public Event getEvent() {
+        return event;
     }
 
     public String getDocId() {
@@ -31,19 +33,15 @@ public Event getEvent() {
     }
 
     public String getFirstArgumentGeneId() {
-        return event.getFirstArgument().getGeneInfo().getOriginalId();
+        return event.getFirstArgument().getGeneId();
     }
 
     public String getSecondArgumentText() {
-        return event.getArity() > 1 ? event.getSecondArgument().getText()  : "";
+        return event.getArity() > 1 ? event.getSecondArgument().getText() : "";
     }
 
     public String getSecondArgumentGeneId() {
-        try {
-            return event.getArity() > 1 ? event.getSecondArgument().getGeneInfo().getOriginalId() : "";
-        } catch (Exception e) {
-            throw new IllegalStateException("Accessing the second event argument of event " + event.getEventId() + " failed. Event arity is " + event.getArity() + ", second argument is " + event.getSecondArgument() + " and geneInfo of the second argument is " + (event.getSecondArgument() != null ? event.getSecondArgument().getGeneId() : "<second argument is null>"));
-        }
+        return event.getArity() > 1 ? event.getSecondArgument().getGeneId() : "";
     }
 
     public String getFirstArgumentPreferredName() {
@@ -79,35 +77,35 @@ public Event getEvent() {
                 class2 = "star-empty";
                 class3 = "star-empty";
                 likelihood = "low";
-            break;
+                break;
             case 3:
                 class1 = "star-full";
                 class2 = "star-empty";
                 class3 = "star-empty";
                 likelihood = "investigation";
-            break;
+                break;
             case 4:
                 class1 = "star-full";
                 class2 = "star-half";
                 class3 = "star-empty";
                 likelihood = "moderate";
-            break;
+                break;
             case 5:
                 class1 = "star-full";
                 class2 = "star-full";
                 class3 = "star-half";
                 likelihood = "high";
-            break;
+                break;
             case 6:
                 class1 = "star-full";
                 class2 = "star-full";
                 class3 = "star-full";
                 likelihood = "assertion";
-            break;
+                break;
             default:
                 throw new IllegalArgumentException("Illegal likelihood ordinal " + event.getLikelihood());
         }
-        return "<div title=\""+likelihood+"\" data-bs-toggle=\"default-tooltip\" class=\"text-center\"><span class=\"symbol-background " + class1 + "\">&nbsp;</span><span class=\"symbol-background " + class2 + "\">&nbsp;</span><span class=\"symbol-background " + class3 + "\">&nbsp;</span></div>";
+        return "<div title=\"" + likelihood + "\" data-bs-toggle=\"default-tooltip\" class=\"text-center\"><span class=\"symbol-background " + class1 + "\">&nbsp;</span><span class=\"symbol-background " + class2 + "\">&nbsp;</span><span class=\"symbol-background " + class3 + "\">&nbsp;</span></div>";
     }
 
     public String getFirstArgumentTextWithPreferredName() {

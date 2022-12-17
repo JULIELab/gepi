@@ -89,7 +89,7 @@ public class GeneIdServiceIntegrationTest {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
         final IdConversionResult conversionResult = geneIdService.convert(Stream.of("gene:2475", "GO:1234", "UP:MTOR_HUMAN"), IdType.GEPI_AGGREGATE).get();
         final Multimap<String, String> idMap = conversionResult.getConvertedItems();
-        assertThat(idMap.keySet()).containsExactly("gene:2475", "GO:1234", "UP:MTOR_HUMAN");
+        assertThat(idMap.keySet()).containsExactlyInAnyOrder("gene:2475", "GO:1234", "UP:MTOR_HUMAN");
         assertThat(idMap.get("gene:2475")).isEqualTo("atid2");
         assertThat(idMap.get("GO:1234")).isEqualTo("tid6");
         assertThat(idMap.get("UP:MTOR_HUMAN")).isEqualTo("atid2");
@@ -173,7 +173,7 @@ public class GeneIdServiceIntegrationTest {
                 "(a3)-[:HAS_ELEMENT]->(akth),"+
                 "(a3)-[:HAS_ELEMENT]->(aktm),"+
                 // some example mappings (see https://stackoverflow.com/questions/14886667/how-to-query-for-properties-with-dashes-in-neo4j-using-cypher for the UniProtKB-ID property in back ticks)
-                "(u:UNIPROT:CONCEPT {originalId:'P42345',id:'tid5',`UniProtKB-ID`:'MTOR_HUMAN'}),"+
+                "(u:UNIPROT:CONCEPT {originalId:'P42345',id:'tid5',`sourceIds1`:'MTOR_HUMAN'}),"+
                 "(go:GENE_ONTOLOGY:CONCEPT {originalId:'GO:1234',id:'tid6'}),"+
                 "(u)-[:IS_MAPPED_TO]->(h),"+
                 "(g)<-[:IS_ANNOTATED_WITH]-(h),"+

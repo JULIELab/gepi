@@ -1,11 +1,10 @@
 define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], function($, index, data) {
 
     let initialize = function(resultExists) {
-        console.log("Initializing the input panel");
-        let listaId = "lista";
-        let listbId = "listb";
-        let lista = '#' + listaId;
-        let listb = '#' + listbId;
+        const listaId = "lista";
+        const listbId = "listb";
+        const lista = '#' + listaId;
+        const listb = '#' + listbId;
         inputCol = $("#inputcol");
         inputColHandle = $("#inputcolhandle");
 
@@ -20,6 +19,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         observekeypress();
         observeFormSubmit();
         observeInputFetchArea();
+        setupInputExamples();
         let running = false;
         window.addEventListener('resize',() => {
             if (!running) {
@@ -261,6 +261,35 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         inputCol.css("margin-left", "-"+(inputColWidth-inputColPadding)+"px");
         inputColHandle.removeClass("background-arrow-left fade inputcolhandle-extended");
         inputColHandle.addClass("background-arrow-right inputcolhandle-retracted");
+    }
+
+    function setupInputExamples() {
+        const listaTextAreaId = "lista";
+        const listbTextAreaId = "listb";
+        const orgTextFieldId = "organismInput";
+        const sentenceTextFieldId = "sentencefilter";
+        const paragraphTextFieldId = "paragraphFilter";
+        const sectionNameTextFieldId = "sectionnamefilter";
+
+        setupInputExample1(listaTextAreaId, listbTextAreaId, orgTextFieldId, sentenceTextFieldId, paragraphTextFieldId, sectionNameTextFieldId);
+        setupInputExample2(listaTextAreaId, listbTextAreaId, orgTextFieldId, sentenceTextFieldId, paragraphTextFieldId, sectionNameTextFieldId);
+        setupInputExample3(listaTextAreaId, listbTextAreaId, orgTextFieldId, sentenceTextFieldId, paragraphTextFieldId, sectionNameTextFieldId);
+    }
+
+    let setupInputExample1 = function(listaTextAreaId, listbTextAreaId,  orgTextFieldId, sentenceTextFieldId, paragraphTextFieldId, sectionNameTextFieldId) {
+        $("#btn-example-1").on("click", () => {
+            console.log(listaTextAreaId)
+            const listaTextArea = document.getElementById(listaTextAreaId);
+            listaTextArea.value = ["2475","gene:3558","up:BRCA1_HUMAN","GO:1902517"].reduce((acc,x) => acc+"\n"+x);
+                
+        });
+    }
+
+    let setupInputExample2 = function(listaTextArea, listbTextArea, orgTextField, sentenceTextField, paragraphTextField, sectionNameTextField) {
+
+    }
+
+    let setupInputExample3 = function(listaTextArea, listbTextArea, orgTextField, sentenceTextField, paragraphTextField, sectionNameTextField) {
     }
 
     return {

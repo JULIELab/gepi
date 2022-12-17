@@ -111,16 +111,20 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
                     assert topHomologyId != null;
 
                     final Argument argument = new Argument(geneId, conceptId, topHomologyId, text);
-                    // We don't want to fetch the gene info for charts. For charts, we don't load the covered text field,
-                    // so we use this as indicator.
-                    if (text != null && !FIELD_VALUE_MOCK_ARGUMENT.equals(conceptId)) {
-                        try {
-                            final GepiConceptInfo geneInfo = geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
-                            argument.setGeneInfo(geneInfo);
-                        } catch (Exception e) {
-                            log.error("Could not load gene info for concept with ID {}", conceptId);
-                        }
-                    }
+//                    // We don't want to fetch the gene info for charts. For charts, we don't load the covered text field,
+//                    // so we use this as indicator.
+//                    if (text != null && !FIELD_VALUE_MOCK_ARGUMENT.equals(conceptId)) {
+//                        try {
+//                            final GepiConceptInfo geneInfo = geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
+//                            argument.setGeneInfo(geneInfo);
+//                        } catch (Exception e) {
+//                            // This is expected when a gene ID is known to GNormPlus but not to GePI.
+//                            // This happens because GNormPlus uses a little older version of NCBI Gene. Some IDs,
+//                            // e.g. 474256, have been discontinued. Filter out the event.
+//                            log.debug("Could not load gene info for concept with ID {}", conceptId);
+//                            return null;
+//                        }
+//                    }
                     arguments.add(argument);
                 } else {
                     log.warn(

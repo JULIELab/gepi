@@ -169,7 +169,7 @@ public class EventQueries {
         eventQuery.addClause(likelihoodFilterClause);
     }
 
-    public static BoolQuery getFulltextQuery(List<String> eventTypes, int eventLikelihood, String sentenceFilter, String paragraphFilter, String sectionNameFilter, String filterFieldsConnectionOperator, String[] taxIds) {
+    public static BoolQuery getFulltextQuery(List<String> eventTypes, int eventLikelihood, String sentenceFilter, String paragraphFilter, String sectionNameFilter, String filterFieldsConnectionOperator, String[] taxIds, boolean includeUnary) {
         BoolQuery eventQuery = new BoolQuery();
 
         if (eventTypes != null && !eventTypes.isEmpty()) {
@@ -179,6 +179,15 @@ public class EventQueries {
             eventTypeClause.addQuery(eventTypesQuery);
             eventTypeClause.occur = FILTER;
             eventQuery.addClause(eventTypeClause);
+        }
+        if (!includeUnary) {
+            final TermQuery tq = new TermQuery();
+            tq.term = 2;
+            tq.field = FIELD_NUM_ARGUMENTS;
+            final BoolClause numArgsClause = new BoolClause();
+            numArgsClause.addQuery(tq);
+            numArgsClause.occur = FILTER;
+            eventQuery.addClause(numArgsClause);
         }
 
         BoolQuery fulltextQuery = new BoolQuery();

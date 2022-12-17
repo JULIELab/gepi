@@ -4,6 +4,7 @@ import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.EventRetrievalService;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
+import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.BeanModelEvent;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.EventPagesDataSource;
@@ -88,6 +89,30 @@ public class TableResultWidget extends GepiWidget {
 
 //    @Property
 //    private List<String> selectedColumns;
+    @Inject
+    private IGeneIdService geneIdService;
+//    @Inject
+//    private TypeCoercer typeCoercer;
+//
+//    public ValueEncoder getColumnsEncoder() {
+//        return new StringValueEncoder();
+//    }
+//
+//    public SelectModel getColumnsModel() {
+//        return new SelectModelImpl(tableModel.getPropertyNames().stream().map(p -> new OptionModelImpl(p)).toArray(OptionModel[]::new));
+//    }
+
+//    @Inject
+//    private AjaxResponseRenderer ajaxResponseRenderer;
+//
+//    @InjectComponent
+//    private GepiWidgetLayout gepiWidgetLayout;
+//
+    // for columns selection
+//    public void onSuccessFromColumnsForm() {
+//        tableModel.include(selectedColumns.toArray(String[]::new));
+//        ajaxResponseRenderer.addRender(gepiWidgetLayout.getBodyZone());
+//    }
 
     @Log
     void setupRender() {
@@ -147,28 +172,6 @@ public class TableResultWidget extends GepiWidget {
         };
 //        selectedColumns = tableModel.getPropertyNames();
     }
-//    @Inject
-//    private TypeCoercer typeCoercer;
-//
-//    public ValueEncoder getColumnsEncoder() {
-//        return new StringValueEncoder();
-//    }
-//
-//    public SelectModel getColumnsModel() {
-//        return new SelectModelImpl(tableModel.getPropertyNames().stream().map(p -> new OptionModelImpl(p)).toArray(OptionModel[]::new));
-//    }
-
-//    @Inject
-//    private AjaxResponseRenderer ajaxResponseRenderer;
-//
-//    @InjectComponent
-//    private GepiWidgetLayout gepiWidgetLayout;
-//
-    // for columns selection
-//    public void onSuccessFromColumnsForm() {
-//        tableModel.include(selectedColumns.toArray(String[]::new));
-//        ajaxResponseRenderer.addRender(gepiWidgetLayout.getBodyZone());
-//    }
 
     /**
      * When the form containing the filter elements is submitted, we want to re-render the table via AJAX
@@ -226,10 +229,14 @@ public class TableResultWidget extends GepiWidget {
                     Future<EventRetrievalResult> unrolledResult4download = getUnrolledResult4download();
                     // Check if we have the download data cached. Otherwise, get it and cache it
                     if (unrolledResult4download == null) {
-                        unrolledResult4download = eventRetrievalService.getEvents(requestData, false);
+                        long time = System.currentTimeMillis();
+                        log.info("[{}] Retrieving unrolled result for Excel sheet creation.", requestData.getDataSessionId());
+                        unrolledResult4download = eventRetrievalService.getEvents(requestData, 0, Integer.MAX_VALUE, false);
                         // We use a weak reference for the complete data since it requires much memory because of all
                         // the context data. The GC should be able to evict it, if necessary.
                         dataService.getData(requestData.getDataSessionId()).setUnrolledResult4download(new WeakReference<>(unrolledResult4download));
+                        time = System.currentTimeMillis() - time;
+                        log.info("[{}] Unrolled result retrieval for Excel sheet creation took {} seconds", requestData.getDataSessionId(), time / 1000);
                     }
                     statisticsFile = dataService.getOverviewExcel(unrolledResult4download.get().getEventList(), requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
 
@@ -254,14 +261,18 @@ public class TableResultWidget extends GepiWidget {
     }
 
     public String getArgumentLink(int argPosition) {
-        GepiConceptInfo targetInfo = argPosition == 1 ? eventRow.getEvent().getFirstArgument().getGeneInfo() : eventRow.getEvent().getSecondArgument().getGeneInfo();
+        String conceptId = argPosition == 1 ? eventRow.getEvent().getFirstArgument().getConceptId() : eventRow.getEvent().getSecondArgument().getConceptId();
+        GepiConceptInfo targetInfo = conceptId.equals(EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT) ? null : geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
         if (targetInfo == null)
             return "#";
         if (targetInfo.getLabels().contains("HGNC_GROUP") || targetInfo.getLabels().contains("AGGREGATE_FPLX_HGNC"))
-            return "https://www.genenames.org/data/genegroup/#!/group"+targetInfo.getOriginalId();
+            // for groups that appear in HGNC and FamPlex, we prefer the HGNC ID since we can link to it
+            return "https://www.genenames.org/data/genegroup/#!/group/" + targetInfo.getOriginalId();
         if (targetInfo.getLabels().contains("FPLX"))
             return "https://github.com/sorgerlab/famplex/";
-        return "https://www.ncbi.nlm.nih.gov/gene/"+targetInfo.getOriginalId();
+        if (targetInfo.getLabels().contains("ID_MAP_NCBI_GENES"))
+            return "https://www.ncbi.nlm.nih.gov/gene/" + targetInfo.getOriginalId();
+        return "#";
     }
 
     public void afterRender() {

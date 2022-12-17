@@ -12,6 +12,13 @@
                 <!-- Hidden field to store the data session ID to the client -->
                 <t:textfield t:id="dataSessionIdField" value="dataSessionId" hidden="true"
                              title="Hidden field to store session information."/>
+                <div class="row" id="examples">
+                    <div class="col-12 text-center mb-2">
+                        <button type="button" class="btn btn-light" id="btn-example-1">Input Example 1</button>
+                        <button type="button" class="btn btn-light" id="btn-example-2">Input Example 2</button>
+                        <button type="button" class="btn btn-light" id="btn-example-3">Input Example 3</button>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-6">
                         <div class="text-center">
@@ -90,7 +97,7 @@
             </div>
         </div>
         <div class="card">
-            <h6 class="card-header text-center">Filter the result by factuality of the interactions
+            <h6 class="card-header text-center">Filter the result by minimal factuality of the interactions
                 <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
                         data-bs-toggle="default-tooltip"
                         title="Factuality means whether an interaction is described as actually happening, not happening or possibly happening on a likelihood scale. This selection allows to specify the lowest factuality level to be returned."/>

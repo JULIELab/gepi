@@ -26,7 +26,6 @@
                         <li><a class="dropdown-item number" href="#">10</a></li>
                         <li><a class="dropdown-item number" href="#">15</a></li>
                         <li><a class="dropdown-item number" href="#">20</a></li>
-                        <li><a class="dropdown-item number" href="#">30</a></li>
                         <li><hr class="dropdown-divider"/></li>
 <!--                    the 'other-bin' class is used in JS to identify this specific item -->
                         <li data-bs-toggle="tooltip" title="Toggles if genes that are not shown are collected in a special 'others' bar. Only applicable if there are more genes than can be displayed."><a class="dropdown-item other-bin" href="#"><span class="tick d-none">&#10003; </span>Make 'other' bar</a></li>

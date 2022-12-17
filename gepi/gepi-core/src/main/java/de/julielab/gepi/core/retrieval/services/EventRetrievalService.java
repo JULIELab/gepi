@@ -126,10 +126,10 @@ public class EventRetrievalService implements IEventRetrievalService {
             FIELD_PMCID,
             FIELD_EVENT_LIKELIHOOD,
             FIELD_EVENT_SENTENCE_TEXT,
-            FIELD_EVENT_PARAGRAPH_TEXT,
+//            FIELD_EVENT_PARAGRAPH_TEXT,
             FIELD_EVENT_MAINEVENTTYPE,
             FIELD_EVENT_ALL_EVENTTYPES,
-//            FIELD_EVENT_ARG_GENE_IDS,
+            FIELD_EVENT_ARG_GENE_IDS,
             FIELD_EVENT_ARG_CONCEPT_IDS,
             FIELD_EVENT_ARG_PREFERRED_NAME,
             FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
@@ -211,12 +211,15 @@ public class EventRetrievalService implements IEventRetrievalService {
 
                 BoolQuery eventQuery = EventQueries.getClosedQuery(requestData, idSetA, idSetB);
 
+                boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
+
                 SearchServerRequest serverRqst = new SearchServerRequest();
                 serverRqst.query = eventQuery;
                 serverRqst.index = documentIndex;
                 serverRqst.rows = numRows;
-                configureDeepPaging(serverRqst, forCharts);
-                if (!forCharts) {
+                serverRqst.requestTimeout = "10m";
+                configureDeepPaging(serverRqst, downloadAll, forCharts);
+                if (!downloadAll) {
                     addHighlighting(serverRqst);
                 }
 
@@ -233,7 +236,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 eventResult.setStartRow(from);
                 eventResult.setEndRow(from + numRows - 1);
                 time = System.currentTimeMillis() - time;
-                log.debug("Retrieved {} bipartite events from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
+                log.debug("Retrieved {} events for closed search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.BIPARTITE);
                 reorderBipartiteEventResultArguments(idSetA, idSetB, eventResult);
                 return eventResult;
@@ -307,7 +310,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 eventResult.setStartRow(from);
                 eventResult.setEndRow(from + numRows - 1);
                 time = System.currentTimeMillis() - time;
-                log.debug("Retrieved {} outside events from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
+                log.info("Retrieved {} events for open search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.OUTSIDE);
                 reorderOutsideEventResultsArguments(idSet, eventResult);
                 log.debug("After reordering, the event list has {} elements", eventResult.getEventList().size());
@@ -331,27 +334,31 @@ public class EventRetrievalService implements IEventRetrievalService {
     public SearchServerRequest getOpenSearchRequest(GepiRequestData requestData, int from, int numRows, boolean forCharts) throws ExecutionException, InterruptedException {
         BoolQuery eventQuery = EventQueries.getOpenQuery(requestData);
 
+        boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
+
         SearchServerRequest serverRqst = new SearchServerRequest();
         serverRqst.query = eventQuery;
         serverRqst.index = documentIndex;
         serverRqst.start = from;
         serverRqst.rows = numRows;
-        configureDeepPaging(serverRqst, forCharts);
-        if (!forCharts) {
+        serverRqst.requestTimeout = "10m";
+        configureDeepPaging(serverRqst, downloadAll, forCharts);
+        if (!downloadAll) {
             addHighlighting(serverRqst);
         }
         return serverRqst;
     }
 
-    private void configureDeepPaging(SearchServerRequest serverRqst, boolean forCharts) {
-        if (forCharts)
+    private void configureDeepPaging(SearchServerRequest serverRqst, boolean downloadAll, boolean forCharts) {
+        if (downloadAll)
             serverRqst.rows = SCROLL_SIZE;
         serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-        serverRqst.downloadCompleteResults = forCharts;
-        serverRqst.downloadCompleteResultsMethod = "scroll";
-        if (forCharts) {
+        serverRqst.downloadCompleteResults = downloadAll;
+        serverRqst.downloadCompleteResultsMethod = "searchAfter";
+        serverRqst.downloadCompleteResultMethodKeepAlive = "5m";
+        if (downloadAll) {
             serverRqst.downloadCompleteResultsLimit = 10000;
-            serverRqst.addSortCommand("_doc", SortOrder.ASCENDING);
+            serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
         }
     }
 
@@ -407,15 +414,18 @@ public class EventRetrievalService implements IEventRetrievalService {
     public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
-            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData.getEventTypes(), requestData.getEventLikelihood(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString(), requestData.getFilterFieldsConnectionOperator(), requestData.getTaxId());
+            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData.getEventTypes(), requestData.getEventLikelihood(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString(), requestData.getFilterFieldsConnectionOperator(), requestData.getTaxId(), requestData.isIncludeUnary());
+
+            boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
 
             SearchServerRequest serverRqst = new SearchServerRequest();
             serverRqst.query = eventQuery;
             serverRqst.index = documentIndex;
             serverRqst.start = from;
             serverRqst.rows = numRows;
-            configureDeepPaging(serverRqst, forCharts);
-            if (!forCharts) {
+            serverRqst.requestTimeout = "10m";
+            configureDeepPaging(serverRqst, downloadAll, forCharts);
+            if (!downloadAll) {
                 addHighlighting(serverRqst);
             }
 
@@ -432,7 +442,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             eventResult.setStartRow(from);
             eventResult.setEndRow(from + numRows - 1);
             time = System.currentTimeMillis() - time;
-            log.debug("Retrieved {} fulltext-filtered events in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
+            log.info("Retrieved {} fulltext-filtered events in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
             eventResult.setResultType(EventResultType.FULLTEXT_FILTERED);
             return eventResult;
         });
