@@ -184,7 +184,7 @@ public class TableResultWidget extends GepiWidget {
     public EventPagesDataSource getEventSource() {
         FilteredGepiRequestData filteredRequest = new FilteredGepiRequestData(requestData);
         filteredRequest.setEventTypeFilter(filterEventType);
-        return new EventPagesDataSource(loggerSource.getLogger(EventPagesDataSource.class), dataService.getData(requestData.getDataSessionId()).getPagedResult(), eventRetrievalService, filteredRequest);
+        return new EventPagesDataSource(loggerSource.getLogger(EventPagesDataSource.class), dataService.getData(requestData.getDataSessionId()).getPagedResult(), eventRetrievalService, geneIdService, filteredRequest);
     }
 
     void onUpdateTableData() {
@@ -262,6 +262,8 @@ public class TableResultWidget extends GepiWidget {
 
     public String getArgumentLink(int argPosition) {
         String conceptId = argPosition == 1 ? eventRow.getEvent().getFirstArgument().getConceptId() : eventRow.getEvent().getSecondArgument().getConceptId();
+        // Retrieving the gene info for each argument in sequence is inefficient. Thus, the info has been pre-fetched in
+        // EventPagesDataSource and is now quickly accessed through the cache.
         GepiConceptInfo targetInfo = conceptId.equals(EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT) ? null : geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
         if (targetInfo == null)
             return "#";
