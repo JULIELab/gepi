@@ -2,6 +2,7 @@ package de.julielab.jcore.ae.genemerge;
 
 import de.julielab.jcore.types.Gene;
 import de.julielab.jcore.types.ResourceEntry;
+import de.julielab.jcore.utility.JCoReTools;
 import de.julielab.jcore.utility.index.JCoReOverlapAnnotationIndex;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
@@ -12,6 +13,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -20,7 +22,11 @@ import java.util.regex.Pattern;
  * Finally, all gazetteer concept DB gene annotations are removed from CAS indexes.
  */
 public class GePiFamplexIdAssigner extends JCasAnnotator_ImplBase {
-    private Pattern famplexHgncGroupMatcher = Pattern.compile("(FPLX|HGNC):.*");
+    private Pattern famplexHgncGroupMatcher = Pattern.compile("(FPLX|HGNCG):.*");
+    /**
+     * Gene names that are not clearly a group or family. In those cases we let the GNormPlus class decide.
+     */
+    private Set<String> difficultCases = Set.of("p53");
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -35,25 +41,26 @@ public class GePiFamplexIdAssigner extends JCasAnnotator_ImplBase {
         for (Gene g : jCas.<Gene>getAnnotationIndex(Gene.type)) {
             if (g.getComponentId() != null && g.getComponentId().toLowerCase().contains("gazetteer") && famplexHgncGroupMatcher.matcher(g.getSpecificType()).matches())
                 conceptGazetteerGenes.index(g);
-            // I decided to ignore the GNP tagging and just match the names from FamPlex and HGNC because it just looks right in the data
-            // the "familiy" is a consistent typo in ProGene
-//            else if (g.getSpecificType() != null && (g.getSpecificType().equalsIgnoreCase("familyname") || g.getSpecificType().equalsIgnoreCase("protein_familiy_or_group"))) {
-//                familyGenes.add(g);
-             else
-            familyGenes.add(g);
-
+                // I decided to ignore the GNP tagging in most cases and just match the names from FamPlex and HGNC because it just looks right in the data.
+                // the "familiy" is a consistent typo in ProGene
+            else if (!difficultCases.contains(g.getCoveredText().toLowerCase()) || (g.getSpecificType() != null && (g.getSpecificType().equalsIgnoreCase("familyname") || g.getSpecificType().equalsIgnoreCase("protein_familiy_or_group")))) {
+                familyGenes.add(g);
+            }
         }
         conceptGazetteerGenes.freeze();
         // find families overlapping gazetteer annotations and transfer the found ID.
         for (Gene familyGene : familyGenes) {
             final List<Gene> search = conceptGazetteerGenes.search(familyGene);
-            Gene longestGene = getLongestMatch(search, familyGene);
-            if (longestGene != null) {
-                final ResourceEntry entry = new ResourceEntry(jCas, familyGene.getBegin(), familyGene.getEnd());
-                entry.setComponentId(getClass().getSimpleName());
-                entry.setEntryId(longestGene.getSpecificType());
-                final FSArray resourceEntryList = new FSArray(jCas, 1);
-                resourceEntryList.set(0, entry);
+            List<Gene> longestGenes = getLongestMatches(search, familyGene);
+            FSArray resourceEntryList;
+            if (!longestGenes.isEmpty()) {
+                resourceEntryList = new FSArray(jCas, longestGenes.size());
+                for (Gene longestGene : longestGenes) {
+                    final ResourceEntry entry = new ResourceEntry(jCas, familyGene.getBegin(), familyGene.getEnd());
+                    entry.setComponentId(getClass().getSimpleName());
+                    entry.setEntryId(longestGene.getSpecificType());
+                    resourceEntryList = JCoReTools.addToFSArray(resourceEntryList, entry);
+                }
                 familyGene.setResourceEntryList(resourceEntryList);
             }
         }
@@ -61,18 +68,21 @@ public class GePiFamplexIdAssigner extends JCasAnnotator_ImplBase {
         conceptGazetteerGenes.getBeginIndex().forEach(Gene::removeFromIndexes);
     }
 
-    private Gene getLongestMatch(Iterable<Gene> genes, Gene referenceGene) {
+    private List<Gene> getLongestMatches(Iterable<Gene> genes, Gene referenceGene) {
         int maxLength = -1;
-        Gene longestGene = null;
+        List<Gene> longestGenes = new ArrayList<>();
         for (Gene g : genes) {
             final int length = g.getEnd() - g.getBegin();
             // Only accept matches that completely cover the predicted gene. Otherwise, name parts of concrete
             // genes can be mistaken for families, e.g. c-Jun is then mapped to the JUN family
             if (length > maxLength && g.getBegin() <= referenceGene.getBegin() && g.getEnd() >= referenceGene.getEnd()) {
                 maxLength = length;
-                longestGene = g;
             }
         }
-        return longestGene;
+        for (Gene g : genes) {
+            if (g.getEnd() - g.getBegin() == maxLength)
+                longestGenes.add(g);
+        }
+        return longestGenes;
     }
 }
