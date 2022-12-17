@@ -5,4 +5,4 @@
 # evaluation scores on event extraction when the genes have to be
 # recognized first.
 # GNormPlus requires a range of resources available in the original
-# GNormPlus Download from 
+# GNormPlus Download from ∑

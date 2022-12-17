@@ -21,7 +21,7 @@ public class GePiFamplexIdAssignerTest {
         ampkFamily.addToIndexes();
         final Gene ampkGazetteer = new Gene(jCas, 0, 4);
         ampkGazetteer.setComponentId("Gazetteer");
-        ampkGazetteer.setSpecificType("tid12345");
+        ampkGazetteer.setSpecificType("FPLX:AMPK");
         ampkGazetteer.addToIndexes();
 
         final Gene mtor = new Gene(jCas, 24, 28);
@@ -41,6 +41,6 @@ public class GePiFamplexIdAssignerTest {
         final Gene ampk = genes.iterator().next();
         assertThat(ampk).extracting(Gene::getCoveredText).isEqualTo("AMPK");
         assertThat(ampk.getResourceEntryList()).isNotNull().hasSize(1);
-        assertThat(ampk.getResourceEntryList(0)).isNotNull().extracting("entryId").isEqualTo("tid12345");
+        assertThat(ampk.getResourceEntryList(0)).isNotNull().extracting("entryId").isEqualTo("FPLX:AMPK");
     }
 }

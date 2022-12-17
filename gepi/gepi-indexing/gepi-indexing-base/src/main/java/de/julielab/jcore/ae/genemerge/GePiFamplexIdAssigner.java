@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * Finally, all gazetteer concept DB gene annotations are removed from CAS indexes.
  */
 public class GePiFamplexIdAssigner extends JCasAnnotator_ImplBase {
-    private Pattern tidP = Pattern.compile("a?tid[0-9]+");
+    private Pattern famplexHgncGroupMatcher = Pattern.compile("(FPLX|HGNC):.*");
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -33,7 +33,7 @@ public class GePiFamplexIdAssigner extends JCasAnnotator_ImplBase {
         List<Gene> familyGenes = new ArrayList<>();
         // collect gazetteer and family genes
         for (Gene g : jCas.<Gene>getAnnotationIndex(Gene.type)) {
-            if (g.getComponentId() != null && g.getComponentId().toLowerCase().contains("gazetteer") && tidP.matcher(g.getSpecificType()).matches())
+            if (g.getComponentId() != null && g.getComponentId().toLowerCase().contains("gazetteer") && famplexHgncGroupMatcher.matcher(g.getSpecificType()).matches())
                 conceptGazetteerGenes.index(g);
             // I decided to ignore the GNP tagging and just match the names from FamPlex and HGNC because it just looks right in the data
             // the "familiy" is a consistent typo in ProGene

@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
-<conceptdatabase xmlns="https://www.julielab.de/conceptdb"
-                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="https://www.julielab.de/conceptdb https://www.julielab.de/conceptdb/conceptdb-1.1.0.xsd https://www.julielab.de/conceptdb/concepts/ncbigene
-                 https://www.julielab.de/conceptdb/concepts/ncbigeneconcepts-1.1.0.xsd
-                 https://www.julielab.de/conceptdb/facets/default https://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd
-                 https://julielab.de/conceptdb/concepts/bioportal https://julielab.de/conceptdb/concepts/bioportalconcepts-1.1.0.xsd
-                 https://www.julielab.de/conceptdb/exporter-1.1.0.xsd">
+<conceptdatabase xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.julielab.de/conceptdb"
+                 xsi:schemaLocation="http://www.julielab.de/conceptdb http://www.julielab.de/conceptdb/concepts/conceptdb-1.2.0.xsd
+                 http://www.julielab.de/conceptdb/concepts/ncbigene http://www.julielab.de/conceptdb/concepts/ncbigeneconcepts-1.2.0.xsd
+                 http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd
+                 http://julielab.de/conceptdb/concepts/bioportal http://www.julielab.de/conceptdb/concepts/bioportalconcepts-1.1.0.xsd">
     <versioning>
         <version>0.10.1-SNAPSHOT</version>
     </versioning>
     <connection>
-        <uri>http://localhost:7575</uri>
+        <uri>http://localhost:7474</uri>
         <user>neo4j</user>
         <password>secret</password>
     </connection>
@@ -44,7 +42,7 @@
                 <httpmethod>POST</httpmethod>
             </rest>
             <concepts>
-                <creator xmlns="https://julielab.de/conceptdb/concepts/bioportal">
+                <creator xmlns="http://julielab.de/conceptdb/concepts/bioportal">
                     <name>JulielabBioPortalToolsConceptCreator</name>
                     <!-- This required the julielab-bioportal-tools to have run before to download the Gene Ontology
                     and extracts its concepts in a custom JSON format -->
@@ -54,8 +52,11 @@
                 </creator>
             </concepts>
             <facet>
-                <creator xmlns="https://www.julielab.de/conceptdb/facets/default">
+                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
+                    <name>DefaultFacetCreator</name>
                     <configuration>
+                        <name>BioPortal</name>
+                        <sourcetype>hierarchical</sourcetype>
                         <facetgroup>
                             <name>BioMed</name>
                         </facetgroup>
@@ -69,7 +70,7 @@
                 <httpmethod>POST</httpmethod>
             </rest>
             <concepts>
-                <creator xmlns="https://www.julielab.de/conceptdb/concepts/ncbigene">
+                <creator xmlns="http://www.julielab.de/conceptdb/concepts/ncbigene">
                     <name>NCBIGeneConceptCreator</name>
                     <configuration>
                         <basepath/>
@@ -95,7 +96,7 @@
                 </creator>
             </concepts>
             <facet>
-                <creator xmlns="https://www.julielab.de/conceptdb/facets/default">
+                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
                     <name>DefaultFacetCreator</name>
                     <configuration>
                         <name>NCBI Gene</name>
@@ -129,7 +130,7 @@
                 </creator>
             </concepts>
             <facet>
-                <creator xmlns="https://www.julielab.de/conceptdb/facets/default">
+                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
                     <name>DefaultFacetCreator</name>
                     <configuration>
                         <name>FamPlex</name>
@@ -166,7 +167,7 @@
                 </creator>
             </concepts>
             <facet>
-                <creator xmlns="https://www.julielab.de/conceptdb/facets/default">
+                <creator xmlns="http://www.julielab.de/conceptdb/facets/default">
                     <name>DefaultFacetCreator</name>
                     <configuration>
                         <name>HGNC</name>
@@ -243,6 +244,7 @@
                     </parameter>
                     <parameter name="copy_properties">
                         <arrayitem>preferredName</arrayitem>
+                        <arrayitem>preferredName_normalized</arrayitem>
                         <arrayitem>synonyms</arrayitem>
                         <arrayitem>originalId</arrayitem>
                         <arrayitem>originalSource</arrayitem>
@@ -288,6 +290,16 @@
             </request>
             <outputfile>es-consumer-resources/egid2tid.map.gz</outputfile>
         </export>
+        <export name="hgncg_fplx_conceptids">
+            <request>
+                <cypherquery>
+                    MATCH (h:HGNC_GROUP) RETURN h.originalSource+":"+h.originalId AS orgId,h.id AS id
+                    UNION
+                    MATCH (f:FPLX) RETURN f.originalSource+":"+f.originalId AS orgId,f.id AS id
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/hgncg_fplx_orgid2tid.map.gz</outputfile>
+        </export>
         <!-- Map from aggregate elements to their highest aggregate. This includes orthology aggregates but also
             FamPlex / HGNC aggregates -->
         <export name="allgeneaggregates">
@@ -310,11 +322,17 @@
         </export>
         <export name="preferredNames">
             <request>
-                <cypherquery>MATCH (c:CONCEPT) WHERE c.preferredName IS NOT null RETURN c.id,c.preferredName</cypherquery>
+                <cypherquery>
+                    MATCH (h:HGNC_GROUP) RETURN h.originalSource+":"+h.originalId AS id,h.preferredName AS name
+                    UNION
+                    MATCH (f:FPLX) RETURN f.originalSource+":"+f.originalId AS id,f.preferredName AS name
+                    UNION
+                    MATCH (c:CONCEPT) WHERE c.preferredName IS NOT null RETURN c.id AS id,c.preferredName AS name
+                </cypherquery>
             </request>
             <outputfile>es-consumer-resources/conceptid2prefName.map.gz</outputfile>
         </export>
-        <export name="genetid2orthologyatid">
+        <export name="genetid2orthologyprefname">
             <request>
                 <cypherquery>
                     MATCH (c:ID_MAP_NCBI_GENES)&lt;-[:HAS_ELEMENT*]-(a) WHERE a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY AND NOT exists((a)&lt;-[:HAS_ELEMENT]-()) RETURN c.id, a.preferredName AS name
@@ -393,20 +411,22 @@
                     <httpmethod>GET</httpmethod>
                 </rest>
                 <parameters>
-                    <!-- The order is important: through the 'unique' parameter we discard keys (=concept names) that already appear in the dictionary during construction. Thus, the aggregates get precedence and HGNC and FamPlex concepts are only included if they have no equal-named concept in the other database. -->
+                    <!-- The order is important: through the 'unique' parameter we discard keys (=concept names) that already appear in the dictionary during construction. Thus, the aggregates get precedence and HGNCG and FamPlex concepts are only included if they have no equal-named concept in the other database. -->
                     <parameter name="labels">
                         <arrayitem>AGGREGATE_FPLX_HGNC</arrayitem>
                         <arrayitem>HGNC_GROUP</arrayitem>
                         <arrayitem>FPLX</arrayitem>
                     </parameter>
+                    <parameter name="add_source_prefix">true</parameter>
+                    <parameter name="source_id_property">originalId</parameter>
                     <parameter name="unique_keys">true</parameter>
                 </parameters>
             </request>
+            <outputfile>processing-dictionaries/fplxhgncgroupnames.dict.gz</outputfile>
             <decoding>
                 <base64>true</base64>
                 <gzip>true</gzip>
             </decoding>
-            <outputfile>processing-dictionaries/fplxhgncgroupnames.dict.gz</outputfile>
         </export>
     </exports>
 </conceptdatabase>

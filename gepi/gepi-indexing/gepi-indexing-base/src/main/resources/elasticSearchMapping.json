@@ -1,6 +1,6 @@
 {
   "settings": {
-    "number_of_shards": 2,
+    "number_of_shards": 3,
     "number_of_replicas": 0,
     "max_terms_count": 1000000,
     "analysis": {
@@ -24,7 +24,7 @@
   },
   "mappings": {
     "_source": {
-      "enabled": true
+      "enabled": false
     },
     "properties": {
       "pmid": {
@@ -41,7 +41,7 @@
       },
       "argumentgeneids": {
         "type": "keyword",
-        "store": false
+        "store": true
       },
       "argumenttaxids": {
         "type": "keyword"

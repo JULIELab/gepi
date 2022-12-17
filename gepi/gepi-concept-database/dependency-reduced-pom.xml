@@ -59,7 +59,7 @@
     </plugins>
   </build>
   <properties>
-    <concept-db-version>1.2.0-SNAPSHOT</concept-db-version>
+    <concept-db-version>1.2.0</concept-db-version>
   </properties>
 </project>
 
