@@ -27,7 +27,7 @@ public class GePiFamplexIdAssigner extends JCasAnnotator_ImplBase {
     /**
      * Gene names that are not clearly a group or family. In those cases we let the GNormPlus class decide.
      */
-    private Pattern difficultCases = Pattern.compile("(p[0-9]+)|(il-?[0-9]+)|(cd[0-9]+)]", Pattern.CASE_INSENSITIVE);
+    private Pattern difficultCases = Pattern.compile("(p[0-9]+)|(il-?[0-9]+)|(cd[0-9]+)|(stat[0-9]+)]", Pattern.CASE_INSENSITIVE);
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
