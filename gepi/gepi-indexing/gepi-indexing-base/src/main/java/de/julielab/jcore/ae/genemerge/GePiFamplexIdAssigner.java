@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Expects as input Gene annotations. Finds those Gene annotations that have been created by the Gazetteer component and whose specific type starts matches "tid[0-9]+", indicating a Julielab Neo4j Concept database ID.
@@ -54,13 +55,12 @@ public class GePiFamplexIdAssigner extends JCasAnnotator_ImplBase {
             List<Gene> longestGenes = getLongestMatches(search, familyGene);
             FSArray resourceEntryList;
             if (!longestGenes.isEmpty()) {
-                resourceEntryList = new FSArray(jCas, longestGenes.size());
-                for (Gene longestGene : longestGenes) {
-                    final ResourceEntry entry = new ResourceEntry(jCas, familyGene.getBegin(), familyGene.getEnd());
-                    entry.setComponentId(getClass().getSimpleName());
-                    entry.setEntryId(longestGene.getSpecificType());
-                    resourceEntryList = JCoReTools.addToFSArray(resourceEntryList, entry);
-                }
+                resourceEntryList = new FSArray(jCas, 1);
+                final String concatenatedIds = longestGenes.stream().map(Gene::getSpecificType).collect(Collectors.joining("---"));
+                final ResourceEntry entry = new ResourceEntry(jCas, familyGene.getBegin(), familyGene.getEnd());
+                entry.setComponentId(getClass().getSimpleName());
+                entry.setEntryId(concatenatedIds);
+                resourceEntryList.set(0, entry);
                 familyGene.setResourceEntryList(resourceEntryList);
             }
         }

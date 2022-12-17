@@ -83,8 +83,7 @@ public class GePiFamplexIdAssignerTest {
         assertThat(genes).hasSize(3);
         final Gene ampk = genes.iterator().next();
         assertThat(ampk).extracting(Gene::getCoveredText).isEqualTo("AMPK");
-        assertThat(ampk.getResourceEntryList()).isNotNull().hasSize(2);
-        assertThat(ampk.getResourceEntryList(0)).isNotNull().extracting("entryId").isEqualTo("FPLX:AMPK");
-        assertThat(ampk.getResourceEntryList(1)).isNotNull().extracting("entryId").isEqualTo("HGNCG:AMPK");
+        assertThat(ampk.getResourceEntryList()).isNotNull().hasSize(1);
+        assertThat(ampk.getResourceEntryList(0)).isNotNull().extracting("entryId").isEqualTo("FPLX:AMPK---HGNCG:AMPK");
     }
 }
