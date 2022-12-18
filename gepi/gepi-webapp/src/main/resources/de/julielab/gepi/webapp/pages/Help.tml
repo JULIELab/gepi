@@ -93,8 +93,57 @@
                                 <li><a class="link-secondary" target="_blank" href="https://www.uniprot.org/">UniProtKB</a> Accession and IDs/mnemonic</li>
                                 <li><a class="link-secondary" target="_blank" href="https://www.genenames.org/data/genegroup/#!/">HGNC Gene Group</a> IDs and names</li>
                                 <li><a class="link-secondary" target="_blank" href="https://github.com/sorgerlab/famplex/">FamPlex</a> IDs and names</li>
+                                <li><a class="link-secondary" target="_blank" href="http://geneontology.org/">Gene Ontology</a> IDs</li>
                             </ul>
                             The first list of identifiers will be called <em>List A</em> or <em>A-List</em> and the second one will be called <em>List B</em> or <em>B-List</em> all over the Web page.
+                        </p>
+                        <p>
+                            Given a gene name or database ID, GePI makes best efforts to recognize the search term and resolve it to one of the above databases. In some cases, IDs are ambiguous across multiple databases. For example, NCBI Gene as well as HGNC Groups use numbers as IDs. If an input ID is not recognized as expected, database prefixes can be used for disambiguation, e.g. <code>gene:2475</code> refers to the human mTOR NCBI Gene entry.
+                            Prefixes are separated via a colon <code>:</code> from the specific database ID. This even possible if the ID already includes a prefix of its own like HGNC or GO. The following database prefixes are used:
+                            <table class="table">
+                                <tr>
+                                    <th>database</th>
+                                    <th>prefix</th>
+                                    <th>example</th>
+                                </tr>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <td><a class="link-secondary" target="_blank" href="https://www.ncbi.nlm.nih.gov/gene/">NCBI Gene</a></td>
+                                        <td><code>gene</code></td>
+                                        <td><code>gene:2475</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a class="link-secondary" target="_blank" href="https://www.ensembl.org/">Ensembl</a></td>
+                                        <td><code>ens</code></td>
+                                        <td><code>ens:ENSG00000198793</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a class="link-secondary" target="_blank" href="https://www.genenames.org/">HGNC Gene</a></td>
+                                        <td><code>hgnc</code></td>
+                                        <td><code>hgnc:HGNC:3942</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a class="link-secondary" target="_blank" href="https://www.uniprot.org/">UniProtKB</a></td>
+                                        <td><code>up</code></td>
+                                        <td><code>up:P42345</code>, <code>up:MTOR_HUMAN</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a class="link-secondary" target="_blank" href="https://www.genenames.org/data/genegroup/#!/">HGNC Gene Group</a></td>
+                                        <td><code>hgncg</code></td>
+                                        <td><code>hgncg:1900</code></td>
+                                    </tr>
+                                     <tr>
+                                        <td><a class="link-secondary" target="_blank" href="https://github.com/sorgerlab/famplex/">FamPlex</a></td>
+                                        <td><code>fplx</code></td>
+                                        <td><code>fplx:AMPK</code></td>
+                                    </tr>
+                                     <tr>
+                                        <td><a class="link-secondary" target="_blank" href="http://geneontology.org/">Gene Ontology</a></td>
+                                        <td><code>go</code></td>
+                                         <td><code>go:GO:0016301</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </p>
                         <h3 id="search-types">Search types</h3>
                         <p>

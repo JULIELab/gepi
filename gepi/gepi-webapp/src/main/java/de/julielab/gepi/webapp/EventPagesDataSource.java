@@ -56,7 +56,10 @@ public class EventPagesDataSource implements GridDataSource {
                 // Retrieving all geneInfos at once only requires a single call to Neo4j instead of one call for
                 // each argument. Since we use an internal cache, the geneInfo items can then be accessed in the TableResultWidget
                 // where we need to know the labels.
+                long time = System.currentTimeMillis();
                 geneIdService.getGeneInfo(() -> eventRetrievalResult.getEventList().stream().map(Event::getArguments).flatMap(Collection::stream).map(Argument::getConceptId).filter(Objects::nonNull).filter(Predicate.not(String::isBlank)).iterator());
+                time = System.currentTimeMillis() - time;
+                log.debug("Pre-fetched the geneInfo of arguments for {} events in ms", events.get().getEventList().size(), time);
                 log.debug("Received {} events where {} events were requested. From {} to {}.", events.get().getEventList().size(), i1 - i + 1, i, i+i1);
                 log.info("Returning events from {} to {}", i, i+i1);
             } else {
