@@ -48,15 +48,18 @@
       },
       "argumentcoveredtext": {
         "type": "text",
-        "store": true
+        "store": true,
+        "norms": false
       },
       "argumentprefnames": {
         "type": "text",
-        "store": true
+        "store": true,
+        "norms": false
       },
       "argumenthomoprefnames": {
         "type": "text",
-        "store": true
+        "store": true,
+        "norms": false
       },
       "argumentconceptids": {
         "type": "keyword",
@@ -87,19 +90,18 @@
       },
       "argument1coveredtext": {
         "type": "text",
-        "store": true
+        "store": true,
+        "norms": false
       },
       "argument1prefname": {
         "type": "text",
-        "store": true
+        "store": true,
+        "norms": false
       },
       "argument1homoprefname": {
         "type": "text",
-        "store": true
-      },
-      "argument1goprefnames": {
-        "type": "text",
-        "store": true
+        "store": true,
+        "norms": false
       },
       "argument1conceptid": {
         "type": "keyword",
@@ -143,19 +145,18 @@
       },
       "argument2coveredtext": {
         "type": "text",
-        "store": true
+        "store": true,
+        "norms": false
       },
       "argument2prefname": {
         "type": "text",
-        "store": true
+        "store": true,
+        "norms": false
       },
       "argument2homoprefname": {
         "type": "text",
-        "store": true
-      },
-      "argument2goprefnames": {
-        "type": "text",
-        "store": true
+        "store": true,
+        "norms": false
       },
       "argument2conceptid": {
         "type": "keyword",
