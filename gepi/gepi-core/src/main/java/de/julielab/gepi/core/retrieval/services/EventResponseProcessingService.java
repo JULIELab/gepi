@@ -98,7 +98,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             List<Argument> arguments = new ArrayList<>(numArguments);
             for (int i = 0; i < numArguments; ++i) {
                 String conceptId = i < conceptIds.size() ? (String) conceptIds.get(i) : null;
-                String geneId = i < geneIds.size() ? (String) geneIds.get(i) : null;
+                String geneId = i < geneIds.size() ? ((String) geneIds.get(i)).replace("---", " / ") : null;
                 String topHomologyId = i < topHomologyIds.size() ? (String) topHomologyIds.get(i) : null;
 //                String famplexId = i < famplexIds.size() ? (String) famplexIds.get(i) : null;
 //                String hgncGroupId = i < hgncGroupIds.size() ? (String) hgncGroupIds.get(i) : null;

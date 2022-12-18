@@ -449,8 +449,8 @@ public class GeneIdService implements IGeneIdService {
                     List<String> labels = record.get("labels(c)").asList(Value::asString);
                     // For FamPlex-HGNCGroup aggregates, get the HGNC Group ID. For HGNC, we can give direct links
                     // to the source.
-                    if (labels.contains("AGGREGATE_FPLX_HGNC") && !StringUtils.isNumeric(originalId))
-                        originalId = divergentOriginalId.asList(Value::asString).stream().filter(StringUtils::isNumeric).limit(1).findAny().get();
+//                    if (labels.contains("AGGREGATE_FPLX_HGNC") && !StringUtils.isNumeric(originalId))
+//                        originalId = divergentOriginalId.asList(Value::asString).stream().filter(StringUtils::isNumeric).limit(1).findAny().get();
                     innerGeneInfo.put(conceptId, GepiConceptInfo.builder().originalId(originalId).conceptId(conceptId).symbol(preferredName).labels(new HashSet<>(labels)).build());
                 }
                 return innerGeneInfo;

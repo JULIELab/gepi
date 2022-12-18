@@ -147,7 +147,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
             FIELD_NUM_ARGUMENTS
     );
-    private static final int SCROLL_SIZE = 2000;
+    private static final int SCROLL_SIZE = 200;
     private Logger log;
     private ISearchServerComponent searchServerComponent;
     private String documentIndex;
@@ -357,7 +357,7 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.downloadCompleteResultsMethod = "searchAfter";
         serverRqst.downloadCompleteResultMethodKeepAlive = "5m";
         if (downloadAll) {
-            serverRqst.downloadCompleteResultsLimit = 10000;
+            serverRqst.downloadCompleteResultsLimit = 2000;
             serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
         }
     }
@@ -482,31 +482,9 @@ public class EventRetrievalService implements IEventRetrievalService {
             Event e = it.next();
             if (e.getArity() > 1) {
                 final Argument secondArg = e.getArgument(1);
-                if (idSet.contains(secondArg.getGeneId()) || idSet.contains(secondArg.getTopHomologyId())) {
-                    List<Argument> arguments = e.getArguments();
-                    Argument tmp = arguments.get(0);
-                    arguments.set(0, arguments.get(1));
-                    arguments.set(1, tmp);
+                if (idSet.contains(secondArg.getTopHomologyId())) {
+                    e.swapArguments();
                 }
-//            int inputIdPosition = -1;
-//            for (int i = 0; i < e.getNumArguments(); ++i) {
-//                Argument g = e.getArgument(i);
-//                // see also above comment in reorderBipartiteEventResultArguments method:
-//                // compare via top-homologyId, not geneId; see also #60 and #62
-//                if (idSet.contains(g.getTopHomologyId()) || idSet.contains(g.getConceptId()) || idSet.contains(g.getGeneId())) {
-//                    inputIdPosition = i;
-//                    break;
-//                }
-//            }
-//            if (inputIdPosition == -1)
-//                throw new IllegalStateException(
-//                        "An event was returned that does not contain an input argument ID: " + e);
-//            if (inputIdPosition > 0) {
-//                List<Argument> arguments = e.getArguments();
-//                Argument tmp = arguments.get(0);
-//                arguments.set(0, arguments.get(inputIdPosition));
-//                arguments.set(inputIdPosition, tmp);
-//            }
             }
         }
         eventResult.setEvents(reorderedEvents);

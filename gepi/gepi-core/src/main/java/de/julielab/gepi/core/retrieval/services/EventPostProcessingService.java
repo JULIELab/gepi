@@ -34,7 +34,10 @@ public class EventPostProcessingService implements IEventPostProcessingService {
 	 * Currently checks against geneId rather than top homology (th) atid, as not
 	 * all species nodes in our neo4j contain th atids. Thus, the cypher query is
 	 * sensitive to a present/absent th node connection.
+	 *
+	 * @deprecated stored in the index
 	 */
+	@Deprecated
 	@Override
 	public List<Event> setPreferredNameFromConceptId(List<Event> ev) {
 
