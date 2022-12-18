@@ -298,12 +298,23 @@
         <export name="tid2atiddirect">
             <request>
                 <cypherquery>
-                    MATCH (a)-[:HAS_ELEMENT]->(c:CONCEPT) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY OR a:AGGREGATE_FPLX_HGNC) AND NOT c:AGGREGATE
+                    MATCH (a)-[:HAS_ELEMENT*]->(c:CONCEPT) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY OR a:AGGREGATE_FPLX_HGNC) AND NOT c:AGGREGATE
                     AND NOT exists(()-[:HAS_ELEMENT]->(a))
                     RETURN DISTINCT c.id AS conceptId,a.id AS aggregateId
                 </cypherquery>
             </request>
             <outputfile>es-consumer-resources/tid2atiddirect.map.gz</outputfile>
+        </export>
+        <!-- Only Famplex/HGNC Groups: Direct map from lowest aggregate element to highest aggregate -->
+        <export name="fplxhgncgtid2atiddirect">
+            <request>
+                <cypherquery>
+                    MATCH (a:AGGREGATE_FPLX_HGNC)-[:HAS_ELEMENT]->(c:CONCEPT) WHERE NOT c:AGGREGATE
+                    AND NOT exists(()-[:HAS_ELEMENT]->(a))
+                    RETURN DISTINCT c.id AS conceptId,a.id AS aggregateId
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/fplxhgncgtid2atiddirect.map.gz</outputfile>
         </export>
         <!-- Direct map from concepts to their equal-name aggregates -->
         <export name="tid2equalnameatid">

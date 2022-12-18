@@ -61,7 +61,7 @@ if [[ ! -d $ONTOLOGY_CONCEPTS ]]; then
     wget https://repo1.maven.org/maven2/de/julielab/julielab-bioportal-ontology-tools/1.1.1/julielab-bioportal-ontology-tools-1.1.1-cli.jar
   fi
   mkdir -p $TMP_DIR/ontologies
-  echo "Downloading Gene Ontology"
+  echo "Downloading Gene Ontology from BioPortal"
   wget http://www.geneontology.org/ontology/gene_ontology.obo -O $TMP_DIR/ontologies/gene_ontology.obo
   echo "Extracting GO concepts from $TMP_DIR/ontologies/ to concept manager JSON format at $ONTOLOGY_CONCEPTS"
   java -jar julielab-bioportal-ontology-tools-*-cli.jar -eci $TMP_DIR/ontologies/ dummy $ONTOLOGY_CONCEPTS false true
