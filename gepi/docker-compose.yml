@@ -1,13 +1,13 @@
 services:
   gepi:
-    image: gepi:0.10.1-SNAPSHOT
+    image: gepi:0.11.0-SNAPSHOT
     container_name: gepi
     ports:
       - 0.0.0.0:80:8080
     networks:
       - elastic
   es01:
-    image: elasticsearch-preanalyzed:7.9.1
+    image: elasticsearch-preanalyzed:7.17.8
     container_name: es01
     environment:
       - node.name=es01
@@ -26,7 +26,7 @@ services:
     networks:
       - elastic
   es02:
-    image: elasticsearch-preanalyzed:7.9.1
+    image: elasticsearch-preanalyzed:7.17.8
     container_name: es02
     environment:
       - node.name=es02
