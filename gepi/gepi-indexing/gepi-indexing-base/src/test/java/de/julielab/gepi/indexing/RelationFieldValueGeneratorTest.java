@@ -62,7 +62,6 @@ public class RelationFieldValueGeneratorTest {
         Document doc = (Document) docs.get(0);
 
         assertThat(doc.get("argumentgeneids").toString()).isEqualTo("[id2, id1]");
-        assertThat(doc.get("aggregationvalue").toString()).isEqualTo("id1---id2");
         assertThat(doc.get("maineventtype").toString()).isEqualTo("regulation");
     }
 
