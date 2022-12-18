@@ -343,6 +343,18 @@
                 
         <externalResourceDependency>
                         
+            <key>fplxhgncgtid2atiddirect</key>
+                        
+            <description>fplxhgncgtid2atiddirect</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
             <key>stopwords</key>
                         
             <description>stopwords</description>
@@ -506,6 +518,32 @@
                 <configurableDataResourceSpecifier>
                                         
                     <url>file:/data/gepi/es-consumer-resources/tid2atiddirect.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>fplxhgncgtid2atiddirect</name>
+                                
+                <description>fplxhgncgtid2atiddirect</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/data/gepi/es-consumer-resources/fplxhgncgtid2atiddirect.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -738,6 +776,14 @@
                 <key>tid2atiddirect</key>
                                 
                 <resourceName>tid2atiddirect</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>fplxhgncgtid2atiddirect</key>
+                                
+                <resourceName>fplxhgncgtid2atiddirect</resourceName>
                             
             </externalResourceBinding>
                         
