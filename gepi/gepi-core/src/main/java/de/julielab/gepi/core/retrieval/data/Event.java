@@ -5,7 +5,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT;
+
 public class Event {
+    public static final Event EMPTY = new Event();
+    static {
+        EMPTY.setArguments(List.of(Argument.EMPTY, Argument.EMPTY));
+        EMPTY.setMainEventType(FIELD_VALUE_MOCK_ARGUMENT);
+        EMPTY.setAllEventTypes(List.of(FIELD_VALUE_MOCK_ARGUMENT));
+        EMPTY.setLikelihood(1);
+        EMPTY.setDocId(FIELD_VALUE_MOCK_ARGUMENT);
+        EMPTY.setEventId(FIELD_VALUE_MOCK_ARGUMENT);
+    }
+
     protected List<String> allEventTypes;
 
     protected List<Argument> arguments;

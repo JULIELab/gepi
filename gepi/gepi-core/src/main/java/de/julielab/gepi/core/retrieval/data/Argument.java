@@ -5,7 +5,12 @@ import org.apache.commons.lang3.StringUtils;
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT;
 
 public class Argument implements Comparable<Argument> {
-
+    public static final Argument EMPTY = new Argument(FIELD_VALUE_MOCK_ARGUMENT, FIELD_VALUE_MOCK_ARGUMENT, FIELD_VALUE_MOCK_ARGUMENT, FIELD_VALUE_MOCK_ARGUMENT);
+    static {
+        EMPTY.setPreferredName(FIELD_VALUE_MOCK_ARGUMENT);
+        EMPTY.setTopHomologyPreferredName(FIELD_VALUE_MOCK_ARGUMENT);
+        EMPTY.setTopHomologyId(FIELD_VALUE_MOCK_ARGUMENT);
+    }
     private String geneId;
     private String conceptId;
     private String topHomologyId;

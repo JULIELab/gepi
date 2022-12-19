@@ -63,6 +63,7 @@ public class InputListMappingTable {
             final IdConversionResult conversionResult = getConversionResult();
             final Multimap<String, String> convertedItems = conversionResult.getConvertedItems();
             List<InputMapping> ret = new ArrayList<>();
+            // they values are always database concept or aggregate IDs
             final Map<String, GepiConceptInfo> geneInfo = geneIdService.getGeneInfo(convertedItems.values());
             for (String inputId : (Iterable<String>) () -> convertedItems.keySet().stream().sorted(String.CASE_INSENSITIVE_ORDER).iterator()) {
                 if (maxTableSize >= 0 && ret.size() == maxTableSize)
@@ -74,7 +75,7 @@ public class InputListMappingTable {
                 // belong to some organism that was not yet accounted for in gene_orthologs. This is a technical detail
                 // and the user should not be burdened with it. So, find the best representative, which should be
                 // the aggregate, if we have one.
-                final Map<String, List<GepiConceptInfo>> infoByNames = geneInfo.values().stream().collect(Collectors.groupingBy(GepiConceptInfo::getSymbol));
+                final Map<String, List<GepiConceptInfo>> infoByNames = convertedItems.get(inputId).stream().map(geneInfo::get).collect(Collectors.groupingBy(GepiConceptInfo::getSymbol));
                 String majoritySymbol = null;
                 int maxSymbolCount = -1;
                 for (String symbol : infoByNames.keySet()) {

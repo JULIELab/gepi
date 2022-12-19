@@ -1,0 +1,12 @@
+# This configuration file is used by the Docker container. It is supposed to be used when the ElasticSearch
+# instances are also docker containers. May need updates to newer versions and the correct Neo4j URL.
+# Needs to be renamed to 'configuration.properties.jetty' to take effect. Just rename the other file with that name,
+# if it exists.
+# The Docker image is derived from a Jetty image where the user is named 'jetty' (thus the name of this file).
+elasticquery.clustername=es-docker-cluster
+elasticquery.url=es01
+elasticquery.port=9200
+elasticquery.sockettimeout=-1
+
+gepi.documents.index.name=gepi_0.10
+gepi.neo4j.bolt.url=bolt://darwin:7788

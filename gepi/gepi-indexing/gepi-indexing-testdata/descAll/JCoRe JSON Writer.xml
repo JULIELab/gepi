@@ -225,9 +225,9 @@
                 
         <externalResourceDependency>
                         
-            <key>egid2tid</key>
+            <key>orgid2tid</key>
                         
-            <description>egid2tid</description>
+            <description>orgid2tid</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
                         
@@ -237,9 +237,9 @@
                 
         <externalResourceDependency>
                         
-            <key>tid2atid</key>
+            <key>tid2atidaddon</key>
                         
-            <description>tid2atid</description>
+            <description>tid2atidaddon</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
                         
@@ -261,9 +261,9 @@
                 
         <externalResourceDependency>
                         
-            <key>tid2topHomologyPrefName</key>
+            <key>tid2equalnameatid</key>
                         
-            <description>tid2topHomologyPrefName</description>
+            <description>tid2equalnameatid</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
                         
@@ -273,9 +273,33 @@
                 
         <externalResourceDependency>
                         
-            <key>tid2tophomo</key>
+            <key>tid2topaggprefname</key>
                         
-            <description>tid2tophomo</description>
+            <description>tid2topaggprefname</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>tid2atiddirect</key>
+                        
+            <description>tid2atiddirect</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>fplxhgncgtid2atiddirect</key>
+                        
+            <description>fplxhgncgtid2atiddirect</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
                         
@@ -415,13 +439,13 @@
                         
             <externalResource>
                                 
-                <name>tid2topHomologyPrefName</name>
+                <name>tid2topaggprefname</name>
                                 
-                <description>tid2topHomologyPrefName</description>
+                <description>tid2topaggprefname</description>
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2topHomologyPrefName.map.gz</url>
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2topaggprefname.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -441,13 +465,13 @@
                         
             <externalResource>
                                 
-                <name>tid2tophomo</name>
+                <name>tid2atiddirect</name>
                                 
-                <description>tid2tophomo</description>
+                <description>tid2atiddirect</description>
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2tophomo.map.gz</url>
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2atiddirect.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -467,13 +491,39 @@
                         
             <externalResource>
                                 
-                <name>tid2atid</name>
+                <name>fplxhgncgtid2atiddirect</name>
                                 
-                <description>tid2atid</description>
+                <description>fplxhgncgtid2atiddirect</description>
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2atid.map.gz</url>
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/fplxhgncgtid2atiddirect.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>tid2atidaddon</name>
+                                
+                <description>tid2atidaddon</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2atidaddon.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -623,13 +673,39 @@
                         
             <externalResource>
                                 
-                <name>egid2tid.map</name>
+                <name>tid2equalnameatid</name>
                                 
-                <description>egid2tid.map</description>
+                <description>tid2equalnameatid</description>
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/egid2tid.map.gz</url>
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2equalnameatid.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>orgid2tid.map</name>
+                                
+                <description>orgid2tid.map</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/orgid2tid.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -661,33 +737,41 @@
                         
             <externalResourceBinding>
                                 
-                <key>tid2topHomologyPrefName</key>
+                <key>tid2topaggprefname</key>
                                 
-                <resourceName>tid2topHomologyPrefName</resourceName>
+                <resourceName>tid2topaggprefname</resourceName>
                             
             </externalResourceBinding>
                         
             <externalResourceBinding>
                                 
-                <key>egid2tid</key>
+                <key>orgid2tid</key>
                                 
-                <resourceName>egid2tid.map</resourceName>
+                <resourceName>orgid2tid.map</resourceName>
                             
             </externalResourceBinding>
                         
             <externalResourceBinding>
                                 
-                <key>tid2tophomo</key>
+                <key>tid2atiddirect</key>
                                 
-                <resourceName>tid2tophomo</resourceName>
+                <resourceName>tid2atiddirect</resourceName>
                             
             </externalResourceBinding>
                         
             <externalResourceBinding>
                                 
-                <key>tid2atid</key>
+                <key>fplxhgncgtid2atiddirect</key>
                                 
-                <resourceName>tid2atid</resourceName>
+                <resourceName>fplxhgncgtid2atiddirect</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2atidaddon</key>
+                                
+                <resourceName>tid2atidaddon</resourceName>
                             
             </externalResourceBinding>
                         
@@ -728,6 +812,14 @@
                 <key>conceptid2prefName</key>
                                 
                 <resourceName>conceptid2prefName</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2equalnameatid</key>
+                                
+                <resourceName>tid2equalnameatid</resourceName>
                             
             </externalResourceBinding>
                         

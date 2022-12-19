@@ -48,6 +48,12 @@
                         Normalized names, all matches searched for, only aggregate or majority name shown in mapping table
                     </dd>
                     <dt>
+                        Why do I receive interactions with genes I did not query for
+                    </dt>
+                    <dd>
+                        Either wanted: Search for PRKAA1 includes
+                    </dd>
+                    <dt>
                         Is GePI open source?
                     </dt>
                     <dl>

@@ -1,17 +1,21 @@
 package de.julielab.gepi.webapp.components;
 
-import de.julielab.gepi.core.retrieval.data.*;
+import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
+import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.retrieval.services.EventRetrievalService;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
+import de.julielab.gepi.core.services.GeneIdService;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.BeanModelEvent;
-import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.EventPagesDataSource;
+import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.data.EventTypes;
 import de.julielab.gepi.webapp.data.FilteredGepiRequestData;
 import de.julielab.java.utilities.FileUtilities;
-import org.apache.tapestry5.*;
+import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
@@ -119,8 +123,8 @@ public class TableResultWidget extends GepiWidget {
         getEventSource();
         List<String> availableColumns = new ArrayList<>(List.of("firstArgumentPreferredName",
                 "secondArgumentPreferredName",
-                "firstArgumentText",
-                "secondArgumentText",
+//                "firstArgumentText",
+//                "secondArgumentText",
                 "firstArgumentGeneId",
                 "secondArgumentGeneId",
 //                "firstArgumentMatchType",
@@ -142,8 +146,8 @@ public class TableResultWidget extends GepiWidget {
 
         tableModel.get("firstArgumentPreferredName").label("Gene A Symbol");
         tableModel.get("secondArgumentPreferredName").label("Gene B Symbol");
-        tableModel.get("firstArgumentText").label("Gene A Text");
-        tableModel.get("secondArgumentText").label("Gene B Text");
+//        tableModel.get("firstArgumentText").label("Gene A Text");
+//        tableModel.get("secondArgumentText").label("Gene B Text");
         tableModel.get("firstArgumentGeneId").label("Gene A Gene ID");
         tableModel.get("secondArgumentGeneId").label("Gene B Gene ID");
 //        tableModel.get("firstArgumentMatchType").label("gene A match type");
@@ -264,7 +268,7 @@ public class TableResultWidget extends GepiWidget {
         String conceptId = argPosition == 1 ? eventRow.getEvent().getFirstArgument().getConceptId() : eventRow.getEvent().getSecondArgument().getConceptId();
         // Retrieving the gene info for each argument in sequence is inefficient. Thus, the info has been pre-fetched in
         // EventPagesDataSource and is now quickly accessed through the cache.
-        GepiConceptInfo targetInfo = conceptId.equals(EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT) ? null : geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
+        GepiConceptInfo targetInfo = conceptId.equals(EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT) || !GeneIdService.CONCEPT_ID_PATTERN.matcher(conceptId).matches() ? null : geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
         if (targetInfo == null)
             return "#";
         if (targetInfo.getLabels().contains("HGNC_GROUP") || targetInfo.getLabels().contains("AGGREGATE_FPLX_HGNC"))

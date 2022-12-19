@@ -11,16 +11,3 @@ GePi is basically a Java servlet web application. Realized with Apache Tapestry,
 
 * openpyxl v3.0.9
 * xlsxwriter v3.0.1
-
-## Development
-
-Some notes and hints useful in development of the Web application.
-
-### Adding elements to the input form
-
-New elements must be taken into account in the following places:
-* `GepiInput#reset()`
-* `GepiQueryParameters` class
-* `gepiinput.js#setupInputExamples`
-
-After the addition of a component it is a good idea to issue a search and then go back to the input form and hit the `Clear input` button. Through ajax-reloading the element IDs are updated with random numbers unless the `t:clientId` attribute is defined. However, this does not seem to work on radio buttons where `t:clientId` ID is not used as the actual ID but rendered as `clientid="..."` attribute. So this is better checked not to throw errors.

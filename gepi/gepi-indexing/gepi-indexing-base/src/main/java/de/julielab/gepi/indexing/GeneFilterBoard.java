@@ -6,16 +6,14 @@ import de.julielab.jcore.consumer.es.filter.*;
 
 import java.util.Map;
 
-import static java.util.stream.Collectors.toMap;
-
 public class GeneFilterBoard extends FilterBoard {
 
     @ExternalResource(key = "orgid2tid")
     Map<String, String> orgid2tid;
     @ExternalResource(key = "geneids2taxids")
     Map<String, String> egid2taxid;
-    @ExternalResource(key = "tid2atid")
-    Map<String, String[]> tid2atid;
+    @ExternalResource(key = "tid2atidaddon")
+    Map<String, String[]> tid2atidaddon;
     @ExternalResource(key = "tid2equalnameatid")
     Map<String, String> tid2equalnameatid;
     @ExternalResource(key = "conceptid2prefName")
@@ -70,11 +68,11 @@ public class GeneFilterBoard extends FilterBoard {
         conceptid2prefNameFilter = new ReplaceFilter(conceptid2prefName);
         orgid2tidAddonFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, new SingleAddonTermsFilter(orgid2tid));
         egid2taxidReplaceFilter = new ReplaceFilter(egid2taxid);
-        tid2atidAddonFilter = new AddonTermsFilter(tid2atid);
+        tid2atidAddonFilter = new AddonTermsFilter(tid2atidaddon);
         orgid2tid2atidAddonFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2tidAddonFilter, tid2atidAddonFilter);
         orgid2prefNameReplaceFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2atidReplaceFilter, conceptid2prefNameFilter, new UniqueFilter());
         orgid2topaggprefname = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2atidReplaceFilter, new ReplaceFilter(tid2topaggPrefName), conceptid2prefNameFilter, new UniqueFilter());
-        orgid2topaggFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2atidReplaceFilter, new ReplaceFilter(tid2atiddirect), new UniqueFilter());
+        orgid2topaggFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2tidReplaceFilter, new ReplaceFilter(tid2atiddirect), new UniqueFilter());
         eg2famplexFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2topaggFilter, new UniqueFilter(), new AddonTermsFilter(tid2famplex, true, true));
         eg2hgncFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2topaggFilter, new UniqueFilter(), new AddonTermsFilter(tid2hgncgroups, true, true));
         eg2gotidFilter = new FilterChain(this.orgid2atidReplaceFilter, new AddonTermsFilter(genetid2gotid, true, true));

@@ -7,7 +7,6 @@ import org.apache.tapestry5.ioc.RegistryBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
@@ -103,7 +102,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testFulltextSearchWithTaxFilter() throws Exception {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getFulltextFilteredEvents(new GepiRequestData().withSentenceFilterString("NMDA receptor"), 0, 5, false);
+        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getFulltextFilteredEvents(new GepiRequestData().withSentenceFilterString("NMDA receptor").withIncludeUnary(true), 0, 5, false);
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(5);
 
         // The event has human genes, so we shouldn't find anything was another tax ID.
@@ -223,7 +222,7 @@ public class EventRetrievalServiceIntegrationTest {
     public void testClosedSearchWithSentenceParagraphFilter() throws Exception {
         // This tests uses 10049519_FE10_0.0_1.0 and 10051468_FE0_0_1.json
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
-        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3569", "54315")).withListBGePiIds(IdConversionResult.of("7124", "21926")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"neutrophil infiltration\"").withParagraphFilterString("\"regenerating mice\""));
+        CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3569", "54315")).withListBGePiIds(IdConversionResult.of("7124", "21926")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"neutrophil infiltration\"").withParagraphFilterString("\"regenerating mice\"").withIncludeUnary(true));
         final List<Event> eventList = bipartiteEventsEvents.get().getEventList();
         assertThat(eventList).extracting(Event::getEventId).containsExactlyInAnyOrder("10049519_FE10_0.0_1.0", "10051468_FE0_0.0_1.0");
     }

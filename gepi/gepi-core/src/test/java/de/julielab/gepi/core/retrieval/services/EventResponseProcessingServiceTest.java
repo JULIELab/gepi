@@ -1,8 +1,5 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import de.julielab.elastic.query.components.ISearchServerComponent;
-import de.julielab.elastic.query.components.data.ElasticSearchCarrier;
-import de.julielab.elastic.query.components.data.ElasticServerResponse;
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
 import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.gepi.core.retrieval.data.Event;
@@ -18,13 +15,13 @@ import java.util.stream.Stream;
 
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS;
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_NUM_ARGUMENTS;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EventResponseProcessingServiceTest {
     @Test
     public void highlightMerging() {
         final EventResponseProcessingService service = new EventResponseProcessingService(LoggerFactory.getLogger(EventPostProcessingService.class));
-        final Map<String, List<String>> sentenceHighlights = Map.of(EventRetrievalService.FIELD_EVENT_SENTENCE_TEXT, List.of("These results suggest that CINC produced in the pleural exudate may participate in neutrophil infiltration, that IL-6 induced in the plasma stimulates T-kininogen production, and that endogenous <em class=\"hl-argument\">TNF</em> may be partly involved in the induction of CINC and <em class=\"hl-argument\">IL-6</em> in this zymosan inflammation."),
+        final Map<String, List<String>> sentenceHighlights = Map.of(EventRetrievalService.FIELD_EVENT_SENTENCE_TEXT_ARGUMENTS, List.of("These results suggest that CINC produced in the pleural exudate may participate in neutrophil infiltration, that IL-6 induced in the plasma stimulates T-kininogen production, and that endogenous <em class=\"hl-argument\">TNF</em> may be partly involved in the induction of CINC and <em class=\"hl-argument\">IL-6</em> in this zymosan inflammation."),
                 EventRetrievalService.FIELD_EVENT_SENTENCE_TEXT_FILTER, List.of("These results suggest that CINC produced in the pleural exudate may participate in neutrophil infiltration, that IL-6 <em class=\"hl-trigger\">induced</em> in the plasma <em class=\"hl-trigger\">stimulates</em> T-kininogen production, and that endogenous TNF may be partly <em class=\"hl-trigger\">involved</em> in the induction of CINC and IL-6 in this zymosan inflammation."),
                 EventRetrievalService.FIELD_EVENT_SENTENCE_TEXT_TRIGGER, List.of("These results suggest that CINC produced in the pleural exudate may participate in <em class=\"hl-filter\">neutrophil</em> <em class=\"hl-filter\">infiltration</em>, that IL-6 induced in the plasma stimulates T-kininogen production, and that endogenous TNF may be partly involved in the induction of CINC and IL-6 in this zymosan inflammation."));
         final EventRetrievalResult result = service.getEventRetrievalResult(getESResponseWithHighlighting(sentenceHighlights));

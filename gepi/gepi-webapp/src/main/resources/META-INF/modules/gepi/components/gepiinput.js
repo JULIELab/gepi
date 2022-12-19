@@ -233,11 +233,14 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
                 listaTextAreaId                : "lista",
                 listbTextAreaId                : "listb",
                 orgTextFieldId                 : "organismInput",
-                eventTypeRadioId               : "eventtypes",
-                radioLikelihoodNegRadioClient  : "radio_likelihood_negation",
+                eventTypeChecklistId           : "eventtypes",
+                negRegulationCheckboxSelector  : "#eventtypes input[value='Negative_regulation']",
+                radioLikelihoodNegRadioClientId: "radio_likelihood_negation",
+                radioLikelihoodModRadioClientId: "radio_likelihood_moderate",
                 includeUnaryId                 : "includeUnary",
                 sentenceTextFieldId            : "sentencefilter",
                 filterOperatorAndRadioClientId : "and",
+                filterOperatorOrRadioClientId  : "or",
                 paragraphTextFieldId           : "paragraphfilter",
                 sectionNameTextFieldId         : "sectionnamefilter"
              };
@@ -255,7 +258,15 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
             btn.on("click", () => {
                 resetInputFields(formElementIds);
                 const listaTextArea = document.getElementById(formElementIds.listaTextAreaId);
-                listaTextArea.value = ["fanc", "bach1", "brip1"].reduce((acc, x) => acc + "\n" + x);
+                const radioLikelihoodModRadio = document.querySelector(`input[clientid='${formElementIds.radioLikelihoodModRadioClientId}'`);
+                const sentenceTextField = document.getElementById(formElementIds.sentenceTextFieldId);
+                const filterOperatorOrRadio = document.querySelector(`input[clientid='${formElementIds.filterOperatorOrRadioClientId}'`);
+                const paragraphTextField = document.getElementById(formElementIds.paragraphTextFieldId);
+                listaTextArea.value = ["fanc", "gene:571", "hgnc:HGNC:20473"].reduce((acc, x) => acc + "\n" + x);
+                radioLikelihoodModRadio.checked = true;
+                sentenceTextField.value = 'stress';
+                filterOperatorOrRadio.checked = true;
+                paragraphTextField.value = 'stress';
             });
         }
 
@@ -264,20 +275,33 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
                 resetInputFields(formElementIds);
                 const listaTextArea = document.getElementById(formElementIds.listaTextAreaId);
                 const listbTextArea = document.getElementById(formElementIds.listbTextAreaId);
-                listaTextArea.value = ["2475", "gene:3558", "up:BRCA1_HUMAN", "ens:ENSG00000139618", "hgnc:HGNC:192"].reduce((acc, x) => acc + "\n" + x);
-                listbTextArea.value = ["GO:0016301", "hgncg:1802"].reduce((acc, x) => acc + "\n" + x);
+                const orgTextField = document.getElementById(formElementIds.orgTextFieldId);
+                listaTextArea.value = ["207", "208", "3611", "5578", "5579", "5591", "9261", "10000", "11651", "11652", "16202", "17164", "18750", "18751", "19090", "23797", "24185", "24680", "25023", "25233", "29110", "29414", "35329", "41957", "48311", "53573", "56480", "66725", "120892"]
+                    .reduce((acc, x) => acc + "\n" + x);
+                listbTextArea.value = ["HRAS", "KRAS", "MAP2K1", "MAP2K2", "MAPK1", "MAPK3", "NRAS", "RAF1"].reduce((acc, x) => acc + "\n" + x);
                 togglelistb();
+                orgTextField.value = "9606";
             });
         }
 
-        function setupInputExample3(formElementIds) {}
+        function setupInputExample3(formElementIds) {
+            $("#btn-example-3").on("click", () => {
+                resetInputFields(formElementIds);
+                // uncheck all but negative regulation
+                document.querySelectorAll(`#${formElementIds.eventTypeChecklistId} input:not([value='Negative_regulation'])`).forEach(checkbox => checkbox.checked = false);
+                const includeUnaryCheckbox = document.getElementById(formElementIds.includeUnaryId);
+                const paragraphTextField = document.getElementById(formElementIds.paragraphTextFieldId);
+                includeUnaryCheckbox.checked = true;
+                paragraphTextField.value = '"MAPK pathway" | "MAPK signaling" | "MAPK signaling pathway" | "MAPK signal transduction pathway" | "MAPK cascade" | "MAP kinase pathway"';
+            });
+        }
 
         function resetInputFields(formElementIds) {
             const listaTextArea = document.getElementById(formElementIds.listaTextAreaId);
             const listbTextArea = document.getElementById(formElementIds.listbTextAreaId);
             const orgTextField = document.getElementById(formElementIds.orgTextFieldId);
-            const eventTypeCheckboxes = document.querySelectorAll(`#${formElementIds.eventTypeRadioId} input`);
-            const radioLikelihoodNegRadio = document.querySelector(`input[clientid='${formElementIds.radioLikelihoodNegRadioClient}'`);
+            const eventTypeCheckboxes = document.querySelectorAll(`#${formElementIds.eventTypeChecklistId} input`);
+            const radioLikelihoodNegRadio = document.querySelector(`input[clientid='${formElementIds.radioLikelihoodNegRadioClientId}'`);
             const includeUnaryCheckbox = document.getElementById(formElementIds.includeUnaryId);
             const sentenceTextField = document.getElementById(formElementIds.sentenceTextFieldId);
             const filterOperatorAndRadio = document.querySelector(`input[clientid='${formElementIds.filterOperatorAndRadioClientId}'`);

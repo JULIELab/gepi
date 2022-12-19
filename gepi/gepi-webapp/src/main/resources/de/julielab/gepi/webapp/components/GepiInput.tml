@@ -13,9 +13,9 @@
                 <div class="row" id="examples">
                     <div class="col-12 text-center mb-2">
                         <button type="button" class="btn btn-light example-input" id="btn-clear-input" title="Clear all input.">Clear input</button>
-                        <button type="button" class="btn btn-light example-input" id="btn-example-1" title="Example 1. Open search for interactions between some elements of the BRCA1 pathway with any interaction partner in the literature.">Input Example 1</button>
-                        <button type="button" class="btn btn-light example-input" id="btn-example-2" title="Example 2. Closed search between">Input Example 2</button>
-                        <button type="button" class="btn btn-light example-input" id="btn-example-3">Input Example 3</button>
+                        <button type="button" class="btn btn-light example-input" id="btn-example-1" title="Example 1. Open search for interactions between some elements of the BRCA1 pathway with any interaction partner in the literature with at least moderate factuality level. Full-text filters require the word 'stress' to appear either in the sentence or the paragraph containing returned interactions. Different database IDs are used to address the genes for illustration purposes. Refer to the help page for all supported IDs.">Input Example 1</button>
+                        <button type="button" class="btn btn-light example-input" id="btn-example-2" title="Example 2. Closed search between a list of genes of interest and members of the MAPK-RAS signalling pathway. Filtered for human genes by specifying the taxonomy ID '9606'.">Input Example 2</button>
+                        <button type="button" class="btn btn-light example-input" id="btn-example-3" title="Example 3. Pure full-text search for interactions mentioned in the context of the MAPK pathway. Returned interactions should be associated with negative regulation, all other interaction types are disabled for this search. The retrieval of single gene events is enabled so the result will include many items that show some molecular event without a second interaction partner.">Input Example 3</button>
                     </div>
                 </div>
                 <div class="row">
@@ -86,7 +86,7 @@
                         title="The recognition algorithm for molecular events distinguishes between the interaction types shown below. Activate or deactivate each type to include exclude interactions of this type from the results."/>
             </div>
             <div class="card-body" id="eventtypediv">
-                <t:checklist t:id="eventtypes" selected="selectedeventtypes" encoder="eventtypeencoder"
+                <t:checklist t:id="eventtypes" id="eventtypes" t:clientId="eventtypes" selected="selectedeventtypes" encoder="eventtypeencoder"
                              model="eventtypemodel" t-checklist-row="testzeugs"/>
             </div><!--Include event descriptions without a second interaction partner:-->
             <div class="text-center">
@@ -123,6 +123,7 @@
                                  label="investigation"/>
                         <t:label for="radio_likelihood_investigation" class="btn btn-outline-primary"/>
                         <t:Radio t:id="radio_likelihood_moderate" class="btn-check" id="radio_likelihood_moderate"
+                                 t:clientId="radio_likelihood_moderate"
                                  type="radio"
                                  value="literal:4"
                                  label="moderate"/>

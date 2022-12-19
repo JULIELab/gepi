@@ -1,4 +1,4 @@
-Could not reader "<AAE delegate>"due to a parsing error: Could not parse an AAE delegate specifier: An import could not be resolved.  No file with name "de/julielab/jcore/types/jcore-semantics-mention-types.xml" was found in the class path or data path. (Descriptor: file:/home/faessler/Coding/git/gepi/gepi/gepi-indexing/gepi-indexing-pubmed/desc/Gazetteer FPLX HGNC Groups Dictionary.xml)
+Could not reader "<AAE delegate>"due to a parsing error: Could not parse an AAE delegate specifier: An import could not be resolved.  No file with name "de/julielab/jcore/types/jcore-semantics-mention-types.xml" was found in the class path or data path. (Descriptor: file:/Users/faessler/Coding/git/gepi/gepi/gepi-indexing/gepi-indexing-pubmed/desc/Gazetteer FPLX HGNC Groups Dictionary.xml)
 
 There are multiple external resources with name "stopword_file". UIMA will only use the first definition.
 
@@ -13,8 +13,6 @@ There are multiple external resources with name "tid2famplex". UIMA will only us
 There are multiple external resources with name "orgid2tid.map". UIMA will only use the first definition.
 
 There are multiple external resources with name "tid2hgncgroups". UIMA will only use the first definition.
-
-There are multiple external resources with name "tid2atid". UIMA will only use the first definition.
 
 There are multiple external resources with name "gotid2hypertid". UIMA will only use the first definition.
 

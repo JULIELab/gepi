@@ -216,6 +216,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 SearchServerRequest serverRqst = new SearchServerRequest();
                 serverRqst.query = eventQuery;
                 serverRqst.index = documentIndex;
+                serverRqst.start = from;
                 serverRqst.rows = numRows;
                 serverRqst.requestTimeout = "10m";
                 configureDeepPaging(serverRqst, downloadAll, forCharts);

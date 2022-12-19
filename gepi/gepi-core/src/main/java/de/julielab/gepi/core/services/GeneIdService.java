@@ -11,30 +11,24 @@ import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.GeneSymbolNormalization;
 import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
-import de.julielab.gepi.core.retrieval.services.EventRetrievalService;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.*;
-import org.neo4j.driver.Record;
 import org.slf4j.Logger;
 
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static org.neo4j.driver.Values.parameters;
 
 public class GeneIdService implements IGeneIdService {
-
+    public static final Pattern CONCEPT_ID_PATTERN = Pattern.compile("[at]id[0-9]+");
 
     public static final Pattern GENE_ID_PATTERN = Pattern.compile("(gene:)?[0-9]+", Pattern.CASE_INSENSITIVE);
     public static final Pattern UP_MNEMONIC_PATTERN = Pattern.compile("(up:|UP:)?[A-Z0-9]+_[A-Z0-9]+");

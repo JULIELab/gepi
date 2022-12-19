@@ -36,7 +36,7 @@ public class GepiQueryParameters {
 
     public boolean isValidRequest() {
         // we don't want to intercept requests coming from the input form
-        return !formdata && !StringUtils.isBlank(listATextAreaValue) || !StringUtils.isBlank(sentenceFilterString) || !StringUtils.isBlank(paragraphFilterString) || !StringUtils.isBlank(sectionNameFilterString);
+        return !formdata && (!StringUtils.isBlank(listATextAreaValue) || !StringUtils.isBlank(sentenceFilterString) || !StringUtils.isBlank(paragraphFilterString) || !StringUtils.isBlank(sectionNameFilterString));
     }
 
     public String getListATextAreaValue() {

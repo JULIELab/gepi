@@ -5,7 +5,7 @@
                  http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd
                  http://julielab.de/conceptdb/concepts/bioportal http://www.julielab.de/conceptdb/concepts/bioportalconcepts-1.1.0.xsd">
     <versioning>
-        <version>0.10.1-SNAPSHOT</version>
+        <version>0.11.0</version>
     </versioning>
     <connection>
         <uri>http://localhost:7474</uri>
@@ -362,7 +362,7 @@
                 5. As second part, return the list of FamPlex concepts that are connected to the orthology aggregate. Since the first path always ends in the non-aggregate gene concept node, we just need to get the elements list1[1..]
                 -->
                 <cypherquery>
-                    MATCH p=(f:FPLX)&lt;-[:isa*]-(c:ID_MAP_NCBI_GENES) WHERE (f)&lt;-[:HAS_ROOT_CONCEPT]-()
+                    MATCH p=(f:FPLX)&lt;-[:isa|partof*]-(c:ID_MAP_NCBI_GENES) WHERE (f)&lt;-[:HAS_ROOT_CONCEPT]-()
                     WITH f,c,p OPTIONAL MATCH p2=(fh:AGGREGATE_FPLX_HGNC)-[:HAS_ELEMENT]-&gt;(f)
                     WITH COALESCE(HEAD([n in nodes(p2) | n.id]),[])+[n in nodes(p) | n.id] AS fplxPathIds,c
                     OPTIONAL MATCH p2=(c)&lt;-[:HAS_ELEMENT*]-(a) WHERE (a:AGGREGATE_GENEGROUP or a:AGGREGATE_TOP_ORTHOLOGY) AND (a)&lt;-[:HAS_ROOT_CONCEPT]-()

@@ -295,9 +295,9 @@
                 
         <externalResourceDependency>
                         
-            <key>tid2atid</key>
+            <key>tid2atidaddon</key>
                         
-            <description>tid2atid</description>
+            <description>tid2atidaddon</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
                         
@@ -575,13 +575,13 @@
                         
             <externalResource>
                                 
-                <name>tid2atid</name>
+                <name>tid2atidaddon</name>
                                 
-                <description>tid2atid</description>
+                <description>tid2atidaddon</description>
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/data/gepi/es-consumer-resources/tid2atid.map.gz</url>
+                    <url>file:/data/gepi/es-consumer-resources/tid2atidaddon.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -827,9 +827,9 @@
                         
             <externalResourceBinding>
                                 
-                <key>tid2atid</key>
+                <key>tid2atidaddon</key>
                                 
-                <resourceName>tid2atid</resourceName>
+                <resourceName>tid2atidaddon</resourceName>
                             
             </externalResourceBinding>
                         

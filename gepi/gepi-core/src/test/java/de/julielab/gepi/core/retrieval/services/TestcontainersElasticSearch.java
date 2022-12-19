@@ -19,7 +19,6 @@ import java.net.URL;
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestcontainersElasticSearch {
@@ -31,7 +30,7 @@ public class TestcontainersElasticSearch {
         return new GenericContainer(
                 new ImageFromDockerfile("gepicoreestest", true)
                         .withFileFromClasspath("Dockerfile", "dockercontext/Dockerfile")
-                        .withFileFromClasspath("elasticsearch-mapper-preanalyzed-7.17.7-SNAPSHOT.zip", "dockercontext/elasticsearch-mapper-preanalyzed-7.17.7-SNAPSHOT.zip"))
+                        .withFileFromClasspath("elasticsearch-mapper-preanalyzed-7.17.8.zip", "dockercontext/elasticsearch-mapper-preanalyzed-7.17.8.zip"))
                 .withExposedPorts(9200)
                 .withEnv("cluster.name", TEST_CLUSTER)
                 .withEnv("discovery.type", "single-node");
