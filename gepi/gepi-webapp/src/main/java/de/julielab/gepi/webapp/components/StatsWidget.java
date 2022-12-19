@@ -2,6 +2,8 @@ package de.julielab.gepi.webapp.components;
 
 import com.google.common.collect.Multimap;
 import de.julielab.gepi.core.retrieval.data.*;
+import de.julielab.gepi.core.retrieval.services.EventRetrievalService;
+import de.julielab.gepi.core.services.GeneIdService;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.data.InputMapping;
@@ -67,6 +69,7 @@ public class StatsWidget extends GepiWidget {
         try {
             Map<Pair<String, String>, Integer> cardinalityMap = getUnrolledResult4charts().get()
                     .getEventList().stream()
+                    .filter(e -> !EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT.equals(e.getFirstArgument().getTopHomologyPreferredName()) && !EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT.equals(e.getSecondArgument().getTopHomologyPreferredName()))
                     .map(e -> new ImmutablePair<>(e.getFirstArgument().getTopHomologyPreferredName(), e.getSecondArgument().getTopHomologyPreferredName()))
                     .collect(Collectors.toMap(Function.identity(), x -> 1, Integer::sum));
             List<Triple<String, String, Integer>> topInteractions = new ArrayList<>(cardinalityMap.size());

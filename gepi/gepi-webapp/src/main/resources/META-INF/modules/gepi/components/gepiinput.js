@@ -1,4 +1,4 @@
-define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], function($, index, data) {
+define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"], function($, index, data, Tooltip) {
 
     let initialize = function(resultExists) {
         const listaId = "lista";
@@ -21,12 +21,16 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         observeInputFetchArea();
         setupInputExamples();
         let running = false;
-        window.addEventListener('resize',() => {
+        window.addEventListener('resize', () => {
             if (!running) {
                 running = true;
-                let shown = !inputCol.css("margin-left").includes("-");ing = false;
+                let shown = !inputCol.css("margin-left").includes("-");
+                ing = false;
                 if (!shown) {
-                    window.setTimeout(() => {hideInput(); running = false;}, 1000);
+                    window.setTimeout(() => {
+                        hideInput();
+                        running = false;
+                    }, 1000);
                 }
             }
         });
@@ -37,7 +41,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
          */
         function observelistbchange() {
             $(listb).on("input change", function() {
-//                togglelistaoptions();
+                //                togglelistaoptions();
             });
         }
 
@@ -92,24 +96,24 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
 
         /* Prohibit unwanted side effects from other component through the dragging */
         function dragenter(e) {
-          e.stopPropagation();
-          e.preventDefault();
+            e.stopPropagation();
+            e.preventDefault();
         }
 
         /* Prohibit unwanted side effects from other component through the dragging */
         function dragover(e) {
-          e.stopPropagation();
-          e.preventDefault();
+            e.stopPropagation();
+            e.preventDefault();
         }
 
         /* Load a file dragged on a text area and set the contents to the text area */
         function drop(e, textarea) {
-          e.stopPropagation();
-          e.preventDefault();
+            e.stopPropagation();
+            e.preventDefault();
 
-          const dt = e.dataTransfer;
+            const dt = e.dataTransfer;
 
-          loadfile(dt, textarea, togglelistb);
+            loadfile(dt, textarea, togglelistb);
         }
 
         function setupclearbuttons() {
@@ -142,14 +146,14 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
          * empty.
          */
         function togglelistaoptions() {
-        // There is currently nothing to do. The options below currently do not exist.
-//            let islistbempty = $(listb).val().length == 0;
-//            let listaoptions = $("#listaoptions input");
-//            if (islistbempty) {
-//                listaoptions.attr("disabled", false);
-//            } else {
-//                listaoptions.attr("disabled", true);
-//            }
+            // There is currently nothing to do. The options below currently do not exist.
+            //            let islistbempty = $(listb).val().length == 0;
+            //            let listaoptions = $("#listaoptions input");
+            //            if (islistbempty) {
+            //                listaoptions.attr("disabled", false);
+            //            } else {
+            //                listaoptions.attr("disabled", true);
+            //            }
         }
 
         /*
@@ -177,31 +181,38 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
                 hideInput();
                 $("#disableplane").off("click");
                 $("#disableplane,#inputcolhandle").on("click", function() {
-                 toggleShowInputPanel();
+                    toggleShowInputPanel();
                 });
             }
         }
 
         function observekeypress() {
-        function KeyPress(e) {
-              let evt = window.event || e;
+            function KeyPress(e) {
+                let evt = window.event || e;
 
-              if ((evt.metaKey || evt.ctrlKey) && evt.keyCode == 83){
-                inputCol.find("form").submit();
-                // prevents the default action (opening a saving dialog)
-                return false;
+                if ((evt.metaKey || evt.ctrlKey) && evt.keyCode == 83) {
+                    inputCol.find("form").submit();
+                    // prevents the default action (opening a saving dialog)
+                    return false;
                 }
-        }
+            }
 
-        inputCol.on("keydown", KeyPress);
+            inputCol.on("keydown", KeyPress);
         }
 
         function observeFormSubmit() {
             form = $("form[id^='input']");
             console.log("Adding submit listener")
-            form.on("submit", form => {console.log("Search form was submitted, clearing data cache."); data.clearData();});
+            form.on("submit", form => {
+                console.log("Search form was submitted, clearing data cache.");
+                data.clearData();
+            });
             // scroll to top; sometimes one needs to scroll down to find the submit button
-            form.on("submit", form => {window.scrollTo(0, 0, {"behavior":"smooth"})});
+            form.on("submit", form => {
+                window.scrollTo(0, 0, {
+                    "behavior": "smooth"
+                })
+            });
         }
 
         function observeInputFetchArea() {
@@ -216,6 +227,77 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
                 }
             );
         }
+
+        function setupInputExamples() {
+            const formElementIds = {
+                listaTextAreaId                : "lista",
+                listbTextAreaId                : "listb",
+                orgTextFieldId                 : "organismInput",
+                eventTypeRadioId               : "eventtypes",
+                radioLikelihoodNegRadioClient  : "radio_likelihood_negation",
+                includeUnaryId                 : "includeUnary",
+                sentenceTextFieldId            : "sentencefilter",
+                filterOperatorAndRadioClientId : "and",
+                paragraphTextFieldId           : "paragraphfilter",
+                sectionNameTextFieldId         : "sectionnamefilter"
+             };
+
+            $("#btn-clear-input").on("click", () => resetInputFields(formElementIds));
+            document.querySelectorAll("button.example-input").forEach(btn => new Tooltip(btn, {trigger: "hover", placement: "bottom"}));
+            setupInputExample1(formElementIds);
+            setupInputExample2(formElementIds);
+            setupInputExample3(formElementIds);
+        }
+
+        function setupInputExample1(formElementIds) {
+            const btn = $("#btn-example-1");
+            // https://www.abeomics.com/brca1-pathway
+            btn.on("click", () => {
+                resetInputFields(formElementIds);
+                const listaTextArea = document.getElementById(formElementIds.listaTextAreaId);
+                listaTextArea.value = ["fanc", "bach1", "brip1"].reduce((acc, x) => acc + "\n" + x);
+            });
+        }
+
+        function setupInputExample2(formElementIds) {
+            $("#btn-example-2").on("click", () => {
+                resetInputFields(formElementIds);
+                const listaTextArea = document.getElementById(formElementIds.listaTextAreaId);
+                const listbTextArea = document.getElementById(formElementIds.listbTextAreaId);
+                listaTextArea.value = ["2475", "gene:3558", "up:BRCA1_HUMAN", "ens:ENSG00000139618", "hgnc:HGNC:192"].reduce((acc, x) => acc + "\n" + x);
+                listbTextArea.value = ["GO:0016301", "hgncg:1802"].reduce((acc, x) => acc + "\n" + x);
+                togglelistb();
+            });
+        }
+
+        function setupInputExample3(formElementIds) {}
+
+        function resetInputFields(formElementIds) {
+            const listaTextArea = document.getElementById(formElementIds.listaTextAreaId);
+            const listbTextArea = document.getElementById(formElementIds.listbTextAreaId);
+            const orgTextField = document.getElementById(formElementIds.orgTextFieldId);
+            const eventTypeCheckboxes = document.querySelectorAll(`#${formElementIds.eventTypeRadioId} input`);
+            const radioLikelihoodNegRadio = document.querySelector(`input[clientid='${formElementIds.radioLikelihoodNegRadioClient}'`);
+            const includeUnaryCheckbox = document.getElementById(formElementIds.includeUnaryId);
+            const sentenceTextField = document.getElementById(formElementIds.sentenceTextFieldId);
+            const filterOperatorAndRadio = document.querySelector(`input[clientid='${formElementIds.filterOperatorAndRadioClientId}'`);
+            const paragraphTextField = document.getElementById(formElementIds.paragraphTextFieldId);
+            const sectionNameTextField = document.getElementById(formElementIds.sectionNameTextFieldId);
+
+            listaTextArea.value = "";
+            listbTextArea.value = "";
+            orgTextField.value = "";
+            eventTypeCheckboxes.forEach(box => box.checked=true);
+            includeUnaryCheckbox.checked = false;
+            radioLikelihoodNegRadio.checked = true;
+            sentenceTextField.value = "";
+            filterOperatorAndRadio.checked = true;
+            paragraphTextField.value = "";
+            sectionNameTextField.value = "";
+
+            togglelistb();
+        }
+
     };
 
 
@@ -258,38 +340,9 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap/tooltip"], 
         console.log("Hiding input panel");
         let inputColWidth = parseInt(inputCol.css("width").slice(0, -2));
         let inputColPadding = parseInt(inputCol.css("padding-right").slice(0, -2));
-        inputCol.css("margin-left", "-"+(inputColWidth-inputColPadding)+"px");
+        inputCol.css("margin-left", "-" + (inputColWidth - inputColPadding) + "px");
         inputColHandle.removeClass("background-arrow-left fade inputcolhandle-extended");
         inputColHandle.addClass("background-arrow-right inputcolhandle-retracted");
-    }
-
-    function setupInputExamples() {
-        const listaTextAreaId = "lista";
-        const listbTextAreaId = "listb";
-        const orgTextFieldId = "organismInput";
-        const sentenceTextFieldId = "sentencefilter";
-        const paragraphTextFieldId = "paragraphFilter";
-        const sectionNameTextFieldId = "sectionnamefilter";
-
-        setupInputExample1(listaTextAreaId, listbTextAreaId, orgTextFieldId, sentenceTextFieldId, paragraphTextFieldId, sectionNameTextFieldId);
-        setupInputExample2(listaTextAreaId, listbTextAreaId, orgTextFieldId, sentenceTextFieldId, paragraphTextFieldId, sectionNameTextFieldId);
-        setupInputExample3(listaTextAreaId, listbTextAreaId, orgTextFieldId, sentenceTextFieldId, paragraphTextFieldId, sectionNameTextFieldId);
-    }
-
-    let setupInputExample1 = function(listaTextAreaId, listbTextAreaId,  orgTextFieldId, sentenceTextFieldId, paragraphTextFieldId, sectionNameTextFieldId) {
-        $("#btn-example-1").on("click", () => {
-            console.log(listaTextAreaId)
-            const listaTextArea = document.getElementById(listaTextAreaId);
-            listaTextArea.value = ["2475","gene:3558","up:BRCA1_HUMAN","GO:1902517"].reduce((acc,x) => acc+"\n"+x);
-                
-        });
-    }
-
-    let setupInputExample2 = function(listaTextArea, listbTextArea, orgTextField, sentenceTextField, paragraphTextField, sectionNameTextField) {
-
-    }
-
-    let setupInputExample3 = function(listaTextArea, listbTextArea, orgTextField, sentenceTextField, paragraphTextField, sectionNameTextField) {
     }
 
     return {

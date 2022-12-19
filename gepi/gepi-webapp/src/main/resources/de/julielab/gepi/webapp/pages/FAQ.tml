@@ -42,6 +42,12 @@
                         </ul>
                     </dd>
                     <dt>
+                        How exactly are gene names mapped to gene IDs?
+                    </dt>
+                    <dd>
+                        Normalized names, all matches searched for, only aggregate or majority name shown in mapping table
+                    </dd>
+                    <dt>
                         Is GePI open source?
                     </dt>
                     <dl>

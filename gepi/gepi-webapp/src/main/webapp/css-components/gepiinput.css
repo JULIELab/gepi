@@ -91,3 +91,7 @@ hr.medium.top {
 #examples div button:not(:first-child) {
     margin-left: .5rem;
 }
+
+.example-input {
+    border: 1px solid #ced4da;
+}

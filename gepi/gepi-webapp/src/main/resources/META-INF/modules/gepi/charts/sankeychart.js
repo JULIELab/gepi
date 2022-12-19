@@ -174,7 +174,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
       this.tooltips.forEach(tooltip => tooltip.dispose());
       this.tooltips = [];
       // Display an info box when there is not data.
-      if (this.preprocessed_data.total_frequency <= 0) {
+      if (!this.preprocessed_data || this.preprocessed_data.total_frequency <= 0) {
         const infoMessage = this.orderType === 'frequency' ? "There is no data to display." : "There are no common interaction partners in the current result.";
         $('#' + this.elementId).append('<div class="alert alert-info mx-auto">' + infoMessage + '</div>');
         $('#' + this.elementId + '-container .settings').addClass('d-none');

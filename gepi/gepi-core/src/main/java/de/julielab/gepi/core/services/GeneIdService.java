@@ -221,14 +221,16 @@ public class GeneIdService implements IGeneIdService {
                     String[] searchInput = geneNameSet.stream().map(GeneSymbolNormalization::normalize).toArray(String[]::new);
                     // Get the highest element in the aggregation-hierarchy; the roots are those that are not elements of another aggregate.
                     // Note that this excludes equal name aggregates because those are not CONCEPTs themselves
-                    String cypher = "MATCH (c:CONCEPT) WHERE c.preferredName_normalized IN $geneNames AND NOT ()-[:HAS_ELEMENT]->(c) RETURN c.preferredName_normalized AS SOURCE_ID, c.id AS SEARCH_ID";
+                    String cypher = "MATCH (c:CONCEPT) WHERE c.preferredName_normalized IN $geneNames AND NOT exists((:AGGREGATE_TOP_ORTHOLOGY)-[:HAS_ELEMENT]->(c)) AND NOT exists((:AGGREGATE_GENE_GROUP)-[:HAS_ELEMENT]->(c)) RETURN c.preferredName_normalized AS SOURCE_ID, c.id AS SEARCH_ID";
                     Result result = tx.run(
                             cypher,
                             parameters("geneNames", searchInput));
 
                     while (result.hasNext()) {
                         record = result.next();
-                        topAtids.put(record.get("SOURCE_ID").asString(), record.get("SEARCH_ID").asString());
+                        final String sourceId = record.get("SOURCE_ID").asString();
+                        final String searchId = record.get("SEARCH_ID").asString();
+                        topAtids.put(sourceId, searchId);
                     }
                     time = System.currentTimeMillis() - time;
                     log.debug("Converted {} concept names to {} aggregate gene IDs in {} seconds", searchInput.length, topAtids.size(), time / 1000);

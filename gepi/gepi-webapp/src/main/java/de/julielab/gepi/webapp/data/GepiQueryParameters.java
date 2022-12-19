@@ -28,13 +28,15 @@ public class GepiQueryParameters {
     private String sentenceFilterString;
     private String paragraphFilterString;
     private String sectionNameFilterString;
+    private boolean formdata;
 
     public GepiQueryParameters(Request request) {
         readParameters(request);
     }
 
     public boolean isValidRequest() {
-        return !StringUtils.isBlank(listATextAreaValue) || !StringUtils.isBlank(sentenceFilterString) || !StringUtils.isBlank(paragraphFilterString) || !StringUtils.isBlank(sectionNameFilterString);
+        // we don't want to intercept requests coming from the input form
+        return !formdata && !StringUtils.isBlank(listATextAreaValue) || !StringUtils.isBlank(sentenceFilterString) || !StringUtils.isBlank(paragraphFilterString) || !StringUtils.isBlank(sectionNameFilterString);
     }
 
     public String getListATextAreaValue() {
@@ -102,8 +104,11 @@ public class GepiQueryParameters {
         filterFieldsConnectionOperator = request.getParameter(FILTERFIELDSCONNECTIONOPERATOR);
         if (filterFieldsConnectionOperator == null)
             filterFieldsConnectionOperator = "AND";
+        else
+            filterFieldsConnectionOperator = filterFieldsConnectionOperator.toUpperCase();
         sentenceFilterString = request.getParameter(SENTENCEFILTER);
         paragraphFilterString = request.getParameter(PARAGRAPHFILTER);
         sectionNameFilterString = request.getParameter(SECTIONNAMEFILTER);
+        formdata = request.getParameter("t:formdata") != null;
     }
 }

@@ -38,7 +38,7 @@
                 <!-- automatically fill in the current app version to the README.md file. For this purpose, we
                 have a README.md in the readme-raw subfolder which is the actual source of the file -->
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>copy-resources</id>

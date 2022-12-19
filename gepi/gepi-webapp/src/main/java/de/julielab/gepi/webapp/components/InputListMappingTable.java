@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class InputListMappingTable {
     @Inject
@@ -73,12 +74,20 @@ public class InputListMappingTable {
                 // belong to some organism that was not yet accounted for in gene_orthologs. This is a technical detail
                 // and the user should not be burdened with it. So, find the best representative, which should be
                 // the aggregate, if we have one.
-                GepiConceptInfo mappedRepresentative = null;
+                final Map<String, List<GepiConceptInfo>> infoByNames = geneInfo.values().stream().collect(Collectors.groupingBy(GepiConceptInfo::getSymbol));
+                String majoritySymbol = null;
+                int maxSymbolCount = -1;
+                for (String symbol : infoByNames.keySet()) {
+                    final Integer count = infoByNames.get(symbol).size();
+                    if (maxSymbolCount < count) {
+                        maxSymbolCount = count;
+                        majoritySymbol = symbol;
+                    }
+                }
+                // get one representative of the majority symbol
+                GepiConceptInfo mappedRepresentative = infoByNames.get(majoritySymbol).get(0);
                 for (String mappedId : convertedItems.get(inputId)) {
                     final GepiConceptInfo info = geneInfo.get(mappedId);
-                    // Use the first item as representative, it is as good as any - except if we have an aggregate.
-                    if (mappedRepresentative == null)
-                        mappedRepresentative = info;
                     // Use the aggregate, if we have one.
                     if (info.isAggregate()) {
                         mappedRepresentative = info;

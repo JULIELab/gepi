@@ -357,7 +357,7 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.downloadCompleteResultsMethod = "searchAfter";
         serverRqst.downloadCompleteResultMethodKeepAlive = "5m";
         if (downloadAll) {
-            serverRqst.downloadCompleteResultsLimit = 2000;
+            serverRqst.downloadCompleteResultsLimit = 200;
             serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
         }
     }

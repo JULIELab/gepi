@@ -119,14 +119,15 @@ public class GepiInput {
     private Messages messages;
 
     @Property
-    private List<EventTypes> selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
+    @Persist(TabPersistentField.TAB)
+    private List<EventTypes> selectedEventTypes;
 
     @Property
-    @Parameter
+    @Persist(TabPersistentField.TAB)
     private String sentenceFilterString;
 
     @Property
-    @Parameter
+    @Persist(TabPersistentField.TAB)
     private String paragraphFilterString;
 
     @Property
@@ -138,6 +139,7 @@ public class GepiInput {
     private Integer eventLikelihood;
 
     @Property
+    @Persist(TabPersistentField.TAB)
     private String sectionNameFilterString;
 
     @Property
@@ -206,6 +208,8 @@ public class GepiInput {
             filterFieldsConnectionOperator = "AND";
         if (eventLikelihood == null)
             eventLikelihood = 1;
+        if (selectedEventTypes == null)
+            selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
     }
 
     void onValidateFromInputForm() {

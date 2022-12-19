@@ -19,8 +19,8 @@ The `production` stage expects that the complete GePI project has been built in 
 Run the following commands to create a `development` container:
 
 ```bash
-DOCKER_BUILDKIT=1 docker build -t gepi:0.11.0-SNAPSHOT --target development .
-docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev -e GEPI_CONFIGURATION=<path to config file> gepi:0.11.0-SNAPSHOT
+DOCKER_BUILDKIT=1 docker build -t gepi:0.11.0 --target development .
+docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev -e GEPI_CONFIGURATION=<path to config file> gepi:0.11.0
 ```
 
 The first command builds an image of the `development` stage. This will also build the `dependencies` stage where all the Java dependencies of the GePI application are downloaded and cached. This will take a while on the first execution but should be faster afterwards thanks to caching.
@@ -38,8 +38,8 @@ To run the `production` container, run
 
 ```bash
 mvn clean package --projects gepi-webapp --also-make
-DOCKER_BUILDKIT=1 docker build -t gepi:0.11.0-SNAPSHOT --target production .
-docker run -dp 8080:8080 gepi:0.11.0-SNAPSHOT
+DOCKER_BUILDKIT=1 docker build -t gepi:0.11.0 --target production .
+docker run -dp 8080:8080 gepi:0.11.0
 ```
 
 These commands
