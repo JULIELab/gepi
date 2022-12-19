@@ -148,7 +148,7 @@
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/var/data/gepi/processing-dictionaries/fplxhgncgroupnames.dict</url>
+                    <url>file:/var/data/gepi/processing-dictionaries/fplxhgncgroupnames.dict.gz</url>
                                         
                     <resourceMetaData>
                                                 

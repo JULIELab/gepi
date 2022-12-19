@@ -5,6 +5,7 @@ import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
+import de.julielab.gepi.webapp.data.ResultType;
 import de.julielab.gepi.webapp.pages.Index;
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.ComponentResources;
@@ -48,6 +49,8 @@ final public class GepiWidgetLayout {
     @Parameter(name = "viewMode")
     @Property
     private String viewModeParam;
+    @Parameter(defaultPrefix = BindingConstants.LITERAL)
+    private ResultType resultType;
     @Parameter(value = "false")
     @Property
     private boolean useTapestryZoneUpdates;
@@ -98,6 +101,21 @@ final public class GepiWidgetLayout {
     }
 
     public Future<EventRetrievalResult> getEsResult() {
+        switch (resultType) {
+            case PAGED:
+                return getPagedEsResult();
+            case UNROLLED:
+               return getUnrolledEsResult();
+            default:
+                throw new IllegalArgumentException("Unknown resultType '" + resultType + "'");
+        }
+    }
+
+    public Future<EventRetrievalResult> getPagedEsResult() {
+        return dataService.getData(requestData.getDataSessionId()).getPagedResult();
+    }
+
+    public Future<EventRetrievalResult> getUnrolledEsResult() {
         return dataService.getData(requestData.getDataSessionId()).getUnrolledResult4charts();
     }
 
@@ -125,13 +143,25 @@ final public class GepiWidgetLayout {
         return widgetSettings;
     }
 
+    /**
+     * For widgets completely managed from JavaScript (sankey, pie), we always render the body and also the
+     * loading message, see isResultLoading(). Such widgets then fetch data via Ajax und remove the loading message
+     * themselves without a Tapestry zone update.
+     * For Tapestry components, we refrain from rendering the body as long as the data is not available. For them,
+     * too, there is an Ajax call but through the TapestryZoneManager JavaScript object in WidgetManager.js.
+     * @return Whether the result required by this dashboard element - unrolled result or paged result - is currently available.
+     */
     public boolean isRenderBody() {
-        // For widgets completely managed from JavaScript (sankey, pie), just render their basics because
-        // the rest will be done in JS.
-        // For Tapestry components
         return !useTapestryZoneUpdates || isResultAvailable();
     }
 
+    /**
+     * <p>
+     * Used to determine weather a loading message should be displayed while an Ajax call is started to fetch
+     * the actual data when it is ready.
+     * </p>
+     * @return
+     */
     public boolean isResultLoading() {
         if (!waitForData)
             return false;
@@ -151,6 +181,7 @@ final public class GepiWidgetLayout {
     }
 
     void onRefreshContent() throws InterruptedException, ExecutionException {
+        log.info("Got refresh content request for {} in Thread {}", clientId, Thread.currentThread().getName());
         // If there is data from Neo4j, use that.
         if (getEsResult() != null && getNeo4jResult() == null) {
             log.debug("Waiting for ElasticSearch to return its results.");
@@ -161,6 +192,16 @@ final public class GepiWidgetLayout {
             getNeo4jResult().get();
         }
         ajaxResponseRenderer.addRender(widgetZone);
+        log.info("Serving refresh content request for {} in Thread {}", clientId, Thread.currentThread().getName());
+    }
+
+    void onLoad() {
+        log.info("Got load event for {} in Thread {}", clientId, Thread.currentThread().getName());
+        if (useTapestryZoneUpdates) {
+            javaScriptSupport.require("gepi/components/widgetManager").invoke("refreshWidget")
+                    .with(clientId);
+            log.info("Sending refreshWidget to {} in Thread {}", clientId, Thread.currentThread().getName());
+        }
     }
 
     public ViewMode viewMode() {
@@ -168,7 +209,6 @@ final public class GepiWidgetLayout {
     }
 
     void onToggleViewMode() {
-        System.out.println("toggle!!");
         switch (viewMode) {
             case "fullscreen":
                 break;
@@ -184,12 +224,7 @@ final public class GepiWidgetLayout {
         ajaxResponseRenderer.addRender(widgetZone);
     }
 
-    void onLoad() {
-        if (useTapestryZoneUpdates) {
-            javaScriptSupport.require("gepi/components/widgetManager").invoke("refreshWidget")
-                    .with(clientId);
-        }
-    }
+
 
     public String getZoneId() {
         String zoneId = "widgetzone_" + clientId;

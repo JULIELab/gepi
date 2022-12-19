@@ -17,6 +17,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         }
 
         setup() {
+            console.log("[trace] before pie semaphor")
           index.getReadySemaphor().done(() => {
             data.awaitData('acounts', this.widgetSettings.dataSessionId).done(() => {
                 data.awaitData('bcounts', this.widgetSettings.dataSessionId).done(() => {
@@ -31,6 +32,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                });
             });
           });
+          console.log("[trace] pie setup done")
         }
 
         /*

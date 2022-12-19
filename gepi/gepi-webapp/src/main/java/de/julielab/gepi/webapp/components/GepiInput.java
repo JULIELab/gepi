@@ -333,6 +333,10 @@ public class GepiInput {
         return null;
     }
 
+    /**
+     * 'Present' means that a search has been started, not that it already finished.
+     * @return
+     */
     private boolean resultPresent() {
         return dataService.getData(dataSessionId) != GePiData.EMPTY;
     }

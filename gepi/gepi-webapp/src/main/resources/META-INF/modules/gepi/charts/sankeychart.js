@@ -18,6 +18,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
     setup() {
       console.log('Preparing to draw sankey chart for element ID ' + this.elementId + ' with node ordering type ' + this.orderType);
 
+      console.log("[before sankey semaphor] sankey setup done")
       index.getReadySemaphor().done(() => {
         console.log('Chart drawing has green light from the central index semaphor, requesting for dataSessionId ' + this.widgetSettings.dataSessionId);
         data.awaitData('relationCounts', this.widgetSettings.dataSessionId).done(() => {
@@ -32,6 +33,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
           }
         });
       });
+      console.log("[trace] sankey setup done")
     }
 
     init() {

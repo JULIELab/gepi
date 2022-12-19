@@ -219,7 +219,8 @@ public class GeneIdService implements IGeneIdService {
 
                     Set<String> geneNameSet = geneNames.collect(Collectors.toSet());
                     String[] searchInput = geneNameSet.stream().map(GeneSymbolNormalization::normalize).toArray(String[]::new);
-                    // get the highest element in the aggregation-hierarchy; the roots are those that are not elements of another aggregate
+                    // Get the highest element in the aggregation-hierarchy; the roots are those that are not elements of another aggregate.
+                    // Note that this excludes equal name aggregates because those are not CONCEPTs themselves
                     String cypher = "MATCH (c:CONCEPT) WHERE c.preferredName_normalized IN $geneNames AND NOT ()-[:HAS_ELEMENT]->(c) RETURN c.preferredName_normalized AS SOURCE_ID, c.id AS SEARCH_ID";
                     Result result = tx.run(
                             cypher,
@@ -359,7 +360,7 @@ public class GeneIdService implements IGeneIdService {
                     Multimap<String, String> topAtids = HashMultimap.create();
 
                     String[] searchInput = id2prefix.keySet().toArray(String[]::new);
-                    final String query = "MATCH (c:CONCEPT:" + label + ") WHERE c." + idProperty + " IN $ids WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return c." + idProperty + " AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
+                    final String query = "MATCH (c:CONCEPT:" + label + ") WHERE c." + idProperty + " IN $ids WITH c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT a:AGGREGATE_EQUAL_NAMES AND NOT ()-[:HAS_ELEMENT]->(a) return c." + idProperty + " AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
                     final Value parameters = parameters("ids", searchInput);
                     Result result = tx.run(
                             query,
@@ -368,8 +369,9 @@ public class GeneIdService implements IGeneIdService {
                     while (result.hasNext()) {
                         record = result.next();
                         final String sourceId = record.get("SOURCE_ID").asString();
+                        final String searchId = record.get("SEARCH_ID").asString();
                         String prefix = id2prefix.get(sourceId) != null ? id2prefix.get(sourceId) : "";
-                        topAtids.put(prefix + sourceId, record.get("SEARCH_ID").asString());
+                        topAtids.put(prefix + sourceId, searchId);
                     }
                     time = System.currentTimeMillis() - time;
                     log.debug("Converted {} input IDs to {} aggregate IDs in {} seconds.", searchInput.length, topAtids.size(), time / 1000);
@@ -391,7 +393,7 @@ public class GeneIdService implements IGeneIdService {
                     Multimap<String, String> topAtids = HashMultimap.create();
 
                     String[] searchInput = id2prefix.keySet().toArray(String[]::new);
-                    final String query = "MATCH (n:CONCEPT:" + label + ")-[:IS_MAPPED_TO]->(c) WHERE n." + idProperty + " IN $ids WITH n,c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT ()-[:HAS_ELEMENT]->(a) return n." + idProperty + " AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
+                    final String query = "MATCH (n:CONCEPT:" + label + ")-[:IS_MAPPED_TO]->(c) WHERE n." + idProperty + " IN $ids WITH n,c OPTIONAL MATCH (a:AGGREGATE)-[:HAS_ELEMENT*]->(c) WHERE NOT a:AGGREGATE_EQUAL_NAMES AND NOT ()-[:HAS_ELEMENT]->(a) return n." + idProperty + " AS SOURCE_ID,COALESCE(a.id,c.id) AS SEARCH_ID";
                     final Value parameters = parameters("ids", searchInput);
                     Result result = tx.run(
                             query,

@@ -1,4 +1,4 @@
-<html t:type="layout" title="GePI Index"
+<html t:type="layout" title="GePI - Retrieval of molecular gene interactions from the scientific literature"
       xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
     <body class="${bodyScrollClass}">
         <!-- Although the input column is not a part of the grid, we give the row class for correct spacing.

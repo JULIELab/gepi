@@ -44,15 +44,7 @@
             awaitData(sourceName, dataSessionId).resolve();
         }
 
-        function getData(sourceName, dataSessionId) {
-            return data.get(makeDataKey(sourceName, dataSessionId));
-        }
-
-        function makeDataKey(sourceName, dataSessionId) {
-            return sourceName + "_" + dataSessionId;
-        }
-
-        function awaitData(sourceName, dataSessionId) {
+         function awaitData(sourceName, dataSessionId) {
             const key = makeDataKey(sourceName, dataSessionId);
             let promise = requestedData.get(key);
             if (!promise) {
@@ -65,6 +57,16 @@
             }
             return promise;
         }
+
+        function getData(sourceName, dataSessionId) {
+            return data.get(makeDataKey(sourceName, dataSessionId));
+        }
+
+        function makeDataKey(sourceName, dataSessionId) {
+            return sourceName + "_" + dataSessionId;
+        }
+
+       
 
         function color_edges(input_links) {
 

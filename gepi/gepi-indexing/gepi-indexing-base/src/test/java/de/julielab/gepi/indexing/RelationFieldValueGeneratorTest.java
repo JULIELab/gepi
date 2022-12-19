@@ -27,7 +27,7 @@ public class RelationFieldValueGeneratorTest {
     @Test
     public void generateFieldValue() throws Exception {
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2atidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
         gfb.orgid2topaggprefname = new FilterChain();
         gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
@@ -68,7 +68,7 @@ public class RelationFieldValueGeneratorTest {
     @Test
     public void generateFieldValueMultipleGeneIds() throws Exception {
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2atidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
         gfb.orgid2topaggprefname = new FilterChain();
         gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
@@ -115,7 +115,7 @@ public class RelationFieldValueGeneratorTest {
     public void generateFieldValueMergedGenes() throws Exception {
         // The GepiGeneMerger creates componentIds that are actually multiple, comma separated IDs
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2atidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
         gfb.orgid2topaggprefname = new FilterChain();
         gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
@@ -160,7 +160,7 @@ public class RelationFieldValueGeneratorTest {
     @Test
     public void generateFieldValueWithFamily() throws Exception {
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2atidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
         gfb.orgid2topaggprefname = new FilterChain();
         gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());
@@ -206,7 +206,7 @@ public class RelationFieldValueGeneratorTest {
     @Test
     public void generateUnaryFieldValue() throws Exception {
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2atidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
         gfb.orgid2topaggprefname = new FilterChain();
         gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
      widgettitle="Table View" t:clientId="tableresult_widget" class="${classes}" sizeClass="widget-large"
-     esResult="esResult"
+     esResult="esResult" resultType="PAGED"
      viewMode="viewMode" useTapestryZoneUpdates="true" requestData="requestData" downloadable="true" waitForData="true"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
 <!--    <form role="form" t:type="form" async="true" t:id="columnsform" id="columnsform">-->

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
      widgettitle="Interaction Partner Distribution A-List (Pie)" t:clientId="${elementId}-outer" class="${classes}"
-     sizeClass="small" esResult="esResult" neo4jResult="neo4jResult" useTapestryZoneUpdates="false" requestData="requestData" waitForData="true" resizable="true">
+     sizeClass="small" esResult="esResult" resultType="UNROLLED" neo4jResult="neo4jResult" useTapestryZoneUpdates="false" requestData="requestData" waitForData="true" resizable="true">
     <!-- useTapestryZoneUpdates should be false for all JavaScript-based widgets. They just receive data from the
     server which is sent once and can then be reused. Updating the whole widget via Ajax basically resets it
     which can cause issues with HTML elements which are renewed and then not found in JavaScript any more. -->

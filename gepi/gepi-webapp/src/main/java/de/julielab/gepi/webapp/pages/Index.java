@@ -185,6 +185,7 @@ public class Index {
      */
     JSONObject onLoadDataToClient() {
         String datasource = request.getParameter("datasource");
+        log.info("Got loadDataToClient event for {} in Thread {}", datasource, Thread.currentThread().getName());
         long dataSessionId = Long.parseLong(Optional.ofNullable(request.getParameter("dataSessionId")).orElse("0"));
         log.debug("[{}] Received data request for '{}' for dataSessionId {} from the client.", dataSessionId, datasource, dataSessionId);
         if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && !datasource.equals("bcounts"))
@@ -217,6 +218,7 @@ public class Index {
                 }
             }
             log.debug("Sending data of type {} to the client ", datasource);
+            log.info("Serving loadDataToClient event for {} in Thread {}", datasource, Thread.currentThread().getName());
             return jsonObject;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

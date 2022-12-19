@@ -29,7 +29,7 @@
                                 </t:label>
                                 <t:textarea class="form-control" rows="20" t:id="lista" id="lista"
                                             t:clientId="lista"
-                                            placeholder="Provide NCBI Gene IDs, one per line. You may also select a file with appropriate IDs using the button below."
+                                            placeholder="Provide gene IDs or names, one per line. You may also select a file with appropriate IDs using the button below or hit an example button above to get started."
                                             value="listatextareavalue">
                                 </t:textarea>
                             </div>

@@ -284,9 +284,9 @@
         </export>
         <!-- Map from aggregate elements to all their aggregates, direct or indirect. This includes orthology aggregates but also
             FamPlex / HGNC aggregates -->
-        <export name="allconceptaggregates">
+        <export name="tid2atidaddon">
             <request>
-                <cypherquery>MATCH (top:AGGREGATE)-[:HAS_ELEMENT*]->(c:CONCEPT) WHERE NOT exists(()-[:HAS_ELEMENT]->(top))
+                <cypherquery>MATCH (top:AGGREGATE)-[:HAS_ELEMENT*]->(c:CONCEPT) WHERE NOT top:AGGREGATE_EQUAL_NAMES AND NOT exists(()-[:HAS_ELEMENT]->(top))
                     AND NOT c:AGGREGATE with c.id as cid,COLLECT(DISTINCT top.id) AS atids
                     RETURN
                     cid, REDUCE(acc=HEAD(atids), atid in TAIL(atids) | acc + "|" + atid)

@@ -113,7 +113,7 @@ public class RelationDocumentGeneratorTest {
     @NotNull
     private RelationDocumentGenerator createRelationDocumentGenerator() {
         GeneFilterBoard gfb = new GeneFilterBoard();
-        gfb.orgid2tidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
+        gfb.orgid2atidReplaceFilter = new ReplaceFilter(Collections.emptyMap());
         gfb.orgid2topaggFilter = new AddonTermsFilter(Collections.emptyMap());
         gfb.orgid2topaggprefname = new FilterChain();
         gfb.orgid2prefNameReplaceFilter = new AddonTermsFilter(Collections.emptyMap());

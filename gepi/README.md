@@ -73,4 +73,4 @@ Update the new version number in the following places:
 * `pom.xml` files (tip: use `mvn versions:set -DnewVersion=<new version>` and `mvn versions:commit` to remove the backup files)
 * `README.md` (by executing `mvn clean package -DskipTests=true` to filter the `readme-raw/README.md` file to automatically set the current version to the `README.md` file)
 * `AppModule.java` in `gepi-webapp`
-* the Docker image version in the Dockerfile
+* the Docker image version in the `docker-compose.yml`

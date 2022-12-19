@@ -319,6 +319,18 @@
                 
         <externalResourceDependency>
                         
+            <key>tid2equalnameatid</key>
+                        
+            <description>tid2equalnameatid</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
             <key>tid2topaggprefname</key>
                         
             <description>tid2topaggprefname</description>
@@ -719,6 +731,32 @@
                         
             <externalResource>
                                 
+                <name>tid2equalnameatid</name>
+                                
+                <description>tid2equalnameatid</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/data/gepi/es-consumer-resources/tid2equalnameatid.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
                 <name>orgid2tid.map</name>
                                 
                 <description>orgid2tid.map</description>
@@ -832,6 +870,14 @@
                 <key>conceptid2prefName</key>
                                 
                 <resourceName>conceptid2prefName</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2equalnameatid</key>
+                                
+                <resourceName>tid2equalnameatid</resourceName>
                             
             </externalResourceBinding>
                         
