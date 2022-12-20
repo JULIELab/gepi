@@ -39,7 +39,7 @@ To run the `production` container, run
 ```bash
 mvn clean package --projects gepi-webapp --also-make
 DOCKER_BUILDKIT=1 docker build -t gepi:0.11.0 --target production .
-docker run -dp 8080:8080 gepi:0.11.0
+docker run -dp 8080:8080 --name gepi gepi:0.11.0
 ```
 
 These commands
@@ -59,9 +59,38 @@ elasticquery.clustername=<name of the ES cluster to connect to>
 elasticquery.url=<actually not a url but the host IP>
 elasticquery.port=9200
 gepi.documents.index.name=<interaction index name in ES>
+elasticquery.sockettimeout=-1
 
 gepi.neo4j.bolt.url=bolt://<host>:<port>
 ```
+
+### Running the Docker image in Production
+
+A production environment has a few requirements that are of lesser importance during development. This section explains requirements and solutions that may come up during GePI deployment with the Docker container. While detailed explanations come below, the complete Docker `run` command we use for deployment looks like the following:
+```
+docker run -dp 80:8080 -p 443:8443 -v /host/path/to/certificate.p12:/var/lib/jetty/etc/keystore.p12 -v /host/path/to/configuration.properties:/gepi-webapp-configuration.properties --add-host=host.docker.internal:host-gateway --name gepi -e GEPI_CONFIGURATION=/gepi-webapp-configuration.properties gepi:0.11.0 jetty.sslContext.keyStorePassword=<changeit>
+```
+
+#### Activating HTTPS
+
+In production, most the `HTTPS` will probably be used. By default, GePI sets the Tapestry configuration to always use either HTTP or HTTPS, not mixing the protocols. Using HTTPS requires a keystore containing a valid certificate for the domain GePI is offered at, and the private key that was used to sign the certificate signing request that was sent to the certificate authority.
+GePI was developed and deployed using Jetty so the following instructions have been tested with Jetty, version 10.x. 
+Create they keystore with openSSL with the command below. This will prompt for a password. A password must be specified because it appears that Jetty will throw NPEs otherwise (not tested with GePI). For the sake of these instructions, we assume the password is `changeit`. For our deployment, we used the certificate including the certificate chain.
+```
+openssl pkcs12 -export -in <your certificate /w chain>.cer -inkey <your private CSR key>.pem \
+               -out <your gepi domain>.p12 -name <your gepi domain> \
+               -CAfile ca.crt -caname root
+```
+The resulting P12 keystore can directly be used with Jetty. Jetty needs either to be told the location of the keystore or the keystore just needs to be put into Jetty's default keystore location. We use the second option in our GePI deployment. To add the keystore file to a new container, use a `Docker volume`:
+`-v /host/path/to/certificate.p12:/var/lib/jetty/etc/keystore.p12`. The Dockerfile already contains commands to add SSL and HTTPS to Jetty. Finally, the keystone password must be given to Jetty. There are several possibilities to do this. For a Docker container, the easiest way is to specify the password on container creation, if the Docker host is not accessible by unauthorized persons. Append `jetty.sslContext.keyStorePassword=changeit` to the Docker `run` command to pass the password to Jetty.
+
+#### Connecting to Services Running on the Docker Host
+
+Running the container in a production environment can be done either via the `docker-compose.yml` file or as an isolated service without other docker components. In the latter case, the Neo4j and ElasticSearch servers may run on the same or on other machines. If they run on the host of the Docker container, the container host can be addressed as `host.docker.internal`. On Linux machines, this will only work if the `--add-host=host.docker.internal:host-gateway` parameter is specified in the Docker `run` command.
+
+#### Providing an external configuration file 
+By default, the project-internal configuration file `configuration.properties.jetty` is used to configure GePI. This file can be edited before image creation which makes the specification of an external configuration file unnecessary. However, if the official GePI image from Docker Hub is used or the image should not be re-created, an external configuration file can be helpful since it does not require the container to change. The GePI configuration file can be given in the environment variable `GEPI_CONFIGURATION` which is passed to the Docker `run` command using the `-e` switch: `-e GEPI_CONFIGURATION=/gepi-webapp-configuration.properties`. Of course, the configuration file must be placed at this location first. A Docker volume can bind an external file into the container: `-v /host/path/to/configuration.properties:/gepi-webapp-configuration.properties`.
+
 
 ## GePI development
 

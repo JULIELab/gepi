@@ -10,6 +10,6 @@ public class Help {
     private JavaScriptSupport javaScriptSupport;
 
     public void afterRender() {
-        javaScriptSupport.require("gepi/pages/help").invoke("setupScrollSpy");
+//        javaScriptSupport.require("gepi/pages/help").invoke("setupScrollSpy");
     }
 }
