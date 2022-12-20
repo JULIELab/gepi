@@ -64,7 +64,7 @@ public class AppModule {
 
         // This is something that should be removed when going to production, but is useful
         // in the early stages of development.
-        configuration.override(SymbolConstants.PRODUCTION_MODE, false);
+        configuration.override(SymbolConstants.PRODUCTION_MODE, true);
     }
 
     public static void contributeApplicationDefaults(
