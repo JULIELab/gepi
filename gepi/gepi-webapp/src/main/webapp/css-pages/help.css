@@ -1,0 +1,47 @@
+
+
+.toc {
+	position: -webkit-sticky;
+	position: sticky;
+	top: 4rem;
+	right: 0;
+	z-index: 2;
+	height: calc(100vh - 6rem);
+	overflow-y: auto;
+}
+
+.toc nav {
+  font-size: .875rem;
+}
+
+.toc nav ul {
+	padding-left: 0;
+	margin-bottom: 0;
+	list-style: none;
+}
+
+.toc nav a {
+  color: inherit;
+}
+
+.toc nav ul ul {
+  padding-left: 1rem;
+  margin-top: .25rem;
+}
+
+.toc nav a:not(:hover) {
+  text-decoration: none;
+}
+
+.toc nav a.active {
+  font-size: 1rem;
+  text-decoration: underline;
+}
+
+.entity {
+	background-color: #f8fecc;
+}
+
+.trigger {
+	background-color: #e5ecfe;
+}
