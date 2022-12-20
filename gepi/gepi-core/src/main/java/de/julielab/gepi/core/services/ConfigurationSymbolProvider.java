@@ -1,18 +1,21 @@
 package de.julielab.gepi.core.services;
 
-import java.io.IOException;
-
 import org.apache.tapestry5.ioc.internal.services.ClasspathResourceSymbolProvider;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 public class ConfigurationSymbolProvider implements SymbolProvider {
 
 	public static final String CONFIG_FILE_PROPERTY = "gepi.configuration";
+	public static final String CONFIG_FILE_ENV_VARIABLE = "GEPI_CONFIGURATION";
 	private SymbolProvider symbolProvider;
 
 	public ConfigurationSymbolProvider(Logger log) {
 		String configFileName = System.getProperty(CONFIG_FILE_PROPERTY);
+		if (configFileName == null || configFileName.isBlank())
+			configFileName = System.getenv(CONFIG_FILE_ENV_VARIABLE);
 		try {
 			if (null == configFileName || configFileName.isBlank()) {
 				String username = System.getProperty("user.name");
