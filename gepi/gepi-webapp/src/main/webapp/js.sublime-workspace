@@ -4,8 +4,64 @@
 		"selected_items":
 		[
 			[
+				"event",
+				"eventTypeChecklistId"
+			],
+			[
+				"ch",
+				"checked"
+			],
+			[
+				"eve",
+				"eventTypeChecklistId"
+			],
+			[
 				"inc",
-				"included_ids_from"
+				"includeUnaryCheckbox"
+			],
+			[
+				"sente",
+				"sentenceTextField"
+			],
+			[
+				"radio",
+				"radioLikelihoodModRadio"
+			],
+			[
+				"likel",
+				"likelihoodGroupId"
+			],
+			[
+				"eventType",
+				"eventTypeCheckboxes"
+			],
+			[
+				"fo",
+				"formElementIds"
+			],
+			[
+				"get",
+				"getElementById"
+			],
+			[
+				"sen",
+				"sentenceTextFieldId"
+			],
+			[
+				"orgte",
+				"orgTextFieldId"
+			],
+			[
+				"sect",
+				"sectionNameTextField"
+			],
+			[
+				"para",
+				"paragraphTextField"
+			],
+			[
+				"org",
+				"orgTextField"
 			],
 			[
 				"filtered",
@@ -415,218 +471,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/sankeychart.js",
-			"settings":
-			{
-				"buffer_size": 20135,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			},
-			"undo_stack":
-			[
-				[
-					11,
-					1,
-					"reindent",
-					null,
-					"AQAAAJwiAAAAAAAAoiIAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAJwiAAAAAAAAnCIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					14,
-					1,
-					"insert",
-					{
-						"characters": "console.log8"
-					},
-					"DAAAAKIiAAAAAAAAoyIAAAAAAAAAAAAAoyIAAAAAAACkIgAAAAAAAAAAAACkIgAAAAAAAKUiAAAAAAAAAAAAAKUiAAAAAAAApiIAAAAAAAAAAAAApiIAAAAAAACnIgAAAAAAAAAAAACnIgAAAAAAAKgiAAAAAAAAAAAAAKgiAAAAAAAAqSIAAAAAAAAAAAAAqSIAAAAAAACqIgAAAAAAAAAAAACqIgAAAAAAAKsiAAAAAAAAAAAAAKsiAAAAAAAArCIAAAAAAAAAAAAArCIAAAAAAACtIgAAAAAAAAAAAACtIgAAAAAAAK4iAAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAKIiAAAAAAAAoiIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					15,
-					1,
-					"left_delete",
-					null,
-					"AQAAAK0iAAAAAAAArSIAAAAAAAABAAAAOA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAK4iAAAAAAAAriIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					16,
-					1,
-					"insert_snippet",
-					{
-						"contents": "($0)"
-					},
-					"AQAAAK0iAAAAAAAAryIAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAK0iAAAAAAAArSIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					17,
-					1,
-					"insert",
-					{
-						"characters": "the_data"
-					},
-					"CAAAAK4iAAAAAAAAryIAAAAAAAAAAAAAryIAAAAAAACwIgAAAAAAAAAAAACwIgAAAAAAALEiAAAAAAAAAAAAALEiAAAAAAAAsiIAAAAAAAAAAAAAsiIAAAAAAACzIgAAAAAAAAAAAACzIgAAAAAAALQiAAAAAAAAAAAAALQiAAAAAAAAtSIAAAAAAAAAAAAAtSIAAAAAAAC2IgAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAK4iAAAAAAAAriIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					23,
-					1,
-					"insert",
-					{
-						"characters": "\n"
-					},
-					"AgAAAJsiAAAAAAAAnCIAAAAAAAAAAAAAnCIAAAAAAACiIgAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAJsiAAAAAAAAmyIAAAAAAAD////////vfw"
-				],
-				[
-					26,
-					1,
-					"insert",
-					{
-						"characters": "if"
-					},
-					"AgAAAKIiAAAAAAAAoyIAAAAAAAAAAAAAoyIAAAAAAACkIgAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAKIiAAAAAAAAoiIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					27,
-					1,
-					"insert",
-					{
-						"characters": " "
-					},
-					"AQAAAKQiAAAAAAAApSIAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAKQiAAAAAAAApCIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					28,
-					1,
-					"insert_snippet",
-					{
-						"contents": "($0)"
-					},
-					"AQAAAKUiAAAAAAAApyIAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAKUiAAAAAAAApSIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					30,
-					1,
-					"insert",
-					{
-						"characters": "orderType==="
-					},
-					"DAAAAKYiAAAAAAAApyIAAAAAAAAAAAAApyIAAAAAAACoIgAAAAAAAAAAAACoIgAAAAAAAKkiAAAAAAAAAAAAAKkiAAAAAAAAqiIAAAAAAAAAAAAAqiIAAAAAAACrIgAAAAAAAAAAAACrIgAAAAAAAKwiAAAAAAAAAAAAAKwiAAAAAAAArSIAAAAAAAAAAAAArSIAAAAAAACuIgAAAAAAAAAAAACuIgAAAAAAAK8iAAAAAAAAAAAAAK8iAAAAAAAAsCIAAAAAAAAAAAAAsCIAAAAAAACxIgAAAAAAAAAAAACxIgAAAAAAALIiAAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAKYiAAAAAAAApiIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					32,
-					1,
-					"insert_snippet",
-					{
-						"contents": "'$0'"
-					},
-					"AQAAALIiAAAAAAAAtCIAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAALIiAAAAAAAAsiIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					34,
-					1,
-					"insert",
-					{
-						"characters": "common"
-					},
-					"BgAAALMiAAAAAAAAtCIAAAAAAAAAAAAAtCIAAAAAAAC1IgAAAAAAAAAAAAC1IgAAAAAAALYiAAAAAAAAAAAAALYiAAAAAAAAtyIAAAAAAAAAAAAAtyIAAAAAAAC4IgAAAAAAAAAAAAC4IgAAAAAAALkiAAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAALMiAAAAAAAAsyIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					36,
-					1,
-					"insert",
-					{
-						"characters": "interactionpartners"
-					},
-					"EwAAALkiAAAAAAAAuiIAAAAAAAAAAAAAuiIAAAAAAAC7IgAAAAAAAAAAAAC7IgAAAAAAALwiAAAAAAAAAAAAALwiAAAAAAAAvSIAAAAAAAAAAAAAvSIAAAAAAAC+IgAAAAAAAAAAAAC+IgAAAAAAAL8iAAAAAAAAAAAAAL8iAAAAAAAAwCIAAAAAAAAAAAAAwCIAAAAAAADBIgAAAAAAAAAAAADBIgAAAAAAAMIiAAAAAAAAAAAAAMIiAAAAAAAAwyIAAAAAAAAAAAAAwyIAAAAAAADEIgAAAAAAAAAAAADEIgAAAAAAAMUiAAAAAAAAAAAAAMUiAAAAAAAAxiIAAAAAAAAAAAAAxiIAAAAAAADHIgAAAAAAAAAAAADHIgAAAAAAAMgiAAAAAAAAAAAAAMgiAAAAAAAAySIAAAAAAAAAAAAAySIAAAAAAADKIgAAAAAAAAAAAADKIgAAAAAAAMsiAAAAAAAAAAAAAMsiAAAAAAAAzCIAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAALkiAAAAAAAAuSIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					47,
-					1,
-					"paste",
-					null,
-					"AgAAALMiAAAAAAAAzSIAAAAAAAAAAAAAzSIAAAAAAADNIgAAAAAAABkAAABjb21tb25pbnRlcmFjdGlvbnBhcnRuZXJz",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAALMiAAAAAAAAzCIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					56,
-					1,
-					"insert",
-					{
-						"characters": "this."
-					},
-					"BQAAAKYiAAAAAAAApyIAAAAAAAAAAAAApyIAAAAAAACoIgAAAAAAAAAAAACoIgAAAAAAAKkiAAAAAAAAAAAAAKkiAAAAAAAAqiIAAAAAAAAAAAAAqiIAAAAAAACrIgAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAKYiAAAAAAAApiIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					65,
-					3,
-					"toggle_comment",
-					{
-						"block": false
-					},
-					"AwAAAKIiAAAAAAAApSIAAAAAAAAAAAAAoiIAAAAAAACiIgAAAAAAAAMAAAAvLyCiIgAAAAAAAKUiAAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAKIiAAAAAAAAoiIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					68,
-					1,
-					"toggle_comment",
-					{
-						"block": false
-					},
-					"AQAAAN4iAAAAAAAA4SIAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAOEiAAAAAAAA4SIAAAAAAAAAAAAAAIBYQA"
-				],
-				[
-					82,
-					2,
-					"right_delete",
-					null,
-					"AgAAAKIiAAAAAAAAoiIAAAAAAAABAAAAL6IiAAAAAAAAoiIAAAAAAAABAAAALw",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAKIiAAAAAAAAoiIAAAAAAAAAAAAAAEBQQA"
-				],
-				[
-					84,
-					2,
-					"right_delete",
-					null,
-					"AgAAANwiAAAAAAAA3CIAAAAAAAABAAAAL9wiAAAAAAAA3CIAAAAAAAABAAAALw",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAANwiAAAAAAAA3CIAAAAAAAAAAAAAAEBQQA"
-				],
-				[
-					94,
-					1,
-					"toggle_comment",
-					{
-						"block": false
-					},
-					"AQAAAKMiAAAAAAAApiIAAAAAAAAAAAAA",
-					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAK0iAAAAAAAArSIAAAAAAAAAAAAAAADwvw"
-				],
-				[
-					8,
-					1,
-					"insert",
-					{
-						"characters": "false"
-					},
-					"BgAAAD4LAAAAAAAAPwsAAAAAAAAAAAAAPwsAAAAAAAA/CwAAAAAAAAQAAAB0cnVlPwsAAAAAAABACwAAAAAAAAAAAABACwAAAAAAAEELAAAAAAAAAAAAAEELAAAAAAAAQgsAAAAAAAAAAAAAQgsAAAAAAABDCwAAAAAAAAAAAAA",
-					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAA+CwAAAAAAAEILAAAAAAAAAAAAAAAA8L8"
-				]
-			]
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -639,6 +483,18 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"format json",
+				"Pretty JSON: Format JSON"
+			],
+			[
+				"format java",
+				"Format: Javascript"
+			],
+			[
+				"format js",
+				"Pretty JSON: Format and Sort JSON"
+			],
 			[
 				"format",
 				"Format: Javascript"
@@ -836,10 +692,6 @@
 				"Pretty JSON: Format and Sort JSON"
 			],
 			[
-				"format js",
-				"Pretty JSON: Format and Sort JSON"
-			],
-			[
 				"pyt",
 				"Set Syntax: Python"
 			],
@@ -900,31 +752,34 @@
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/webapp/WEB-INF",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts",
+		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/sankey",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/components",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/pages"
 	],
 	"file_history":
 	[
+		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/components/gepiinput.js",
+		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/data.js",
+		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/components/widgetManager.js",
+		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/sankeychart.js",
+		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/barchart.js",
+		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/piechart.js",
+		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/webapp/css-components/gepiinput.css",
+		"/Users/faessler/.zprofile",
+		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/sankey/weightfunctions.js",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/webapp/css-components/tablewidget.css",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/tablewidget.js",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/pages/help.js",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/webapp/css-components/layout.css",
-		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/data.js",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/webapp/css-pages/help.css",
 		"/Users/faessler/Coding/git/jcore-dependencies/biosem-event-extractor/evaluateBioSem.sh",
 		"/Users/faessler/Coding/git/gepi/paper-experiments/biosem/evaluateBioSem.sh",
 		"/Users/faessler/Research/geno/NLMGene_Train.txt",
-		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/piechart.js",
 		"/Users/faessler/Documents/Coling/dissertation/Dissertation/main.tex",
 		"/Users/faessler/Documents/Coling/dissertation/Dissertation/chapters/publications.tex",
-		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/sankeychart.js",
-		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/barchart.js",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/base.js",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/webapp/css-components/sankeywidget.css",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/circlechart_old.js",
-		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/components/gepiinput.js",
-		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/components/widgetManager.js",
-		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/sankey/weightfunctions.js",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/webapp/css-components/barchartwidget.css",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/webapp/css-components/piechartwidget.css",
 		"/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/webapp/css-components/gepiwidgetlayout.css",
@@ -1030,13 +885,11 @@
 		"/Users/faessler/Coding/git/jcore-gene-mapper-ae/jcore-gene-mapper-ae/smac/inspectionfiles-gene/candidateranking-merged-testsplit-4-me-0.79.txt",
 		"/Users/faessler/Coding/git/jcore-gene-mapper-ae/jcore-gene-mapper-ae/smac/inspectionfiles-gene/candidateranking-merged-testsplit-4-me-0.8.txt",
 		"/Users/faessler/Coding/git/jcore-gene-mapper-ae/jcore-gene-mapper-ae/smac/inspectionfiles-gene/candidateranking-merged-testsplit-0-me-0.94.txt",
-		"/Users/faessler/Coding/git/jcore-gene-mapper-ae/jcore-gene-mapper-ae/smac/inspectionfiles-gene/candidateranking-merged-testsplit-4-me-0.75.txt",
-		"/Users/faessler/Coding/local/geno-jcore-pipelines/corpora/GNormPlus/GNormPlusCorpus/NLMIAT.PubTator.txt",
-		"/Users/faessler/Coding/git/jcore-gene-mapper-ae/jcore-gene-mapper-ae/smac/inspectionfiles-gene/candidateranking-merged-testsplit-6-me-0.85.txt"
+		"/Users/faessler/Coding/git/jcore-gene-mapper-ae/jcore-gene-mapper-ae/smac/inspectionfiles-gene/candidateranking-merged-testsplit-4-me-0.75.txt"
 	],
 	"find":
 	{
-		"height": 36.0
+		"height": 74.0
 	},
 	"find_in_files":
 	{
@@ -1050,6 +903,19 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"numarg",
+			"OR",
+			"alert-info",
+			"were found",
+			"$.get",
+			"fade",
+			"showOutput",
+			"gnormp",
+			"get(",
+			"\\\\n",
+			"\\n",
+			"argumentconceptids",
+			"console",
 			".put",
 			"input",
 			"margin",
@@ -1164,27 +1030,15 @@
 			"Cyclin",
 			"cyclin",
 			"lysopl",
-			" 88878007",
-			"88878007",
-			"900000000000447004",
-			"900000000000020002",
-			"10064899",
-			"family",
-			"1698610",
-			"\tcyclin\t",
-			"delta",
-			"2365818",
-			"9230439",
-			"ER-posi",
-			"cyclin",
-			"17877751"
+			" 88878007"
 		],
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": false,
+		"regex": true,
 		"replace_history":
 		[
+			"\\n",
 			" {",
 			"{\n",
 			"460",
@@ -1228,135 +1082,6 @@
 		{
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "/Users/faessler/Coding/git/gepi/gepi/gepi-webapp/src/main/resources/META-INF/modules/gepi/charts/sankeychart.js",
-					"selected": true,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 20135,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2883,
-								2883
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-									"1":
-									[
-										3140,
-										3141
-									]
-								},
-								"icon":
-								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/curly_bracket.png",
-										"region.purplish"
-									]
-								},
-								"open":
-								{
-									"1":
-									[
-										2439,
-										2440
-									]
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content"
-							],
-							"git_gutter_is_enabled": true,
-							"origPos":
-							[
-								0.0,
-								1294.0
-							],
-							"syncScroll": false,
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"word_separators": "./\\()\"'-:,.;<>~!@#%^&*|+=[]{}`~?"
-						},
-						"translation.x": 0.0,
-						"translation.y": 1294.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"stack_multiselect": false,
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -1415,7 +1140,7 @@
 	"project": "js.sublime-project",
 	"replace":
 	{
-		"height": 68.0
+		"height": 122.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1513,7 +1238,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 280.0,
+	"side_bar_width": 308.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

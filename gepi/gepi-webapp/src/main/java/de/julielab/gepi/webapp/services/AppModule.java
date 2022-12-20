@@ -17,8 +17,6 @@ import org.apache.tapestry5.ioc.annotations.*;
 import org.apache.tapestry5.ioc.services.ApplicationDefaults;
 import org.apache.tapestry5.ioc.services.ParallelExecutor;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
-import org.apache.tapestry5.ioc.services.cron.CronSchedule;
-import org.apache.tapestry5.ioc.services.cron.IntervalSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.services.*;
 import org.apache.tapestry5.services.javascript.JavaScriptStack;
@@ -60,7 +58,7 @@ public class AppModule {
 
         // This is something that should be removed when going to production, but is useful
         // in the early stages of development.
-        configuration.override(SymbolConstants.PRODUCTION_MODE, false);
+        configuration.override(SymbolConstants.PRODUCTION_MODE, true);
     }
 
     public static void contributeApplicationDefaults(
