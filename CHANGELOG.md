@@ -1,5 +1,47 @@
 # Changelog
 
+## v0.11.0-beta (20/12/2022)
+- [**enhancement**] Provide search examples [#196](https://github.com/JULIELab/gepi/issues/196)
+- [**enhancement**] Introduce separate waiting-for-data state for paged requests [#193](https://github.com/JULIELab/gepi/issues/193)
+- [**enhancement**] Load geneInfo in batch instead of one-by-one [#192](https://github.com/JULIELab/gepi/issues/192)
+- [**enhancement**] Add a mechanism for GePiFamplexIdAssigner  to let GNP decide whether a gene should be mapped to Famplex/HGNC groups or not [#191](https://github.com/JULIELab/gepi/issues/191)
+- [**enhancement**] Switch FamPlex and HGNC IDs in the index from conceptIds to prefixed original IDs [#190](https://github.com/JULIELab/gepi/issues/190)
+- [**enhancement**] Extend preferredName normalization to punctuation and white spaces [#188](https://github.com/JULIELab/gepi/issues/188)
+- [**enhancement**] Add taxIds to index documents and filter on those [#185](https://github.com/JULIELab/gepi/issues/185)
+- [**enhancement**] Show message when concrete gene IDs and tax IDs are given with contradictions [#184](https://github.com/JULIELab/gepi/issues/184)
+- [**enhancement**] Make direct links possible [#182](https://github.com/JULIELab/gepi/issues/182)
+- [**performance**] Add an index document field for aggregations [#181](https://github.com/JULIELab/gepi/issues/181)
+- [**enhancement**] Create index documents for unary events [#180](https://github.com/JULIELab/gepi/issues/180)
+- [**enhancement**] Filter out duplicates based on abbreviation introduction [#179](https://github.com/JULIELab/gepi/issues/179)
+- [**evaluation**] Add a UIMA BioNLP ST gene merger component [#178](https://github.com/JULIELab/gepi/issues/178)
+- [**evaluation**] Add code to evaluate BioSem given GNormPlus genes [#177](https://github.com/JULIELab/gepi/issues/177)
+- [**evaluation**] Add code to reproduce GNormPlus evalution results in the GePI paper [#176](https://github.com/JULIELab/gepi/issues/176)
+- [**enhancement**] Integrate factuality (level of likelihood that an interaction actually takes place) [#173](https://github.com/JULIELab/gepi/issues/173)
+- [**enhancement**] Add hover effects and tooltips for sankey diagrams [#172](https://github.com/JULIELab/gepi/issues/172)
+- [**enhancement**] Add 6th Bootstrap grid tier [#171](https://github.com/JULIELab/gepi/issues/171)
+- [**enhancement**] Distribute widgets relative to breakpoints and available space [#170](https://github.com/JULIELab/gepi/issues/170)
+- [**enhancement**] Display messages in widges when there is no data [#169](https://github.com/JULIELab/gepi/issues/169)
+- [**enhancement**] Try to resolve genes by synonym if there is no match by preferredName/symbol [#168](https://github.com/JULIELab/gepi/issues/168)
+- [**closed**] Common partners Sankey: hide non-common edges [#167](https://github.com/JULIELab/gepi/issues/167)
+- [**enhancement**] Add bar plot widget [#166](https://github.com/JULIELab/gepi/issues/166)
+- [**enhancement**] Always show 'others' slice in pie charts when there are too many genes to show [#165](https://github.com/JULIELab/gepi/issues/165)
+- [**enhancement**] Make sankey diagrams so that their contents are not cropped [#155](https://github.com/JULIELab/gepi/issues/155)
+- [**bug**] Deactivate B list file upload as long as A is empty [#147](https://github.com/JULIELab/gepi/issues/147)
+- [**bug**] Make the event type filter work for 'phosphorylation' [#144](https://github.com/JULIELab/gepi/issues/144)
+- [**bug**] Fix issue where b-list cannot be read from file repeatedly [#134](https://github.com/JULIELab/gepi/issues/134)
+- [**closed**] Check if reflexive relations are returned [#131](https://github.com/JULIELab/gepi/issues/131)
+- [**closed**] Integrate Ensemble ID -> NCBI Gene ID mapping [#119](https://github.com/JULIELab/gepi/issues/119)
+- [**enhancement**] Integrate Gene Name -> NCBI Gene ID mapping [#118](https://github.com/JULIELab/gepi/issues/118)
+- [**closed**] Remove the organism restriction of GeNo [#112](https://github.com/JULIELab/gepi/issues/112)
+- [**closed**] Make diagrams always use up the available space [#101](https://github.com/JULIELab/gepi/issues/101)
+
+---
+
+## v0.10.1-beta (21/10/2022)
+- [**bug**] Fix null context with paragraph filter [#164](https://github.com/JULIELab/gepi/issues/164)
+
+---
+
 ## v0.10.0-beta (21/10/2022)
 
 #### General Enhancements
