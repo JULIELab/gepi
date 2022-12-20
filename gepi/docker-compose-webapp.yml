@@ -1,0 +1,20 @@
+version: "3.2"
+services:
+  gepi:
+    image: gepi:0.11.0
+    container_name: gepi
+    ports:
+      - 0.0.0.0:80:8080
+      - 0.0.0.0:443:8443
+    volumes:
+      - type: bind
+        source: /host/path/to/keystore.p12
+        target: /var/lib/jetty/etc/keystore.p12
+      - type: bind
+        source: /host/path/to/configuration.properties
+        target: /gepi-webapp-configuration.properties
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    command:
+      - "jetty.sslContext.keyStorePassword=<changeit>"
