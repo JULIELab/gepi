@@ -5,6 +5,9 @@
         <div class="card no-outline" tabindex="0">
             <div class="card-header text-center">
                     Find Molecular Interactions in the Scientific Literature
+                <div class="text-muted">
+                    This website is free and open to all users and there is no login requirement
+                </div>
             </div>
             <div class="card-body">
                 <!-- Hidden field to store the data session ID to the client -->

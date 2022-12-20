@@ -15,11 +15,11 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
-import org.apache.tapestry5.services.HttpError;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -88,14 +88,17 @@ public class Index {
         GePiData data = dataService.getData(dataSessionId);
         resultNonNullOnLoad = data != null && (data.getUnrolledResult4charts() != null || data.getAggregatedResult() != null);
     }
-
+private boolean sessionExists = false;
     // Handle call with an unwanted context
     Object onActivate(EventContext eventContext) {
         if (requestData == null) {
             dataSessionId = dataService.newSession();
             log.debug("Current dataSessionId is 0, initializing GePi session with ID {}", dataSessionId);
+            log.debug("No session");
         } else {
+            log.debug("Session with ID {}", dataSessionId);
             log.debug("Existing dataSessionId is {}", dataSessionId);
+            sessionExists = true;
         }
 //        final Object ret = eventContext.getCount() > 0 ? new HttpError(404, "Resource not found") : null;
 //        return ret;
@@ -120,6 +123,12 @@ public class Index {
             javaScriptSupport.require("gepi/pages/index").invoke("readyForWidgets");
         } else {
             log.debug("No result present, not showing results but input form.");
+        }
+        if (!sessionExists) {
+            log.info("No session exists, displaying cookie consent modal");
+            javaScriptSupport.require("gepi/pages/index").invoke("displayCookieConsentModal");
+        } else {
+            log.info("There already is a session");
         }
     }
 
