@@ -42,12 +42,6 @@
             <import location="de.julielab.jcore.ae.eventflattener.EventFlattener.xml"/>
                     
         </delegateAnalysisEngine>
-                
-        <delegateAnalysisEngine key="JCoRe AcronymAnnotator">
-                        
-            <import location="JCoRe AcronymAnnotator.xml"/>
-                    
-        </delegateAnalysisEngine>
             
     </delegateAnalysisEngineSpecifiers>
         
@@ -74,8 +68,6 @@
                 <node>JCoRe Likelihood Assignment AE</node>
                                 
                 <node>de.julielab.jcore.ae.eventflattener.EventFlattener</node>
-                                
-                <node>JCoRe AcronymAnnotator</node>
                             
             </fixedFlow>
                     

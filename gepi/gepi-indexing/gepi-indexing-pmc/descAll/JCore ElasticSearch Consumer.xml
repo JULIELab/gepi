@@ -295,9 +295,9 @@
                 
         <externalResourceDependency>
                         
-            <key>tid2atid</key>
+            <key>tid2atidaddon</key>
                         
-            <description>tid2atid</description>
+            <description>tid2atidaddon</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
                         
@@ -310,6 +310,18 @@
             <key>conceptid2prefName</key>
                         
             <description>conceptid2prefName</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
+            <key>tid2equalnameatid</key>
+                        
+            <description>tid2equalnameatid</description>
                         
             <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IMapProvider</interfaceName>
                         
@@ -563,13 +575,13 @@
                         
             <externalResource>
                                 
-                <name>tid2atid</name>
+                <name>tid2atidaddon</name>
                                 
-                <description>tid2atid</description>
+                <description>tid2atidaddon</description>
                                 
                 <configurableDataResourceSpecifier>
                                         
-                    <url>file:/data/gepi/es-consumer-resources/tid2atid.map.gz</url>
+                    <url>file:/data/gepi/es-consumer-resources/tid2atidaddon.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -719,6 +731,32 @@
                         
             <externalResource>
                                 
+                <name>tid2equalnameatid</name>
+                                
+                <description>tid2equalnameatid</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/data/gepi/es-consumer-resources/tid2equalnameatid.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneStringMapProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
                 <name>orgid2tid.map</name>
                                 
                 <description>orgid2tid.map</description>
@@ -789,9 +827,9 @@
                         
             <externalResourceBinding>
                                 
-                <key>tid2atid</key>
+                <key>tid2atidaddon</key>
                                 
-                <resourceName>tid2atid</resourceName>
+                <resourceName>tid2atidaddon</resourceName>
                             
             </externalResourceBinding>
                         
@@ -832,6 +870,14 @@
                 <key>conceptid2prefName</key>
                                 
                 <resourceName>conceptid2prefName</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>tid2equalnameatid</key>
+                                
+                <resourceName>tid2equalnameatid</resourceName>
                             
             </externalResourceBinding>
                         

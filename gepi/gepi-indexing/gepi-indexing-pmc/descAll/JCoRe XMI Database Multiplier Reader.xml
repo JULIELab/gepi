@@ -366,6 +366,8 @@
                         <string>gnormplusbiosem:de.julielab.jcore.types.EventMention</string>
                                                 
                         <string>gnormplusbiosem:de.julielab.jcore.types.EventTrigger</string>
+                                                
+                        <string>de.julielab.jcore.types.Abbreviation</string>
                                             
                     </array>
                                     

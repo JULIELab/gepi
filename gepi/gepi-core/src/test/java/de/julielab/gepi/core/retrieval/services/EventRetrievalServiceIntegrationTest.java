@@ -54,7 +54,16 @@ public class EventRetrievalServiceIntegrationTest {
         final List<String> conceptId = arguments.stream().map(Argument::getConceptId).collect(Collectors.toList());
 
         assertThat(eventTypes).containsExactlyInAnyOrder("Binding", "Binding", "Gene_expression", "Binding", "Binding");
-        assertThat(conceptId).containsExactlyInAnyOrder("tid14871561", "tid14865758", "tid14871561", "none", "tid14871561", "none", "tid14871561", "none", "tid14871561", "none");
+        assertThat(conceptId).containsExactlyInAnyOrder("tid16199850",
+                "none",
+                "tid16199850",
+                "none",
+                "tid16199850",
+                "none",
+                "tid16199850",
+                "tid16168587",
+                "tid16199850",
+                "none");
     }
 
     @Test
@@ -69,7 +78,8 @@ public class EventRetrievalServiceIntegrationTest {
         final List<String> conceptId = arguments.stream().map(Argument::getConceptId).collect(Collectors.toList());
 
         assertThat(eventTypes).containsExactlyInAnyOrder("Binding");
-        assertThat(conceptId).containsExactlyInAnyOrder("tid14871561", "tid14865758");
+        // of course, these values change every time we update the database.
+        assertThat(conceptId).containsExactlyInAnyOrder("tid16199850", "tid16168587");
     }
 
     @Test
@@ -220,7 +230,7 @@ public class EventRetrievalServiceIntegrationTest {
 
     @Test
     public void testClosedSearchWithSentenceParagraphFilter() throws Exception {
-        // This tests uses 10049519_FE10_0.0_1.0 and 10051468_FE0_0_1.json
+        // This tests uses 10049519_FE10_0.0_1.0 and 10051468_FE0_0.0_1.0.json
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
         CompletableFuture<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3569", "54315")).withListBGePiIds(IdConversionResult.of("7124", "21926")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"neutrophil infiltration\"").withParagraphFilterString("\"regenerating mice\"").withIncludeUnary(true));
         final List<Event> eventList = bipartiteEventsEvents.get().getEventList();
@@ -232,7 +242,7 @@ public class EventRetrievalServiceIntegrationTest {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
         long totalNumberOfEvents = eventRetrievalService.getTotalNumberOfEvents();
         // the number of JSON files in the test index directory
-        assertThat(totalNumberOfEvents).isEqualTo(322);
+        assertThat(totalNumberOfEvents).isEqualTo(320);
     }
 
     @Test

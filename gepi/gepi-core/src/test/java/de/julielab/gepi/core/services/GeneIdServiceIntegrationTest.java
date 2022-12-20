@@ -90,9 +90,9 @@ public class GeneIdServiceIntegrationTest {
         final IdConversionResult conversionResult = geneIdService.convert(Stream.of("gene:2475", "GO:1234", "UP:MTOR_HUMAN"), IdType.GEPI_AGGREGATE).get();
         final Multimap<String, String> idMap = conversionResult.getConvertedItems();
         assertThat(idMap.keySet()).containsExactlyInAnyOrder("gene:2475", "GO:1234", "UP:MTOR_HUMAN");
-        assertThat(idMap.get("gene:2475")).isEqualTo("atid2");
-        assertThat(idMap.get("GO:1234")).isEqualTo("tid6");
-        assertThat(idMap.get("UP:MTOR_HUMAN")).isEqualTo("atid2");
+        assertThat(idMap.get("gene:2475")).containsExactly("atid2");
+        assertThat(idMap.get("GO:1234")).containsExactly("tid6");
+        assertThat(idMap.get("UP:MTOR_HUMAN")).containsExactly("atid2");
     }
 
     @Test
@@ -144,7 +144,7 @@ public class GeneIdServiceIntegrationTest {
         //       /       \                             /        \
         //    a(atid0)  a2(atid1)                 akth(tid3)    aktm(tid4)
         //    /     \         |
-        // h(tid0)  m(tid1)  d(tid1)
+        // h(tid0)  m(tid1)  d(tid7)
         //
         //
         // Mappings:
@@ -157,7 +157,7 @@ public class GeneIdServiceIntegrationTest {
                 "(t:AGGREGATE_TOP_ORTHOLOGY:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',id:'atid2',originalId:'2475'})," +
                 "(h:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',originalId:'2475',id:'tid0',taxId:'9606'})," +
                 "(m:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_normalized:'mtor',originalId:'56717',id:'tid1',taxId:'10090'}),"+
-                "(d:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mtor',preferredName_normalized:'mtor',originalId:'324254',id:'tid1',taxId:'7955'}),"+
+                "(d:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mtor',preferredName_normalized:'mtor',originalId:'324254',id:'tid7',taxId:'7955'}),"+
                 "(r:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_normalized:'mtor',originalId:'56718',id:'tid2',taxId:'10116'})," +
                 "(f)-[:HAS_ROOT_CONCEPT]->(t),"+
                 "(f)-[:HAS_ROOT_CONCEPT]->(r),"+

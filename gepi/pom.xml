@@ -99,7 +99,7 @@
         </dependencies>
     </dependencyManagement>
     <properties>
-        <tapestry-release-version>5.8.1</tapestry-release-version>
-        <jcore-version>2.6.0-SNAPSHOT</jcore-version>
+        <tapestry-release-version>5.8.2</tapestry-release-version>
+        <jcore-version>2.6.1</jcore-version>
     </properties>
 </project>

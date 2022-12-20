@@ -50,7 +50,10 @@ public class GeneIdService implements IGeneIdService {
     public static final String GO_LABEL = "GENE_ONTOLOGY";
     public static final String CONCEPT_LABEL = "CONCEPT";
     public static final String PROP_ORGID = "originalId";
-    public static final String PROP_UP_ID = "`UniProtKB-ID`";
+    // we also have a special property for the UniProtKB-ID (the mnemonic) but sourceIds are indexed anyway,
+    // and it is predictable that the ID is assigned second to the accession. The import algorithm first
+    // imports the original ID.
+    public static final String PROP_UP_ID = "sourceIds1";
     private final Logger log;
     private Driver driver;
     private final LoadingCache<String, GepiConceptInfo> geneInfoCache = CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(30)).maximumSize(10000).build(new CacheLoader<>() {
@@ -215,7 +218,7 @@ public class GeneIdService implements IGeneIdService {
                     String[] searchInput = geneNameSet.stream().map(GeneSymbolNormalization::normalize).toArray(String[]::new);
                     // Get the highest element in the aggregation-hierarchy; the roots are those that are not elements of another aggregate.
                     // Note that this excludes equal name aggregates because those are not CONCEPTs themselves
-                    String cypher = "MATCH (c:CONCEPT) WHERE c.preferredName_normalized IN $geneNames AND NOT exists((:AGGREGATE_TOP_ORTHOLOGY)-[:HAS_ELEMENT]->(c)) AND NOT exists((:AGGREGATE_GENE_GROUP)-[:HAS_ELEMENT]->(c)) RETURN c.preferredName_normalized AS SOURCE_ID, c.id AS SEARCH_ID";
+                    String cypher = "MATCH (c:CONCEPT) WHERE c.preferredName_normalized IN $geneNames AND NOT exists((:AGGREGATE_TOP_ORTHOLOGY)-[:HAS_ELEMENT]->(c)) AND NOT exists((:AGGREGATE_GENEGROUP)-[:HAS_ELEMENT]->(c)) RETURN c.preferredName_normalized AS SOURCE_ID, c.id AS SEARCH_ID";
                     Result result = tx.run(
                             cypher,
                             parameters("geneNames", searchInput));
