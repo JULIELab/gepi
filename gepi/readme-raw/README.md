@@ -39,7 +39,7 @@ To run the `production` container, run
 ```bash
 mvn clean package --projects gepi-webapp --also-make
 DOCKER_BUILDKIT=1 docker build -t gepi:${project.version} --target production .
-docker run -dp 8080:8080 gepi:${project.version}
+docker run -dp 8080:8080 --name gepi gepi:${project.version}
 ```
 
 These commands
