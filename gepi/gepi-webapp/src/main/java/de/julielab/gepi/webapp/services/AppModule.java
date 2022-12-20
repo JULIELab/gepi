@@ -54,7 +54,13 @@ public class AppModule {
         // The application version is primarily useful as it appears in
         // any exception reports (HTML or textual).
         configuration.override(SymbolConstants.APPLICATION_VERSION, "0.11.0-beta");
+        // Avoid Ajax-requests waiting for each other. This would make asynchronous lading of
+        // dashboard elements impossible
         configuration.override(SymbolConstants.SESSION_LOCKING_ENABLED, false);
+        // This works as if all pages would have a @Secure annotation. Despite this seeming as if "security" would
+        // be disabled, this is actually the way to use when only HTTPS should be used.
+        // See https://tapestry.apache.org/configuration.html
+        configuration.override(SymbolConstants.SECURE_ENABLED, false);
 
         // This is something that should be removed when going to production, but is useful
         // in the early stages of development.
