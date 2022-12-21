@@ -199,7 +199,7 @@ public class EventQueries {
             addFulltextSearchQuery(paragraphFilter, FIELD_EVENT_PARAGRAPH_TEXT, filterFieldsOccur, fulltextQuery);
         }
         if (!StringUtils.isBlank(sectionNameFilter)) {
-            addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, filterFieldsOccur, eventQuery);
+            addFulltextSearchQuery(sectionNameFilter, FIELD_PARAGRAPH_HEADINGS, filterFieldsOccur, fulltextQuery);
         }
         BoolClause fulltextClause = new BoolClause();
         fulltextClause.addQuery(fulltextQuery);
