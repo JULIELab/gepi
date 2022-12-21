@@ -258,6 +258,7 @@ public class GepiInput {
                 && listBTextAreaValue.trim().length() > 0;
         boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
         boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
+        boolean isSectionNameFilterPresent = sectionNameFilterString != null && !sectionNameFilterString.isBlank();
         Future<IdConversionResult> listAGePiIds = convertToAggregateIds(listATextAreaValue, "listA");
         Future<IdConversionResult> listBGePiIds = convertToAggregateIds(listBTextAreaValue, "listB");
         if (isABSearchRequest) {
@@ -267,7 +268,7 @@ public class GepiInput {
         }
         log.info("InputMode {}", inputMode);
         log.info("Filter fields connector: {}", filterFieldsConnectionOperator);
-        if (isSentenceFilterPresent || isParagraphFilterPresent) {
+        if (isSentenceFilterPresent || isParagraphFilterPresent || isSectionNameFilterPresent) {
             if (inputMode != null)
                 inputMode.add(InputMode.FULLTEXT_QUERY);
             else
