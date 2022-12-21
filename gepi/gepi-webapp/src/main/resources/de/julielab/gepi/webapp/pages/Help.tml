@@ -17,7 +17,7 @@
                         <p>
                             The focus lies on interactions that involve genes, gene products, families, complexes and
                             groups of genes. For the purpose of this service, no difference is made between genes and
-                            their products. Text mining algorithms are employed to search the text of documents from
+                            their products. Biomedical Natural Language Processing (BioNLP) algorithms are employed to scan the text of documents from
                             PubMed and the PubMed Central open access subset for mentions of interactions between these
                             types of
                             entities. Recognized interactions contain gene expression, phosphorylation, positive and
@@ -26,41 +26,32 @@
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
                                         <p class="fs-6">
-                                            In this study, we examined whether <span class="entity">gp41</span>-<span
-                                                class="trigger">induced
-                                        </span>
-                                            <span class="entity">
-                                                <it>IL-10</it>
-                                            </span>
-                                            <span class="trigger">up-regulation</span>
-                                            is <span class="trigger">mediated</span> by the previously described
-                                            synergistic <span class="trigger">activation</span> of cAMP and
-                                            <span class="entity">NF-kappaB</span> pathways.
+                                            <span class="entity">Fibroblast growth factor-1</span> (<span class="entity">FGF-1</span>) <span class="trigger">enhances</span>
+                                            <span class="entity">IL-2</span> production and nuclear translocation of <span class="entity">NF-kappaB</span> in <span class="entity">FGF receptor</span>-bearing Jurkat T cells.
                                         </p>
                                     </blockquote>
                                 </div>
                                 <div class="card-footer">
-                                    <a class="link-secondary" href="https://pubmed.ncbi.nlm.nih.gov/10089566/"
+                                    <a class="link-secondary" href="https://pubmed.ncbi.nlm.nih.gov/10229820/"
                                        target="_blank">
-                                        <cite title="PMID10089566">PMID10089566</cite>
+                                        <cite title="PMID10229820">PMID10229820</cite>
                                     </a>
+                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:fgf1,blist:il2,docid:10229820,sentencefilter:NF-kappaB}" class="link-light btn btn-info float-end" target="_blank">Show in GePI</t:pagelink>
                                 </div>
                             </div>
-                            contains the protein mentions <span class="entity">gp41</span> and <span
-                                    class="entity">IL-10</span> and the protein complex <span class="entity">NFkappaB</span>. Between those, several events
+                            contains the gene/protein mentions <span class="entity">Fibroblast growth factor-1</span>, <span
+                                class="entity">FGF-1</span>, <span class="entity">IL-2</span>, the protein complex <span class="entity">NFkappaB</span> and the <span class="entity">FGF receptor</span> family. Between some of those, several events
                             describe the up-regulation of
                             <span class="entity">
-                                <it>IL-10</it>
+                                <it>IL-1</it>
                             </span>
-                            , indicated by the words <span class="trigger">induced</span>, <span class="trigger">
-                                up-regulation
-                            </span>, <span class="trigger">mediated</span> and <span class="trigger">activation</span>.
-                            For this service, the gene/protein names are recognized and regulation events are extracted.
-                            Focus on the gene/protein entities is given. Thus, although there are multiple regulations
-                            mentioned, the interaction is simplified to a single GePI database item that records the
-                            entities and the interaction/event types: <span class="entity">gp41</span> and <span
-                                    class="entity">IL-10
-                            </span> and <span class="trigger">(up-)regulation</span>. This is an example of a binary interaction between two proteins. Events can refer to a single entity and, thus, be unary. Frequent examples are phosphorylation events when the cause of the activation is either not mentioned or is not an entity in the scope of GePI. Consider the example
+                            , indicated by the words <span class="trigger">enhances</span> and <span class="trigger">production</span>.
+                            <span class="entity">FGF-1</span> is a short form of <span class="entity">Fibroblast growth factor-1</span>. In such cases the interaction with the short form is omitted from the database to avoid duplication.
+                            For this service, the gene/protein names are recognized and molecular events are extracted from the document text.
+                            Interactions that include multiple events are simplified to a single GePI database item that records the
+                            entities and the interaction/event types: <span class="entity">Fibroblast growth factor-1</span> and <span
+                                    class="entity">IL-2
+                            </span>, <span class="trigger">(up-)regulation</span> and <span class="trigger">gene expression</span>. This is an example of a binary interaction between two entities. Events can refer to a single entity and, thus, be unary. Frequent examples are phosphorylation events when the cause of the activation is either not mentioned or is not an entity in the scope of GePI. Consider the example
 
                             <div class="card mt-3 mb-3">
                                 <div class="card-body">
@@ -76,6 +67,7 @@
                                        target="_blank">
                                         <cite title="PMID9794375">PMID9794375</cite>
                                     </a>
+                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:10971,docid:9794375,includeunary=true,paragraphfilter=after%20differential%20stimulation}" class="link-light btn btn-info float-end" target="_blank">Show in GePI</t:pagelink>
                                 </div>
                             </div>
                             where the <span class="trigger">phosophorylation</span> of an entity is discussed without the mention of another entity.
@@ -104,60 +96,79 @@
                                 <tr>
                                     <th>database</th>
                                     <th>prefix</th>
-                                    <th>example</th>
+                                    <th>example<t:pagelink page="Index" parameters="literal:{alist:gene%3A2475%2Cens%3AENSG00000198793%2Chgnc%3AHGNC%3A3942%2Cup%3AP42345%2Cup%3AMTOR_HUMAN%2Chgncg%3A1900%2Cfplx%3AAMPK%2Cgo%3AGO%3A0016301}" class="link-light btn btn-info float-end" target="_blank" title="Click to start an example search for all the IDs in this table." data-bs-toggle="default-tooltip">Show in GePI</t:pagelink></th>
                                 </tr>
                                 <tbody class="table-group-divider">
                                     <tr>
                                         <td><a class="link-secondary" target="_blank" href="https://www.ncbi.nlm.nih.gov/gene/">NCBI Gene</a></td>
                                         <td><code>gene</code></td>
-                                        <td><code>gene:2475</code></td>
+                                        <td><code><t:pagelink page="Index" parameters="literal:{alist:gene%3A2475}" target="_blank">gene:2475</t:pagelink></code></td>
                                     </tr>
                                     <tr>
                                         <td><a class="link-secondary" target="_blank" href="https://www.ensembl.org/">Ensembl</a></td>
                                         <td><code>ens</code></td>
-                                        <td><code>ens:ENSG00000198793</code></td>
+                                        <td><code><t:pagelink page="Index" parameters="literal:{alist:ens%3AENSG00000198793}" target="_blank">ens:ENSG00000198793</t:pagelink></code></td>
                                     </tr>
                                     <tr>
                                         <td><a class="link-secondary" target="_blank" href="https://www.genenames.org/">HGNC Gene</a></td>
                                         <td><code>hgnc</code></td>
-                                        <td><code>hgnc:HGNC:3942</code></td>
+                                        <td><code><t:pagelink page="Index" parameters="literal:{alist:hgnc%3AHGNC%3A3942}" target="_blank">hgnc:HGNC:3942</t:pagelink></code></td>
                                     </tr>
                                     <tr>
                                         <td><a class="link-secondary" target="_blank" href="https://www.uniprot.org/">UniProtKB</a></td>
                                         <td><code>up</code></td>
-                                        <td><code>up:P42345</code>, <code>up:MTOR_HUMAN</code></td>
+                                        <td><code><t:pagelink page="Index" parameters="literal:{alist:up%3AP42345}" target="_blank">up:P42345</t:pagelink></code>, <code><t:pagelink page="Index" parameters="literal:{alist:up%3AMTOR_HUMAN}" target="_blank">up:MTOR_HUMAN</t:pagelink></code></td>
                                     </tr>
                                     <tr>
                                         <td><a class="link-secondary" target="_blank" href="https://www.genenames.org/data/genegroup/#!/">HGNC Gene Group</a></td>
                                         <td><code>hgncg</code></td>
-                                        <td><code>hgncg:1900</code></td>
+                                        <td><code><t:pagelink page="Index" parameters="literal:{alist:hgncg%3A1900}" target="_blank">hgncg:1900</t:pagelink></code></td>
                                     </tr>
                                      <tr>
                                         <td><a class="link-secondary" target="_blank" href="https://github.com/sorgerlab/famplex/">FamPlex</a></td>
                                         <td><code>fplx</code></td>
-                                        <td><code>fplx:AMPK</code></td>
+                                        <td><code><t:pagelink page="Index" parameters="literal:{alist:fplx%3AAMPK}" target="_blank">fplx:AMPK</t:pagelink></code></td>
                                     </tr>
                                      <tr>
                                         <td><a class="link-secondary" target="_blank" href="http://geneontology.org/">Gene Ontology</a></td>
                                         <td><code>go</code></td>
-                                         <td><code>go:GO:0016301</code></td>
+                                         <td><code><t:pagelink page="Index" parameters="literal:{alist:go%3AGO%3A0016301}" target="_blank">go:GO:0016301</t:pagelink></code></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </p>
                         <h3 id="search-types">Search types</h3>
                         <p>
-                            <em>Open search.</em> When List A is specified but List B is not, this is called an open search because the set of possible interaction partners is left open. The result will contain interactions that have an item of List A as one interaction partner and any other interaction partner. No events will be returned where both interaction partners belong to List A. If this should be allowed, a closed search can be performed where List A and List B are set to the same list of identifiers.
+
+                            <h5 id="search-open">Open Search</h5> When List A is specified but List B is not, this is called an open search because the set of possible interaction partners is left open. The result will contain interactions that have an item of List A as one interaction partner and any other interaction partner. No events will be returned where both interaction partners belong to List A. If this should be allowed, a closed search can be performed where List A and List B are set to the same list of identifiers.
+                            <div>
+                                <code>
+                                <t:pagelink page="Index" parameters="literal:{alist:mtor}" class="me-2" target="_blank" title="Click to start an example open search for mTOR." data-bs-toggle="default-tooltip">
+                                Show in GePI</t:pagelink>
+                                </code>
+                            </div>
                         </p>
                         <p>
-                            <em>Closed search.</em> When List A and List B are provided, this is called a closed search because a closed set of interaction partners has been defined. Result interactions will always contain one interaction partner from List A and one from List B. Entries are allowed to exist in both lists. No events will be returned that contain the same gene as both interaction partners.
+                            <h5 id="search-closed">Closed Search</h5>
+                            When List A and List B are provided, this is called a closed search because a closed set of interaction partners has been defined. Result interactions will always contain one interaction partner from List A and one from List B. Entries are allowed to exist in both lists. No events will be returned that contain the same gene as both interaction partners.
+                            <div>
+                            <code>
+                                <t:pagelink page="Index" parameters="literal:{alist:mtor,blist:ampk}"  target="_blank" title="Click to start an example closed search for mTOR and AMPK." data-bs-toggle="default-tooltip">
+                                    Show in GePI</t:pagelink>
+                            </code>
+                            </div>
                         </p>
-                        <p id="full-text-details">
-                            <em>Full-text search.</em> It is possible to omit the specification of List A and List B completely if at least one of the three full-text filter fields is specified. The result will contain the interactions that appeared in the sentences or paragraphs that match the respective full-text query. Basic boolean operators are possible, for example <code>+</code> is used for <code>AND</code>, the pipe symbol <code>|</code> signifies a boolean <code>OR</code> and quotes <code>"..."</code> denote an phrase expression that groups words togther, e.g. <code>"MAPK pathway" | "MAPK signaling"</code> searches for <code>MAPK pathway OR MAPK signaling</code> where the text is required to contain the exact phrases. The query syntax is specified in the <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-simple-query-string-query.html" class="link-secondary" target="_blank">ElasticSearch Simple Query String Query</a> with all operators enabled.
+                        <p id="search-full-text">
+                            <h5>Full-text Search</h5>
+                            It is possible to omit the specification of List A and List B completely if at least one of the three full-text filter fields is specified. The result will contain the interactions that appeared in the sentences or paragraphs that match the respective full-text query. Basic boolean operators are possible, for example <code>+</code> is used for <code>AND</code>, the pipe symbol <code>|</code> signifies a boolean <code>OR</code> and quotes <code>"..."</code> denote an phrase expression that groups words togther, e.g. <code><t:pagelink page="Index" parameters="literal:{sentencefilter:%22MAPK%20pathway%22%20|%20%22MAPK%20signaling%22}" target="_blank">"MAPK pathway" | "MAPK signaling"</t:pagelink></code> searches for <code>MAPK pathway OR MAPK signaling</code> where the text is required to contain the exact phrases. The query syntax is specified in the <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-simple-query-string-query.html" class="link-secondary" target="_blank">ElasticSearch Simple Query String Query</a> with all operators enabled.
+                            <code>
+                                <t:pagelink page="Index" parameters="literal:{sentencefilter:%22MAPK%20pathway%22%20|%20%22MAPK%20signaling%22}"  target="_blank" title="Click to start an example full-text search for 'MAPK pathway OR MAPK signaling'" data-bs-toggle="default-tooltip">
+                                        Show in GePI</t:pagelink>
+                            </code>
                             The section heading search aims at interactions mentioned within sections whose headings match the specified query. All interactions in the database store the names of the sections or subsections they are contained in. As an example, consider the following section structure.
                             <div class="card mt-3 mb-3">
                                 <div class="card-header">
-                                    <div class="card-title">BMP-6 inhibits growth of mature human B cells; induction of Smad phosphorylation and upregulation of Id1</div>
+                                    <div class="card-title">Interaction of Complement Defence Collagens C1q and Mannose-Binding Lectin with BMP-1/Tolloid-like Proteinases</div>
                                 </div>
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
@@ -169,38 +180,31 @@
                                                <p class="fs-6">
                                                 [...]
                                               </p>
-                                            <h5>BMP-6 induces phosphorylation of Smad1/5/8</h5>
-                                               <p class="fs-6">
-                                                 [...]
-                                              </p>
-                                            <h5>BMP-6 induces upregulation of Id1</h5>
+                                            <h5>The defence collagens C1q and MBL interact with BMP-1 and mTLL-1</h5>
+                                                <p class="fs-6">
+                                                    [...]
+                                                </p>
+                                            <h5>BMP-1/C1q co-localization in tissue inflammation</h5>
                                             <p class="fs-6">
-                                                Next, we wanted to explore whether the
-                                                    <span class="entity">BMP-6
-                                                    </span>
-                                                    <span class="trigger">induced
-                                                    </span>
-                                                    <span class="trigger">phosphorylation</span>
-                                                of
-                                                    <span class="entity">Smad 1/5/8</span>
-                                                also could induce transcriptional changes of target genes.
+                                                To test the <span class="likelihood">possibility</span> of an <span class="trigger">interaction</span> of <span class="entity">C1q</span> with <entity>BMP-1</entity> in physiological conditions, we investigated the expression of these two proteins in human skin sections by immunofluorescence.
                                             </p>
                                     </blockquote>
                                 </div>
                                 <div class="card-footer">
-                                    <a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1134658/"
+                                    <a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5717261/"
                                        target="_blank">
-                                        <cite title="PMC1134658">PMC1134658</cite>
+                                        <cite title="PMC5717261">PMC5717261</cite>
+                                        <t:pagelink page="Index" parameters="literal:{alist:c1q,blist=bmp1,sectionnamefilter=}" class="link-light btn btn-info float-end" target="_blank" title="Click to start an example search for all the IDs in this table." data-bs-toggle="default-tooltip">Show in GePI</t:pagelink>
                                     </a>
                                 </div>
                             </div>
-                            The interaction between <span class="entity">BMP-6</span> and <span class="entity">Smas 1/5/8</span> is mentioned in the Results subsection named <em>BMP-6 induces upregulation of Id1</em> of PMC1134658. The database entry for this interaction stores all headings and titles up to the document title:
+                            The interaction between <span class="entity">C1q</span> and <span class="entity">BMP-1</span> is mentioned in the Results subsection named <em>BMP-1/C1q co-localization in tissue inflammation</em> of PMC5717261. The database entry for this interaction stores all headings and titles that include the interaction - or each other - up to the document title:
                             <ul>
-                                <li>BMP-6 induces upregulation of Id1 <span class="badge text-bg-secondary">subsection heading</span></li>
+                                <li>BMP-1/C1q co-localization in tissue inflammation <span class="badge text-bg-secondary">subsection heading</span></li>
                                 <li>Results <span class="badge text-bg-secondary">section heading</span></li>
-                                <li>BMP-6 inhibits growth of mature human B cells; induction of Smad phosphorylation and upregulation of Id1 <span class="badge text-bg-secondary">article title</span></li>
+                                <li>Interaction of Complement Defence Collagens C1q and Mannose-Binding Lectin with BMP-1/Tolloid-like Proteinases <span class="badge text-bg-secondary">article title</span></li>
                             </ul>
-                            Of note, the subheading <em>BMP-6 induces phosphorylation of Smad1/5/8</em> is not included in the list because it does not contain the interaction but exists on the same section sub-level as <em>BMP-6 induces upregulation of Id1</em>.
+                            Of note, the subheading <em>The defence collagens C1q and MBL interact with BMP-1 and mTLL-1</em> is not included in the list because it is not part of the section-chain from interaction to article title but exists on the same section sub-level as <em>Defence collagens are neither substrates nor inhibitors of soluble BMP-1</em> that includes the interaction.
                         </p>
                         <h3 id="filter-types">Filter types</h3>
                         <p>
@@ -208,44 +212,86 @@
                             These filters cannot constitute searches of their own but exist to solely to restrict the search defined by the methods described above.
                         </p>
                         <p>
-                            <em>Taxonomy filter.</em>A comma-separated list of NCBI Taxonomy IDs may be provided to filter on the interaction partners.
+                            For each filter type presented below, an example is given. After clicking an example link on opening the new browser tab, you may fetch the input panel by the handle to the left of page to see how the filter is used with the input form.
+                            <div class="alert alert-primary">The filter examples consist of two links each, one for a reference search without the filter and one search with the enabled filter for comparison. Please be patient and wait for each search to complete before you hit another link. The web application has a single session state and would return the same - the latest - result for both searches if different links are hit too quickly one after another.</div>
+                        </p>
+                        <p>
+                        <h5 id="filter-taxonomy">Taxonomy filter</h5>
+                            A comma-separated list of NCBI Taxonomy IDs may be provided to filter on the interaction partners.
                             NCBI Gene entries are always assigned a exactly one taxonomy ID. The GePI text processing pipeline also assigns species to protein families
                             based on the species discussed in the respective document. The species are stored as taxonomy IDs in the interaction database and
                             also used for species filter purposes. In case no species is mentioned at all - which commonly happens in PubMed abstracts - the human
                             taxonomy ID 9606 is assigned as this the most frequent organism discussed in PubMed.
+                            <div>
+                            <code>
+                                <t:pagelink page="Index" parameters="literal:{alist:mtor}" class="me-2" target="_blank" title="Click to start an example open search for mTOR. The 'Gene A ID' column shows different gene IDs for mTOR that belong to different species." data-bs-toggle="default-tooltip">
+                                    Show without filter</t:pagelink>
+                            </code>
+                            <code>
+                                <t:pagelink page="Index" parameters="literal:{alist:mtor,taxids:9606}"  target="_blank" title="Click to start an example open search for human mTOR. The 'Gene A ID' column is restricted to the gene IDs 2475 for human mTOR." data-bs-toggle="default-tooltip">
+                                    Show with filter</t:pagelink>
+                            </code>
+                            </div>
                         </p>
                         <p>
-                            <em>Interaction types filter.</em> By default, interactions of all types are included into a search result. This selection can be reduced to focus on specific interaction types, e.g. phosphorylation events regarding the input gene lists.
+                        <h5 id="filter-interaction-types">Interaction types filter</h5>
+                            By default, interactions of all types are included into a search result. This selection can be reduced to focus on specific interaction types, e.g. binding events regarding the input gene lists.
+                        <div>
+                            <code>
+                            <t:pagelink page="Index"  parameters="literal:{alist:mtor,taxids:9606,eventtypes:Binding}" class="me-2" target="_blank" title="Click to start an example search for binding events involving mTOR. The result table column 'relation types' always includes 'Binding'." data-bs-toggle="default-tooltip">
+                                    Show without filtery</t:pagelink>
+                            </code>
+                            <code>
+                            <t:pagelink page="Index"  parameters="literal:{alist:mtor,taxids:9606}"  target="_blank" title="Click to start an example search for binding events involving mTOR. The result table column 'relation types' always includes 'Binding'." data-bs-toggle="default-tooltip">
+                                Show with filter</t:pagelink>
+                            </code>
+                        </div>
                         </p>
                         <p>
-                            <em>Inclusion of single gene events.</em> The interaction extraction algorithm frequently finds molecular event descriptions that refer to a single gene without further interaction partners as described in <a href="#purpose-of-this-website" class="link-secondary">Purpose of this Web site</a>.</p>
-                            These unary events are excluded from the search results by default. They will be included if the button is activated.
-                        <p id="factuality-filter">
-                            <em>Factuality level filter.</em> Reports of molecular interactions may include words or phrases to express a restriction on factuality of an interaction description meaning that the described interaction might or might not have been observed. Consider the following example.
+                        <h5 id="filter-include-unary">Inclusion of single gene events</h5>
+                             The interaction extraction algorithm frequently finds molecular event descriptions that refer to a single gene without further interaction partners as described in <a href="#purpose-of-this-website" class="link-secondary">Purpose of this Web site</a>.
+                             These unary events are excluded from the search results by default. They will be included if the button is activated.
+                             <div>
+                                 <code>
+                                 <t:pagelink page="Index" parameters="literal:{alist:mtor}" class="me-2" target="_blank" title="Click to start an example search for mTOR that includes unary events." data-bs-toggle="default-tooltip">
+                                         Show without filter</t:pagelink>
+                                 </code>
+                                 <code>
+                                 <t:pagelink page="Index" parameters="literal:{alist:mtor,includeunary=true}" target="_blank" title="Click to start an example search for mTOR that includes unary events." data-bs-toggle="default-tooltip">
+                                     Show with filter</t:pagelink>
+                                 </code>
+                             </div>
+                        </p>
+                        <p>
+                        <h5 id="filter-factuality">Factuality level filter</h5>
+                            Reports of molecular interactions may include words or phrases to express a restriction on factuality of an interaction description meaning that the described interaction might or might not have been observed. Consider the following example.
+                            <div>
+                                <code>
+                                <t:pagelink page="Index" anchor="tableresult_widget" class="me-2" parameters="literal:{alist:bmp1,blist:c1q,docid:PMC5717261}" target="_blank" title="Click to start a reference search where some interactions have a moderate factuality level." data-bs-toggle="default-tooltip">
+                                    Show without filter</t:pagelink>
+                                </code>
+                                <code>
+                                <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1,blist:c1q,docid:PMC5717261,factuality:6}" target="_blank" title="Click to start a filtered search where only assertion level interactions are returned." data-bs-toggle="default-tooltip">
+                                    Show with filter</t:pagelink>
+                                </code>
+                            </div>
                             <div class="card mt-3 mb-3">
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
                                         <p class="fs-6">
-                                            Next, we wanted to <span class="likelihood">explore whether</span> the
-                                            <span class="entity">BMP-6
-                                            </span>
-                                            <span class="trigger">induced
-                                            </span>
-                                            <span class="trigger">phosphorylation</span>
-                                            of
-                                            <span class="entity">Smad 1/5/8</span>
-                                            also could induce transcriptional changes of target genes.
+                                            To test the <span class="likelihood">possibility</span> of an <span class="trigger">interaction</span> of <span class="entity">C1q</span> with <entity>BMP-1</entity> in physiological conditions, we investigated the expression of these two proteins in human skin sections by immunofluorescence.
                                         </p>
                                     </blockquote>
                                 </div>
                                 <div class="card-footer">
-                                    <a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1134658/"
+                                    <a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5717261/"
                                        target="_blank">
-                                        <cite title="PMC1134658">PMC1134658</cite>
+                                        <cite title="PMC5717261">PMC5717261</cite>
                                     </a>
+                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1,blist:c1q,docid:PMC5717261,sentencefilter=+two%20+proteins%20+human%20+skin}" class="link-light btn btn-info float-end" target="_blank">Show in GePI</t:pagelink>
                                 </div>
                             </div>
-                            The words <span class="likelihood">explore</span> and <span class="likelihood">whether</span> express at this specific position in text that the interaction between <span class="entity">BMP-6</span> and <span class="entity">Smad 1/5/6</span> is not reported
+                            The word <span class="likelihood">possibility</span> expresses at this specific position in text that the interaction between <span class="entity">C1q</span> and <span class="entity">BMP-1</span> is not reported
                             as a fact but stands to be investigated. To control the degree of factuality of returned interactions, GePI offers six filter levels.
                             <table class="table">
                                 <tr>
@@ -444,8 +490,21 @@
                                     <li>
                                         <a href="#input-specification">Input Specification</a>
                                         <ul>
-                                            <li><a href="#search-types">Search types</a></li>
-                                            <li><a href="#filter-types">Filter types</a></li>
+                                            <li><a href="#search-types">Search types</a>
+                                                <ul>
+                                                    <li><a href="#search-open">Open Search</a></li>
+                                                    <li><a href="#search-closed">Closed Search</a></li>
+                                                    <li><a href="#search-full-text">Full-text Search</a></li>
+                                                </ul>
+                                            </li>
+                                            <li><a href="#filter-types">Filter types</a>
+                                                <ul>
+                                                    <li><a href="#filter-taxonomy">Taxonomy filter</a></li>
+                                                    <li><a href="#filter-interaction-types">Interaction types filter</a></li>
+                                                    <li><a href="#filter-include-unary">Inclusion of single gene events</a></li>
+                                                    <li><a href="#filter-factuality">Factuality level filter</a></li>
+                                                </ul>
+                                            </li>
                                         </ul>
                                     </li>
                                     <li>
@@ -483,7 +542,6 @@
                                                     </li>
                                                 </ul>
                                             </li>
-
                                         </ul>
                                     </li>
                                 </ul>
@@ -494,5 +552,4 @@
             </div>
         </div>
     </body>
-
 </html>

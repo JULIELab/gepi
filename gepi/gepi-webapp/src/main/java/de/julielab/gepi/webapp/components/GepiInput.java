@@ -1,21 +1,19 @@
 package de.julielab.gepi.webapp.components;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.services.IAggregatedEventsRetrievalService;
+import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
-import de.julielab.gepi.core.retrieval.data.GepiRequestData;
+import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.core.services.IdType;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.data.EventTypes;
 import de.julielab.gepi.webapp.data.GepiQueryParameters;
-import org.apache.tapestry5.*;
+import de.julielab.gepi.webapp.pages.Index;
+import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.PersistenceConstants;
+import org.apache.tapestry5.SelectModel;
+import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.commons.services.TypeCoercer;
@@ -27,13 +25,19 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
-
-import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
-import de.julielab.gepi.core.services.IGeneIdService;
-import de.julielab.gepi.webapp.pages.Index;
 import org.apache.tapestry5.util.EnumSelectModel;
 import org.apache.tapestry5.util.EnumValueEncoder;
 import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Import(stylesheet = {"context:css-components/gepiinput.css"})
 public class GepiInput {
@@ -175,6 +179,8 @@ public class GepiInput {
      */
     @Parameter
     private GepiRequestData requestData;
+    // could be made a input form element; currently only here for direct links, e.g. from the help pages
+    private String docId;
 
 //    void onActivate(EventContext eventContext) {
 //        if (reset) {
@@ -193,6 +199,7 @@ public class GepiInput {
         sentenceFilterString = "";
         paragraphFilterString = "";
         sectionNameFilterString = "";
+        docId = "";
     }
 
     public ValueEncoder getEventTypeEncoder() {
@@ -244,6 +251,8 @@ public class GepiInput {
         this.filterFieldsConnectionOperator = queryParameters.getFilterFieldsConnectionOperator();
         this.sectionNameFilterString = queryParameters.getSectionNameFilterString();
         this.dataSessionId = dataSessionId;
+        this.includeUnary = queryParameters.isIncludeUnary();
+        this.docId = queryParameters.getDocid();
         executeSearch();
     }
 
@@ -274,7 +283,7 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, dataSessionId);
+        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
 //        if ((filterString != null && !filterString.isBlank())) {
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);

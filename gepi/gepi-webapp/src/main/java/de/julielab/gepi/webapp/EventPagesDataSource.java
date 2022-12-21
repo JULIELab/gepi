@@ -3,10 +3,10 @@ package de.julielab.gepi.webapp;
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.retrieval.services.EventRetrievalService;
 import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGeneIdService;
-import de.julielab.gepi.webapp.data.FilteredGepiRequestData;
 import org.apache.tapestry5.grid.GridDataSource;
 import org.apache.tapestry5.grid.SortConstraint;
 import org.slf4j.Logger;
@@ -22,13 +22,13 @@ import static de.julielab.gepi.core.services.GeneIdService.CONCEPT_ID_PATTERN;
 
 public class EventPagesDataSource implements GridDataSource {
     private final IEventRetrievalService eventRetrievalService;
-    private final FilteredGepiRequestData requestData;
+    private final GepiRequestData requestData;
     private IGeneIdService geneIdService;
     private Logger log;
     private Future<EventRetrievalResult> events;
     private int start;
 
-    public EventPagesDataSource(Logger log, Future<EventRetrievalResult> events, IEventRetrievalService eventRetrievalService, IGeneIdService geneIdService, FilteredGepiRequestData requestData) {
+    public EventPagesDataSource(Logger log, Future<EventRetrievalResult> events, IEventRetrievalService eventRetrievalService, IGeneIdService geneIdService, GepiRequestData requestData) {
         this.log = log;
         this.events = events;
         this.eventRetrievalService = eventRetrievalService;

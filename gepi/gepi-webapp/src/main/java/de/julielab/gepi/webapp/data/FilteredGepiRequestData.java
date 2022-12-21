@@ -70,7 +70,7 @@ public class FilteredGepiRequestData extends GepiRequestData {
     private String arg2IdFilter;
 
     public FilteredGepiRequestData(GepiRequestData requestData) {
-        super(requestData.getEventTypes(), requestData.isIncludeUnary(), requestData.getEventLikelihood(), requestData.getListAGePiIds(),requestData.getListBGePiIds(), requestData.getTaxId(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getFilterFieldsConnectionOperator(), requestData.getSectionNameFilterString(), requestData.getInputMode(), requestData.getDataSessionId());
+        super(requestData.getEventTypes(), requestData.isIncludeUnary(), requestData.getEventLikelihood(), requestData.getListAGePiIds(),requestData.getListBGePiIds(), requestData.getTaxId(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getFilterFieldsConnectionOperator(), requestData.getSectionNameFilterString(), requestData.getInputMode(), requestData.getDocId(), requestData.getDataSessionId());
     }
 
 }
