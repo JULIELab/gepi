@@ -19,8 +19,8 @@ The `production` stage expects that the complete GePI project has been built in 
 Run the following commands to create a `development` container:
 
 ```bash
-DOCKER_BUILDKIT=1 docker build -t gepi:0.11.1 --target development .
-docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev -e GEPI_CONFIGURATION=<path to config file> gepi:0.11.1
+DOCKER_BUILDKIT=1 docker build -t gepi:0.11.2 --target development .
+docker run -dp 8080:8080 -v {/path/to/gepi/directory}:/var/gepi/dev -e GEPI_CONFIGURATION=<path to config file> gepi:0.11.2
 ```
 
 The first command builds an image of the `development` stage. This will also build the `dependencies` stage where all the Java dependencies of the GePI application are downloaded and cached. This will take a while on the first execution but should be faster afterwards thanks to caching.
@@ -38,8 +38,8 @@ To run the `production` container, run
 
 ```bash
 mvn clean package --projects gepi-webapp --also-make
-DOCKER_BUILDKIT=1 docker build -t gepi:0.11.1 --target production .
-docker run -dp 8080:8080 --name gepi gepi:0.11.1
+DOCKER_BUILDKIT=1 docker build -t gepi:0.11.2 --target production .
+docker run -dp 8080:8080 --name gepi gepi:0.11.2
 ```
 
 These commands
@@ -68,7 +68,7 @@ gepi.neo4j.bolt.url=bolt://<host>:<port>
 
 A production environment has a few requirements that are of lesser importance during development. This section explains requirements and solutions that may come up during GePI deployment with the Docker container. While detailed explanations come below, the full Docker `run` command we use for deployment looks like the following:
 ```
-docker run -dp 80:8080 -p 443:8443 -v /host/path/to/certificate.p12:/var/lib/jetty/etc/keystore.p12 -v /host/path/to/configuration.properties:/gepi-webapp-configuration.properties --add-host=host.docker.internal:host-gateway --name gepi -e GEPI_CONFIGURATION=/gepi-webapp-configuration.properties gepi:0.11.1 jetty.sslContext.keyStorePassword=<changeit>
+docker run -dp 80:8080 -p 443:8443 -v /host/path/to/certificate.p12:/var/lib/jetty/etc/keystore.p12 -v /host/path/to/configuration.properties:/gepi-webapp-configuration.properties --add-host=host.docker.internal:host-gateway --name gepi -e GEPI_CONFIGURATION=/gepi-webapp-configuration.properties gepi:0.11.2 jetty.sslContext.keyStorePassword=<changeit>
 ```
 Alternatively, the `docker-compose-webapp.yml` file can be used with a few additions.
 
@@ -103,7 +103,8 @@ Update the new version number in the following places:
 * `pom.xml` files (tip: use `mvn versions:set -DnewVersion=<new version>` and `mvn versions:commit` to remove the backup files)
 * `README.md` (by executing `mvn clean package -DskipTests=true` to filter the `readme-raw/README.md` file to automatically set the current version to the `README.md` file)
 * `AppModule.java` in `gepi-webapp`
+  * set `PRODUCTION_MODE` to true for releases
 * the Docker image version in the `docker-compose.yml`
 * the DB version in `gene-database.xml` in the `gepi-concept-database` module
-* in `gepi-indexing-base` execute `python ../../../../jcore-misc/jcore-scripts/createMetaDescriptors.py -c -i -r manual -v 1.0 .` given that `jcore-misc` has been cloned to the same directory as GePI
+* in `gepi`-code base directory, execute `python ../../jcore-misc/jcore-scripts/createMetaDescriptors.py -c -i -r manual -v 1.0 gepi-indexing/gepi-indexing-base` given that `jcore-misc` has been cloned to the same directory as GePI
   * this updates the description file for the use with the JCoRe pipeline builder

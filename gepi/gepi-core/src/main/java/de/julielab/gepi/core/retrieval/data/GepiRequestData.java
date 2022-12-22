@@ -18,6 +18,7 @@ public class GepiRequestData implements Cloneable {
     private String filterFieldsConnectionOperator = "AND";
     private EnumSet<InputMode> inputMode;
     private String docId;
+    private int eventRetrievalLimitForAggregations;
     private long dataSessionId;
     private boolean includeUnary;
     private int eventLikelihood;
@@ -25,7 +26,11 @@ public class GepiRequestData implements Cloneable {
     private String sectionNameFilterString;
     private int pageSize = 10;
 
-    public GepiRequestData(List<String> eventTypes, boolean includeUnary, int eventLikelihood, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String[] taxId, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, String docId, long dataSessionId) {
+    public int getEventRetrievalLimitForAggregations() {
+        return eventRetrievalLimitForAggregations;
+    }
+
+    public GepiRequestData(List<String> eventTypes, boolean includeUnary, int eventLikelihood, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String[] taxId, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, String docId, int eventRetrievalLimitForAggregations, long dataSessionId) {
         this.includeUnary = includeUnary;
         this.eventLikelihood = eventLikelihood;
         this.taxId = taxId;
@@ -38,6 +43,7 @@ public class GepiRequestData implements Cloneable {
         this.filterFieldsConnectionOperator = filterFieldsConnectionOperator;
         this.inputMode = inputMode;
         this.docId = docId;
+        this.eventRetrievalLimitForAggregations = eventRetrievalLimitForAggregations;
         this.dataSessionId = dataSessionId;
     }
 

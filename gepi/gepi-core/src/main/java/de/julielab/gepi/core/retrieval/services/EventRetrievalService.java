@@ -147,7 +147,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             FIELD_EVENT_ARG_HOMOLOGY_PREFERRED_NAME,
             FIELD_NUM_ARGUMENTS
     );
-    private static final int SCROLL_SIZE = 200;
+    private static final int SCROLL_SIZE = 2000;
     private Logger log;
     private ISearchServerComponent searchServerComponent;
     private String documentIndex;
@@ -218,8 +218,8 @@ public class EventRetrievalService implements IEventRetrievalService {
                 serverRqst.index = documentIndex;
                 serverRqst.start = from;
                 serverRqst.rows = numRows;
-                serverRqst.requestTimeout = "10m";
-                configureDeepPaging(serverRqst, downloadAll, forCharts);
+//                serverRqst.requestTimeout = "10m";
+                configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
                 if (!downloadAll) {
                     addHighlighting(serverRqst);
                 }
@@ -230,7 +230,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 log.debug("Sent closed search server request");
                 searchServerComponent.process(carrier);
                 if (log.isDebugEnabled())
-                    log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis()-time) / 1000);
+                    log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
                         .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
@@ -303,7 +303,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 log.debug("Sent open search server request");
                 searchServerComponent.process(carrier);
                 if (log.isDebugEnabled())
-                log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis()-time) / 1000);
+                    log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
 
 
                 EventRetrievalResult eventResult = eventResponseProcessingService
@@ -342,23 +342,24 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.index = documentIndex;
         serverRqst.start = from;
         serverRqst.rows = numRows;
-        serverRqst.requestTimeout = "10m";
-        configureDeepPaging(serverRqst, downloadAll, forCharts);
+//        serverRqst.requestTimeout = "10m";
+        configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
         if (!downloadAll) {
             addHighlighting(serverRqst);
         }
         return serverRqst;
     }
 
-    private void configureDeepPaging(SearchServerRequest serverRqst, boolean downloadAll, boolean forCharts) {
+    private void configureDeepPaging(SearchServerRequest serverRqst, boolean downloadAll, boolean forCharts, int interactionRetrievalLimit) {
         if (downloadAll)
-            serverRqst.rows = SCROLL_SIZE;
+            serverRqst.rows = Math.min(SCROLL_SIZE, interactionRetrievalLimit);
         serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-        serverRqst.downloadCompleteResults = downloadAll;
+        serverRqst.downloadCompleteResults = downloadAll && interactionRetrievalLimit > 0;
         serverRqst.downloadCompleteResultsMethod = "searchAfter";
         serverRqst.downloadCompleteResultMethodKeepAlive = "5m";
         if (downloadAll) {
-            serverRqst.downloadCompleteResultsLimit = 200;
+            if (interactionRetrievalLimit < Integer.MAX_VALUE)
+                serverRqst.downloadCompleteResultsLimit = interactionRetrievalLimit;
             serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
         }
     }
@@ -424,8 +425,8 @@ public class EventRetrievalService implements IEventRetrievalService {
             serverRqst.index = documentIndex;
             serverRqst.start = from;
             serverRqst.rows = numRows;
-            serverRqst.requestTimeout = "10m";
-            configureDeepPaging(serverRqst, downloadAll, forCharts);
+//            serverRqst.requestTimeout = "10m";
+            configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
             if (!downloadAll) {
                 addHighlighting(serverRqst);
             }
@@ -436,7 +437,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             log.debug("Sent full-text search server request");
             searchServerComponent.process(carrier);
             if (log.isDebugEnabled())
-                log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis()-time) / 1000);
+                log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
 
             EventRetrievalResult eventResult = eventResponseProcessingService
                     .getEventRetrievalResult(carrier.getSingleSearchServerResponse());
