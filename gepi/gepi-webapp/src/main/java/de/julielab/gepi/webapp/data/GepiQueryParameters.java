@@ -139,6 +139,8 @@ public class GepiQueryParameters {
             if (paragraphFilterString != null)
                 paragraphFilterString = decodeUrlEncoding(sentenceFilterString);
             sectionNameFilterString = request.getParameter(SECTIONNAMEFILTER);
+            if (sectionNameFilterString != null)
+                sectionNameFilterString = decodeUrlEncoding(sectionNameFilterString);
             docid = request.getParameter(DOCID);
             includeUnary = Boolean.parseBoolean(request.getParameter(INCLUDE_UNARY));
         }

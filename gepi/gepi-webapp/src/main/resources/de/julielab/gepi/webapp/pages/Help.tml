@@ -161,6 +161,7 @@
                         <p id="search-full-text">
                             <h5>Full-text Search</h5>
                             It is possible to omit the specification of List A and List B completely if at least one of the three full-text filter fields is specified. The result will contain the interactions that appeared in the sentences or paragraphs that match the respective full-text query. Basic boolean operators are possible, for example <code>+</code> is used for <code>AND</code>, the pipe symbol <code>|</code> signifies a boolean <code>OR</code> and quotes <code>"..."</code> denote an phrase expression that groups words togther, e.g. <code><t:pagelink page="Index" parameters="literal:{sentencefilter:%22MAPK%20pathway%22%20|%20%22MAPK%20signaling%22}" target="_blank">"MAPK pathway" | "MAPK signaling"</t:pagelink></code> searches for <code>MAPK pathway OR MAPK signaling</code> where the text is required to contain the exact phrases. The query syntax is specified in the <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-simple-query-string-query.html" class="link-secondary" target="_blank">ElasticSearch Simple Query String Query</a> with all operators enabled.
+                            When both sentence and paragraph filters are specified, the way to combine both filters can be selected using the button between the input fields. "AND" means that an interaction must match both filters to be included in the result, "OR" includes all interactions that match either filter.
                             <code>
                                 <t:pagelink page="Index" parameters="literal:{sentencefilter:%22MAPK%20pathway%22%20|%20%22MAPK%20signaling%22}"  target="_blank" title="Click to start an example full-text search for 'MAPK pathway OR MAPK signaling'" data-bs-toggle="default-tooltip">
                                         Show in GePI</t:pagelink>
@@ -194,7 +195,7 @@
                                     <a class="link-secondary" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5717261/"
                                        target="_blank">
                                         <cite title="PMC5717261">PMC5717261</cite>
-                                        <t:pagelink page="Index" parameters="literal:{alist:c1q,blist=bmp1,sectionnamefilter=}" class="link-light btn btn-info float-end" target="_blank" title="Click to start an example search for all the IDs in this table." data-bs-toggle="default-tooltip">Show in GePI</t:pagelink>
+                                        <t:pagelink page="Index" parameters="literal:{alist:c1q,blist=bmp1,sectionnamefilter=+bmp%20+1%20+c1q%20+co%20+localization%20+tissue%20+inflammation}" class="link-light btn btn-info float-end" target="_blank" title="Click to start an example search for all the IDs in this table." data-bs-toggle="default-tooltip">Show in GePI</t:pagelink>
                                     </a>
                                 </div>
                             </div>
@@ -265,16 +266,6 @@
                         <p>
                         <h5 id="filter-factuality">Factuality level filter</h5>
                             Reports of molecular interactions may include words or phrases to express a restriction on factuality of an interaction description meaning that the described interaction might or might not have been observed. Consider the following example.
-                            <div>
-                                <code>
-                                <t:pagelink page="Index" anchor="tableresult_widget" class="me-2" parameters="literal:{alist:bmp1,blist:c1q,docid:PMC5717261}" target="_blank" title="Click to start a reference search where some interactions have a moderate factuality level." data-bs-toggle="default-tooltip">
-                                    Show without filter</t:pagelink>
-                                </code>
-                                <code>
-                                <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1,blist:c1q,docid:PMC5717261,factuality:6}" target="_blank" title="Click to start a filtered search where only assertion level interactions are returned." data-bs-toggle="default-tooltip">
-                                    Show with filter</t:pagelink>
-                                </code>
-                            </div>
                             <div class="card mt-3 mb-3">
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
@@ -288,7 +279,7 @@
                                        target="_blank">
                                         <cite title="PMC5717261">PMC5717261</cite>
                                     </a>
-                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1,blist:c1q,docid:PMC5717261,sentencefilter=+two%20+proteins%20+human%20+skin}" class="link-light btn btn-info float-end" target="_blank">Show in GePI</t:pagelink>
+                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{docid:PMC5717261,sectionnamefilter=+bmp%20+1%20+c1q%20+co%20+localization%20+tissue%20+inflammation}" class="link-light btn btn-info float-end" target="_blank">Show in GePI</t:pagelink>
                                 </div>
                             </div>
                             The word <span class="likelihood">possibility</span> expresses at this specific position in text that the interaction between <span class="entity">C1q</span> and <span class="entity">BMP-1</span> is not reported
@@ -321,10 +312,31 @@
                             The selection of a factuality item filters interactions to be assigned the selected or a higher - more assertive - factuality level. Thus, selecting <span class="badge text-bg-secondary">moderate</span> will allow interactions
                             with <span class="badge text-bg-secondary">moderate</span>, <span class="badge text-bg-secondary">high</span> and <span class="badge text-bg-secondary">assertion</span> factuality levels to be included in the result. Thus, the default
                             selection lies on <span class="badge text-bg-secondary">negation</span> which does not impose any factuality restriction.
+                            <div>
+                                <code>
+                                <t:pagelink page="Index" anchor="tableresult_widget" class="me-2" parameters="literal:{alist:bmp1,blist:c1q,docid:PMC5717261}" target="_blank" title="Click to start a reference search where some interactions have a moderate factuality level." data-bs-toggle="default-tooltip">
+                                    Show without filter</t:pagelink>
+                                </code>
+                                <code>
+                                <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1,blist:c1q,docid:PMC5717261,factuality:6}" target="_blank" title="Click to start a filtered search where only assertion level interactions are returned." data-bs-toggle="default-tooltip">
+                                    Show with filter</t:pagelink>
+                                </code>
+                            </div>
                         </p>
                         <p>
-                            <em>full-text filters.</em> The full-text fields can be used to start a search on their own or they can serve as a filter for the results of specified A-List and B-List genes. Then, only interactions will be returned that adhere
-                            to the gene list specification and also match the provided full-text filters. See <a href="#full-text-details" class="link-secondary">full-text search</a> for information about the exact full-text query mechanisms.
+                            <h5 id="filter-full-text">Full-text filters</h5>
+                            The full-text fields can be used to start a search on their own or they can serve as a filter for the results of specified A-List and B-List genes. Then, only interactions will be returned that adhere
+                            to the gene list specification and also match the provided full-text filters. See <a href="#search-full-text" class="link-secondary">full-text search</a> for information about the exact full-text query mechanisms.
+                            <div>
+                                <code>
+                                    <t:pagelink page="Index" anchor="tableresult_widget" class="me-2" parameters="literal:{alist:bmp1%2Cbmp2%2Csmad1}" target="_blank" title="Click to start a reference search without a full-text filter." data-bs-toggle="default-tooltip">
+                                        Show without filter</t:pagelink>
+                                </code>
+                                <code>
+                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1%2Cbmp2%2Csmad1,sentencefilter=stress}" target="_blank" title="Click to start a filtered search where only assertion level interactions are returned." data-bs-toggle="default-tooltip">
+                                        Show with filter</t:pagelink>
+                                </code>
+                            </div>
                         </p>
                         <h2 id="output-dashboard">Output Dashboard</h2>
                         <p>
@@ -457,7 +469,7 @@
                         <p>
                             It shows the interaction partner symbols and IDs as recognized during automated literature processing
                             via natural language processing (NLP) techniques, their actual text string in the document,
-                            their <a href="#factuality-filter" class="link-secondary">factuality rating</a> and the sentence from the
+                            their <a href="#filter-factuality" class="link-secondary">factuality rating</a> and the sentence from the
                             document that contains the description of the interaction. If a full-text filter was
                             set on paragraph level, a portion of the paragraph containing the filter query is also given.
                         </p>
@@ -503,6 +515,7 @@
                                                     <li><a href="#filter-interaction-types">Interaction types filter</a></li>
                                                     <li><a href="#filter-include-unary">Inclusion of single gene events</a></li>
                                                     <li><a href="#filter-factuality">Factuality level filter</a></li>
+                                                    <li><a href="#filter-full-text">Full-text filters</a></li>
                                                 </ul>
                                             </li>
                                         </ul>
