@@ -90,6 +90,15 @@ public class EventQueries {
             taxIdFilterClause.addQuery(taxQuery);
             eventQuery.addClause(taxIdFilterClause);
         }
+        if (requestData.getDocId() != null && !requestData.getDocId().isBlank()) {
+            final MultiMatchQuery docIdQuery = new MultiMatchQuery();
+            docIdQuery.query = requestData.getDocId();
+            docIdQuery.fields = List.of(FIELD_PMID, FIELD_PMCID);
+            final BoolClause docIdFilterClause = new BoolClause();
+            docIdFilterClause.addQuery(docIdQuery);
+            docIdFilterClause.occur = FILTER;
+            eventQuery.addClause(docIdFilterClause);
+        }
         return eventQuery;
     }
 
@@ -155,6 +164,15 @@ public class EventQueries {
             taxIdFilterClause.addQuery(taxQuery);
             eventQuery.addClause(taxIdFilterClause);
         }
+        if (requestData.getDocId() != null && !requestData.getDocId().isBlank()) {
+            final MultiMatchQuery docIdQuery = new MultiMatchQuery();
+            docIdQuery.query = requestData.getDocId();
+            docIdQuery.fields = List.of(FIELD_PMID, FIELD_PMCID);
+            final BoolClause docIdFilterClause = new BoolClause();
+            docIdFilterClause.addQuery(docIdQuery);
+            docIdFilterClause.occur = FILTER;
+            eventQuery.addClause(docIdFilterClause);
+        }
 
         return eventQuery;
     }
@@ -169,8 +187,18 @@ public class EventQueries {
         eventQuery.addClause(likelihoodFilterClause);
     }
 
-    public static BoolQuery getFulltextQuery(List<String> eventTypes, int eventLikelihood, String sentenceFilter, String paragraphFilter, String sectionNameFilter, String filterFieldsConnectionOperator, String[] taxIds, boolean includeUnary) {
+    public static BoolQuery getFulltextQuery(GepiRequestData requestData) {
         BoolQuery eventQuery = new BoolQuery();
+
+        final List<String> eventTypes = requestData.getEventTypes();
+        final boolean includeUnary = requestData.isIncludeUnary();
+        final String filterFieldsConnectionOperator = requestData.getFilterFieldsConnectionOperator();
+        final String sentenceFilter = requestData.getSentenceFilterString();
+        final String paragraphFilter = requestData.getParagraphFilterString();
+        final String sectionNameFilter = requestData.getSectionNameFilterString();
+        final int eventLikelihood = requestData.getEventLikelihood();
+        final String[] taxIds = requestData.getTaxId();
+        final String docId = requestData.getDocId();
 
         if (eventTypes != null && !eventTypes.isEmpty()) {
             TermsQuery eventTypesQuery = new TermsQuery(new ArrayList<>(eventTypes));
@@ -215,6 +243,15 @@ public class EventQueries {
             taxIdFilterClause.occur = FILTER;
             taxIdFilterClause.addQuery(taxQuery);
             eventQuery.addClause(taxIdFilterClause);
+        }
+        if (docId != null && docId.isBlank()) {
+            final MultiMatchQuery docIdQuery = new MultiMatchQuery();
+            docIdQuery.query = docId;
+            docIdQuery.fields = List.of(FIELD_PMID, FIELD_PMCID);
+            final BoolClause docIdFilterClause = new BoolClause();
+            docIdFilterClause.addQuery(docIdQuery);
+            docIdFilterClause.occur = FILTER;
+            eventQuery.addClause(docIdFilterClause);
         }
         return eventQuery;
     }
