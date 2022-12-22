@@ -103,6 +103,9 @@
         "store": true,
         "norms": false
       },
+      "argument1homoprefnameaggvalue": {
+        "type": "keyword"
+      },
       "argument1conceptid": {
         "type": "keyword",
         "store": true
@@ -157,6 +160,9 @@
         "type": "text",
         "store": true,
         "norms": false
+      },
+      "argument2homoprefnameaggvalue": {
+        "type": "keyword"
       },
       "argument2conceptid": {
         "type": "keyword",

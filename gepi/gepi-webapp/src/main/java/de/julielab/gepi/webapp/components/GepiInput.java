@@ -150,6 +150,14 @@ public class GepiInput {
     @Persist(TabPersistentField.TAB)
     private boolean includeUnary;
 
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private Integer interactionRetrievalLimitForAggregations;
+
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private boolean interactionRetrievalLimitForAggregationsNoLimit;
+
     /**
      * This is not an ID for the servlet session but to the current data state.
      */
@@ -200,6 +208,7 @@ public class GepiInput {
         paragraphFilterString = "";
         sectionNameFilterString = "";
         docId = "";
+        interactionRetrievalLimitForAggregations = 1000;
     }
 
     public ValueEncoder getEventTypeEncoder() {
@@ -217,6 +226,8 @@ public class GepiInput {
             eventLikelihood = 1;
         if (selectedEventTypes == null)
             selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
+        if (interactionRetrievalLimitForAggregations == null)
+            interactionRetrievalLimitForAggregations = 1000;
     }
 
     void onValidateFromInputForm() {
@@ -283,7 +294,7 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, dataSessionId);
+        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, interactionRetrievalLimitForAggregationsNoLimit ? Integer.MAX_VALUE : interactionRetrievalLimitForAggregations, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
 //        if ((filterString != null && !filterString.isBlank())) {
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);

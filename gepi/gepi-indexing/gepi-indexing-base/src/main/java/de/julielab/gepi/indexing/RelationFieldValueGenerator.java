@@ -194,6 +194,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
 //                            document.addField("argument1prefname", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2prefNameReplaceFilter));
                             final IFieldValue arg1HomoPrefNameValue = createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.orgid2topaggprefname);
 //                            document.addField("argument1homoprefname", arg1HomoPrefNameValue);
+                            document.addField("argument1homoprefnameaggvalue", arg1HomoPrefNameValue);
 //                            final IFieldValue arg1GoPrefnames = createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2goprefnameFilter);
 //                            document.addField("argument1goprefnames", arg1GoPrefnames);
 //                            document.addField("argument1matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
@@ -211,6 +212,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
 //                            document.addField("argument2prefname", createRawFieldValueForFieldValue(document.getAsRawToken("argument2conceptid"), geneFb.conceptid2prefNameFilter));
                             final IFieldValue arg2HomoPrefNameValue = createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.orgid2topaggprefname);
 //                            document.addField("argument2homoprefname", arg2HomoPrefNameValue);
+                            document.addField("argument2homoprefnameaggvalue", arg2HomoPrefNameValue);
 //                            final IFieldValue arg2GoPrefnames = createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2goprefnameFilter);
 //                            document.addField("argument2goprefnames", arg2GoPrefnames);
 //                            document.addField("argument2matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
@@ -255,7 +257,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("ARGUMENT_FS", argPair);
                             // For ElasticSearch aggregations, we create terms in the form 'symbol1---symbol2'. We also sort the symbols so that the same pair of symbols is always stored in the same order.
                             // Then we can use ElasticSearch aggregations to count interactions occurrences instead of retrieving all documents and counting ourselves.
-//                            document.addField("aggregationvalue", document.getAsArrayFieldValue("argumenthomoprefnames").stream().map(IFieldValue::toString).sorted().collect(Collectors.joining("---")));
+                            document.addField("aggregationvalue", document.getAsArrayFieldValue("argumenthomoprefnames").stream().map(IFieldValue::toString).sorted().collect(Collectors.joining("---")));
 //                            final ArrayFieldValue go1Values = new ArrayFieldValue(arg1GoPrefnames);
 //                            final ArrayFieldValue go2Values = new ArrayFieldValue(arg2GoPrefnames);
 //                            for (IFieldValue go1 : go1Values) {

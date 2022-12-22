@@ -23,6 +23,7 @@ public class GepiQueryParameters {
     public static final String SECTIONNAMEFILTER = "sectionnamefilter";
     public static final String INCLUDE_UNARY = "includeunary";
     public static final String DOCID = "docid";
+    public static final String INTERACTION_RETRIEVAL_LIMIT = "interactionretrievalllimit";
     private String listATextAreaValue;
     private String listBTextAreaValue;
     private String taxId;
@@ -35,6 +36,7 @@ public class GepiQueryParameters {
     private String docid;
     private boolean includeUnary;
     private boolean formdata;
+    private int interactionRetrievalLimit;
 
     public GepiQueryParameters(Request request) {
         readParameters(request);
@@ -143,6 +145,11 @@ public class GepiQueryParameters {
                 sectionNameFilterString = decodeUrlEncoding(sectionNameFilterString);
             docid = request.getParameter(DOCID);
             includeUnary = Boolean.parseBoolean(request.getParameter(INCLUDE_UNARY));
+            try {
+                interactionRetrievalLimit = Integer.parseInt(request.getParameter(INTERACTION_RETRIEVAL_LIMIT));
+            } catch (NumberFormatException e) {
+                // no number given
+            }
         }
     }
 
