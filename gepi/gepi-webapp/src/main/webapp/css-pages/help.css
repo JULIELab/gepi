@@ -1,4 +1,10 @@
+a.btn.btn-info {
+    padding: 0 .25rem 0 .25rem;
+}
 
+code a {
+    color: var(--bs-code-color);
+}
 
 .toc {
 	position: -webkit-sticky;
@@ -44,4 +50,8 @@
 
 .trigger {
 	background-color: #e5ecfe;
+}
+
+.likelihood {
+    background-color: #fed9a0;
 }

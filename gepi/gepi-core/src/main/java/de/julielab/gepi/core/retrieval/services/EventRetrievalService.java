@@ -415,7 +415,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
-            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData.getEventTypes(), requestData.getEventLikelihood(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString(), requestData.getFilterFieldsConnectionOperator(), requestData.getTaxId(), requestData.isIncludeUnary());
+            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData);
 
             boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
 

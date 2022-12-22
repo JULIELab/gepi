@@ -17,13 +17,15 @@ public class GepiRequestData implements Cloneable {
     private String paragraphFilterString;
     private String filterFieldsConnectionOperator = "AND";
     private EnumSet<InputMode> inputMode;
+    private String docId;
     private long dataSessionId;
     private boolean includeUnary;
     private int eventLikelihood;
     private String[] taxId;
     private String sectionNameFilterString;
     private int pageSize = 10;
-    public GepiRequestData(List<String> eventTypes, boolean includeUnary, int eventLikelihood, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String[] taxId, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, long dataSessionId) {
+
+    public GepiRequestData(List<String> eventTypes, boolean includeUnary, int eventLikelihood, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String[] taxId, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, String docId, long dataSessionId) {
         this.includeUnary = includeUnary;
         this.eventLikelihood = eventLikelihood;
         this.taxId = taxId;
@@ -35,11 +37,16 @@ public class GepiRequestData implements Cloneable {
         this.paragraphFilterString = paragraphFilterString;
         this.filterFieldsConnectionOperator = filterFieldsConnectionOperator;
         this.inputMode = inputMode;
+        this.docId = docId;
         this.dataSessionId = dataSessionId;
     }
 
     public GepiRequestData() {
 
+    }
+
+    public String getDocId() {
+        return docId;
     }
 
     public boolean isIncludeUnary() {
@@ -114,6 +121,7 @@ public class GepiRequestData implements Cloneable {
         this.includeUnary = includeUnary;
         return this;
     }
+
     public GepiRequestData withEventTypes(List<String> eventTypes) {
         this.eventTypes = eventTypes;
         return this;
@@ -174,6 +182,11 @@ public class GepiRequestData implements Cloneable {
 
     public GepiRequestData withSectionNameFilterString(String sectionNameFilterString) {
         this.sectionNameFilterString = sectionNameFilterString;
+        return this;
+    }
+
+    public GepiRequestData withDocId(String docid) {
+        this.docId = docid;
         return this;
     }
 

@@ -12,7 +12,6 @@ import de.julielab.gepi.webapp.BeanModelEvent;
 import de.julielab.gepi.webapp.EventPagesDataSource;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.data.EventTypes;
-import de.julielab.gepi.webapp.data.FilteredGepiRequestData;
 import de.julielab.java.utilities.FileUtilities;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.StreamResponse;
@@ -186,9 +185,9 @@ public class TableResultWidget extends GepiWidget {
 //        }
 //    }
     public EventPagesDataSource getEventSource() {
-        FilteredGepiRequestData filteredRequest = new FilteredGepiRequestData(requestData);
-        filteredRequest.setEventTypeFilter(filterEventType);
-        return new EventPagesDataSource(loggerSource.getLogger(EventPagesDataSource.class), dataService.getData(requestData.getDataSessionId()).getPagedResult(), eventRetrievalService, geneIdService, filteredRequest);
+//        FilteredGepiRequestData filteredRequest = new FilteredGepiRequestData(requestData);
+//        filteredRequest.setEventTypeFilter(filterEventType);
+        return new EventPagesDataSource(loggerSource.getLogger(EventPagesDataSource.class), dataService.getData(requestData.getDataSessionId()).getPagedResult(), eventRetrievalService, geneIdService, requestData);
     }
 
     void onUpdateTableData() {
