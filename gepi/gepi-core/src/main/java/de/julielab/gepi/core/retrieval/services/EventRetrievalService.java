@@ -352,13 +352,13 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     private void configureDeepPaging(SearchServerRequest serverRqst, boolean downloadAll, boolean forCharts, int interactionRetrievalLimit) {
         if (downloadAll)
-            serverRqst.rows = Math.min(SCROLL_SIZE, interactionRetrievalLimit);
+            serverRqst.rows = forCharts ? Math.min(SCROLL_SIZE, interactionRetrievalLimit) : SCROLL_SIZE;
         serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-        serverRqst.downloadCompleteResults = downloadAll && interactionRetrievalLimit > 0;
+        serverRqst.downloadCompleteResults = downloadAll && (!forCharts || interactionRetrievalLimit > 0);
         serverRqst.downloadCompleteResultsMethod = "searchAfter";
         serverRqst.downloadCompleteResultMethodKeepAlive = "5m";
         if (downloadAll) {
-            if (interactionRetrievalLimit < Integer.MAX_VALUE)
+            if (forCharts && interactionRetrievalLimit < Integer.MAX_VALUE)
                 serverRqst.downloadCompleteResultsLimit = interactionRetrievalLimit;
             serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
         }

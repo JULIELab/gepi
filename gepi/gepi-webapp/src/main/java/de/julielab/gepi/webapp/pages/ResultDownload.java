@@ -24,9 +24,10 @@ public class ResultDownload {
 
     @Inject
     private IGePiDataService dataService;
+    @Environmental
+    private ComponentResources resources;
 
     public void onActivate(long dataSessionId) {
-        System.out.println(dataSessionId);
         this.dataSessionId = dataSessionId;
     }
 
@@ -34,7 +35,7 @@ public class ResultDownload {
         try {
             return dataService.existsTempStatusFile(dataSessionId);
         } catch (IOException e) {
-            log.error("Could not check whether Excel results status file for dataSessionId {} does exists.", dataService);
+            log.error("Could not check whether Excel results status file for dataSessionId {} does exists.", dataService, e);
             return false;
         }
     }
@@ -43,7 +44,7 @@ public class ResultDownload {
         try {
             return dataService.isDownloadExcelFileReady(dataSessionId) ? "alert-success" : "alert-info";
         } catch (IOException e) {
-            log.error("Could not check whether Excel result file for dataSessionId {} is ready.", dataSessionId);
+            log.error("Could not check whether Excel result file for dataSessionId {} is ready for determining alert class.", dataSessionId, e);
             return "alert-danger";
         }
     }
@@ -52,12 +53,29 @@ public class ResultDownload {
         try {
             return dataService.getDownloadFileCreationStatus(dataSessionId);
         } catch (IOException e) {
-            log.error("Could not retrieve the contents of the download status file.");
+            log.error("Could not retrieve the contents of the download status file.", e);
             return "An internal error has occurred while checking for the download file. Please try again later. If this continues to happen, please send an E-Mail to sas" + "cha" + "." + "scha" + "euble@le" + "ibniz-hki" + "." + "de";
         }
     }
 
-    public StreamResponse onDownloadExcelFile(long dataSessionId) {
+    public boolean isDownloadFileReady() {
+        try {
+            return dataService.isDownloadExcelFileReady(dataSessionId);
+        } catch (IOException e) {
+            log.error("Could not check whether Excel result file for dataSessionId {} is ready.", dataSessionId, e);
+            return false;
+        }
+    }
+
+
+    public Object onDownloadExcelFile(long dataSessionId) {
+        log.info("Got dataSessionId {}", dataSessionId);
+        try {
+            if (!dataService.isDownloadExcelFileReady(dataSessionId))
+                return null;
+        } catch (IOException e) {
+            log.error("Could not check whether Excel result file for dataSessionId {} is ready in order to download it.", dataSessionId, e);
+        }
         return new StreamResponse() {
 
             private Path statisticsFile;
@@ -65,9 +83,9 @@ public class ResultDownload {
             @Override
             public void prepareResponse(Response response) {
                 try {
-                statisticsFile = dataService.getTempXlsDataFile(dataSessionId);
-                response.setHeader("Content-Length", "" + Files.size(statisticsFile)); // output into file
-                response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getFileName());
+                    statisticsFile = dataService.getTempXlsDataFile(dataSessionId);
+                    response.setHeader("Content-Length", "" + Files.size(statisticsFile)); // output into file
+                    response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getFileName());
                 } catch (Exception e) {
                     log.error("Could not download Excel result for dataSessionId {}", dataSessionId, e);
                 }
@@ -84,9 +102,6 @@ public class ResultDownload {
             }
         };
     }
-
-    @Environmental
-    private ComponentResources resources;
 
     public ComponentResources getComponentResources() {
         return resources;

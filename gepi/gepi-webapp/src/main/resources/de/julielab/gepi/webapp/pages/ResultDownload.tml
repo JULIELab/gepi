@@ -1,4 +1,4 @@
-<html t:type="layout" title="Contact"
+<html t:type="layout" title="Interaction Result Download"
       xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter">
 
     <div class="container-md">
@@ -10,8 +10,16 @@
                 <t:if test="sessionResultExists">
                     <div class="alert ${alertClass}" role="alert">
                         ${resultFileStatus}
+                        <t:unless test="downloadFileReady">
+                            <div class="text-muted">Hit the reload button of your browser to update this page.</div>
+                        </t:unless>
                     </div>
-                    <t:eventlink event="downloadExcelFile" context="${dataSessionId}" class="btn btn-primary">Download</t:eventlink>
+                    <t:if test="downloadFileReady">
+                        <t:eventlink event="downloadExcelFile" context="${dataSessionId}"  class="btn btn-primary">Download</t:eventlink>
+                        <p:else>
+                            <button type="button"  class="btn btn-primary" disabled="true">Download</button>
+                        </p:else>
+                    </t:if>
                     <p:else>
                         <div class="alert alert-warning" role="alert">
                             There is no result for this session with number ${dataSessionId}. Did you hit the download button above the interactions table?
