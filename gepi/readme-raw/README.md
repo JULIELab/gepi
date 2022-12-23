@@ -106,5 +106,5 @@ Update the new version number in the following places:
   * set `PRODUCTION_MODE` to true for releases
 * the Docker image version in the `docker-compose.yml`
 * the DB version in `gene-database.xml` in the `gepi-concept-database` module
-* in `gepi-indexing-base` execute `python ../../../../jcore-misc/jcore-scripts/createMetaDescriptors.py -c -i -r manual -v 1.0 .` given that `jcore-misc` has been cloned to the same directory as GePI
+* in execute `python ../../jcore-misc/jcore-scripts/createMetaDescriptors.py -c -i -r manual -v 1.0 gepi-indexing/gepi-indexing-base` given that `jcore-misc` has been cloned to the same directory as GePI
   * this updates the description file for the use with the JCoRe pipeline builder

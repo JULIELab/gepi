@@ -81,7 +81,7 @@ public class GePiDataServiceTest {
         events.add(e4);
 
 
-        GePiDataService gePiDataService = new GePiDataService(gepiTmpDir, gepiExcelPrefix);
+        GePiDataService gePiDataService = new GePiDataService(gepiTmpDir.toString(), gepiExcelPrefix);
         final EventRetrievalResult eventRetrievalResult = new EventRetrievalResult();
         eventRetrievalResult.setEvents(events);
 
@@ -156,7 +156,7 @@ public class GePiDataServiceTest {
         for (int i = 0; i < 10; i++)
             events.add(e6);
 
-        final GePiDataService manager = new GePiDataService(gepiTmpDir, gepiExcelPrefix);
+        final GePiDataService manager = new GePiDataService(gepiTmpDir.toString(), gepiExcelPrefix);
         final JSONObject nodesNLinks = manager.getPairsWithCommonTarget(events);
         final JSONArray pairs = nodesNLinks.getJSONArray("links");
         System.out.println(pairs);

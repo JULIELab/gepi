@@ -1,6 +1,6 @@
 services:
   gepi:
-    image: gepi:0.11.2
+    image: gepi:0.12.0
     container_name: gepi
     ports:
       - 0.0.0.0:80:8080
