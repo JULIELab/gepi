@@ -9,6 +9,7 @@
 
 #### Bug Fixes
 
+- [**bug**] Fix download file issue "file not found" in production container [#220](https://github.com/JULIELab/gepi/issues/220)
 - [**bug**] Fix truncated download table due to event download restriction for charts [#215](https://github.com/JULIELab/gepi/issues/215)
 
 #### Miscellaneous Changes
