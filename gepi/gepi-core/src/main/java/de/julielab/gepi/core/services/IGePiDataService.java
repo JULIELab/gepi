@@ -1,17 +1,16 @@
 package de.julielab.gepi.core.services;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.List;
-
 import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.GePiData;
 import de.julielab.gepi.core.retrieval.data.InputMode;
 import org.apache.tapestry5.json.JSONArray;
-
-import de.julielab.gepi.core.retrieval.data.Event;
 import org.apache.tapestry5.json.JSONObject;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.EnumSet;
+import java.util.List;
 
 public interface IGePiDataService {
 
@@ -74,5 +73,5 @@ public interface IGePiDataService {
      * @param sectionNameFilterString
      * @return An InputStream of the created Excel file.
      */
-    File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException;
+    Path getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException;
 }

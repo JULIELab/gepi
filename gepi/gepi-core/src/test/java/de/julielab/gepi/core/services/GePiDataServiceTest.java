@@ -5,17 +5,28 @@ import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.InputMode;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static de.julielab.gepi.core.services.GePiDataService.GEPI_TMP_DIR_NAME;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GePiDataServiceTest {
+
+    private static Path gepiTmpDir;
+    private static String gepiExcelPrefix;
+
+    @BeforeClass
+    public static void setup() {
+        gepiTmpDir = Path.of(System.getProperty("java.io.tmpdir"), GEPI_TMP_DIR_NAME);
+        gepiExcelPrefix = GePiDataService.GEPI_EXCEL_FILE_PREFIX_NAME;
+    }
 
     @Test
     public void writeExcelSummary() throws Exception {
@@ -68,8 +79,8 @@ public class GePiDataServiceTest {
         events.add(e4);
 
 
-        GePiDataService gePiDataService = new GePiDataService();
-        File outputFile = gePiDataService.getOverviewExcel(events, 1234, EnumSet.of(InputMode.A), null, null, null);
+        GePiDataService gePiDataService = new GePiDataService(gepiTmpDir, gepiExcelPrefix);
+        Path outputFile = gePiDataService.getOverviewExcel(events, 1234, EnumSet.of(InputMode.A), null, null, null);
         assertThat(outputFile).exists();
     }
 
@@ -140,7 +151,7 @@ public class GePiDataServiceTest {
         for (int i = 0; i < 10; i++)
             events.add(e6);
 
-        final GePiDataService manager = new GePiDataService();
+        final GePiDataService manager = new GePiDataService(gepiTmpDir, gepiExcelPrefix);
         final JSONObject nodesNLinks = manager.getPairsWithCommonTarget(events);
         final JSONArray pairs = nodesNLinks.getJSONArray("links");
         System.out.println(pairs);

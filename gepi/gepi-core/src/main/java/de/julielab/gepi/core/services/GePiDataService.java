@@ -1,23 +1,26 @@
 package de.julielab.gepi.core.services;
 
-import java.io.*;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.*;
+import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
 import de.julielab.java.utilities.IOStreamUtilities;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tapestry5.annotations.Log;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -25,14 +28,20 @@ public class GePiDataService implements IGePiDataService {
 
     public static final String SOURCE = "source";
     public static final String TARGET = "target";
+    public static final String GEPI_TMP_DIR_NAME = "gepi";
+    public static final String GEPI_EXCEL_FILE_PREFIX_NAME = "gepi-excel-";
     private static final Logger log = LoggerFactory.getLogger(GePiDataService.class);
     private Cache<Long, GePiData> dataCache;
+    private final Path gepiTmpDir;
+    private String excelFilePrefix;
     /**
      * This string is the scripts itself, not a reference to a file.
      */
     private String excelResultCreationScript;
 
-    public GePiDataService() throws IOException {
+    public GePiDataService(@Symbol(GepiCoreSymbolConstants.GEPI_TMP_DIR) Path gepiTmpDir, @Symbol(GepiCoreSymbolConstants.GEPI_EXCEL_FILE_PREFIX) String excelFilePrefix) throws IOException {
+        this.gepiTmpDir = gepiTmpDir;
+        this.excelFilePrefix = excelFilePrefix;
         // We use weak values. So when a user session is evicted,
         // its GePi data can also be removed as soon as possible.
         dataCache = CacheBuilder.newBuilder().weakValues().build();
@@ -238,12 +247,12 @@ public class GePiDataService implements IGePiDataService {
     }
 
     @Override
-    public File getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException {
+    public Path getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException {
         long time = System.currentTimeMillis();
         log.info("Creating event statistics Excel file for dataSessionId {}", dataSessionId);
-        File tsvFile = getTempTsvDataFile(dataSessionId);
+        Path tsvFile = getTempTsvDataFile(dataSessionId);
         log.info("Tmp TSV: {}", tsvFile);
-        File xlsFile = getTempXlsDataFile(dataSessionId);
+        Path xlsFile = getTempXlsDataFile(dataSessionId);
         log.info("Tmp XLS: {}", xlsFile);
         writeOverviewTsvFile(events, tsvFile);
         createExcelSummaryFile(tsvFile, xlsFile, inputMode, sentenceFilterString, paragraphFilterString, sectionNameFilterString);
@@ -252,8 +261,8 @@ public class GePiDataService implements IGePiDataService {
         return xlsFile;
     }
 
-    private void createExcelSummaryFile(File tsvFile, File xlsFile, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder().command("python3", "-c", excelResultCreationScript, tsvFile.getAbsolutePath(), xlsFile.getAbsolutePath(), inputMode.stream().map(InputMode::name).collect(Collectors.joining(" ")), sentenceFilterString != null ? sentenceFilterString : "<none>", paragraphFilterString != null ? paragraphFilterString : "<none>", sectionNameFilterString != null ? sectionNameFilterString : "<none>");
+    private void createExcelSummaryFile(Path tsvFile, Path xlsFile, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException {
+        ProcessBuilder builder = new ProcessBuilder().command("python3", "-c", excelResultCreationScript, tsvFile.toAbsolutePath().toString(), xlsFile.toAbsolutePath().toString(), inputMode.stream().map(InputMode::name).collect(Collectors.joining(" ")), sentenceFilterString != null ? sentenceFilterString : "<none>", paragraphFilterString != null ? paragraphFilterString : "<none>", sectionNameFilterString != null ? sectionNameFilterString : "<none>");
         log.info("xls builder command: {}", builder.command());
         Process process = builder.start();
         InputStream processInput = process.getInputStream();
@@ -262,11 +271,11 @@ public class GePiDataService implements IGePiDataService {
         List<String> errorLines = IOStreamUtilities.getLinesFromInputStream(processErrors);
         if (!errorLines.isEmpty()) {
             log.error("Error occurred when trying to create Excel output: {}", String.join(System.getProperty("line.separator"), errorLines));
-            if (xlsFile.exists())
-                xlsFile.delete();
+            if (Files.exists(xlsFile))
+                Files.delete(xlsFile);
         }
-        if (!xlsFile.exists())
-            throw new FileNotFoundException("The Excel file " + xlsFile.getAbsolutePath() + " does not exist.");
+        if (!Files.exists(xlsFile))
+            throw new FileNotFoundException("The Excel file " + xlsFile.toAbsolutePath() + " does not exist.");
     }
     protected static final HashMap<Integer, String> likelihoodNames;
 
@@ -279,9 +288,9 @@ public class GePiDataService implements IGePiDataService {
         likelihoodNames.put(5, "high");
         likelihoodNames.put(6, "assertion");
     }
-    private void writeOverviewTsvFile(List<Event> events, File file) throws IOException {
+    private void writeOverviewTsvFile(List<Event> events, Path file) throws IOException {
         log.debug("Writing event statistics tsv file to {}", file);
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, UTF_8))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file.toFile(), UTF_8))) {
             List<String> row = new ArrayList<>();
             for (Event e : events) {
                 row.add(e.getFirstArgument().getPreferredName());
@@ -315,12 +324,12 @@ public class GePiDataService implements IGePiDataService {
         }
     }
 
-    private File getTempTsvDataFile(long dataSessionId) throws IOException {
-        return File.createTempFile("gepi-" + dataSessionId, ".tsv");
+    private Path getTempTsvDataFile(long dataSessionId) throws IOException {
+        return Files.createTempFile(gepiTmpDir, GEPI_EXCEL_FILE_PREFIX_NAME + dataSessionId, ".tsv");
     }
 
-    private File getTempXlsDataFile(long dataSessionId) throws IOException {
-        return File.createTempFile("gepi-" + dataSessionId, ".xlsx");
+    private Path getTempXlsDataFile(long dataSessionId) throws IOException {
+        return Files.createTempFile(gepiTmpDir, GEPI_EXCEL_FILE_PREFIX_NAME + dataSessionId, ".xlsx");
     }
 
     private JSONObject getJsonObjectForArgument(Argument argument) {

@@ -26,10 +26,11 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
@@ -224,7 +225,7 @@ public class TableResultWidget extends GepiWidget {
     StreamResponse onDownload() {
         return new StreamResponse() {
 
-            private File statisticsFile;
+            private Path statisticsFile;
 
             @Override
             public void prepareResponse(Response response) {
@@ -243,8 +244,8 @@ public class TableResultWidget extends GepiWidget {
                     }
                     statisticsFile = dataService.getOverviewExcel(unrolledResult4download.get().getEventList(), requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
 
-                    response.setHeader("Content-Length", "" + statisticsFile.length()); // output into file
-                    response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getName());
+                    response.setHeader("Content-Length", "" + Files.size(statisticsFile)); // output into file
+                    response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getFileName());
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -253,7 +254,7 @@ public class TableResultWidget extends GepiWidget {
 
             @Override
             public InputStream getStream() throws IOException {
-                return FileUtilities.getInputStreamFromFile(statisticsFile);
+                return FileUtilities.getInputStreamFromFile(statisticsFile.toFile());
             }
 
             @Override

@@ -1,5 +1,6 @@
 package de.julielab.gepi.webapp.services;
 
+import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.services.ConfigurationSymbolProvider;
 import de.julielab.gepi.core.services.GepiCoreModule;
 import de.julielab.gepi.webapp.base.TabPersistentField;
@@ -24,6 +25,10 @@ import org.apache.tapestry5.services.javascript.StackExtension;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.nio.file.Path;
+
+import static de.julielab.gepi.core.services.GePiDataService.GEPI_EXCEL_FILE_PREFIX_NAME;
+import static de.julielab.gepi.core.services.GePiDataService.GEPI_TMP_DIR_NAME;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to
@@ -31,6 +36,8 @@ import java.io.IOException;
  */
 @ImportModule(GepiCoreModule.class)
 public class AppModule {
+
+
     public static void contributeSymbolSource(@Autobuild ConfigurationSymbolProvider symbolProvider,
                                               final OrderedConfiguration<SymbolProvider> configuration) {
         configuration.add("GePiConfigurationSymbols", symbolProvider, "before:ApplicationDefaults");
@@ -53,7 +60,7 @@ public class AppModule {
 
         // The application version is primarily useful as it appears in
         // any exception reports (HTML or textual).
-        configuration.override(SymbolConstants.APPLICATION_VERSION, "0.11.2");
+        configuration.override(SymbolConstants.APPLICATION_VERSION, "0.12.0-beta");
         // Avoid Ajax-requests waiting for each other. This would make asynchronous lading of
         // dashboard elements impossible
         configuration.override(SymbolConstants.SESSION_LOCKING_ENABLED, false);
@@ -64,7 +71,7 @@ public class AppModule {
 
         // This is something that should be removed when going to production, but is useful
         // in the early stages of development.
-        configuration.override(SymbolConstants.PRODUCTION_MODE, true);
+        configuration.override(SymbolConstants.PRODUCTION_MODE, false);
     }
 
     public static void contributeApplicationDefaults(
@@ -81,6 +88,9 @@ public class AppModule {
         configuration.add(SymbolConstants.HMAC_PASSPHRASE, "juliegepipassphrase");
 
         configuration.add(SymbolConstants.ERRORS_CLOSE_BUTTON_CSS_CLASS, "btn-close position-absolute top-0 end-0");
+
+        configuration.add(GepiCoreSymbolConstants.GEPI_TMP_DIR, Path.of(System.getProperty("java.io.tmpdir"), GEPI_TMP_DIR_NAME));
+        configuration.add(GepiCoreSymbolConstants.GEPI_EXCEL_FILE_PREFIX, GEPI_EXCEL_FILE_PREFIX_NAME);
     }
 
     /**
@@ -105,6 +115,16 @@ public class AppModule {
     @Contribute(RequestHandler.class)
     public static void contributeRequestFilters(final OrderedConfiguration<RequestFilter> filters) {
         filters.addInstance(GePiRequestFilter.class.getSimpleName(), GePiRequestFilter.class, "after:ErrorFilter");
+    }
+
+    @Startup
+    public static void scheduleJobs(ParallelExecutor pExecutor, PeriodicExecutor executor, IStatisticsCollector statisticsCollector) {
+        // this was meant to collection current interaction statistics once a day (the lower time given here was for
+        // development purposes)
+        // Could still be done, removed it for now due to time constraints
+//         executor.addJob(new IntervalSchedule(60000),
+//         "Event Statistics Calculation Job",
+//         statisticsCollector);
     }
 
     /**
@@ -211,16 +231,6 @@ public class AppModule {
         configuration.add(GePiSessionState.class, new ApplicationStateContribution("session", sessionStateCreator));
     }
 
-    @Startup
-    public static void scheduleJobs(ParallelExecutor pExecutor, PeriodicExecutor executor, IStatisticsCollector statisticsCollector) {
-        // this was meant to collection current interaction statistics once a day (the lower time given here was for
-        // development purposes)
-        // Could still be done, removed it for now due to time constraints
-//         executor.addJob(new IntervalSchedule(60000),
-//         "Event Statistics Calculation Job",
-//         statisticsCollector);
-    }
-
     /**
      * Redirect the user to the intended page when browsing through
      * tapestry forms through browser history or over-eager autocomplete
@@ -228,15 +238,11 @@ public class AppModule {
     public RequestExceptionHandler decorateRequestExceptionHandler(
             final ComponentSource componentSource,
             final Response response,
-            final RequestExceptionHandler oldHandler)
-    {
-        return new RequestExceptionHandler()
-        {
+            final RequestExceptionHandler oldHandler) {
+        return new RequestExceptionHandler() {
             @Override
-            public void handleRequestException(Throwable exception) throws IOException
-            {
-                if (exception.getMessage() == null || !exception.getMessage().contains("Forms require that the request method be POST and that the t:formdata query parameter have values"))
-                {
+            public void handleRequestException(Throwable exception) throws IOException {
+                if (exception.getMessage() == null || !exception.getMessage().contains("Forms require that the request method be POST and that the t:formdata query parameter have values")) {
                     oldHandler.handleRequestException(exception);
                     return;
                 }
