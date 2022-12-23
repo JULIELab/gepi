@@ -1,0 +1,9 @@
+# This configuration file is meant to be given as path for the environment variable GEPI_CONFIGURATION to the
+# gepi-dev container assuming the ElasticSearch can be reached on the host at port 9201.
+elasticquery.clustername=es-docker-cluster
+elasticquery.url=host.docker.internal
+elasticquery.port=9201
+elasticquery.sockettimeout=-1
+
+gepi.documents.index.name=gepi_1.0
+gepi.neo4j.bolt.url=bolt://host.docker.internal:7687

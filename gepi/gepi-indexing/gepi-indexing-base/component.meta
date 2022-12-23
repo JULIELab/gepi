@@ -18,7 +18,7 @@
     "maven-artifact": {
         "artifactId": "gepi-indexing-base",
         "groupId": "de.julielab",
-        "version": "0.11.2"
+        "version": "0.12.0"
     },
     "name": "GePi Indexing Base"
 }

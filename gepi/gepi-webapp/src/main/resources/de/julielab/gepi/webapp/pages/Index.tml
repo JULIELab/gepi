@@ -37,11 +37,16 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="downloadModalLabel">Interaction download</h5>
+                        <h5 class="modal-title" id="downloadModalLabel">Interaction result download</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Interaction data is being assembled. This can take a few minutes. Please wait for the download dialog to appear.</p>
+                        <p>Interaction data is being assembled. This may take a while depending on result size and server load. You can use the link below to fetch the download at a later time. The link is valid at least 24h.</p>
+                        <div class="alert alert-warning">Assembling the data of a session will replace previously prepared result files, even they have not been downloaded. To begin a new session for a separate download file, hit the <span class="background-well-gray">Reset Session</span> button to the right of the navigation bar.</div>
+                        <div class="input-group">
+                            <input type="text" id="downloadUrlCopyTextField" class="form-control input-monospace input-sm color-bg-subtle" data-autoselect="" value="${resultFileDownloadLink}" aria-label="${resultFileDownloadLink}" readonly=""/>
+                            <button class="btn btn-secondary" type="button" id="downloadUrlCopyButton"/>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

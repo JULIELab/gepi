@@ -174,3 +174,15 @@ a:active, a:hover {
 .has-error .form-control-feedback {
   color: #a94442;
 }
+#downloadUrlCopyTextField {
+    background-color: #f6f8fa;
+}
+
+#downloadUrlCopyButton {
+	cursor: pointer;
+    background-image: url("../images/content_copy_black_24dp.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #f6f8fa;
+    width: 40px;
+}

@@ -15,6 +15,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+import org.apache.tapestry5.services.PageRenderLinkSource;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
@@ -75,6 +76,9 @@ public class Index {
 
     @InjectComponent
     private GepiInput gepiInput;
+    private boolean sessionExists = false;
+    @InjectPage
+    private ResultDownload resultDownload;
 
     public Zone getOutputZone() {
         return outputZone;
@@ -88,7 +92,7 @@ public class Index {
         GePiData data = dataService.getData(dataSessionId);
         resultNonNullOnLoad = data != null && (data.getUnrolledResult4charts() != null || data.getAggregatedResult() != null);
     }
-private boolean sessionExists = false;
+
     // Handle call with an unwanted context
     Object onActivate(EventContext eventContext) {
         if (requestData == null) {
@@ -116,6 +120,7 @@ private boolean sessionExists = false;
     void afterRender() {
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI());
+        javaScriptSupport.require("gepi/pages/index").invoke("setupDownloadUrlCopyButton");
         if (isResultPresent()) {
             // If there already is data at loading the page, the input panel is already hidden (see #getShowInputClass)
             // and we can display the widgets.
@@ -149,6 +154,12 @@ private boolean sessionExists = false;
         return resultPresent;
     }
 
+//    public String getShowInputClass() {
+//        if (getEsResult() == null && getNeo4jResult() == null)
+//            return "show";
+//        return "";
+//    }
+
     /**
      * @return The class "into", causing the outputcol to show immediately, or the empty string which will hide the outputcol initially.
      */
@@ -157,12 +168,6 @@ private boolean sessionExists = false;
             return "show";
         return "";
     }
-
-//    public String getShowInputClass() {
-//        if (getEsResult() == null && getNeo4jResult() == null)
-//            return "show";
-//        return "";
-//    }
 
     public Object onReset() {
         log.debug("Reset!");
@@ -179,13 +184,13 @@ private boolean sessionExists = false;
         this.hasLargeWidget = hasLargeWidget;
     }
 
-    public String getBodyScrollClass() {
-        return hasLargeWidget ? "noScroll" : "";
-    }
-
 //    public String getWidgetOverlayShowClass() {
 //        return hasLargeWidget ? "into" : "";
 //    }
+
+    public String getBodyScrollClass() {
+        return hasLargeWidget ? "noScroll" : "";
+    }
 
     /**
      * Called from the client to retrieve the data for chart display.
@@ -391,13 +396,20 @@ private boolean sessionExists = false;
         return 6;
     }
 
-
     private boolean isAList() {
         return requestData.getInputMode().contains(InputMode.A) || isBList();
     }
 
     private boolean isBList() {
         return requestData.getInputMode().contains(InputMode.AB);
+    }
+
+
+    @Inject
+    private PageRenderLinkSource pageRenderLS;
+
+    public String getResultFileDownloadLink() {
+        return pageRenderLS.createPageRenderLinkWithContext(ResultDownload.class, dataSessionId).toAbsoluteURI();
     }
 
 }
