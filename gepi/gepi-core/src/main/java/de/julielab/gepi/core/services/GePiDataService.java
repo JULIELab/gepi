@@ -33,10 +33,22 @@ public class GePiDataService implements IGePiDataService {
     public static final String GEPI_TMP_DIR_NAME = "gepi";
     public static final String GEPI_EXCEL_FILE_PREFIX_NAME = "gepi-excel-";
     public static final String GEPI_EXCEL_STATUS_FILE_PREFIX = "gepi-excel-status-";
-    private static final Logger log = LoggerFactory.getLogger(GePiDataService.class);
     public static final String EXCEL_FILE_SUCCESS_STATE = "GePI interactions have been successfully saved in Excel format.";
-    private Cache<Long, GePiData> dataCache;
+    protected static final HashMap<Integer, String> likelihoodNames;
+    private static final Logger log = LoggerFactory.getLogger(GePiDataService.class);
+
+    static {
+        likelihoodNames = new HashMap<>();
+        likelihoodNames.put(1, "negation");
+        likelihoodNames.put(2, "low");
+        likelihoodNames.put(3, "investigation");
+        likelihoodNames.put(4, "moderate");
+        likelihoodNames.put(5, "high");
+        likelihoodNames.put(6, "assertion");
+    }
+
     private final Path gepiTmpDir;
+    private Cache<Long, GePiData> dataCache;
     private String excelFilePrefix;
     /**
      * This string is the scripts itself, not a reference to a file.
@@ -254,15 +266,21 @@ public class GePiDataService implements IGePiDataService {
     public Path getOverviewExcel(Future<EventRetrievalResult> eventRetrievalResult, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException, ExecutionException, InterruptedException {
         long time = System.currentTimeMillis();
         log.info("Creating event statistics Excel file for dataSessionId {}", dataSessionId);
-        updateDownloadFileCreationsStatus( "Step 1 of 3: Retrieving and storing all interactions for Excel sheet creation.", dataSessionId);
+        final Path tempStatusFile = getTempStatusFile(dataSessionId);
+        if (!Files.exists(tempStatusFile)) {
+            if (!Files.exists(tempStatusFile.getParent()))
+                Files.createDirectories(tempStatusFile.getParent());
+            Files.createFile(tempStatusFile);
+        }
+        updateDownloadFileCreationsStatus("Step 1 of 3: Retrieving and storing all interactions for Excel sheet creation.", dataSessionId);
         Path tsvFile = getTempTsvDataFile(dataSessionId);
         Path xlsFile = getTempXlsDataFile(dataSessionId);
         writeOverviewTsvFile(eventRetrievalResult.get().getEventList(), tsvFile);
-        updateDownloadFileCreationsStatus( "Step 2 of 3: Retrieval of all interactions has finished. Creating Excel file.", dataSessionId);
+        updateDownloadFileCreationsStatus("Step 2 of 3: Retrieval of all interactions has finished. Creating Excel file.", dataSessionId);
         createExcelSummaryFile(tsvFile, xlsFile, inputMode, sentenceFilterString, paragraphFilterString, sectionNameFilterString);
         updateDownloadFileCreationsStatus(EXCEL_FILE_SUCCESS_STATE + " The file is ready for download.", dataSessionId);
         time = System.currentTimeMillis() - time;
-        log.info("Excel sheet creation took {} seconds", time/1000);
+        log.info("Excel sheet creation took {} seconds", time / 1000);
         return xlsFile;
     }
 
@@ -305,17 +323,7 @@ public class GePiDataService implements IGePiDataService {
         if (!Files.exists(xlsFile))
             throw new FileNotFoundException("The Excel file " + xlsFile.toAbsolutePath() + " does not exist.");
     }
-    protected static final HashMap<Integer, String> likelihoodNames;
 
-    static {
-        likelihoodNames = new HashMap<>();
-        likelihoodNames.put(1, "negation");
-        likelihoodNames.put(2, "low");
-        likelihoodNames.put(3, "investigation");
-        likelihoodNames.put(4, "moderate");
-        likelihoodNames.put(5, "high");
-        likelihoodNames.put(6, "assertion");
-    }
     private void writeOverviewTsvFile(List<Event> events, Path file) throws IOException {
         log.debug("Writing event statistics tsv file to {}", file);
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file.toFile(), UTF_8))) {
