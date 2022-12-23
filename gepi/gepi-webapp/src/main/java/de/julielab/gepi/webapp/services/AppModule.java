@@ -7,6 +7,7 @@ import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.state.GePiSessionState;
 import de.julielab.gepi.webapp.state.GePiSessionStateCreator;
 import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.MetaDataConstants;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.commons.MappedConfiguration;
 import org.apache.tapestry5.commons.OrderedConfiguration;
@@ -129,6 +130,10 @@ public class AppModule {
 //         "Event Statistics Calculation Job",
 //         statisticsCollector);
         executor.addJob(new IntervalSchedule(Duration.ofDays(1).toMillis()), "Temp file deletion job", statisticsCollector);
+    }
+
+    public void contributeMetaDataLocator(MappedConfiguration<String, String> configuration) {
+        configuration.add(MetaDataConstants.SECURE_PAGE, "true");
     }
 
     /**
