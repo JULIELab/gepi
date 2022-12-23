@@ -182,7 +182,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("source", docId.startsWith("PMC") ? "pmc" : "pubmed");
                             String arg1EntryIdPath = "/ref/resourceEntryList[" + k + "]/entryId";
                             String arg2EntryIdPath = "/ref/resourceEntryList[" + l + "]/entryId";
-                            document.addField("argument1", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.orgid2tid2atidAddonFilter));
+                            document.addField("argument1", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[0], argPair[0], argPair[0], argPair[0]}, new String[]{arg1EntryIdPath, arg1EntryIdPath, arg1EntryIdPath, arg1EntryIdPath, arg1EntryIdPath}, new Filter[]{geneFb.orgid2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2gohypertidFilter, geneFb.orgid2equalnameatidReplaceFilter}, new UniqueFilter()));
 //                            document.addField("argument1geneid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, null));
 //                            document.addField("argument1taxid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2taxidReplaceFilter));
 //                            document.addField("argument1conceptid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2tidReplaceFilter));
@@ -200,7 +200,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
 //                            document.addField("argument1matchtype", Stream.of(argPair).map(ArgumentMention.class::cast).map(ArgumentMention::getRef).map(ConceptMention.class::cast).map(cm -> cm.getResourceEntryList(0).getConfidence() == null || cm.getResourceEntryList(0).getConfidence().contains("9999") ? "exact" : "fuzzy").toArray());
 //                            document.addField("argument1genesource", createRawFieldValueForAnnotation(argPair[0], "/ref/componentId", geneComponentIdProcessingfilter));
 //                            document.addField("argument1genemappingsource", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList[" + k + "]/componentId", geneComponentIdProcessingfilter));
-                            document.addField("argument2", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.orgid2tid2atidAddonFilter));
+                            document.addField("argument2", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[1], argPair[1], argPair[1], argPair[1], argPair[1]}, new String[]{arg2EntryIdPath, arg2EntryIdPath, arg2EntryIdPath, arg2EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.orgid2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2gohypertidFilter, geneFb.orgid2equalnameatidReplaceFilter}, new UniqueFilter()));
 //                            document.addField("argument2geneid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, null));
 //                            document.addField("argument2taxid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2taxidReplaceFilter));
 //                            document.addField("argument2conceptid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tidReplaceFilter));

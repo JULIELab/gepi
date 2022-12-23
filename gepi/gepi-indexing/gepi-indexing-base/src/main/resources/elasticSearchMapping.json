@@ -81,8 +81,7 @@
         "type": "keyword"
       },
       "argument1": {
-        "type": "keyword",
-        "store": true
+        "type": "keyword"
       },
       "argument1geneid": {
         "type": "keyword",
@@ -139,8 +138,7 @@
         "store": true
       },
       "argument2": {
-        "type": "keyword",
-        "store": true
+        "type": "keyword"
       },
       "argument2geneid": {
         "type": "keyword",
