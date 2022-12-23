@@ -2,6 +2,7 @@ package de.julielab.gepi.core.services;
 
 import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.InputMode;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static de.julielab.gepi.core.services.GePiDataService.GEPI_TMP_DIR_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +82,10 @@ public class GePiDataServiceTest {
 
 
         GePiDataService gePiDataService = new GePiDataService(gepiTmpDir, gepiExcelPrefix);
-        Path outputFile = gePiDataService.getOverviewExcel(events, 1234, EnumSet.of(InputMode.A), null, null, null);
+        final EventRetrievalResult eventRetrievalResult = new EventRetrievalResult();
+        eventRetrievalResult.setEvents(events);
+
+        Path outputFile = gePiDataService.getOverviewExcel(CompletableFuture.completedFuture(eventRetrievalResult), 1234, EnumSet.of(InputMode.A), null, null, null);
         assertThat(outputFile).exists();
     }
 

@@ -19,6 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,9 @@ public class GePiDataService implements IGePiDataService {
     public static final String TARGET = "target";
     public static final String GEPI_TMP_DIR_NAME = "gepi";
     public static final String GEPI_EXCEL_FILE_PREFIX_NAME = "gepi-excel-";
+    public static final String GEPI_EXCEL_STATUS_FILE_PREFIX = "gepi-excel-status-";
     private static final Logger log = LoggerFactory.getLogger(GePiDataService.class);
+    public static final String EXCEL_FILE_SUCCESS_STATE = "GePI interactions have been successfully saved in Excel format.";
     private Cache<Long, GePiData> dataCache;
     private final Path gepiTmpDir;
     private String excelFilePrefix;
@@ -39,8 +43,8 @@ public class GePiDataService implements IGePiDataService {
      */
     private String excelResultCreationScript;
 
-    public GePiDataService(@Symbol(GepiCoreSymbolConstants.GEPI_TMP_DIR) Path gepiTmpDir, @Symbol(GepiCoreSymbolConstants.GEPI_EXCEL_FILE_PREFIX) String excelFilePrefix) throws IOException {
-        this.gepiTmpDir = gepiTmpDir;
+    public GePiDataService(@Symbol(GepiCoreSymbolConstants.GEPI_TMP_DIR) String gepiTmpDir, @Symbol(GepiCoreSymbolConstants.GEPI_EXCEL_FILE_PREFIX) String excelFilePrefix) throws IOException {
+        this.gepiTmpDir = Path.of(gepiTmpDir);
         this.excelFilePrefix = excelFilePrefix;
         // We use weak values. So when a user session is evicted,
         // its GePi data can also be removed as soon as possible.
@@ -247,18 +251,42 @@ public class GePiDataService implements IGePiDataService {
     }
 
     @Override
-    public Path getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException {
+    public Path getOverviewExcel(Future<EventRetrievalResult> eventRetrievalResult, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException, ExecutionException, InterruptedException {
         long time = System.currentTimeMillis();
         log.info("Creating event statistics Excel file for dataSessionId {}", dataSessionId);
+        updateDownloadFileCreationsStatus( "Step 1 of 3: Retrieving and storing all interactions for Excel sheet creation.", dataSessionId);
         Path tsvFile = getTempTsvDataFile(dataSessionId);
-        log.info("Tmp TSV: {}", tsvFile);
         Path xlsFile = getTempXlsDataFile(dataSessionId);
-        log.info("Tmp XLS: {}", xlsFile);
-        writeOverviewTsvFile(events, tsvFile);
+        writeOverviewTsvFile(eventRetrievalResult.get().getEventList(), tsvFile);
+        updateDownloadFileCreationsStatus( "Step 2 of 3: Retrieval of all interactions has finished. Creating Excel file.", dataSessionId);
         createExcelSummaryFile(tsvFile, xlsFile, inputMode, sentenceFilterString, paragraphFilterString, sectionNameFilterString);
+        updateDownloadFileCreationsStatus(EXCEL_FILE_SUCCESS_STATE + " The file is ready for download.", dataSessionId);
         time = System.currentTimeMillis() - time;
         log.info("Excel sheet creation took {} seconds", time/1000);
         return xlsFile;
+    }
+
+    @Override
+    public String getDownloadFileCreationStatus(long dataSessionId) throws IOException {
+        final Path tempStatusFile = getTempStatusFile(dataSessionId);
+        final String status = Files.readString(tempStatusFile);
+        return status;
+    }
+
+    @Override
+    public boolean existsTempStatusFile(long dataSessionId) throws IOException {
+        return Files.exists(getTempStatusFile(dataSessionId));
+    }
+
+    @Override
+    public boolean isDownloadExcelFileReady(long dataSessionId) throws IOException {
+        final String status = getDownloadFileCreationStatus(dataSessionId);
+        return status.contains(EXCEL_FILE_SUCCESS_STATE);
+    }
+
+    private void updateDownloadFileCreationsStatus(String status, long dataSessionId) throws IOException {
+        final Path tempStatusFile = getTempStatusFile(dataSessionId);
+        Files.writeString(tempStatusFile, status);
     }
 
     private void createExcelSummaryFile(Path tsvFile, Path xlsFile, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException {
@@ -324,12 +352,17 @@ public class GePiDataService implements IGePiDataService {
         }
     }
 
-    private Path getTempTsvDataFile(long dataSessionId) throws IOException {
-        return Files.createTempFile(gepiTmpDir, GEPI_EXCEL_FILE_PREFIX_NAME + dataSessionId, ".tsv");
+    private Path getTempStatusFile(long dataSessionId) {
+        return Path.of(gepiTmpDir.toString(), GEPI_EXCEL_STATUS_FILE_PREFIX + dataSessionId + ".txt");
     }
 
-    private Path getTempXlsDataFile(long dataSessionId) throws IOException {
-        return Files.createTempFile(gepiTmpDir, GEPI_EXCEL_FILE_PREFIX_NAME + dataSessionId, ".xlsx");
+    private Path getTempTsvDataFile(long dataSessionId) {
+        return Path.of(gepiTmpDir.toString(), GEPI_EXCEL_FILE_PREFIX_NAME + dataSessionId + ".tsv");
+    }
+
+    @Override
+    public Path getTempXlsDataFile(long dataSessionId) {
+        return Path.of(gepiTmpDir.toString(), GEPI_EXCEL_FILE_PREFIX_NAME + dataSessionId + ".xlsx");
     }
 
     private JSONObject getJsonObjectForArgument(Argument argument) {

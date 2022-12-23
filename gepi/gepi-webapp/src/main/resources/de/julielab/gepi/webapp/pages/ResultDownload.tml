@@ -1,0 +1,24 @@
+<html t:type="layout" title="Contact"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter">
+
+    <div class="container-md">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title text-center">Excel download file creation status for session <span class="background-well-gray">${dataSessionId}</span></div>
+            </div>
+            <div class="card-body text-center">
+                <t:if test="sessionResultExists">
+                    <div class="alert ${alertClass}" role="alert">
+                        ${resultFileStatus}
+                    </div>
+                    <t:eventlink event="downloadExcelFile" context="${dataSessionId}" class="btn btn-primary">Download</t:eventlink>
+                    <p:else>
+                        <div class="alert alert-warning" role="alert">
+                            There is no result for this session with number ${dataSessionId}. Did you hit the download button above the interactions table?
+                        </div>
+                    </p:else>
+                </t:if>
+            </div>
+        </div>
+    </div>
+</html>

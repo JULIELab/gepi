@@ -242,13 +242,12 @@ public class TableResultWidget extends GepiWidget {
                         time = System.currentTimeMillis() - time;
                         log.info("[{}] Unrolled result retrieval for Excel sheet creation took {} seconds", requestData.getDataSessionId(), time / 1000);
                     }
-                    statisticsFile = dataService.getOverviewExcel(unrolledResult4download.get().getEventList(), requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
+                    statisticsFile = dataService.getOverviewExcel(unrolledResult4download, requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
 
                     response.setHeader("Content-Length", "" + Files.size(statisticsFile)); // output into file
                     response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getFileName());
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    log.error("Could not create Excel result for dataSessionId {}", requestData.getDataSessionId(), e);
                 }
             }
 

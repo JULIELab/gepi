@@ -18,6 +18,7 @@ import org.apache.tapestry5.ioc.annotations.*;
 import org.apache.tapestry5.ioc.services.ApplicationDefaults;
 import org.apache.tapestry5.ioc.services.ParallelExecutor;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
+import org.apache.tapestry5.ioc.services.cron.IntervalSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.services.*;
 import org.apache.tapestry5.services.javascript.JavaScriptStack;
@@ -26,6 +27,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
 
 import static de.julielab.gepi.core.services.GePiDataService.GEPI_EXCEL_FILE_PREFIX_NAME;
 import static de.julielab.gepi.core.services.GePiDataService.GEPI_TMP_DIR_NAME;
@@ -51,6 +53,7 @@ public class AppModule {
         // is provided inline, or requires more initialization than simply
         // invoking the constructor.
         binder.bind(IStatisticsCollector.class, StatisticsCollector.class);
+        binder.bind(ITempFileCleaner.class, TempFileCleaner.class);
     }
 
     public static void contributeFactoryDefaults(
@@ -118,13 +121,14 @@ public class AppModule {
     }
 
     @Startup
-    public static void scheduleJobs(ParallelExecutor pExecutor, PeriodicExecutor executor, IStatisticsCollector statisticsCollector) {
+    public static void scheduleJobs(ParallelExecutor pExecutor, PeriodicExecutor executor, IStatisticsCollector statisticsCollector, ITempFileCleaner tempFileCleaner) {
         // this was meant to collection current interaction statistics once a day (the lower time given here was for
         // development purposes)
         // Could still be done, removed it for now due to time constraints
 //         executor.addJob(new IntervalSchedule(60000),
 //         "Event Statistics Calculation Job",
 //         statisticsCollector);
+        executor.addJob(new IntervalSchedule(Duration.ofDays(1).toMillis()), "Temp file deletion job", statisticsCollector);
     }
 
     /**

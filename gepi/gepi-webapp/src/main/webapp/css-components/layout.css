@@ -39,3 +39,9 @@ body.noScroll {
 .nav-item.active {
     color: #ffffff;
 }
+
+.background-well-gray {
+    background-color: #ddd;
+    border-radius: 10px;
+    padding: 0 .5rem;
+}

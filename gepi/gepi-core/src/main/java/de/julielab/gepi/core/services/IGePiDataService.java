@@ -1,9 +1,6 @@
 package de.julielab.gepi.core.services;
 
-import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.data.GePiData;
-import de.julielab.gepi.core.retrieval.data.InputMode;
+import de.julielab.gepi.core.retrieval.data.*;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
@@ -11,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public interface IGePiDataService {
 
@@ -73,5 +72,13 @@ public interface IGePiDataService {
      * @param sectionNameFilterString
      * @return An InputStream of the created Excel file.
      */
-    Path getOverviewExcel(List<Event> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException;
+    Path getOverviewExcel(Future<EventRetrievalResult> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException, ExecutionException, InterruptedException;
+
+    String getDownloadFileCreationStatus(long dataSessionId) throws IOException;
+
+    boolean existsTempStatusFile(long dataSessionId) throws IOException;
+
+    boolean isDownloadExcelFileReady(long dataSessionId) throws IOException;
+
+    Path getTempXlsDataFile(long dataSessionId);
 }

@@ -15,6 +15,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -25,6 +26,7 @@ public class TempFileCleanerTest {
 
     @BeforeClass
     public static void setup() throws IOException {
+        final Random random = new Random();
         gepiTmpDir = Path.of("src/test/resources/", "gepi-tmp-test");
         Files.createDirectories(gepiTmpDir);
         gepiExcelPrefix = GePiDataService.GEPI_EXCEL_FILE_PREFIX_NAME;
