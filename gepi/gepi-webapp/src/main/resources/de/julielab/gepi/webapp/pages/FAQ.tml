@@ -1,68 +1,98 @@
-<html t:type="layout" title="Contact"
+<html t:type="layout" title="Frequently Asked Questions"
       xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
 
     <div class="container-md">
         <div class="card">
             <div class="card-header">
-                <div class="card-title">Frequently Asked Questions</div>
+                <div class="card-title text-center">Frequently Asked Questions</div>
             </div>
             <div class="card-body">
                 <dl>
                     <dt>
+                        Which browsers and operating systems were tested with GePI?
+                    </dt>
+                    <dd>
+                        The table below lists combinations of operating systems and browsers that have been tested with GePI.
+                        <div class="overflow-auto">
+                            <table class="table">
+                                <th>OS</th><th>Version</th><th>Chrome</th><th>Firefox</th><th>Microsoft Edge</th><th>Safari</th>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <td>Linux</td><td>Mint 20.3, Ubuntu 22.04</td><td>108.0.5359.124</td><td>108.0.1</td><td>-</td><td>-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mac OS</td><td>11.6.8,11.7.1</td><td>108.0.5359.124</td><td>108.0.1</td><td>-</td><td>15.4,16.1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Windows</td><td>10,11</td><td>108.0.5359.125</td><td>108.0.1</td><td>108.0.1462.54</td><td>-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </dd>
+                    <dt id="nlp-tools">
                         Which NLP tools are used in GePI to find molecular interactions in the literature?
                     </dt>
                     <dd>
                         <ul>
-                            <li>Basic linguistic processing: JCoRe</li>
-                            <li>Gene recognition: Adapted JULIE Lab version of GNormPlus</li>
-                            <li>Interaction extraction: BioSem</li>
-                            <li>Factuality assessment: JCoRe component basing on work of Christine Engelmann</li>
+                            <li>Basic linguistic processing: <a href="https://github.com/JULIELab/jcore-base" target="_blank" class="link-secondary">JCoRe</a></li>
+                            <li>Gene recognition: <a href="https://github.com/JULIELab/gnormplus" target="_blank" class="link-secondary">Adapted JULIE Lab version of GNormPlus</a></li>
+                            <li>Interaction extraction: <a href="https://github.com/JULIELab/jcore-projects/tree/master/jcore-biosem-ae-bionlp-st11" target="_blank" class="link-secondary">BioSem trained on BioNLP Shared Task 2011 data</a></li>
+                            <li>Factuality assessment: JCoRe components for <a href="https://github.com/JULIELab/jcore-base/tree/master/jcore-likelihood-detection-ae" target="_blank" class="link-secondary">hedge word detection</a> and <a href="https://github.com/JULIELab/jcore-base/tree/master/jcore-likelihood-assignment-ae" target="_blank" class="link-secondary">assignment to interaction descriptions</a></li>
                         </ul>
                     </dd>
                     <dt>
                         Can I do the NLP processing on my own?
                     </dt>
                     <dd>
-                        All the required components and code is freely available. However, PubMed and PubMed central
-                        (open access subset) are large text repositories and their processing required significant
+                        All the required components and code is freely available, see <a href="#nlp-tools" class="link-secondary">above</a>.
+                        However, PubMed and PubMed central
+                        (open access subset) are large text repositories and require significant
                         computational resources for reasonable processing times. As a rule of thumb, 50-60 CPU cores
                         and machines with at least 64GB of memory are recommended. Depending on the quality of the hardware,
-                        lower resources might still be adequate. The  GePI pipeline has actually rather modest
-                        requirements on hardware, for example, no GPUs are needed.
+                        lower numbers might still be adequate. The GePI pipeline has actually rather modest
+                        requirements on hardware. No GPUs are needed.
                     </dd>
                     <dt>
                         Which technology is used for GePI?
                     </dt>
                     <dd>
-                        <ul><!-- TODO URLs -->
-                            <li>NLP pipeline: UIMA</li><!-- TODO link zum  NLP teil  oben -->
-                            <li>Neo4j 4.4</li>
-                            <li>ElasticSearch 7.17</li>
-                            <li>Tapestry 5.8</li>
+                        <ul>
+                            <li>NLP pipeline: <a href="#nlp-tools" class="link-secondary">JCoRe </a><a href="uima.apache.org/" target="_blank" class="link-secondary">UIMA</a> components</li>
+                            <li><a href="neo4j.com/" target="_blank" class="link-secondary">Neo4j</a> 4.4</li>
+                            <li><a href="elastic.co/" target="_blank" class="link-secondary">ElasticSearch</a> 7.18 with the <a href="https://github.com/JULIELab/elasticsearch-mapper-preanalyzed/tree/7.17.8-mvn" target="_blank" class="link-secondary">Preanalyzed Mapper Plugin</a></li>
+                            <li><a href="tapestry.apache.org/" target="_blank" class="link-secondary">Tapestry</a> 5.8</li>
                         </ul>
                     </dd>
                     <dt>
-                        How exactly are gene names mapped to gene IDs?
+                        How exactly are gene names mapped to gene IDs in a GePI query?
                     </dt>
                     <dd>
-                        Normalized names, all matches searched for, only aggregate or majority name shown in mapping table
+                        We match the names after a normalization step to the NCBI Gene symbols in our database.
+                        The normalization step includes lower-casing of the name and the removal of punctuation and white spaces so that, for example, <code>il2</code> and <code>il-2</code> are both mapped to <code>IL2</code>.
+                        Gene name matching will often find multiple matches in our database despite the fact that we use the NCBI <a href="https://ncbiinsights.ncbi.nlm.nih.gov/2018/02/27/gene_orthologs-file-gene-ftp/" target="_blank" class="link-secondary">gene_orthologs</a> file to create single representatives for orthologous genes. Sometimes not all species are (yet) included in the file or the normalization matches multiple symbols.
+                        For this reason, the symbol mapping table in the statistics element of the result dashboard shows the most frequent target name for an input gene name. Still, all found elements will be searched for in GePI. If this leads to unwanted results, it is recommended to use <t:pagelink page="Help" anchor="input-specification" target="_blank" class="link-secondary">canonical gene IDs</t:pagelink> in the query.
                     </dd>
                     <dt>
                         Why do I receive interactions with genes I did not query for
                     </dt>
                     <dd>
-                        queries for families, complexes and gene groups return their parts or members, just like GO terms
+                        Queries for families, complexes and gene groups also match their parts or members. For example, a query for <code>AKT</code> will retrieve interactions including <code>AKT1</code>. This is most obvious when searching for GO terms where the query result consists of genes annotated with the GO term contained in the query - even if the query does not contain a single gene name or ID.
                     </dd>
                     <dt>Why do full-text query or filter results highlight words that do not seem to match a query term?</dt>
                     <dd>
-                        For full-text queries GePI expands abbreviation. Consider the abbreviation <span class="em">cyclic mechanical stress (CMS)</span>, used for example in <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2654047/" class="link-secondary" target="_blank">PMC2654047</a>. It is introduced at the beginning of the document and then used throughout the text. Thus, when the query <em>stress</em> would only work on the first occurrence of the term when the long form is given. To allow matches for all the other places, too, we internally expand abbreviations to make such matches possible.  <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1,bmp2,smad1,sentencefilter=stress}" target="_blank" title="Click to start an example search filtered by the word 'stress' that will be found in abbreviations." data-bs-toggle="default-tooltip">
+                        For full-text queries GePI expands abbreviations. Consider the abbreviation <em>cyclic mechanical stress (CMS)</em>, used for example in <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2654047/" class="link-secondary" target="_blank">PMC2654047</a>. It is introduced at the beginning of the document and then used throughout the text. Thus, the query <em>stress</em> would only work on the first occurrence of the term when the long form is given. To allow matches for all the other places, too, we internally expand abbreviations to make such matches possible.
+                        <p>
+                        <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1%2Cbmp2%2Csmad1,sentencefilter:stress}" target="_blank" class="link-light btn btn-info" title="Click to start an example search filtered by the word 'stress' that will be found in abbreviations." data-bs-toggle="default-tooltip">
                         Show this example in GePI</t:pagelink>
+                        </p>
                     </dd>
                     <dt>
                         Is GePI open source?
                     </dt>
                     <dl>
-                        Yes! The complete GePI source code is available on GitHub at <!-- TODO -->
+                        As soon as the scientific paper describing GePI is published, the complete code will be made public on GitHub.
+                        <!--Yes! The complete GePI source code is available on GitHub at  TODO -->
                     </dl>
                 </dl>
             </div>

@@ -1,5 +1,6 @@
 a.btn.btn-info {
     padding: 0 .25rem 0 .25rem;
+    vertical-align: baseline;
 }
 
 code a {

@@ -46,6 +46,7 @@ public class Layout {
 		return new String[] { "Index",
 //				"Statistics",
 				"Help",
+				"FAQ",
 				"About", "Contact" };
 	}
 }
