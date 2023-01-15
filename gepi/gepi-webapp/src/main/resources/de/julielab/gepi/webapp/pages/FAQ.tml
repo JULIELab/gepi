@@ -68,7 +68,7 @@
                         How exactly are gene names mapped to gene IDs in a GePI query?
                     </dt>
                     <dd>
-                        We match the names after a normalization step to the NCBI Gene symbols in our database.
+                        We match the input names after a normalization step to the NCBI Gene symbols in our database.
                         The normalization step includes lower-casing of the name and the removal of punctuation and white spaces so that, for example, <code>il2</code> and <code>il-2</code> are both mapped to <code>IL2</code>.
                         Gene name matching will often find multiple matches in our database despite the fact that we use the NCBI <a href="https://ncbiinsights.ncbi.nlm.nih.gov/2018/02/27/gene_orthologs-file-gene-ftp/" target="_blank" class="link-secondary">gene_orthologs</a> file to create single representatives for orthologous genes. Sometimes not all species are (yet) included in the file. Since the genes that exist in several species often carry the same name, this could result in multiple input matches. It is also possible that the normalization causes multiple symbols to match.
                         For this reason, the symbol mapping table in the statistics element of the result dashboard shows the most frequent target name for an input gene name. Still, all found elements will be searched for in GePI. If this leads to unwanted results, it is recommended to use <t:pagelink page="Help" anchor="input-specification" target="_blank" class="link-secondary">canonical gene IDs</t:pagelink> in the query.
