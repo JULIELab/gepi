@@ -64,7 +64,7 @@ public class AppModule {
 
         // The application version is primarily useful as it appears in
         // any exception reports (HTML or textual).
-        configuration.override(SymbolConstants.APPLICATION_VERSION, "0.12.0");
+        configuration.override(SymbolConstants.APPLICATION_VERSION, "0.12.1");
         // Avoid Ajax-requests waiting for each other. This would make asynchronous lading of
         // dashboard elements impossible
         configuration.override(SymbolConstants.SESSION_LOCKING_ENABLED, false);
