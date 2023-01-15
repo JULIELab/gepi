@@ -22,7 +22,7 @@
 	<logger name="de.julielab.elastic.query.components.data.ElasticServerResponse" level="INFO"/>
 	<logger name="de.julielab" level="INFO" />
 <!--	<logger name="de.julielab.gepi.webapp" level="DEBUG"/>-->
-<!--	<logger name="de.julielab.gepi.webapp.pages.Index" level="debug"/>-->
+	<logger name="de.julielab.gepi.webapp.pages.Index" level="debug"/>
 	<logger name="de.julielab.gepi.webapp.components.GepiWidgetLayout" level="INFO"/>
 <!--	<logger name="de.julielab.gepi.core.services.GepiCoreModule.IGeneIdService" level="DEBUG"/>-->
 		<logger name="de.julielab.gepi.core.services.GepiCoreModule.IGePiDataService" level="DEBUG"/>

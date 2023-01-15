@@ -21,10 +21,10 @@
                                         <td>Linux</td><td>Mint 20.3, Ubuntu 22.04</td><td>108.0.5359.124</td><td>108.0.1</td><td>-</td><td>-</td>
                                     </tr>
                                     <tr>
-                                        <td>Mac OS</td><td>11.6.8,11.7.1</td><td>108.0.5359.124</td><td>108.0.1</td><td>-</td><td>15.4,16.1</td>
+                                        <td>Mac OS</td><td>11.6.8, 11.7.1</td><td>108.0.5359.124</td><td>108.0.1</td><td>-</td><td>15.4, 16.1</td>
                                     </tr>
                                     <tr>
-                                        <td>Windows</td><td>10,11</td><td>108.0.5359.125</td><td>108.0.1</td><td>108.0.1462.54</td><td>-</td>
+                                        <td>Windows</td><td>10, 11</td><td>108.0.5359.125</td><td>108.0.1</td><td>108.0.1462.54</td><td>-</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -58,10 +58,10 @@
                     </dt>
                     <dd>
                         <ul>
-                            <li>NLP pipeline: <a href="#nlp-tools" class="link-secondary">JCoRe </a><a href="uima.apache.org/" target="_blank" class="link-secondary">UIMA</a> components</li>
-                            <li><a href="neo4j.com/" target="_blank" class="link-secondary">Neo4j</a> 4.4</li>
-                            <li><a href="elastic.co/" target="_blank" class="link-secondary">ElasticSearch</a> 7.18 with the <a href="https://github.com/JULIELab/elasticsearch-mapper-preanalyzed/tree/7.17.8-mvn" target="_blank" class="link-secondary">Preanalyzed Mapper Plugin</a></li>
-                            <li><a href="tapestry.apache.org/" target="_blank" class="link-secondary">Tapestry</a> 5.8</li>
+                            <li>NLP pipeline: <a href="#nlp-tools" class="link-secondary">JCoRe </a><a href="uima.apache.org/" target="_blank" class="link-secondary">UIMA</a> components (see above)</li>
+                            <li><a href="https://neo4j.com/" target="_blank" class="link-secondary">Neo4j</a> 4.4</li>
+                            <li><a href="https://elastic.co/" target="_blank" class="link-secondary">ElasticSearch</a> 7.18 with the <a href="https://github.com/JULIELab/elasticsearch-mapper-preanalyzed/tree/7.17.8-mvn" target="_blank" class="link-secondary">Preanalyzed Mapper Plugin</a></li>
+                            <li><a href="https://tapestry.apache.org/" target="_blank" class="link-secondary">Tapestry</a> 5.8</li>
                         </ul>
                     </dd>
                     <dt>
@@ -70,11 +70,11 @@
                     <dd>
                         We match the names after a normalization step to the NCBI Gene symbols in our database.
                         The normalization step includes lower-casing of the name and the removal of punctuation and white spaces so that, for example, <code>il2</code> and <code>il-2</code> are both mapped to <code>IL2</code>.
-                        Gene name matching will often find multiple matches in our database despite the fact that we use the NCBI <a href="https://ncbiinsights.ncbi.nlm.nih.gov/2018/02/27/gene_orthologs-file-gene-ftp/" target="_blank" class="link-secondary">gene_orthologs</a> file to create single representatives for orthologous genes. Sometimes not all species are (yet) included in the file or the normalization matches multiple symbols.
+                        Gene name matching will often find multiple matches in our database despite the fact that we use the NCBI <a href="https://ncbiinsights.ncbi.nlm.nih.gov/2018/02/27/gene_orthologs-file-gene-ftp/" target="_blank" class="link-secondary">gene_orthologs</a> file to create single representatives for orthologous genes. Sometimes not all species are (yet) included in the file. Since the genes that exist in several species often carry the same name, this could result in multiple input matches. It is also possible that the normalization causes multiple symbols to match.
                         For this reason, the symbol mapping table in the statistics element of the result dashboard shows the most frequent target name for an input gene name. Still, all found elements will be searched for in GePI. If this leads to unwanted results, it is recommended to use <t:pagelink page="Help" anchor="input-specification" target="_blank" class="link-secondary">canonical gene IDs</t:pagelink> in the query.
                     </dd>
                     <dt>
-                        Why do I receive interactions with genes I did not query for
+                        Why do I receive interactions with genes that are not in my search query?
                     </dt>
                     <dd>
                         Queries for families, complexes and gene groups also match their parts or members. For example, a query for <code>AKT</code> will retrieve interactions including <code>AKT1</code>. This is most obvious when searching for GO terms where the query result consists of genes annotated with the GO term contained in the query - even if the query does not contain a single gene name or ID.

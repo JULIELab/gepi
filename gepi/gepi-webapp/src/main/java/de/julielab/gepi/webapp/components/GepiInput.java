@@ -42,6 +42,7 @@ import java.util.stream.Stream;
 @Import(stylesheet = {"context:css-components/gepiinput.css"})
 public class GepiInput {
 
+    public static final int INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS = 1000;
     @Inject
     private Logger log;
 
@@ -208,7 +209,7 @@ public class GepiInput {
         paragraphFilterString = "";
         sectionNameFilterString = "";
         docId = "";
-        interactionRetrievalLimitForAggregations = 1000;
+        interactionRetrievalLimitForAggregations = INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
     }
 
     public ValueEncoder getEventTypeEncoder() {
@@ -227,7 +228,7 @@ public class GepiInput {
         if (selectedEventTypes == null)
             selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
         if (interactionRetrievalLimitForAggregations == null)
-            interactionRetrievalLimitForAggregations = 1000;
+            interactionRetrievalLimitForAggregations = INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
     }
 
     void onValidateFromInputForm() {
@@ -264,6 +265,7 @@ public class GepiInput {
         this.dataSessionId = dataSessionId;
         this.includeUnary = queryParameters.isIncludeUnary();
         this.docId = queryParameters.getDocid();
+        this.interactionRetrievalLimitForAggregations = queryParameters.getInteractionRetrievalLimitForAggregations();
         executeSearch();
     }
 

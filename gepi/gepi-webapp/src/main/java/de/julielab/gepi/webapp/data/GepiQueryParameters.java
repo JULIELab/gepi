@@ -9,6 +9,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static de.julielab.gepi.webapp.components.GepiInput.INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
+
 public class GepiQueryParameters {
     public static final String LISTA = "lista";
     public static final String LISTB = "listb";
@@ -36,7 +38,7 @@ public class GepiQueryParameters {
     private String docid;
     private boolean includeUnary;
     private boolean formdata;
-    private int interactionRetrievalLimit;
+    private int interactionRetrievalLimitForAggregations;
 
     public GepiQueryParameters(Request request) {
         readParameters(request);
@@ -145,8 +147,9 @@ public class GepiQueryParameters {
                 sectionNameFilterString = decodeUrlEncoding(sectionNameFilterString);
             docid = request.getParameter(DOCID);
             includeUnary = Boolean.parseBoolean(request.getParameter(INCLUDE_UNARY));
+            interactionRetrievalLimitForAggregations = INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
             try {
-                interactionRetrievalLimit = Integer.parseInt(request.getParameter(INTERACTION_RETRIEVAL_LIMIT));
+                interactionRetrievalLimitForAggregations = Integer.parseInt(request.getParameter(INTERACTION_RETRIEVAL_LIMIT));
             } catch (NumberFormatException e) {
                 // no number given
             }
@@ -160,5 +163,13 @@ public class GepiQueryParameters {
                 .replaceAll("\\$002522", "\"")
                 .replaceAll("\\$007[Cc]", "|")
                 .replaceAll("\\$002[Bb]","+");
+    }
+
+    public int getInteractionRetrievalLimitForAggregations() {
+        return interactionRetrievalLimitForAggregations;
+    }
+
+    public void setInteractionRetrievalLimitForAggregations(int interactionRetrievalLimitForAggregations) {
+        this.interactionRetrievalLimitForAggregations = interactionRetrievalLimitForAggregations;
     }
 }

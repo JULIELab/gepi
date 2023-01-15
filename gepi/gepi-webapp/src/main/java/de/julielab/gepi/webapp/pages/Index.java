@@ -5,6 +5,7 @@ import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.components.GepiInput;
 import de.julielab.gepi.webapp.data.GepiQueryParameters;
+import de.julielab.gepi.webapp.state.GePiSessionState;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
@@ -15,6 +16,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+import org.apache.tapestry5.services.ApplicationStateManager;
 import org.apache.tapestry5.services.PageRenderLinkSource;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
@@ -92,10 +94,11 @@ public class Index {
         GePiData data = dataService.getData(dataSessionId);
         resultNonNullOnLoad = data != null && (data.getUnrolledResult4charts() != null || data.getAggregatedResult() != null);
     }
-
-    // Handle call with an unwanted context
+    @Inject
+    private ApplicationStateManager asm;
     Object onActivate(EventContext eventContext) {
         if (requestData == null) {
+            final GePiSessionState gePiSessionState = asm.get(GePiSessionState.class);
             dataSessionId = dataService.newSession();
             log.debug("Current dataSessionId is 0, initializing GePi session with ID {}", dataSessionId);
             log.debug("No session");
