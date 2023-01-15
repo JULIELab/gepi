@@ -1,8 +1,15 @@
 # Changelog
 
 ## v0.12.1 (15/01/2023)
-- [**bug**] Fix NPE when entering the page via FAQ or Help page [#223](https://github.com/JULIELab/gepi/issues/223)
+
+#### General Enhancements
+
+- [**enhancement**] Add an FAQ page. [#224](https://github.com/JULIELab/gepi/issues/224)
 - [**enhancement**] Create a (fav)icon  or our own [#214](https://github.com/JULIELab/gepi/issues/214)
+
+#### Bug Fixes
+
+- [**bug**] Fix NPE when entering the page via FAQ or Help page [#223](https://github.com/JULIELab/gepi/issues/223)
 
 ---
 
