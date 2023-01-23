@@ -85,7 +85,7 @@
                                 <li><a class="link-secondary" target="_blank" href="https://www.uniprot.org/">UniProtKB</a> Accession and IDs/mnemonic</li>
                                 <li><a class="link-secondary" target="_blank" href="https://www.genenames.org/data/genegroup/#!/">HGNC Gene Group</a> IDs and names</li>
                                 <li><a class="link-secondary" target="_blank" href="https://github.com/sorgerlab/famplex/">FamPlex</a> IDs and names</li>
-                                <li><a class="link-secondary" target="_blank" href="http://geneontology.org/">Gene Ontology</a> IDs</li>
+                                <li><a class="link-secondary" target="_blank" href="http://geneontology.org/">Gene Ontology</a> IDs and concept names</li>
                             </ul>
                             The first list of identifiers will be called <em>List A</em> or <em>A-List</em> and the second one will be called <em>List B</em> or <em>B-List</em> all over the Web page.
                         </p>
