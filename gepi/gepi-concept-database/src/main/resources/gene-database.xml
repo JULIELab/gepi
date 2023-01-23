@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <conceptdatabase xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.julielab.de/conceptdb"
-                 xsi:schemaLocation="http://www.julielab.de/conceptdb http://www.julielab.de/conceptdb/concepts/conceptdb-1.2.0.xsd
+                 xsi:schemaLocation="http://www.julielab.de/conceptdb http://www.julielab.de/conceptdb/concepts/conceptdb-1.2.1.xsd
                  http://www.julielab.de/conceptdb/concepts/ncbigene http://www.julielab.de/conceptdb/concepts/ncbigeneconcepts-1.2.0.xsd
                  http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd
                  http://julielab.de/conceptdb/concepts/bioportal http://www.julielab.de/conceptdb/concepts/bioportalconcepts-1.1.0.xsd">
     <versioning>
-        <version>0.12.1</version>
+        <version>0.12.2</version>
     </versioning>
     <connection>
         <uri>http://localhost:7474</uri>
@@ -41,6 +41,13 @@
                 <restendpoint>/concepts/concept_manager/insert_concepts</restendpoint>
                 <httpmethod>POST</httpmethod>
             </rest>
+            <importoptions>
+                <!-- This was used to update the preferred names of the Gene Ontology concepts because they were
+                partially wrong after the initial import. Both parameters should be set to 'false' normally or
+                the whole importoptions element be removed completely. -->
+                <merge>true</merge>
+                <overridepreferredname>true</overridepreferredname>
+            </importoptions>
             <concepts>
                 <creator xmlns="http://julielab.de/conceptdb/concepts/bioportal">
                     <name>JulielabBioPortalToolsConceptCreator</name>

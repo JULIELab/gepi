@@ -63,8 +63,11 @@ if [[ ! -d $ONTOLOGY_CONCEPTS ]]; then
   mkdir -p $TMP_DIR/ontologies
   echo "Downloading Gene Ontology from BioPortal"
   wget http://www.geneontology.org/ontology/gene_ontology.obo -O $TMP_DIR/ontologies/gene_ontology.obo
+  echo "Removing xrefs from OBO format because the OWL API will mix them up with the actual names of the class, possibly resulting in wrong preferred names."
+  sed '/^xref:/d' $TMP_DIR/ontologies/gene_ontology.obo > $TMP_DIR/ontologies/gene_ontology_no_xrefs.obo
   echo "Extracting GO concepts from $TMP_DIR/ontologies/ to concept manager JSON format at $ONTOLOGY_CONCEPTS"
-  java -jar julielab-bioportal-ontology-tools-*-cli.jar -eci $TMP_DIR/ontologies/ dummy $ONTOLOGY_CONCEPTS false true
+  java -jar julielab-bioportal-ontology-tools-*-cli.jar -eci $TMP_DIR/ontologies/ dummy $ONTOLOGY_CONCEPTS false true gene_ontology_no_xrefs
+  mv $ONTOLOGY_CONCEPTS/gene_ontology_no_xrefs.cls.jsonlst.gz $ONTOLOGY_CONCEPTS/gene_ontology.cls.jsonlst.gz
 else
   echo "Found directory for ontology concepts in JSON format at $ONTOLOGY_CONCEPTS"
 fi
