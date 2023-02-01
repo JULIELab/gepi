@@ -1,11 +1,14 @@
 package de.julielab.gepi.core.retrieval.services;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
+import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUnit;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregationResult;
 import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.gepi.core.retrieval.data.Argument;
+import de.julielab.gepi.core.retrieval.data.EsAggregatedResult;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.services.IGeneIdService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.annotations.Log;
@@ -56,6 +59,20 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 //		eventPPService.setPreferredNameFromConceptId(eventRetrievalResult.getEventList());
 //		eventPPService.setArgumentGeneIds(eventRetrievalResult.getEventList());
         return eventRetrievalResult;
+    }
+
+
+    @Override
+    public EsAggregatedResult getEventRetrievalAggregatedResult(IElasticServerResponse searchServerResponse, TermsAggregation eventCountRequest, Set<String> aListIds) {
+        final EsAggregatedResult result = new EsAggregatedResult();
+        final TermsAggregationResult eventCountResult = (TermsAggregationResult) searchServerResponse.getAggregationResult(eventCountRequest);
+        for (ITermsAggregationUnit aggregationUnit : eventCountResult.getAggregationUnits()) {
+            final String eventPairTerm = (String) aggregationUnit.getTerm();
+            final String[] eventPair = eventPairTerm.split(AGGREGATION_VALUE_DELIMITER);
+            final long count = aggregationUnit.getCount();
+
+        }
+        return null;
     }
 
     private Stream<Event> resultDocuments2Events(Stream<ISearchServerDocument> documents) {

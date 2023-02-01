@@ -1,6 +1,6 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.Neo4jAggregatedEventsRetrievalResult;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +17,7 @@ public interface IAggregatedEventsRetrievalService {
      * @param eventTypes
      * @return
      */
-    CompletableFuture<AggregatedEventsRetrievalResult> getEvents(Future<Stream<String>> idStream1, List<String> eventTypes);
+    CompletableFuture<Neo4jAggregatedEventsRetrievalResult> getEvents(Future<Stream<String>> idStream1, List<String> eventTypes);
 
     /**
      * A-B-Search.
@@ -26,5 +26,5 @@ public interface IAggregatedEventsRetrievalService {
      * @param eventTypes
      * @return
      */
-    CompletableFuture<AggregatedEventsRetrievalResult> getEvents(Future<Stream<String>> idStream1, Future<Stream<String>> idStream2, List<String> eventTypes);
+    CompletableFuture<Neo4jAggregatedEventsRetrievalResult> getEvents(Future<Stream<String>> idStream1, Future<Stream<String>> idStream2, List<String> eventTypes);
 }

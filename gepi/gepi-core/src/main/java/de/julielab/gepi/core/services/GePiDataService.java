@@ -172,7 +172,7 @@ public class GePiDataService implements IGePiDataService {
     }
 
     @Override
-    public JSONObject getPairedArgsCount(AggregatedEventsRetrievalResult aggregatedEvents) {
+    public JSONObject getPairedArgsCount(Neo4jAggregatedEventsRetrievalResult aggregatedEvents) {
         JSONArray nodes = new JSONArray();
         JSONArray links = new JSONArray();
 
