@@ -20,5 +20,11 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip'
+    - name: Load python dependencies
+      run: pip install -r gepi/requirements.txt
     - name: Build with Maven
       run: mvn -B package --file gepi/pom.xml --settings .github/maven-settings.xml
