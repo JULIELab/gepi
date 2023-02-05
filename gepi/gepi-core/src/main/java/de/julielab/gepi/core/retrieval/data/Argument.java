@@ -1,5 +1,6 @@
 package de.julielab.gepi.core.retrieval.data;
 
+
 import org.apache.commons.lang3.StringUtils;
 
 import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT;

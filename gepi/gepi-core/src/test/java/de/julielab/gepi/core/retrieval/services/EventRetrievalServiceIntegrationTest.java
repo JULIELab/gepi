@@ -1,12 +1,18 @@
 package de.julielab.gepi.core.retrieval.services;
 
+import de.julielab.elastic.query.components.ISearchServerComponent;
+import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.services.GePiCoreTestModule;
+import de.julielab.gepi.core.services.IGeneIdService;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.RegistryBuilder;
+import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
@@ -36,6 +42,10 @@ public class EventRetrievalServiceIntegrationTest {
 
         registry = RegistryBuilder.buildAndStartupRegistry(GePiCoreTestModule.class);
     }
+
+
+
+
 
 
     @AfterClass
@@ -268,7 +278,19 @@ public class EventRetrievalServiceIntegrationTest {
 
     @Test
     public void testAggregations() throws Exception {
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
+        Mockito.when(geneIdServiceMock.getGeneInfo(Mockito.anyIterable())).thenAnswer(i -> {
+            Iterable<String> ids = (Iterable<String>) i.getArguments()[0];
+            for (var id : ids) {
+                System.out.println(id);
+            }
+            return null;
+        });
+        final EventRetrievalService eventRetrievalService = new EventRetrievalService(
+                registry.getService(SymbolSource.class).valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS),
+                LoggerFactory.getLogger(EventRetrievalService.class), registry.getService(IEventResponseProcessingService.class),
+                geneIdServiceMock),
+                registry.getService(ISearchServerComponent.class));
         Future<EsAggregatedResult> openAggregationResult = eventRetrievalService.openAggregatedSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("3458")));
         System.out.println(openAggregationResult.get().getASymbolFrequencies());
         System.out.println(openAggregationResult.get().getBSymbolFrequencies());
