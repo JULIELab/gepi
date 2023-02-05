@@ -38,9 +38,9 @@ jobs:
           !testng-results.xml
         report_individual_runs: "true"
     - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: always()
-        with:
-          name: JEST Tests            # Name of the check run which will be created
-          path: gepi/**/target/surefire-reports/*.xml    # Path to test results
-          reporter: java-junit        # Format of test results
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: JEST Tests            # Name of the check run which will be created
+        path: gepi/**/target/surefire-reports/*.xml    # Path to test results
+        reporter: java-junit        # Format of test results
