@@ -11,6 +11,7 @@ import de.julielab.elastic.query.components.data.query.*;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
+import de.julielab.gepi.core.services.IGeneIdService;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
@@ -158,16 +159,18 @@ public class EventRetrievalService implements IEventRetrievalService {
     );
     private static final int SCROLL_SIZE = 2000;
     private Logger log;
+    private IGeneIdService geneIdService;
     private ISearchServerComponent searchServerComponent;
     private String documentIndex;
     private IEventResponseProcessingService eventResponseProcessingService;
 
     public EventRetrievalService(@Symbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS) String documentIndex, Logger log,
-                                 IEventResponseProcessingService eventResponseProcessingService,
+                                 IEventResponseProcessingService eventResponseProcessingService, IGeneIdService geneIdService,
                                  ISearchServerComponent searchServerComponent) {
         this.documentIndex = documentIndex;
         this.log = log;
         this.eventResponseProcessingService = eventResponseProcessingService;
+        this.geneIdService = geneIdService;
         this.searchServerComponent = searchServerComponent;
     }
 
@@ -492,29 +495,51 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     private Future<EsAggregatedResult> openAggregatedSearch(GepiRequestData requestData) {
-        try {
-            final SearchServerRequest openSearchRequest = getOpenSearchRequest(requestData, 0, 0, false);
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Short comment: Fetch the aggregate names of the input A IDs so we can tell in the aggregate values
+                // which argument belongs to A.
+                // Long comment: The aggregationvalue field stores the symbol of the gene top-aggregates (orthology / homology / famplex / hgnc),
+                // see de.julielab.gepi.indexing.GeneFilterBoard.orgid2topaggprefname, e.g. AKT---MTOR.
+                // For genes it is the highest orthology aggregate. For FamPlex and HGNC Groups it is the
+                // highest equal-name aggregate. The latter poses is a discrepancy because the GeneIdService does not map
+                // FamPlex or HGNC Group inputs to the equal-name aggregate. This is not an issue, however,
+                // because the equal-name aggregate always has the same name as its elements, if it exists (hence the name).
+                final Future<Map<String, GepiConceptInfo>> aGeneInfo = CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return geneIdService.getGeneInfo(requestData.getAListIdsAsSet());
+                    } catch (Exception e) {
+                        log.error("Could not retrieve gene info");
+                        throw new RuntimeException(e);
+                    }
+                });
 
-            final TermsAggregation eventCountRequest = new TermsAggregation();
-            eventCountRequest.name = "events";
-            eventCountRequest.field = FIELD_AGGREGATION_VALUE;
+                final SearchServerRequest openSearchRequest = getOpenSearchRequest(requestData, 0, 0, false);
 
-            openSearchRequest.addAggregationCommand(eventCountRequest);
+                final TermsAggregation eventCountRequest = new TermsAggregation();
+                eventCountRequest.name = "events";
+                eventCountRequest.field = FIELD_AGGREGATION_VALUE;
 
-            ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OpenAggregatedSearch");
-            carrier.addSearchServerRequest(openSearchRequest);
-            long time = System.currentTimeMillis();
-            log.debug("Sent full-text search server request");
-            searchServerComponent.process(carrier);
-            if (log.isDebugEnabled())
-                log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
+                openSearchRequest.addAggregationCommand(eventCountRequest);
 
-            EsAggregatedResult aggregatedResult = eventResponseProcessingService
-                    .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, requestData.getAListIdsAsSet());
-        } catch (Exception e) {
-            log.error("Open aggregated search failed", e);
-        }
-        return null;
+                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OpenAggregatedSearch");
+                carrier.addSearchServerRequest(openSearchRequest);
+                long time = System.currentTimeMillis();
+                log.debug("Sent full-text search server request");
+                searchServerComponent.process(carrier);
+                if (log.isDebugEnabled())
+                    log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
+
+
+
+                EsAggregatedResult aggregatedResult = eventResponseProcessingService
+                        .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, aGeneInfo.get().values().stream().map(GepiConceptInfo::getSymbol).collect(Collectors.toSet()));
+                return aggregatedResult;
+            } catch (Exception e) {
+                log.error("Open aggregated search failed", e);
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private Future<EsAggregatedResult> closedAggregatedSearch(GepiRequestData requestData) {
