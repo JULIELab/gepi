@@ -111,11 +111,11 @@ public class GepiInput {
     private CompletableFuture<EventRetrievalResult> persistEsResult;
 
     @Parameter
-    private CompletableFuture<AggregatedEventsRetrievalResult> neo4jResult;
+    private CompletableFuture<Neo4jAggregatedEventsRetrievalResult> neo4jResult;
 
     @Property
     @Persist(TabPersistentField.TAB)
-    private CompletableFuture<AggregatedEventsRetrievalResult> persistNeo4jResult;
+    private CompletableFuture<Neo4jAggregatedEventsRetrievalResult> persistNeo4jResult;
 
     @Inject
     private TypeCoercer typeCoercer;
@@ -298,12 +298,9 @@ public class GepiInput {
         }
         requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, interactionRetrievalLimitForAggregationsNoLimit ? Integer.MAX_VALUE : interactionRetrievalLimitForAggregations, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
-//        if ((filterString != null && !filterString.isBlank())) {
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
         Future<EventRetrievalResult> unrolledResult4Charts = eventRetrievalService.getEvents(requestData, true);
-//        } else {
-//        fetchEventsFromNeo4j(selectedEventTypeNames, isAListPresent, isABSearchRequest);
-//        }
+        Future<EsAggregatedResult> aggregatedResult = eventRetrievalService.getAggregatedEvents(requestData);
         final String[] aLines = listATextAreaValue != null ? listATextAreaValue.split("\n") : new String[0];
         final String[] bLines = listBTextAreaValue != null ? listBTextAreaValue.split("\n") : new String[0];
         log.info("[{}] A input, first elements: {}", dataSessionId, Arrays.asList(aLines).subList(0, Math.min(5, aLines.length)));

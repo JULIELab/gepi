@@ -1,13 +1,12 @@
 package de.julielab.gepi.core.retrieval.services;
 
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
-import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
+import de.julielab.gepi.core.retrieval.data.Neo4jAggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.core.services.IdType;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.neo4j.driver.*;
-import org.neo4j.driver.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ public class AggregatedEventsRetrievalService implements IAggregatedEventsRetrie
     }
 
     @Override
-    public CompletableFuture<AggregatedEventsRetrievalResult> getEvents(Future<Stream<String>> idStream1, List<String> eventTypes) {
+    public CompletableFuture<Neo4jAggregatedEventsRetrievalResult> getEvents(Future<Stream<String>> idStream1, List<String> eventTypes) {
         return CompletableFuture.supplyAsync(() -> {
             long time = System.currentTimeMillis();
             String idProperty = "sourceIds0";
@@ -71,7 +70,7 @@ public class AggregatedEventsRetrievalService implements IAggregatedEventsRetrie
             queryTemplate = queryTemplate.replaceAll("\\$PROP\\$", idProperty);
             try (Session s = driver.session(); Transaction tx = s.beginTransaction()) {
                 Result cypherResult = tx.run(queryTemplate, Map.of("aList", inputIds));
-                AggregatedEventsRetrievalResult retrievalResult = new AggregatedEventsRetrievalResult();
+                Neo4jAggregatedEventsRetrievalResult retrievalResult = new Neo4jAggregatedEventsRetrievalResult();
                 while (cypherResult.hasNext()) {
                     Record record = cypherResult.next();
                     retrievalResult.add(
@@ -89,7 +88,7 @@ public class AggregatedEventsRetrievalService implements IAggregatedEventsRetrie
     }
 
     @Override
-    public CompletableFuture<AggregatedEventsRetrievalResult> getEvents(Future<Stream<String>> idStream1, Future<Stream<String>> idStream2, List<String> eventTypes) {
+    public CompletableFuture<Neo4jAggregatedEventsRetrievalResult> getEvents(Future<Stream<String>> idStream1, Future<Stream<String>> idStream2, List<String> eventTypes) {
         return CompletableFuture.supplyAsync(() -> {
             long time = System.currentTimeMillis();
             String queryTemplate = String.format("MATCH (c:CONCEPT) WHERE c.sourceIds0 IN $aList \n" +
@@ -117,7 +116,7 @@ public class AggregatedEventsRetrievalService implements IAggregatedEventsRetrie
             try (Session s = driver.session(); Transaction tx = s.beginTransaction()) {
                 try {
                     Result cypherResult = tx.run(queryTemplate, Map.of("aList", idStream1.get(), "bList", idStream2.get()));
-                    AggregatedEventsRetrievalResult retrievalResult = new AggregatedEventsRetrievalResult();
+                    Neo4jAggregatedEventsRetrievalResult retrievalResult = new Neo4jAggregatedEventsRetrievalResult();
                     while (cypherResult.hasNext()) {
                         Record record = cypherResult.next();
                         retrievalResult.add(

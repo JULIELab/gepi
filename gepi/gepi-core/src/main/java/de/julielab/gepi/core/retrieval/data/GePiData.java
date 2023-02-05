@@ -1,7 +1,5 @@
 package de.julielab.gepi.core.retrieval.data;
 
-import com.google.j2objc.annotations.Weak;
-
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Future;
 
@@ -11,14 +9,14 @@ import java.util.concurrent.Future;
 public class GePiData {
     public static final GePiData EMPTY = new GePiData();
     private long sessionId;
-    private Future<AggregatedEventsRetrievalResult> aggregatedResult;
+    private Future<Neo4jAggregatedEventsRetrievalResult> neo4jAggregatedResult;
     private Future<EventRetrievalResult> unrolledResult4charts;
     private WeakReference<Future<EventRetrievalResult>> unrolledResult4download;
     private Future<EventRetrievalResult> pagedResult;
     private Future<IdConversionResult> listAIdConversionResult;
     private Future<IdConversionResult> listBIdConversionResult;
-    public GePiData(Future<AggregatedEventsRetrievalResult> aggregatedResult, Future<EventRetrievalResult> unrolledResult4charts, Future<EventRetrievalResult> pagedResult, Future<IdConversionResult> listAIdConversionResult, Future<IdConversionResult> listBIdConversionResult) {
-        this.aggregatedResult = aggregatedResult;
+    public GePiData(Future<Neo4jAggregatedEventsRetrievalResult> aggregatedResult, Future<EventRetrievalResult> unrolledResult4charts, Future<EventRetrievalResult> pagedResult, Future<IdConversionResult> listAIdConversionResult, Future<IdConversionResult> listBIdConversionResult) {
+        this.neo4jAggregatedResult = aggregatedResult;
         this.unrolledResult4charts = unrolledResult4charts;
         this.pagedResult = pagedResult;
         this.listAIdConversionResult = listAIdConversionResult;
@@ -49,8 +47,8 @@ public class GePiData {
         this.sessionId = sessionId;
     }
 
-    public Future<AggregatedEventsRetrievalResult> getAggregatedResult() {
-        return aggregatedResult;
+    public Future<Neo4jAggregatedEventsRetrievalResult> getNeo4jAggregatedResult() {
+        return neo4jAggregatedResult;
     }
 
     public Future<EventRetrievalResult> getUnrolledResult4charts() {

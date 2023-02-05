@@ -1,12 +1,15 @@
 package de.julielab.gepi.webapp.components;
 
-import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
+import de.julielab.gepi.core.retrieval.data.Neo4jAggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.pages.Index;
 import org.apache.tapestry5.BindingConstants;
-import org.apache.tapestry5.annotations.*;
+import org.apache.tapestry5.annotations.InjectComponent;
+import org.apache.tapestry5.annotations.InjectPage;
+import org.apache.tapestry5.annotations.Parameter;
+import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
@@ -47,8 +50,8 @@ public class GepiWidget {
         return dataService.getData(requestData.getDataSessionId()).getUnrolledResult4download().get();
     }
 
-    public Future<AggregatedEventsRetrievalResult> getNeo4jResult() {
-        return dataService.getData(requestData.getDataSessionId()).getAggregatedResult();
+    public Future<Neo4jAggregatedEventsRetrievalResult> getNeo4jResult() {
+        return dataService.getData(requestData.getDataSessionId()).getNeo4jAggregatedResult();
     }
 
     public boolean isLargeView() {

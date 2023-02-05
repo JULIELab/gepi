@@ -1,15 +1,16 @@
 package de.julielab.gepi.core.retrieval.services;
 
 import de.julielab.elastic.query.components.data.ISearchServerDocument;
+import de.julielab.elastic.query.components.data.aggregation.ITermsAggregationUnit;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregationResult;
 import de.julielab.elastic.query.services.IElasticServerResponse;
 import de.julielab.gepi.core.retrieval.data.Argument;
+import de.julielab.gepi.core.retrieval.data.EsAggregatedResult;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
-import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
-import de.julielab.gepi.core.services.IGeneIdService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.annotations.Log;
-import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -24,12 +25,7 @@ import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.*;
 
 public class EventResponseProcessingService implements IEventResponseProcessingService {
 
-    private final static Pattern FULLTEXT_QUERY_HIGHLIGHT_PATTERN = Pattern.compile("<b>");
-    @Inject
-    private IEventPostProcessingService eventPPService;
     private Logger log;
-    @Inject
-    private IGeneIdService geneIdService;
 
     public EventResponseProcessingService(Logger log) {
         this.log = log;
@@ -56,6 +52,26 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 //		eventPPService.setPreferredNameFromConceptId(eventRetrievalResult.getEventList());
 //		eventPPService.setArgumentGeneIds(eventRetrievalResult.getEventList());
         return eventRetrievalResult;
+    }
+
+
+    @Override
+    public EsAggregatedResult getEventRetrievalAggregatedResult(IElasticServerResponse searchServerResponse, TermsAggregation eventCountRequest, Set<String> aTopAggregateNames) {
+        final EsAggregatedResult result = new EsAggregatedResult();
+        final TermsAggregationResult eventCountResult = (TermsAggregationResult) searchServerResponse.getAggregationResult(eventCountRequest);
+        for (ITermsAggregationUnit aggregationUnit : eventCountResult.getAggregationUnits()) {
+            final String eventPairTerm = (String) aggregationUnit.getTerm();
+            final List<String> eventPair = Arrays.asList(eventPairTerm.split(AGGREGATION_VALUE_DELIMITER));
+            final long count = aggregationUnit.getCount();
+            // If necessary, switch argument positions in order to sort the results for A- and B-List membership
+            if (!aTopAggregateNames.contains(eventPair.get(0)) && aTopAggregateNames.contains(eventPair.get(1)))
+                Collections.swap(eventPair, 0, 1);
+            // This adds the event and its count to the result and also adds up the arguments and their frequencies.
+            // The ES index aggregationvalue field contains the arguments sorted alphabetically, so we cannot meet
+            // the same combination of arguments twice.
+            result.addArgumentPair(eventPair, count);
+        }
+        return result;
     }
 
     private Stream<Event> resultDocuments2Events(Stream<ISearchServerDocument> documents) {

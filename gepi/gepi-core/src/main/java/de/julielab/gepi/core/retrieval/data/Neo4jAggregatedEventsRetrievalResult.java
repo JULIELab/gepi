@@ -3,7 +3,7 @@ package de.julielab.gepi.core.retrieval.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AggregatedEventsRetrievalResult {
+public class Neo4jAggregatedEventsRetrievalResult {
     private List<String> arg1Names = new ArrayList<>();
     private List<String> arg2Names = new ArrayList<>();
     private List<String> arg1Ids = new ArrayList<>();
