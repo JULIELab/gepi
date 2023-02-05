@@ -41,6 +41,6 @@ jobs:
       uses: dorny/test-reporter@v1
       if: always()
       with:
-        name: JEST Tests            # Name of the check run which will be created
-        path: gepi/**/target/surefire-reports/*.xml    # Path to test results
+        name: JUnit Tests            # Name of the check run which will be created
+        path: gepi/**/target/surefire-reports/TestSuite.xml    # Path to test results
         reporter: java-junit        # Format of test results

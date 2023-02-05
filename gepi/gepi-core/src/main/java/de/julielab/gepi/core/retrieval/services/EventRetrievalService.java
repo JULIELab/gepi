@@ -494,7 +494,8 @@ public class EventRetrievalService implements IEventRetrievalService {
         return null;
     }
 
-    private Future<EsAggregatedResult> openAggregatedSearch(GepiRequestData requestData) {
+    @Override
+    public Future<EsAggregatedResult> openAggregatedSearch(GepiRequestData requestData) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 // Short comment: Fetch the aggregate names of the input A IDs so we can tell in the aggregate values

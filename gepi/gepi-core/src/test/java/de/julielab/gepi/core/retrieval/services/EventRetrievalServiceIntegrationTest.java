@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -263,5 +264,17 @@ public class EventRetrievalServiceIntegrationTest {
         IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("7124")).withListBGePiIds(IdConversionResult.of("3569", "7351")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"neutrophil infiltration\"").withParagraphFilterString("\"regenerating mice\""));
         final List<Event> eventList = bipartiteEventsEvents.get().getEventList();
+    }
+
+    @Test
+    public void testAggregations() throws Exception {
+        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        Future<EsAggregatedResult> openAggregationResult = eventRetrievalService.openAggregatedSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("3458")));
+        System.out.println(openAggregationResult.get().getASymbolFrequencies());
+        System.out.println(openAggregationResult.get().getBSymbolFrequencies());
+        final Map<Event, Long> eventFrequencies = openAggregationResult.get().getEventFrequencies();
+        for (var e : eventFrequencies.keySet()) {
+            System.out.println(e.getFirstArgument().getTopHomologyPreferredName() + "---" + e.getSecondArgument().getTopHomologyPreferredName() + ": " + eventFrequencies.get(e));
+        }
     }
 }
