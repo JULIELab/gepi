@@ -33,4 +33,14 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
-        junit_files: "gepi/**/target/surefire-reports/*.xml"
+        junit_files: |
+          "gepi/**/target/surefire-reports/*.xml"
+          !testng-results.xml
+        report_individual_runs: "true"
+    - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: JEST Tests            # Name of the check run which will be created
+          path: gepi/**/target/surefire-reports/*.xml    # Path to test results
+          reporter: java-junit        # Format of test results
