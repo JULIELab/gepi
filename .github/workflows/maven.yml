@@ -34,7 +34,7 @@ jobs:
       if: always()
       with:
         junit_files: |
-          "gepi/**/target/surefire-reports/*.xml"
+          gepi/**/target/surefire-reports/*.xml
           !testng-results.xml
         report_individual_runs: "true"
     - name: Test Report
