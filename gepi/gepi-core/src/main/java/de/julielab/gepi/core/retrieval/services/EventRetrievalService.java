@@ -211,29 +211,13 @@ public class EventRetrievalService implements IEventRetrievalService {
         return CompletableFuture.supplyAsync(() -> {
             try {
 
-                Set<String> idSetA = requestData.getListAGePiIds().get().getConvertedItems().values().stream().collect(Collectors.toSet());
-
-                Set<String> idSetB = requestData.getListBGePiIds().get().getConvertedItems().values().stream().collect(Collectors.toSet());
-
-                log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idSetA.size(), idSetB.size());
+                log.debug("Retrieving closed events for {} A IDs and {} B IDs", requestData.getListAGePiIds().get().getConvertedItems().size(), requestData.getListBGePiIds().get().getConvertedItems().size());
                 if (log.isDebugEnabled())
                     log.debug("Some A target IDs are: {}", requestData.getListAGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
                 if (log.isDebugEnabled())
                     log.debug("Some B target IDs are: {}", requestData.getListBGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
 
-                BoolQuery eventQuery = EventQueries.getClosedQuery(requestData, idSetA, idSetB);
-
-                boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
-
-                SearchServerRequest serverRqst = new SearchServerRequest();
-                serverRqst.query = eventQuery;
-                serverRqst.index = documentIndex;
-                serverRqst.start = from;
-                serverRqst.rows = numRows;
-                configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
-                if (!downloadAll && numRows > 0) {
-                    addHighlighting(serverRqst);
-                }
+                SearchServerRequest serverRqst = getClosedSearchRequest(requestData, from, numRows, forCharts);
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier<>("ClosedSearch");
                 carrier.addSearchServerRequest(serverRqst);
@@ -250,13 +234,30 @@ public class EventRetrievalService implements IEventRetrievalService {
                 time = System.currentTimeMillis() - time;
                 log.debug("Retrieved {} events for closed search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.BIPARTITE);
-                reorderBipartiteEventResultArguments(idSetA, idSetB, eventResult);
+                reorderBipartiteEventResultArguments(requestData.getAListIdsAsSet(), requestData.getBListIdsAsSet(), eventResult);
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
                 log.error("Could not retrieve the IDs for the query", e);
             }
             return null;
         });
+    }
+
+    private SearchServerRequest getClosedSearchRequest(GepiRequestData requestData, int from, int numRows, boolean forCharts) throws ExecutionException, InterruptedException {
+        BoolQuery eventQuery = EventQueries.getClosedQuery(requestData, requestData.getAListIdsAsSet(), requestData.getBListIdsAsSet());
+
+        boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
+
+        SearchServerRequest serverRqst = new SearchServerRequest();
+        serverRqst.query = eventQuery;
+        serverRqst.index = documentIndex;
+        serverRqst.start = from;
+        serverRqst.rows = numRows;
+        configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
+        if (!downloadAll && numRows > 0) {
+            addHighlighting(serverRqst);
+        }
+        return serverRqst;
     }
 
 
@@ -496,6 +497,34 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     @Override
     public Future<EsAggregatedResult> openAggregatedSearch(GepiRequestData requestData) {
+        try {
+            final SearchServerRequest openSearchRequest = getOpenSearchRequest(requestData, 0, 0, false);
+            return aggregatedSearch(requestData, openSearchRequest);
+        } catch (Exception e) {
+            log.error("Open aggregated search failed", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Future<EsAggregatedResult> closedAggregatedSearch(GepiRequestData requestData) {
+        try {
+            final SearchServerRequest closedSearchRequest = getClosedSearchRequest(requestData, 0, 0, false);
+            return aggregatedSearch(requestData, closedSearchRequest);
+        } catch (Exception e) {
+            log.error("Closed aggregated search failed", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * <p>Returns the aggregated event counts for the given request data and the open, closed or fulltext serverRequest that was created from the requestData.</p>
+     *
+     * @param requestData
+     * @param serverRequest
+     * @return
+     */
+    private Future<EsAggregatedResult> aggregatedSearch(GepiRequestData requestData, SearchServerRequest serverRequest) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 // Short comment: Fetch the aggregate names of the input A IDs so we can tell in the aggregate values
@@ -515,22 +544,20 @@ public class EventRetrievalService implements IEventRetrievalService {
                     }
                 });
 
-                final SearchServerRequest openSearchRequest = getOpenSearchRequest(requestData, 0, 0, false);
 
                 final TermsAggregation eventCountRequest = new TermsAggregation();
                 eventCountRequest.name = "events";
                 eventCountRequest.field = FIELD_AGGREGATION_VALUE;
 
-                openSearchRequest.addAggregationCommand(eventCountRequest);
+                serverRequest.addAggregationCommand(eventCountRequest);
 
-                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OpenAggregatedSearch");
-                carrier.addSearchServerRequest(openSearchRequest);
+                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("AggregatedSearch");
+                carrier.addSearchServerRequest(serverRequest);
                 long time = System.currentTimeMillis();
                 log.debug("Sent full-text search server request");
                 searchServerComponent.process(carrier);
                 if (log.isDebugEnabled())
                     log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
-
 
 
                 EsAggregatedResult aggregatedResult = eventResponseProcessingService
@@ -541,10 +568,6 @@ public class EventRetrievalService implements IEventRetrievalService {
                 throw new RuntimeException(e);
             }
         });
-    }
-
-    private Future<EsAggregatedResult> closedAggregatedSearch(GepiRequestData requestData) {
-        return null;
     }
 
 

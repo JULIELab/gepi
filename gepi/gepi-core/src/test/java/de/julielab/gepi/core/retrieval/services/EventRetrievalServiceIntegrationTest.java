@@ -279,7 +279,7 @@ public class EventRetrievalServiceIntegrationTest {
     }
 
     @Test
-    public void testAggregations() throws Exception {
+    public void testAggregationsOpenSearch() throws Exception {
         final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
         Mockito.when(geneIdServiceMock.getGeneInfo(Set.of("3458"))).thenReturn(Map.of("3458", GepiConceptInfo.builder().symbol("IFNG").build()));
         final EventRetrievalService eventRetrievalService = new EventRetrievalService(
@@ -298,4 +298,24 @@ public class EventRetrievalServiceIntegrationTest {
                 .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
                 .containsExactly(Tuple.tuple("IFNG", "LBR", 1L), Tuple.tuple("IFNG", "CPQ", 1L), Tuple.tuple("IFNG", "none", 6L));
     }
+
+    @Test
+    public void testAggregationsClosedSearch() throws Exception {
+        final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
+        Mockito.when(geneIdServiceMock.getGeneInfo(Set.of("10243"))).thenReturn(Map.of("10243", GepiConceptInfo.builder().symbol("GPHN").build()));
+        final EventRetrievalService eventRetrievalService = new EventRetrievalService(
+                registry.getService(SymbolSource.class).valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS),
+                LoggerFactory.getLogger(EventRetrievalService.class),
+                registry.getService(IEventResponseProcessingService.class),
+                geneIdServiceMock,
+                registry.getService(ISearchServerComponent.class));
+        Future<EsAggregatedResult> closedAggregationResult = eventRetrievalService.closedAggregatedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("10243")).withListBGePiIds(IdConversionResult.of("2743")));
+        assertThat(closedAggregationResult.get().getASymbolFrequencies().get("GPHN")).isEqualTo(1);
+        assertThat(closedAggregationResult.get().getBSymbolFrequencies().get("GLRB")).isEqualTo(1);
+        assertThat(closedAggregationResult.get().getEventFrequencies())
+                .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
+                .containsExactly(Tuple.tuple("GPHN", "GLRB", 1L));
+    }
+
+
 }
