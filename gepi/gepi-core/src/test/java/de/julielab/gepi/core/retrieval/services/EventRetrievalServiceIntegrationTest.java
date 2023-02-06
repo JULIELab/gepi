@@ -281,6 +281,7 @@ public class EventRetrievalServiceIntegrationTest {
         final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
         Mockito.when(geneIdServiceMock.getGeneInfo(Mockito.anyIterable())).thenAnswer(i -> {
             Iterable<String> ids = (Iterable<String>) i.getArguments()[0];
+            System.out.println(ids);
             for (var id : ids) {
                 System.out.println(id);
             }
