@@ -288,8 +288,9 @@ public class EventRetrievalServiceIntegrationTest {
         });
         final EventRetrievalService eventRetrievalService = new EventRetrievalService(
                 registry.getService(SymbolSource.class).valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS),
-                LoggerFactory.getLogger(EventRetrievalService.class), registry.getService(IEventResponseProcessingService.class),
-                geneIdServiceMock),
+                LoggerFactory.getLogger(EventRetrievalService.class),
+                registry.getService(IEventResponseProcessingService.class),
+                geneIdServiceMock,
                 registry.getService(ISearchServerComponent.class));
         Future<EsAggregatedResult> openAggregationResult = eventRetrievalService.openAggregatedSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("3458")));
         System.out.println(openAggregationResult.get().getASymbolFrequencies());
