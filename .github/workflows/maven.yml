@@ -42,5 +42,5 @@ jobs:
       if: always()
       with:
         name: JUnit Tests            # Name of the check run which will be created
-        path: gepi/**/target/surefire-reports/TestSuite.xml    # Path to test results
+        path: gepi/**/target/surefire-reports/TEST-TestSuite.xml    # Path to test results
         reporter: java-junit        # Format of test results
