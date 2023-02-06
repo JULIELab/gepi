@@ -33,9 +33,7 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
-        junit_files: |
-          gepi/**/target/surefire-reports/*.xml
-          !testng-results.xml
+        junit_files: gepi/**/target/surefire-reports/TEST-TestSuite.xml
         report_individual_runs: "true"
     - name: Test Report
       uses: dorny/test-reporter@v1
