@@ -12,5 +12,6 @@ public class AggregatedArgument extends Argument{
         // aggregated events from the aggregationvalue ES field only know the highest aggregate name (FamPlex / HGNCG / gene orthology)
         super(null, null, null, null);
         setTopHomologyPreferredName(topAggregateName);
+        setComparisonMode(ComparisonMode.TOP_HOMOLOGY_PREFERRED_NAME);
     }
 }

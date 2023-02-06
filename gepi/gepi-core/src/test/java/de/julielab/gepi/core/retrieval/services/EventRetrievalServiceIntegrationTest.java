@@ -8,6 +8,7 @@ import de.julielab.gepi.core.services.IGeneIdService;
 import org.apache.tapestry5.ioc.Registry;
 import org.apache.tapestry5.ioc.RegistryBuilder;
 import org.apache.tapestry5.ioc.services.SymbolSource;
+import org.assertj.core.groups.Tuple;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -17,6 +18,7 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -279,14 +281,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testAggregations() throws Exception {
         final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
-        Mockito.when(geneIdServiceMock.getGeneInfo(Mockito.anyIterable())).thenAnswer(i -> {
-            Iterable<String> ids = (Iterable<String>) i.getArguments()[0];
-            System.out.println(ids);
-            for (var id : ids) {
-                System.out.println(id);
-            }
-            return null;
-        });
+        Mockito.when(geneIdServiceMock.getGeneInfo(Set.of("3458"))).thenReturn(Map.of("3458", GepiConceptInfo.builder().symbol("IFNG").build()));
         final EventRetrievalService eventRetrievalService = new EventRetrievalService(
                 registry.getService(SymbolSource.class).valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS),
                 LoggerFactory.getLogger(EventRetrievalService.class),
@@ -294,11 +289,13 @@ public class EventRetrievalServiceIntegrationTest {
                 geneIdServiceMock,
                 registry.getService(ISearchServerComponent.class));
         Future<EsAggregatedResult> openAggregationResult = eventRetrievalService.openAggregatedSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("3458")));
-        System.out.println(openAggregationResult.get().getASymbolFrequencies());
-        System.out.println(openAggregationResult.get().getBSymbolFrequencies());
-        final Map<Event, Long> eventFrequencies = openAggregationResult.get().getEventFrequencies();
-        for (var e : eventFrequencies.keySet()) {
-            System.out.println(e.getFirstArgument().getTopHomologyPreferredName() + "---" + e.getSecondArgument().getTopHomologyPreferredName() + ": " + eventFrequencies.get(e));
-        }
+        // As seen in other tests above, an open search for 3458 results in 8 hits - all of which need to hit 3458, IFNG. So:
+        assertThat(openAggregationResult.get().getASymbolFrequencies().get("IFNG")).isEqualTo(8);
+        // 1 event is with LBR, another with CPQ. The rest are unary events
+        assertThat(openAggregationResult.get().getBSymbolFrequencies().get("LBR")).isEqualTo(1);
+        assertThat(openAggregationResult.get().getBSymbolFrequencies().get("CPQ")).isEqualTo(1);
+        assertThat(openAggregationResult.get().getEventFrequencies())
+                .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
+                .containsExactly(Tuple.tuple("IFNG", "LBR", 1L), Tuple.tuple("IFNG", "CPQ", 1L), Tuple.tuple("IFNG", "none", 6L));
     }
 }

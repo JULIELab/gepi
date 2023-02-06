@@ -3,15 +3,16 @@ package de.julielab.gepi.core.retrieval.data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
 public class EsAggregatedResult {
-    private Map<String, Long> aSymbolFrequencies;
-    private Map<String, Long> bSymbolFrequencies;
-    private Map<Event, Long> eventFrequencies;
+    private Map<String, Long> aSymbolFrequencies = new HashMap<>();
+    private Map<String, Long> bSymbolFrequencies = new HashMap<>();
+    private Map<Event, Long> eventFrequencies = new HashMap<>();
 
     /**
      * <p>
