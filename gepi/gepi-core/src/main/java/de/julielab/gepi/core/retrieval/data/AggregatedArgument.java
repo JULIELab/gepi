@@ -16,4 +16,9 @@ public class AggregatedArgument extends Argument{
         // Otherwise, all the arguments and, in consequence, the events will appear to be the same in HashMaps.
         setComparisonMode(ComparisonMode.TOP_HOMOLOGY_PREFERRED_NAME);
     }
+
+    @Override
+    public String toString() {
+        return getTopHomologyPreferredName();
+    }
 }

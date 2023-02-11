@@ -427,19 +427,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
-            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData);
-
-            boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
-
-            SearchServerRequest serverRqst = new SearchServerRequest();
-            serverRqst.query = eventQuery;
-            serverRqst.index = documentIndex;
-            serverRqst.start = from;
-            serverRqst.rows = numRows;
-            configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
-            if (!downloadAll && numRows > 0) {
-                addHighlighting(serverRqst);
-            }
+            SearchServerRequest serverRqst = getFulltextSearchRequest(requestData, from, numRows, forCharts);
 
             ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("FulltextFilteredEvents");
             carrier.addSearchServerRequest(serverRqst);
@@ -458,6 +446,23 @@ public class EventRetrievalService implements IEventRetrievalService {
             eventResult.setResultType(EventResultType.FULLTEXT_FILTERED);
             return eventResult;
         });
+    }
+
+    private SearchServerRequest getFulltextSearchRequest(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
+        BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData);
+
+        boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
+
+        SearchServerRequest serverRqst = new SearchServerRequest();
+        serverRqst.query = eventQuery;
+        serverRqst.index = documentIndex;
+        serverRqst.start = from;
+        serverRqst.rows = numRows;
+        configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
+        if (!downloadAll && numRows > 0) {
+            addHighlighting(serverRqst);
+        }
+        return serverRqst;
     }
 
     @Override
@@ -517,6 +522,17 @@ public class EventRetrievalService implements IEventRetrievalService {
         }
     }
 
+    @Override
+    public Future<EsAggregatedResult> fulltextAggregatedSearch(GepiRequestData requestData) {
+        try {
+            final SearchServerRequest fulltextSearchRequest= getFulltextSearchRequest(requestData, 0, 0, false);
+            return aggregatedSearch(requestData, fulltextSearchRequest);
+        } catch (Exception e) {
+            log.error("Closed aggregated search failed", e);
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * <p>Returns the aggregated event counts for the given request data and the open, closed or fulltext serverRequest that was created from the requestData.</p>
      *
@@ -535,19 +551,20 @@ public class EventRetrievalService implements IEventRetrievalService {
                 // highest equal-name aggregate. The latter poses is a discrepancy because the GeneIdService does not map
                 // FamPlex or HGNC Group inputs to the equal-name aggregate. This is not an issue, however,
                 // because the equal-name aggregate always has the same name as its elements, if it exists (hence the name).
-                final Future<Map<String, GepiConceptInfo>> aGeneInfo = CompletableFuture.supplyAsync(() -> {
+                final Future<Map<String, GepiConceptInfo>> aGeneInfo = requestData.getListAGePiIds() != null ? CompletableFuture.supplyAsync(() -> {
                     try {
                         return geneIdService.getGeneInfo(requestData.getAListIdsAsSet());
                     } catch (Exception e) {
                         log.error("Could not retrieve gene info");
                         throw new RuntimeException(e);
                     }
-                });
+                }) : null;
 
 
                 final TermsAggregation eventCountRequest = new TermsAggregation();
                 eventCountRequest.name = "events";
                 eventCountRequest.field = FIELD_AGGREGATION_VALUE;
+                eventCountRequest.size = Integer.MAX_VALUE;
 
                 serverRequest.addAggregationCommand(eventCountRequest);
 
@@ -561,7 +578,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 
                 EsAggregatedResult aggregatedResult = eventResponseProcessingService
-                        .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, aGeneInfo.get().values().stream().map(GepiConceptInfo::getSymbol).collect(Collectors.toSet()));
+                        .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, aGeneInfo != null ? aGeneInfo.get().values().stream().map(GepiConceptInfo::getSymbol).collect(Collectors.toSet()) : Collections.emptySet());
                 return aggregatedResult;
             } catch (Exception e) {
                 log.error("Open aggregated search failed", e);

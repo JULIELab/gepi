@@ -55,4 +55,6 @@ public interface IEventRetrievalService {
     Future<EsAggregatedResult> openAggregatedSearch(GepiRequestData requestData);
 
     Future<EsAggregatedResult> closedAggregatedSearch(GepiRequestData requestData);
+
+    Future<EsAggregatedResult> fulltextAggregatedSearch(GepiRequestData requestData);
 }

@@ -317,5 +317,32 @@ public class EventRetrievalServiceIntegrationTest {
                 .containsExactly(Tuple.tuple("GPHN", "GLRB", 1L));
     }
 
+    @Test
+    public void testAggregationsFulltextSearch() throws Exception {
+        // We don't need to mock a call to the service because no call should be done.
+        // The fulltext search does not make a difference between A and B since no A and B IDs are given.
+        final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
+        final EventRetrievalService eventRetrievalService = new EventRetrievalService(
+                registry.getService(SymbolSource.class).valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS),
+                LoggerFactory.getLogger(EventRetrievalService.class),
+                registry.getService(IEventResponseProcessingService.class),
+                geneIdServiceMock,
+                registry.getService(ISearchServerComponent.class));
+        Future<EsAggregatedResult> closedAggregationResult = eventRetrievalService.fulltextAggregatedSearch(new GepiRequestData().withSentenceFilterString("NMDA receptor").withIncludeUnary(true));
+        // just check a few arguments. There are too many to check them all.
+        assertThat(closedAggregationResult.get().getASymbolFrequencies().get("GHR")).isEqualTo(4);
+        assertThat(closedAggregationResult.get().getASymbolFrequencies().get("GPHN")).isEqualTo(3);
+        assertThat(closedAggregationResult.get().getASymbolFrequencies().get("PKC")).isEqualTo(2);
+        assertThat(closedAggregationResult.get().getASymbolFrequencies().get("TACR1")).isEqualTo(2);
+        assertThat(closedAggregationResult.get().getASymbolFrequencies().get("GRIA1")).isEqualTo(1);
+        assertThat(closedAggregationResult.get().getASymbolFrequencies().get("GRIA2")).isEqualTo(1);
+        assertThat(closedAggregationResult.get().getASymbolFrequencies().get("GRIA3")).isEqualTo(1);
+        assertThat(closedAggregationResult.get().getASymbolFrequencies().get("BCL2")).isEqualTo(1);
+        assertThat(closedAggregationResult.get().getBSymbolFrequencies().get("IL1B")).isEqualTo(1);
+        assertThat(closedAggregationResult.get().getEventFrequencies())
+                .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
+                .contains(Tuple.tuple("GPHN", "none", 3L), Tuple.tuple("PGR", "none", 1L), Tuple.tuple("TACR1", "none", 2L), Tuple.tuple("G protein-coupled receptors", "none", 1L), Tuple.tuple("CSF3", "IL1B", 1L));
+    }
+
 
 }
