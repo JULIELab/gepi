@@ -296,7 +296,7 @@ public class EventRetrievalServiceIntegrationTest {
         assertThat(openAggregationResult.get().getBSymbolFrequencies().get("CPQ")).isEqualTo(1);
         assertThat(openAggregationResult.get().getEventFrequencies())
                 .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
-                .containsExactly(Tuple.tuple("IFNG", "LBR", 1L), Tuple.tuple("IFNG", "CPQ", 1L), Tuple.tuple("IFNG", "none", 6L));
+                .containsExactly(Tuple.tuple("IFNG", "LBR", 1), Tuple.tuple("IFNG", "CPQ", 1), Tuple.tuple("IFNG", "none", 6));
     }
 
     @Test
@@ -314,7 +314,7 @@ public class EventRetrievalServiceIntegrationTest {
         assertThat(closedAggregationResult.get().getBSymbolFrequencies().get("GLRB")).isEqualTo(1);
         assertThat(closedAggregationResult.get().getEventFrequencies())
                 .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
-                .containsExactly(Tuple.tuple("GPHN", "GLRB", 1L));
+                .containsExactly(Tuple.tuple("GPHN", "GLRB", 1));
     }
 
     @Test
@@ -341,7 +341,7 @@ public class EventRetrievalServiceIntegrationTest {
         assertThat(closedAggregationResult.get().getBSymbolFrequencies().get("IL1B")).isEqualTo(1);
         assertThat(closedAggregationResult.get().getEventFrequencies())
                 .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
-                .contains(Tuple.tuple("GPHN", "none", 3L), Tuple.tuple("PGR", "none", 1L), Tuple.tuple("TACR1", "none", 2L), Tuple.tuple("G protein-coupled receptors", "none", 1L), Tuple.tuple("CSF3", "IL1B", 1L));
+                .contains(Tuple.tuple("GPHN", "none", 3), Tuple.tuple("PGR", "none", 1), Tuple.tuple("TACR1", "none", 2), Tuple.tuple("G protein-coupled receptors", "none", 1), Tuple.tuple("CSF3", "IL1B", 1));
     }
 
 

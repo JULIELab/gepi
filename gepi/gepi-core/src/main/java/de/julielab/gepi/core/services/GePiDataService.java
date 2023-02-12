@@ -127,6 +127,26 @@ public class GePiDataService implements IGePiDataService {
     }
 
     /**
+     * <p>Converts a map of argument symbols and their frequencies into JSON format for chats.</p>
+     * <p>The key is the top homology name in GePI.</p>
+     * @param symbolFrequencies The number of occurrences in the event result for A- or B symbols.
+     * @return A JSON representation of the input counts.
+     */
+    @Override
+    public JSONArray getArgumentCount(Map<String, Integer> symbolFrequencies) {
+        // put to json format
+        JSONArray singleArgCountJson = new JSONArray();
+
+        for (String argumentName : symbolFrequencies.keySet()) {
+            final Integer count = symbolFrequencies.get(argumentName);
+            final JSONArray nameCountPair = new JSONArray(argumentName, count);
+            singleArgCountJson.add(nameCountPair);
+        }
+
+        return singleArgCountJson;
+    }
+
+    /**
      * sets json formated input list for google charts that accepts an entry
      * pair + number (here gene pair (from + to) + count of occurrences)
      * singleArgCountJson is array of arrays with [<gene name 1><gene name
@@ -142,33 +162,8 @@ public class GePiDataService implements IGePiDataService {
         // get the count for how often pairs appear
         Map<Event, Integer> pairedArgCount = CollectionUtils.getCardinalityMap(evtList.stream().filter(e -> e.getArity() > 1).collect(Collectors.toList()));
 
-        // put to json
-        JSONArray nodes = new JSONArray();
-        JSONArray links = new JSONArray();
-        Set<String> nodeIdAlreadySeen = new HashSet<>();
-        pairedArgCount.entrySet().stream().forEach(e -> {
-            final Event k = e.getKey();
-            final Integer v = e.getValue();
-            JSONObject link = new JSONObject();
-            link.put("source", k.getFirstArgument().getTopHomologyPreferredName());
-            link.put("target", k.getSecondArgument().getTopHomologyPreferredName());
-            link.put("frequency", v);
-            link.put("type", k.getMainEventType());
-
-            links.put(link);
-
-            if (nodeIdAlreadySeen.add(k.getFirstArgument().getTopHomologyPreferredName())) {
-                nodes.put(getJsonObjectForArgument(k.getFirstArgument()));
-            }
-            if (nodeIdAlreadySeen.add(k.getSecondArgument().getTopHomologyPreferredName())) {
-                nodes.put(getJsonObjectForArgument(k.getSecondArgument()));
-            }
-        });
-
-        JSONObject nodesNLinks = new JSONObject();
-        nodesNLinks.put("nodes", nodes);
-        nodesNLinks.put("links", links);
-        return nodesNLinks;
+        // convert the counts to JSON
+        return getPairedArgsCount(pairedArgCount);
     }
 
     @Override
@@ -191,6 +186,40 @@ public class GePiDataService implements IGePiDataService {
         }
 
         JSONObject nodesNLinks = new JSONObject();
+        nodesNLinks.put("nodes", nodes);
+        nodesNLinks.put("links", links);
+        return nodesNLinks;
+    }
+
+    /**
+     * <p>Returns nodes and links for the Sankey diagrams based on aggregated events counts.</p>
+     * <p>The top homology preferred name is used for the node names.</p>
+     * @param eventFrequencies A map assigning frequency counts to unique events
+     * @return A JSON representation of nodes (arguments) and the frequency of events between the nodes (links).
+     */
+    @Override
+    public JSONObject getPairedArgsCount(Map<Event, Integer> eventFrequencies) {
+        JSONArray nodes = new JSONArray();
+        JSONArray links = new JSONArray();
+        JSONObject nodesNLinks = new JSONObject();
+        Set<String> nodeIdAlreadySeen = new HashSet<>();
+        for (Event e : eventFrequencies.keySet()) {
+            final Integer count = eventFrequencies.get(e);
+            JSONObject link = new JSONObject();
+            link.put("source", e.getFirstArgument().getTopHomologyPreferredName());
+            link.put("target", e.getSecondArgument().getTopHomologyPreferredName());
+            link.put("frequency", count);
+
+
+            links.add(link);
+
+            if (nodeIdAlreadySeen.add(e.getFirstArgument().getTopHomologyPreferredName())) {
+                nodes.add(getJsonObjectForArgument(e.getFirstArgument()));
+            }
+            if (nodeIdAlreadySeen.add(e.getSecondArgument().getTopHomologyPreferredName())) {
+                nodes.add(getJsonObjectForArgument(e.getSecondArgument()));
+            }
+        }
         nodesNLinks.put("nodes", nodes);
         nodesNLinks.put("links", links);
         return nodesNLinks;

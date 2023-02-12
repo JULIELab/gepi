@@ -234,7 +234,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 time = System.currentTimeMillis() - time;
                 log.debug("Retrieved {} events for closed search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.BIPARTITE);
-                reorderBipartiteEventResultArguments(requestData.getAListIdsAsSet(), requestData.getBListIdsAsSet(), eventResult);
+                reorderClosedEventResultArguments(requestData.getAListIdsAsSet(), requestData.getBListIdsAsSet(), eventResult);
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
                 log.error("Could not retrieve the IDs for the query", e);
@@ -275,8 +275,8 @@ public class EventRetrievalService implements IEventRetrievalService {
      * @param eventResult The event result as returned by the
      *                    {@link EventResponseProcessingService}.
      */
-    private void reorderBipartiteEventResultArguments(Set<String> idSetA, Set<String> idSetB,
-                                                      EventRetrievalResult eventResult) {
+    private void reorderClosedEventResultArguments(Set<String> idSetA, Set<String> idSetB,
+                                                   EventRetrievalResult eventResult) {
         // reorder all arguments such that the first argument corresponds to
         // an input ID from list A and the second argument corresponds to an
         // ID from list B
@@ -284,9 +284,9 @@ public class EventRetrievalService implements IEventRetrievalService {
         for (Event e : eventResult.getEventList()) {
             Argument firstArg = e.getFirstArgument();
             Argument secondArg = e.getSecondArgument();
-            if (!(idSetA.contains(firstArg.getGeneId()) || idSetA.contains(firstArg.getTopHomologyId())))
+            if (!(idSetA.contains(firstArg.getGeneId()) || idSetA.contains(firstArg.getTopHomologyId())) && (idSetA.contains(secondArg.getGeneId()) || idSetA.contains(secondArg.getTopHomologyId())))
                 e.swapArguments();
-            else if (!(idSetB.contains(secondArg.getGeneId()) || idSetB.contains(secondArg.getTopHomologyId())))
+            else if (!(idSetB.contains(secondArg.getGeneId()) || idSetB.contains(secondArg.getTopHomologyId())) && idSetB.contains(firstArg.getGeneId()) || idSetB.contains(firstArg.getTopHomologyId()))
                 e.swapArguments();
         }
     }
@@ -325,7 +325,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 time = System.currentTimeMillis() - time;
                 log.info("Retrieved {} events for open search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.OUTSIDE);
-                reorderOutsideEventResultsArguments(idSet, eventResult);
+                reorderOpenEventResultsArguments(idSet, eventResult);
                 log.debug("After reordering, the event list has {} elements", eventResult.getEventList().size());
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
@@ -491,13 +491,9 @@ public class EventRetrievalService implements IEventRetrievalService {
             esResult = openAggregatedSearch(requestData);
         } else {
             // No IDs were entered
-            esResult = getFulltextFilteredAggregatedEvents(requestData);
+            esResult = fulltextAggregatedSearch(requestData);
         }
         return esResult;
-    }
-
-    private Future<EsAggregatedResult> getFulltextFilteredAggregatedEvents(GepiRequestData requestData) {
-        return null;
     }
 
     @Override
@@ -567,6 +563,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 eventCountRequest.size = Integer.MAX_VALUE;
 
                 serverRequest.addAggregationCommand(eventCountRequest);
+                serverRequest.trackTotalHitsUpTo = Integer.MAX_VALUE;
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("AggregatedSearch");
                 carrier.addSearchServerRequest(serverRequest);
@@ -596,7 +593,7 @@ public class EventRetrievalService implements IEventRetrievalService {
      * @param eventResult The event result as returned by
      *                    {@link EventResponseProcessingService}.
      */
-    private void reorderOutsideEventResultsArguments(Set<String> idSet, EventRetrievalResult eventResult) {
+    private void reorderOpenEventResultsArguments(Set<String> idSet, EventRetrievalResult eventResult) {
         // reorder all arguments such that the first argument corresponds to
         // the input ID that caused the match
 
@@ -604,8 +601,9 @@ public class EventRetrievalService implements IEventRetrievalService {
         for (Iterator<Event> it = reorderedEvents.iterator(); it.hasNext(); ) {
             Event e = it.next();
             if (e.getArity() > 1) {
+                final Argument firstArg = e.getArgument(0);
                 final Argument secondArg = e.getArgument(1);
-                if (idSet.contains(secondArg.getTopHomologyId())) {
+                if ((idSet.contains(secondArg.getGeneId()) || idSet.contains(secondArg.getTopHomologyId())) && !(idSet.contains(firstArg.getGeneId()) || idSet.contains(firstArg.getTopHomologyId()))) {
                     e.swapArguments();
                 }
             }

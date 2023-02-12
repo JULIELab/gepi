@@ -299,7 +299,7 @@ public class GepiInput {
         requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, interactionRetrievalLimitForAggregationsNoLimit ? Integer.MAX_VALUE : interactionRetrievalLimitForAggregations, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
-        Future<EventRetrievalResult> unrolledResult4Charts = eventRetrievalService.getEvents(requestData, true);
+        Future<EventRetrievalResult> unrolledResult4Charts = null;//eventRetrievalService.getEvents(requestData, true);
         Future<EsAggregatedResult> aggregatedResult = eventRetrievalService.getAggregatedEvents(requestData);
         final String[] aLines = listATextAreaValue != null ? listATextAreaValue.split("\n") : new String[0];
         final String[] bLines = listBTextAreaValue != null ? listBTextAreaValue.split("\n") : new String[0];
@@ -310,7 +310,7 @@ public class GepiInput {
         log.info("[{}] paragraph filter: {}", dataSessionId, paragraphFilterString);
         log.info("[{}] section filter: {}", dataSessionId, sectionNameFilterString);
 
-        data = new GePiData(neo4jResult, unrolledResult4Charts, pagedEsResult, listAGePiIds, listBGePiIds);
+        data = new GePiData(neo4jResult, unrolledResult4Charts, aggregatedResult,pagedEsResult, listAGePiIds, listBGePiIds);
         log.debug("Setting newly retrieved data for dataSessionId: {}", dataSessionId);
         dataService.putData(dataSessionId, data);
         Index indexPage = (Index) resources.getContainer();
