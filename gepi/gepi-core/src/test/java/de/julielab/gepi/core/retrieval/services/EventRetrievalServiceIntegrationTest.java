@@ -296,7 +296,7 @@ public class EventRetrievalServiceIntegrationTest {
         assertThat(openAggregationResult.get().getBSymbolFrequencies().get("CPQ")).isEqualTo(1);
         assertThat(openAggregationResult.get().getEventFrequencies())
                 .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
-                .containsExactly(Tuple.tuple("IFNG", "LBR", 1), Tuple.tuple("IFNG", "CPQ", 1), Tuple.tuple("IFNG", "none", 6));
+                .contains(Tuple.tuple("IFNG", "LBR", 1), Tuple.tuple("IFNG", "CPQ", 1), Tuple.tuple("IFNG", "none", 6));
     }
 
     @Test

@@ -22,7 +22,7 @@ public class EventRetrievalServiceTest {
 	public void testReorderBipartiteEventResultArguments() throws Exception {
 		EventRetrievalService retrievalService = new EventRetrievalService(null,
 				LoggerFactory.getLogger(EventRetrievalService.class), null, null, null);
-		Method method = retrievalService.getClass().getDeclaredMethod("reorderBipartiteEventResultArguments", Set.class,
+		Method method = retrievalService.getClass().getDeclaredMethod("reorderClosedEventResultArguments", Set.class,
 				Set.class, EventRetrievalResult.class);
 		method.setAccessible(true);
 

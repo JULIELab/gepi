@@ -64,13 +64,15 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             final String eventPairTerm = (String) aggregationUnit.getTerm();
             final List<String> eventPair = Arrays.asList(eventPairTerm.split(AGGREGATION_VALUE_DELIMITER));
             final int count = (int) aggregationUnit.getCount();
-            // If necessary, switch argument positions in order to sort the results for A- and B-List membership
-            // First case: The event is unary and the sole argument does not belong to A. Then is must belong to be (or we have a name mismatch)
-            if (!aTopAggregateNames.contains(eventPair.get(0)) && eventPair.get(1).equals(FIELD_VALUE_MOCK_ARGUMENT))
-                Collections.swap(eventPair, 0, 1);
-            // Second case: The event is binary and the A-argument is found in second place
-            else if (!aTopAggregateNames.contains(eventPair.get(0)) && aTopAggregateNames.contains(eventPair.get(1)))
-                Collections.swap(eventPair, 0, 1);
+            if (aTopAggregateNames != null && !aTopAggregateNames.isEmpty()) {
+                // If necessary, switch argument positions in order to sort the results for A- and B-List membership
+                // First case: The event is unary and the sole argument does not belong to A. Then is must belong to be (or we have a name mismatch)
+                if (!aTopAggregateNames.contains(eventPair.get(0)) && eventPair.get(1).equals(FIELD_VALUE_MOCK_ARGUMENT))
+                    Collections.swap(eventPair, 0, 1);
+                    // Second case: The event is binary and the A-argument is found in second place
+                else if (!aTopAggregateNames.contains(eventPair.get(0)) && aTopAggregateNames.contains(eventPair.get(1)))
+                    Collections.swap(eventPair, 0, 1);
+            }
             // This adds the event and its count to the result and also adds up the arguments and their frequencies.
             // The ES index aggregationvalue field contains the arguments sorted alphabetically, so we cannot meet
             // the same combination of arguments twice.
