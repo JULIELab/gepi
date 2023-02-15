@@ -92,7 +92,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
 
         drawPieChart(countType, parentElementId) {
-            let argCounts = data.getData(countType, this.widgetSettings.dataSessionId)['argumentcounts'];
+            let argCounts = Array.from(data.getData(countType, this.widgetSettings.dataSessionId)['argumentcounts']);
+            argCounts.sort((a,b)=>b[1]-a[1]);
             if (!argCounts || argCounts.length === 0) {
                 $('#'+parentElementId).append('<div class="alert alert-info mx-auto">There is not data to display.</div>');
                 return;

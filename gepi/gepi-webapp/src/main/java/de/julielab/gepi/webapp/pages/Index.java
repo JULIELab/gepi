@@ -197,7 +197,7 @@ public class Index {
         if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && !datasource.equals("bcounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
         GePiData data = dataService.getData(dataSessionId);
-        if (data.getUnrolledResult4charts() == null && data.getNeo4jAggregatedResult() == null)
+        if (data.getEsAggregatedResult() == null && data.getUnrolledResult4charts() == null && data.getNeo4jAggregatedResult() == null)
             throw new IllegalStateException("The ES result and the Neo4j result for dataSessionId " + dataSessionId + " are both null.");
         try {
             log.debug("Creating JSON object from results.");
