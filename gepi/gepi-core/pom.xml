@@ -14,7 +14,7 @@
         <dependency>
             <groupId>de.julielab</groupId>
             <artifactId>julielab-elastic-query-components</artifactId>
-            <version>1.7.1-SNAPSHOT</version>
+            <version>1.7.1</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -102,6 +102,7 @@
                 <!-- Unpack the test data from the respective Maven module so we can use it in our tests -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>unpack-test-data</id>

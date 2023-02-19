@@ -21,6 +21,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import static de.julielab.gepi.core.services.GeneIdService.PROP_PREFNAME;
+
 /**
  * Gets any IDs, converts them to GePi IDs (or just queries the index?!) and
  * returns the found relations
@@ -555,6 +557,14 @@ public class EventRetrievalService implements IEventRetrievalService {
                         throw new RuntimeException(e);
                     }
                 }) : null;
+                final Future<Set<String>> aFamilyAndTopAggregateSymbols = requestData.getListAGePiIds() != null ? CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return  geneIdService.getGeneAggregateSymbolsForFamilyConcepts(requestData.getAListIdsAsSet(), PROP_PREFNAME);
+                    } catch (Exception e) {
+                        log.error("Could not retrieve family and top aggregate symbols");
+                        throw new RuntimeException(e);
+                    }
+                }) : null;
 
 
                 final TermsAggregation eventCountRequest = new TermsAggregation();
@@ -574,8 +584,12 @@ public class EventRetrievalService implements IEventRetrievalService {
                     log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
 
 
+                final Set<String> familyAndAggregateSymbols = aGeneInfo != null ? aGeneInfo.get().values().stream().map(GepiConceptInfo::getSymbol).collect(Collectors.toSet()) : Collections.emptySet();
+                if (familyAndAggregateSymbols != null && aFamilyAndTopAggregateSymbols != null) {
+                    familyAndAggregateSymbols.addAll(aFamilyAndTopAggregateSymbols.get());
+                }
                 EsAggregatedResult aggregatedResult = eventResponseProcessingService
-                        .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, aGeneInfo != null ? aGeneInfo.get().values().stream().map(GepiConceptInfo::getSymbol).collect(Collectors.toSet()) : Collections.emptySet());
+                        .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, familyAndAggregateSymbols);
                 return aggregatedResult;
             } catch (Exception e) {
                 log.error("Open aggregated search failed", e);

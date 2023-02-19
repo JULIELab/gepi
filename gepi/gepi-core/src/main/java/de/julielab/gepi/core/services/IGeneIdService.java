@@ -5,6 +5,7 @@ import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
@@ -40,4 +41,5 @@ public interface IGeneIdService {
 
 	Map<String, GepiConceptInfo> getGeneInfo(Iterable<String> conceptIds);
 
+    Set<String> getGeneAggregateSymbolsForFamilyConcepts(Iterable<? extends String> conceptIds, String propertyName);
 }

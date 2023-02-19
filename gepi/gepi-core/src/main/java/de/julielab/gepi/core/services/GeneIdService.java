@@ -50,6 +50,8 @@ public class GeneIdService implements IGeneIdService {
     public static final String GO_LABEL = "GENE_ONTOLOGY";
     public static final String CONCEPT_LABEL = "CONCEPT";
     public static final String PROP_ORGID = "originalId";
+    public static final String PROP_PREFNAME = "preferredName";
+    public static final String PROP_ID = "id";
     // we also have a special property for the UniProtKB-ID (the mnemonic) but sourceIds are indexed anyway,
     // and it is predictable that the ID is assigned second to the accession. The import algorithm first
     // imports the original ID.
@@ -67,6 +69,7 @@ public class GeneIdService implements IGeneIdService {
             return getGeneInfoFromDatabase(keys);
         }
     });
+
 
     public GeneIdService(Logger log, @Symbol(GepiCoreSymbolConstants.NEO4J_BOLT_URL) String boltUrl) {
         this.log = log;
@@ -435,7 +438,7 @@ public class GeneIdService implements IGeneIdService {
                 // property and which one in the divergent property. This depends on traversing order and is not determined
                 // beforehand. Get both properties so we can decide which one to use. FamPlex IDs are a readable name,
                 // HGNC Group IDs are numbers.
-                final String query = "MATCH (c:CONCEPT) WHERE c.id IN $conceptIds RETURN c.originalId,c.originalId_divergentProperty,c.id,c.preferredName,c.synonyms,c.descriptions,labels(c)";
+                final String query = "MATCH (c:CONCEPT) WHERE c.id IN $conceptIds RETURN c.originalId,c.id,c.preferredName,c.synonyms,c.descriptions,labels(c)";
                 final Value parameters = parameters("conceptIds", conceptIds);
                 Result result = tx.run(
                         query,
@@ -445,7 +448,6 @@ public class GeneIdService implements IGeneIdService {
                     Record record = result.next();
                     String conceptId = record.get("c.id").asString();
                     String originalId = record.get("c.originalId").asString();
-                    Value divergentOriginalId = record.get("c.originalId_divergentProperty");
                     String preferredName = record.get("c.preferredName").asString();
                     List<String> labels = record.get("labels(c)").asList(Value::asString);
                     // For FamPlex-HGNCGroup aggregates, get the HGNC Group ID. For HGNC, we can give direct links
@@ -458,6 +460,39 @@ public class GeneIdService implements IGeneIdService {
             });
         }
         return geneInfo;
+    }
+
+    /**
+     * <p>Starting at FPLX or HGNC_GROUP concept nodes, retrieve the names of the sub-family concept and the top aggregate symbols of their gene elements.</p>
+     * <p>This is used to find all possibilities for an A-List concept to create an event argument match since for families their sub-concepts are also found due to hyponym resolution.</p>
+     * @param conceptIds
+     * @param propertyName
+     * @return
+     */
+    @Override
+    public Set<String> getGeneAggregateSymbolsForFamilyConcepts(Iterable<? extends String> conceptIds, String propertyName) {
+        Set<String> ret;
+        try (Session session = driver.session()) {
+            ret = session.readTransaction(tx -> {
+                Set<String> symbolSet = new HashSet<>();
+                final String query = "MATCH p=(f)-[:IS_BROADER_THAN*]->(c) WHERE (f:FPLX OR f:HGNC_GROUP) AND f.id IN $conceptIds AND c:ID_MAP_NCBI_GENES " +
+                        "WITH c, [n in nodes(p) WHERE n:FPLX OR n:HGNC_GROUP | n."+propertyName+"] as familySymbols " +
+                        // from gene to ortholog, if that exists
+                        "OPTIONAL MATCH (c)<-[:HAS_ELEMENT*]-(a) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY) AND NOT exists(()-[:HAS_ELEMENT]->(a))" +
+                        "WITH familySymbols, COALESCE(a."+propertyName+",c."+propertyName+") as geneSymbol " +
+                        "RETURN familySymbols + [geneSymbol] as symbols";
+                final Value parameters = parameters("conceptIds", conceptIds);
+                Result result = tx.run(query, parameters);
+
+                while (result.hasNext()) {
+                    Record record = result.next();
+                    final List<Object> symbols = record.get("symbols").asList();
+                    symbols.stream().map(String.class::cast).forEach(symbolSet::add);
+                }
+                return symbolSet;
+            });
+        }
+        return ret;
     }
 
 }

@@ -10,11 +10,14 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.harness.junit.rule.Neo4jRule;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static de.julielab.gepi.core.services.GeneIdService.*;
 import static org.assertj.core.api.Assertions.assertThat;
+
 public class GeneIdServiceIntegrationTest {
     @Rule()
     public Neo4jRule neo4j = new Neo4jRule().withFixture(graphDatabaseService -> {
@@ -134,15 +137,42 @@ public class GeneIdServiceIntegrationTest {
         assertThat(geneInfo.get("atid3").getSymbol()).isEqualTo("AKT1");
     }
 
+    @Test
+    public void getSymbolsFromFamilyConceptNode() {
+        // We want the homology top aggregate symbol for a HGNC_GROUP concept. The top homology has AKT1 as symbol,
+        // the actual gene "Akt1" for differentiation.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getGeneAggregateSymbolsForFamilyConcepts(List.of("tid8"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("AKT", "AKT1");
+    }
+
+    @Test
+    public void getSymbolsFromFamilyConceptNode2() {
+        // We want the homology top aggregate symbol for a FPLX concept. However, the connected rat:Mtor node
+        // does not have a top aggregate. So its own symbol should be returned.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getGeneAggregateSymbolsForFamilyConcepts(List.of("tid9"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("MTOR_FAMILY", "Mtor");
+    }
+
+    @Test
+    public void getSymbolsFromFamilyConceptNode3() {
+        // We want the symbols of the AMPK start node, its sub-family children and the top-orthology aggregate symbol
+        // of its genes. All those elements could appear due hyponym resolution when we search for AMPK
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getGeneAggregateSymbolsForFamilyConcepts(List.of("tid10"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("AMPK", "AMPK_ALPHA", "AMPK_BETA", "PRKAA1", "PRKAB1");
+    }
+
     private void setupDB(GraphDatabaseService graphDatabaseService) {
         // Example graph with two groups of genes: mTOR and Akt1.
         // This graph does not show the real data but is shaped to cover the test cases.
         //                            f:FACET
-        //                 ----------------------------
-        //                /             |             \
-        //     t:(mTOR,atid2)  r:CONCEPT(mTOR,tid2) a3:(Akt1,atid3)
-        //       /       \                             /        \
-        //    a(atid0)  a2(atid1)                 akth(tid3)    aktm(tid4)
+        //                 ---------------------------------------------------------------------
+        //               /             |             \                  \                     \
+        //     t(mTOR,atid2)  r(Mtor,tid2)      a3(AKT1,atid3)     prkaa1(PRKAA1,tid12)    prkab1(PRKAB1, tid13)
+        //       /       \                             /      \
+        //    a(atid0)  a2(atid1)                 akth(tid3)  aktm(tid4)
         //    /     \         |
         // h(tid0)  m(tid1)  d(tid7)
         //
@@ -151,33 +181,52 @@ public class GeneIdServiceIntegrationTest {
         //  u(MTOR_HUMAN,tid5)--h(tid0)
         //  go(GO:1234,tid6)--h(tid0)
         //  go(GO:1234,tid6)--akth(tid3)
+        //
+        // Families:
+        // akt(HGNC_GROUP:AKT, tid8)--akth(tid3)
+        // mf(FPLX:MTOR, tid9)--r(tid2)
+        // ampk(FPLX:AMPK, tid10)--ampka(tid11)
+        // ampka(FPLX:AMPKA, tid11)--PRKAA1(tid12)
+        // ampkb(FPLX:AMPKB, tid14)--PRKAB1(tid13)
         final String testData = "CREATE (f:FACET {id:'fid0', name:'Genes'})," +
                 "(a:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',id:'atid0'})," +
                 "(a2:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',id:'atid1'})," +
                 "(t:AGGREGATE_TOP_ORTHOLOGY:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',id:'atid2',originalId:'2475'})," +
                 "(h:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',originalId:'2475',id:'tid0',taxId:'9606'})," +
-                "(m:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_normalized:'mtor',originalId:'56717',id:'tid1',taxId:'10090'}),"+
-                "(d:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mtor',preferredName_normalized:'mtor',originalId:'324254',id:'tid7',taxId:'7955'}),"+
+                "(m:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_normalized:'mtor',originalId:'56717',id:'tid1',taxId:'10090'})," +
+                "(d:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mtor',preferredName_normalized:'mtor',originalId:'324254',id:'tid7',taxId:'7955'})," +
                 "(r:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_normalized:'mtor',originalId:'56718',id:'tid2',taxId:'10116'})," +
-                "(f)-[:HAS_ROOT_CONCEPT]->(t),"+
-                "(f)-[:HAS_ROOT_CONCEPT]->(r),"+
-                "(t)-[:HAS_ELEMENT]->(a),"+
-                "(t)-[:HAS_ELEMENT]->(a2),"+
-                "(a)-[:HAS_ELEMENT]->(h),"+
-                "(a)-[:HAS_ELEMENT]->(m),"+
-                "(a2)-[:HAS_ELEMENT]->(d),"+
+                "(f)-[:HAS_ROOT_CONCEPT]->(t)," +
+                "(f)-[:HAS_ROOT_CONCEPT]->(r)," +
+                "(t)-[:HAS_ELEMENT]->(a)," +
+                "(t)-[:HAS_ELEMENT]->(a2)," +
+                "(a)-[:HAS_ELEMENT]->(h)," +
+                "(a)-[:HAS_ELEMENT]->(m)," +
+                "(a2)-[:HAS_ELEMENT]->(d)," +
                 "(a3:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'AKT1',preferredName_normalized:'akt1',id:'atid3'})," +
-                "(akth:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'AKT1',preferredName_normalized:'akt1',originalId:'207',id:'tid3',taxId:'9606'}),"+
-                "(aktm:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Akt1',preferredName_normalized:'akt1',originalId:'11651',id:'tid4',taxId:'10090'}),"+
-                "(f)-[:HAS_ROOT_CONCEPT]->(a3),"+
-                "(a3)-[:HAS_ELEMENT]->(akth),"+
-                "(a3)-[:HAS_ELEMENT]->(aktm),"+
-                // some example mappings (see https://stackoverflow.com/questions/14886667/how-to-query-for-properties-with-dashes-in-neo4j-using-cypher for the UniProtKB-ID property in back ticks)
-                "(u:UNIPROT:CONCEPT {originalId:'P42345',id:'tid5',`sourceIds1`:'MTOR_HUMAN'}),"+
-                "(go:GENE_ONTOLOGY:CONCEPT {originalId:'GO:1234',id:'tid6'}),"+
-                "(u)-[:IS_MAPPED_TO]->(h),"+
-                "(g)<-[:IS_ANNOTATED_WITH]-(h),"+
-                "(g)<-[:IS_ANNOTATED_WITH]-(akth)";
+                "(akth:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Akt1',preferredName_normalized:'akt1',originalId:'207',id:'tid3',taxId:'9606'})," +
+                "(aktm:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Akt1',preferredName_normalized:'akt1',originalId:'11651',id:'tid4',taxId:'10090'})," +
+                "(f)-[:HAS_ROOT_CONCEPT]->(a3)," +
+                "(a3)-[:HAS_ELEMENT]->(akth)," +
+                "(a3)-[:HAS_ELEMENT]->(aktm)," +
+                "(u:UNIPROT:CONCEPT {originalId:'P42345',id:'tid5',sourceIds1:'MTOR_HUMAN'})," +
+                "(go:GENE_ONTOLOGY:CONCEPT {originalId:'GO:1234',id:'tid6'})," +
+                "(u)-[:IS_MAPPED_TO]->(h)," +
+                "(go)<-[:IS_ANNOTATED_WITH]-(h)," +
+                "(go)<-[:IS_ANNOTATED_WITH]-(akth)," +
+                "(akt:HGNC_GROUP {id:'tid8',preferredName:'AKT'})," +
+                "(mf:FPLX {id:'tid9',preferredName:'MTOR_FAMILY'})," +
+                "(ampk:FPLX {id:'tid10',preferredName:'AMPK'})," +
+                "(ampka:FPLX {id:'tid11',preferredName:'AMPK_ALPHA'})," +
+                "(ampkb:FPLX {id:'tid14',preferredName:'AMPK_BETA'})," +
+                "(prkaa1:ID_MAP_NCBI_GENES:CONCEPT {id:'tid12',preferredName:'PRKAA1'})," +
+                "(prkab1:ID_MAP_NCBI_GENES:CONCEPT {id:'tid13',preferredName:'PRKAB1'})," +
+                "(akt)-[:IS_BROADER_THAN]->(akth)," +
+                "(mf)-[:IS_BROADER_THAN]->(r)," +
+                "(ampk)-[:IS_BROADER_THAN]->(ampka),"+
+                "(ampk)-[:IS_BROADER_THAN]->(ampkb),"+
+                "(ampka)-[:IS_BROADER_THAN]->(prkaa1),"+
+                "(ampkb)-[:IS_BROADER_THAN]->(prkab1)";
         try (final Transaction tx = graphDatabaseService.beginTx()) {
             tx.execute(testData);
             tx.commit();

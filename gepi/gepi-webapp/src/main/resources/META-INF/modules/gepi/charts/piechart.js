@@ -170,7 +170,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 .append('path')
                 .attr('class', 'slice')
                 .attr('data-bs-toggle', 'default-tooltip')
-                .attr('title', d => d.data.label)
+                .attr('title', d => d.data.label + "<br/>" + d.data.value + "<br/>" + Math.round(100 * d.data.percentage) + '%')
                 .attr('opacity', '.7')
                 .attr('d', arc)
                 .attr('fill', (d,i) => colorScale(i))
