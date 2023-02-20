@@ -495,4 +495,42 @@ public class GeneIdService implements IGeneIdService {
         return ret;
     }
 
+    @Override
+    public Set<String> getFamilyAndOrthologyGroupNodeProperties(Iterable<? extends String> conceptIds, String propertyName) {
+        Set<String> ret;
+        try (Session session = driver.session()) {
+            ret = session.readTransaction(tx -> {
+                Set<String> symbolSet = new HashSet<>();
+                final String query = "MATCH (f:CONCEPT) WHERE f.id IN $conceptIds \n" +
+                        "CALL {\n" +
+                        "    WITH f\n" +
+                        "    WITH f\n" +
+                        "    WHERE f:FPLX OR f:HGNC_GROUP\n" +
+                        "    MATCH p=(f:CONCEPT)-[:IS_BROADER_THAN*]->(c) WHERE f.id IN $conceptIds AND c:ID_MAP_NCBI_GENES\n" +
+                        "    WITH c,[n in nodes(p) WHERE n:FPLX OR n:HGNC_GROUP | n."+propertyName+"] as familySymbols " +
+                        "    OPTIONAL MATCH (c)<-[:HAS_ELEMENT*]-(a) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY) AND NOT exists(()-[:HAS_ELEMENT]->(a)) \n" +
+                        "    RETURN familySymbols + [COALESCE(a."+propertyName+",c."+propertyName+")] as symbols\n" +
+                        "\n" +
+                        "    UNION\n" +
+                        "\n" +
+                        "    WITH f\n" +
+                        "    WITH f\n" +
+                        "    WHERE NOT (f:FPLX OR f:HGNC_GROUP)\n" +
+                        "    RETURN [f."+propertyName+"] as symbols\n" +
+                        "}\n" +
+                        "return symbols";
+                final Value parameters = parameters("conceptIds", conceptIds);
+                Result result = tx.run(query, parameters);
+
+                while (result.hasNext()) {
+                    Record record = result.next();
+                    final List<Object> symbols = record.get("symbols").asList();
+                    symbols.stream().map(String.class::cast).forEach(symbolSet::add);
+                }
+                return symbolSet;
+            });
+        }
+        return ret;
+    }
+
 }

@@ -42,4 +42,6 @@ public interface IGeneIdService {
 	Map<String, GepiConceptInfo> getGeneInfo(Iterable<String> conceptIds);
 
     Set<String> getGeneAggregateSymbolsForFamilyConcepts(Iterable<? extends String> conceptIds, String propertyName);
+
+    Set<String> getFamilyAndOrthologyGroupNodeProperties(Iterable<? extends String> conceptIds, String propertyName);
 }

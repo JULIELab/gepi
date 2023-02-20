@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import static de.julielab.gepi.core.services.GeneIdService.PROP_PREFNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -43,8 +44,15 @@ public class EventRetrievalServiceIntegrationTest {
         TestcontainersElasticSearch.populateEsTestInstance(es);
 
         registry = RegistryBuilder.buildAndStartupRegistry(GePiCoreTestModule.class);
+        
     }
 
+    private IEventRetrievalService getEventRetrievalService() {
+        SymbolSource ss = registry.getService(SymbolSource.class);
+        IGeneIdService geneIdService = Mockito.mock(IGeneIdService.class);
+        return new EventRetrievalService(ss.valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS), LoggerFactory.getLogger(EventRetrievalService.class), registry.getService(IEventResponseProcessingService.class),
+                geneIdService, registry.getService(ISearchServerComponent.class));
+    }
 
 
 
@@ -57,7 +65,7 @@ public class EventRetrievalServiceIntegrationTest {
 
     @Test
     public void testOpenSearch() throws Exception {
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("10243")));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(5);
 
@@ -81,7 +89,7 @@ public class EventRetrievalServiceIntegrationTest {
 
     @Test
     public void testOpenSearchOnlyBinary() throws Exception {
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withIncludeUnary(false).withListAGePiIds(IdConversionResult.of("10243")));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(1);
 
@@ -98,7 +106,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testOpenSearchWithTaxFilter() throws Exception {
         // We should just find all documents with gene ID 10243
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("atid2324")));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(5);
 
@@ -113,7 +121,7 @@ public class EventRetrievalServiceIntegrationTest {
 
     @Test
     public void testClosedSearchEventsWithTaxFilter() throws Exception {
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("10243")).withListBGePiIds(IdConversionResult.of("2743")));
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(1);
 
@@ -124,7 +132,7 @@ public class EventRetrievalServiceIntegrationTest {
 
     @Test
     public void testFulltextSearchWithTaxFilter() throws Exception {
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.getFulltextFilteredEvents(new GepiRequestData().withSentenceFilterString("NMDA receptor").withIncludeUnary(true), 0, 5, false);
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(5);
 
@@ -136,14 +144,14 @@ public class EventRetrievalServiceIntegrationTest {
 
     @Test
     public void testOpenSearchWithEventTypeFilter1() throws Exception {
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("10243")).withEventTypes("Binding"));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(4);
     }
 
     @Test
     public void testOpenSearchWithEventTypeFilter2() throws Exception {
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3930")).withEventTypes("Negative_regulation"));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(0);
     }
@@ -151,7 +159,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testOpenSearchWithSentenceFilter1() throws Exception {
         // 10051776_FE6_0.0_0.0.json
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("10243")).withEventTypes("Gene_expression").withSentenceFilterString("\"NMDA receptor\""));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(1);
         assertThat(outsideEvents.get().getEventList()).extracting(Event::getEventId).containsExactly("10051776_FE6_0.0_0.0");
@@ -159,7 +167,7 @@ public class EventRetrievalServiceIntegrationTest {
 
     @Test
     public void testOpenSearchWithSentenceFilter2() throws Exception {
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3930")).withEventTypes("Positive_regulation").withSentenceFilterString("stress"));
         assertThat(outsideEvents.get().getEventList().size()).isEqualTo(0);
     }
@@ -168,7 +176,7 @@ public class EventRetrievalServiceIntegrationTest {
     public void testOpenSearchWithSentenceParagraphFilter() throws Exception {
         // this test refers to test file 10022233_FE6_0_1.json
         // both filter keywords, for sentence and paragraph, are present for the same event items
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("1268")).withFilterFieldsConnectionOperator("AND").withSentenceFilterString("pertussis toxin").withParagraphFilterString("immune modulation"));
         assertThat(outsideEvents.get().getEventList()).isNotEmpty();
         assertThat(outsideEvents.get().getEventList().get(0).getPmid()).isEqualTo("10022233");
@@ -181,14 +189,14 @@ public class EventRetrievalServiceIntegrationTest {
         // the 'pertussis toxin' phrase is present in the sentence of the former, the 'Heparinized blood' in the
         // paragraph of the latter.
         // Through the 'or' operator, we should get both
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> outsideEvents = eventRetrievalService.openSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("1268", "3458")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"pertussis toxin\"").withParagraphFilterString("\"Heparinized blood\""));
         assertThat(outsideEvents.get().getEventList()).extracting(Event::getEventId).contains("10022233_FE6_0.0_1.0", "10022381_FE16_0.0_0.0");
     }
 
     @Test
     public void testClosedSearchEvents() throws Exception {
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("10243")).withListBGePiIds(IdConversionResult.of("2743")));
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(1);
 
@@ -204,7 +212,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testClosedSearchEventsWithEventTypeFilter1() throws Exception {
         // 10029158_FE15_0.0_1.0.json
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("1440")).withListBGePiIds(IdConversionResult.of("3553")).withEventTypes("Localization"));
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(1);
     }
@@ -212,7 +220,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testClosedSearchEventsWithEventTypeFilter2() throws Exception {
         // 10051776_FE5_0.0_1.0.json
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("10243")).withListBGePiIds(IdConversionResult.of("2743")).withEventTypes("Binding"));
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(1);
     }
@@ -220,7 +228,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testClosedSearchEventsWithEventTypeFilter3() throws Exception {
         // We should NOT find something because the event type filter doesn't fit.
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("10243")).withListBGePiIds(IdConversionResult.of("2743")).withEventTypes("Phosphorylation"));
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(0);
     }
@@ -228,7 +236,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testClosedSearchEventsWithSentenceFilter1() throws Exception {
         // 10051776_FE5_0.0_1.0.json
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("10243")).withListBGePiIds(IdConversionResult.of("2743")).withEventTypes("Binding").withSentenceFilterString("sequence"));
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(1);
     }
@@ -236,7 +244,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testClosedSearchEventsWithSentenceFilter2() throws Exception {
         // there should be 0 hits because the 'stress' keyword is not contained in the found event sentence
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("10243")).withListBGePiIds(IdConversionResult.of("8870")).withEventTypes("Binding").withSentenceFilterString("stress"));
         assertThat(bipartiteEventsEvents.get().getEventList().size()).isEqualTo(0);
     }
@@ -244,7 +252,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testClosedSearchWithSentenceParagraphFilter() throws Exception {
         // This tests uses 10049519_FE10_0.0_1.0 and 10051468_FE0_0.0_1.0.json
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withListAGePiIds(IdConversionResult.of("3569", "54315")).withListBGePiIds(IdConversionResult.of("7124", "21926")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"neutrophil infiltration\"").withParagraphFilterString("\"regenerating mice\"").withIncludeUnary(true));
         final List<Event> eventList = bipartiteEventsEvents.get().getEventList();
         assertThat(eventList).extracting(Event::getEventId).containsExactlyInAnyOrder("10049519_FE10_0.0_1.0", "10051468_FE0_0.0_1.0");
@@ -252,7 +260,7 @@ public class EventRetrievalServiceIntegrationTest {
 
     @Test
     public void getTotalNumberOfEvents() {
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         long totalNumberOfEvents = eventRetrievalService.getTotalNumberOfEvents();
         // the number of JSON files in the test index directory
         assertThat(totalNumberOfEvents).isEqualTo(320);
@@ -261,7 +269,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testOpenSearchEventWithSectionFilter() throws Exception {
         // First, establish the baseline: For gene ID 3458 we should find 8 events without filters
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> outsideEventsWithoutRestriction = eventRetrievalService.openSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("3458")));
         assertThat(outsideEventsWithoutRestriction.get().getEventList().size()).isEqualTo(8);
 
@@ -273,7 +281,7 @@ public class EventRetrievalServiceIntegrationTest {
     @Test
     public void testHighlighting() throws Exception {
         // This tests uses 10049519_FE11_0_1.json and 10051468_FE0_0_1.json
-        IEventRetrievalService eventRetrievalService = registry.getService(IEventRetrievalService.class);
+        IEventRetrievalService eventRetrievalService = getEventRetrievalService();
         Future<EventRetrievalResult> bipartiteEventsEvents = eventRetrievalService.closedSearch(new GepiRequestData().withIncludeUnary(true).withListAGePiIds(IdConversionResult.of("7124")).withListBGePiIds(IdConversionResult.of("3569", "7351")).withFilterFieldsConnectionOperator("OR").withSentenceFilterString("\"neutrophil infiltration\"").withParagraphFilterString("\"regenerating mice\""));
         final List<Event> eventList = bipartiteEventsEvents.get().getEventList();
     }
@@ -282,6 +290,7 @@ public class EventRetrievalServiceIntegrationTest {
     public void testAggregationsOpenSearch() throws Exception {
         final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
         Mockito.when(geneIdServiceMock.getGeneInfo(Set.of("3458"))).thenReturn(Map.of("3458", GepiConceptInfo.builder().symbol("IFNG").build()));
+        Mockito.when(geneIdServiceMock.getFamilyAndOrthologyGroupNodeProperties(Set.of("3458"), PROP_PREFNAME)).thenReturn(Set.of("IFNG"));
         final EventRetrievalService eventRetrievalService = new EventRetrievalService(
                 registry.getService(SymbolSource.class).valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS),
                 LoggerFactory.getLogger(EventRetrievalService.class),
@@ -303,6 +312,7 @@ public class EventRetrievalServiceIntegrationTest {
     public void testAggregationsClosedSearch() throws Exception {
         final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
         Mockito.when(geneIdServiceMock.getGeneInfo(Set.of("10243"))).thenReturn(Map.of("10243", GepiConceptInfo.builder().symbol("GPHN").build()));
+        Mockito.when(geneIdServiceMock.getFamilyAndOrthologyGroupNodeProperties(Set.of("10243"), PROP_PREFNAME)).thenReturn(Set.of("GPHN"));
         final EventRetrievalService eventRetrievalService = new EventRetrievalService(
                 registry.getService(SymbolSource.class).valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS),
                 LoggerFactory.getLogger(EventRetrievalService.class),

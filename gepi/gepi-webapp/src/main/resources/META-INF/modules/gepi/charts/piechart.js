@@ -253,7 +253,9 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         initTooltips() {
             console.log("Creating piechart tooltips on " + this.elementId)
             $('#' + this.elementId + '-outer svg .slice').each(function() {
-                 new Tooltip(this)
+                new Tooltip(this, {
+                    html: true
+                })
              });
         }      
     }

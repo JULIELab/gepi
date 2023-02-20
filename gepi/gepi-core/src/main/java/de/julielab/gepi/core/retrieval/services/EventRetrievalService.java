@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import static de.julielab.gepi.core.services.GeneIdService.PROP_ID;
 import static de.julielab.gepi.core.services.GeneIdService.PROP_PREFNAME;
 
 /**
@@ -236,7 +237,9 @@ public class EventRetrievalService implements IEventRetrievalService {
                 time = System.currentTimeMillis() - time;
                 log.debug("Retrieved {} events for closed search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.BIPARTITE);
-                reorderClosedEventResultArguments(requestData.getAListIdsAsSet(), requestData.getBListIdsAsSet(), eventResult);
+                final Set<String> aListIdsAsSet = geneIdService.getFamilyAndOrthologyGroupNodeProperties(requestData.getAListIdsAsSet(), PROP_ID);
+                final Set<String> bListIdsAsSet = geneIdService.getFamilyAndOrthologyGroupNodeProperties(requestData.getBListIdsAsSet(), PROP_ID);
+                reorderClosedEventResultArguments(aListIdsAsSet, bListIdsAsSet, eventResult);
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
                 log.error("Could not retrieve the IDs for the query", e);
@@ -327,7 +330,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 time = System.currentTimeMillis() - time;
                 log.info("Retrieved {} events for open search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.OUTSIDE);
-                reorderOpenEventResultsArguments(idSet, eventResult);
+                reorderOpenEventResultsArguments(geneIdService.getFamilyAndOrthologyGroupNodeProperties(idSet, PROP_ID), eventResult);
                 log.debug("After reordering, the event list has {} elements", eventResult.getEventList().size());
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
@@ -549,17 +552,17 @@ public class EventRetrievalService implements IEventRetrievalService {
                 // highest equal-name aggregate. The latter poses is a discrepancy because the GeneIdService does not map
                 // FamPlex or HGNC Group inputs to the equal-name aggregate. This is not an issue, however,
                 // because the equal-name aggregate always has the same name as its elements, if it exists (hence the name).
-                final Future<Map<String, GepiConceptInfo>> aGeneInfo = requestData.getListAGePiIds() != null ? CompletableFuture.supplyAsync(() -> {
-                    try {
-                        return geneIdService.getGeneInfo(requestData.getAListIdsAsSet());
-                    } catch (Exception e) {
-                        log.error("Could not retrieve gene info");
-                        throw new RuntimeException(e);
-                    }
-                }) : null;
+//                final Future<Map<String, GepiConceptInfo>> aGeneInfo = requestData.getListAGePiIds() != null ? CompletableFuture.supplyAsync(() -> {
+//                    try {
+//                        return geneIdService.getGeneInfo(requestData.getAListIdsAsSet());
+//                    } catch (Exception e) {
+//                        log.error("Could not retrieve gene info");
+//                        throw new RuntimeException(e);
+//                    }
+//                }) : null;
                 final Future<Set<String>> aFamilyAndTopAggregateSymbols = requestData.getListAGePiIds() != null ? CompletableFuture.supplyAsync(() -> {
                     try {
-                        return  geneIdService.getGeneAggregateSymbolsForFamilyConcepts(requestData.getAListIdsAsSet(), PROP_PREFNAME);
+                        return  geneIdService.getFamilyAndOrthologyGroupNodeProperties(requestData.getAListIdsAsSet(), PROP_PREFNAME);
                     } catch (Exception e) {
                         log.error("Could not retrieve family and top aggregate symbols");
                         throw new RuntimeException(e);
@@ -584,10 +587,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                     log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
 
 
-                final Set<String> familyAndAggregateSymbols = aGeneInfo != null ? aGeneInfo.get().values().stream().map(GepiConceptInfo::getSymbol).collect(Collectors.toSet()) : Collections.emptySet();
-                if (familyAndAggregateSymbols != null && aFamilyAndTopAggregateSymbols != null) {
-                    familyAndAggregateSymbols.addAll(aFamilyAndTopAggregateSymbols.get());
-                }
+                final Set<String> familyAndAggregateSymbols = aFamilyAndTopAggregateSymbols != null ? aFamilyAndTopAggregateSymbols.get() : Collections.emptySet();
                 EsAggregatedResult aggregatedResult = eventResponseProcessingService
                         .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, familyAndAggregateSymbols);
                 return aggregatedResult;

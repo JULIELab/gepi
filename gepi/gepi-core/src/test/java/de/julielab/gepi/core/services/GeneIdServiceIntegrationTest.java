@@ -164,6 +164,47 @@ public class GeneIdServiceIntegrationTest {
         assertThat(symbols).containsExactlyInAnyOrder("AMPK", "AMPK_ALPHA", "AMPK_BETA", "PRKAA1", "PRKAB1");
     }
 
+    @Test
+    public void getFamilyAndOrthologyGroupNodeProperties() {
+        // getFamilyAndOrthologyGroupNodeProperties() tests are very similar to the getSymbolsFromFamilyConceptNode() tests except that the
+        // getFamilyAndOrthologyGroupNodeProperties() has a conditional return value that does what
+        // getSymbolsFromFamilyConceptNode() does when applied to a family node or, if applied to another node,
+        // just returns that node's target property.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getFamilyAndOrthologyGroupNodeProperties(List.of("tid8"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("AKT", "AKT1");
+    }
+
+    @Test
+    public void getFamilyAndOrthologyGroupNodeProperties2() {
+        // getFamilyAndOrthologyGroupNodeProperties() tests are very similar to the getSymbolsFromFamilyConceptNode() tests except that the
+        // getFamilyAndOrthologyGroupNodeProperties() has a conditional return value that does what
+        // getSymbolsFromFamilyConceptNode() does when applied to a family node or, if applied to another node,
+        // just returns that node's target property.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getFamilyAndOrthologyGroupNodeProperties(List.of("tid9"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("MTOR_FAMILY", "Mtor");
+    }
+
+    @Test
+    public void getFamilyAndOrthologyGroupNodeProperties3() {
+        // getFamilyAndOrthologyGroupNodeProperties() tests are very similar to the getSymbolsFromFamilyConceptNode() tests except that the
+        // getFamilyAndOrthologyGroupNodeProperties() has a conditional return value that does what
+        // getSymbolsFromFamilyConceptNode() does when applied to a family node or, if applied to another node,
+        // just returns that node's target property.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getFamilyAndOrthologyGroupNodeProperties(List.of("tid10"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("AMPK", "AMPK_ALPHA", "AMPK_BETA", "PRKAA1", "PRKAB1");
+    }
+
+    @Test
+    public void getFamilyAndOrthologyGroupNodeProperties4() {
+        // Here we start from a top aggregate instead of a family concept so we just expect the orthology name back
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getFamilyAndOrthologyGroupNodeProperties(List.of("atid2"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("mTOR");
+    }
+
     private void setupDB(GraphDatabaseService graphDatabaseService) {
         // Example graph with two groups of genes: mTOR and Akt1.
         // This graph does not show the real data but is shaped to cover the test cases.
@@ -199,10 +240,15 @@ public class GeneIdServiceIntegrationTest {
                 "(f)-[:HAS_ROOT_CONCEPT]->(t)," +
                 "(f)-[:HAS_ROOT_CONCEPT]->(r)," +
                 "(t)-[:HAS_ELEMENT]->(a)," +
+                "(t)-[:IS_BROADER_THAN]->(a)," +
                 "(t)-[:HAS_ELEMENT]->(a2)," +
+                "(t)-[:IS_BROADER_THAN]->(a2)," +
                 "(a)-[:HAS_ELEMENT]->(h)," +
+                "(a)-[:IS_BROADER_THAN]->(h)," +
                 "(a)-[:HAS_ELEMENT]->(m)," +
+                "(a)-[:IS_BROADER_THAN]->(m)," +
                 "(a2)-[:HAS_ELEMENT]->(d)," +
+                "(a2)-[:IS_BROADER_THAN]->(d)," +
                 "(a3:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'AKT1',preferredName_normalized:'akt1',id:'atid3'})," +
                 "(akth:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Akt1',preferredName_normalized:'akt1',originalId:'207',id:'tid3',taxId:'9606'})," +
                 "(aktm:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Akt1',preferredName_normalized:'akt1',originalId:'11651',id:'tid4',taxId:'10090'})," +
@@ -214,11 +260,11 @@ public class GeneIdServiceIntegrationTest {
                 "(u)-[:IS_MAPPED_TO]->(h)," +
                 "(go)<-[:IS_ANNOTATED_WITH]-(h)," +
                 "(go)<-[:IS_ANNOTATED_WITH]-(akth)," +
-                "(akt:HGNC_GROUP {id:'tid8',preferredName:'AKT'})," +
-                "(mf:FPLX {id:'tid9',preferredName:'MTOR_FAMILY'})," +
-                "(ampk:FPLX {id:'tid10',preferredName:'AMPK'})," +
-                "(ampka:FPLX {id:'tid11',preferredName:'AMPK_ALPHA'})," +
-                "(ampkb:FPLX {id:'tid14',preferredName:'AMPK_BETA'})," +
+                "(akt:HGNC_GROUP:CONCEPT {id:'tid8',preferredName:'AKT'})," +
+                "(mf:FPLX:CONCEPT {id:'tid9',preferredName:'MTOR_FAMILY'})," +
+                "(ampk:FPLX:CONCEPT {id:'tid10',preferredName:'AMPK'})," +
+                "(ampka:FPLX:CONCEPT {id:'tid11',preferredName:'AMPK_ALPHA'})," +
+                "(ampkb:FPLX:CONCEPT {id:'tid14',preferredName:'AMPK_BETA'})," +
                 "(prkaa1:ID_MAP_NCBI_GENES:CONCEPT {id:'tid12',preferredName:'PRKAA1'})," +
                 "(prkab1:ID_MAP_NCBI_GENES:CONCEPT {id:'tid13',preferredName:'PRKAB1'})," +
                 "(akt)-[:IS_BROADER_THAN]->(akth)," +
