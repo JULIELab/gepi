@@ -21,9 +21,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import static de.julielab.gepi.core.services.GeneIdService.PROP_ID;
-import static de.julielab.gepi.core.services.GeneIdService.PROP_PREFNAME;
-
 /**
  * Gets any IDs, converts them to GePi IDs (or just queries the index?!) and
  * returns the found relations
@@ -237,8 +234,10 @@ public class EventRetrievalService implements IEventRetrievalService {
                 time = System.currentTimeMillis() - time;
                 log.debug("Retrieved {} events for closed search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.BIPARTITE);
-                final Set<String> aListIdsAsSet = geneIdService.getFamilyAndOrthologyGroupNodeProperties(requestData.getAListIdsAsSet(), PROP_ID);
-                final Set<String> bListIdsAsSet = geneIdService.getFamilyAndOrthologyGroupNodeProperties(requestData.getBListIdsAsSet(), PROP_ID);
+//                final Set<String> aListIdsAsSet = geneIdService.getFamilyAndOrthologyGroupNodeProperties(requestData.getAListIdsAsSet(), PROP_ID);
+//                final Set<String> bListIdsAsSet = geneIdService.getFamilyAndOrthologyGroupNodeProperties(requestData.getBListIdsAsSet(), PROP_ID);
+                final Set<String> aListIdsAsSet = requestData.getAListIdsAsSet();
+                final Set<String> bListIdsAsSet = requestData.getBListIdsAsSet();
                 reorderClosedEventResultArguments(aListIdsAsSet, bListIdsAsSet, eventResult);
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
@@ -258,6 +257,7 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.index = documentIndex;
         serverRqst.start = from;
         serverRqst.rows = numRows;
+        serverRqst.trackTotalHitsUpTo = Integer.MAX_VALUE;
         configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
         if (!downloadAll && numRows > 0) {
             addHighlighting(serverRqst);
@@ -330,7 +330,8 @@ public class EventRetrievalService implements IEventRetrievalService {
                 time = System.currentTimeMillis() - time;
                 log.info("Retrieved {} events for open search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.OUTSIDE);
-                reorderOpenEventResultsArguments(geneIdService.getFamilyAndOrthologyGroupNodeProperties(idSet, PROP_ID), eventResult);
+//                reorderOpenEventResultsArguments(geneIdService.getFamilyAndOrthologyGroupNodeProperties(idSet, PROP_ID), eventResult);
+                reorderOpenEventResultsArguments(idSet, eventResult);
                 log.debug("After reordering, the event list has {} elements", eventResult.getEventList().size());
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
@@ -359,6 +360,7 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.index = documentIndex;
         serverRqst.start = from;
         serverRqst.rows = numRows;
+        serverRqst.trackTotalHitsUpTo = Integer.MAX_VALUE;
         configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
         if (!downloadAll && numRows > 0) {
             addHighlighting(serverRqst);
@@ -463,6 +465,7 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.index = documentIndex;
         serverRqst.start = from;
         serverRqst.rows = numRows;
+        serverRqst.trackTotalHitsUpTo = Integer.MAX_VALUE;
         configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
         if (!downloadAll && numRows > 0) {
             addHighlighting(serverRqst);
@@ -503,35 +506,42 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     @Override
     public Future<EsAggregatedResult> openAggregatedSearch(GepiRequestData requestData) {
-        try {
-            final SearchServerRequest openSearchRequest = getOpenSearchRequest(requestData, 0, 0, false);
-            return aggregatedSearch(requestData, openSearchRequest);
-        } catch (Exception e) {
-            log.error("Open aggregated search failed", e);
-            throw new RuntimeException(e);
-        }
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                final SearchServerRequest openSearchRequest = getOpenSearchRequest(requestData, 0, 0, false);
+                return aggregatedSearch(requestData, openSearchRequest);
+            } catch (Exception e) {
+                log.error("Open aggregated search failed", e);
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     public Future<EsAggregatedResult> closedAggregatedSearch(GepiRequestData requestData) {
-        try {
-            final SearchServerRequest closedSearchRequest = getClosedSearchRequest(requestData, 0, 0, false);
-            return aggregatedSearch(requestData, closedSearchRequest);
-        } catch (Exception e) {
-            log.error("Closed aggregated search failed", e);
-            throw new RuntimeException(e);
-        }
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                final SearchServerRequest closedSearchRequest = getClosedSearchRequest(requestData, 0, 0, false);
+                return aggregatedSearch(requestData, closedSearchRequest);
+            } catch (Exception e) {
+                log.error("Closed aggregated search failed", e);
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     public Future<EsAggregatedResult> fulltextAggregatedSearch(GepiRequestData requestData) {
-        try {
-            final SearchServerRequest fulltextSearchRequest= getFulltextSearchRequest(requestData, 0, 0, false);
-            return aggregatedSearch(requestData, fulltextSearchRequest);
-        } catch (Exception e) {
-            log.error("Closed aggregated search failed", e);
-            throw new RuntimeException(e);
-        }
+        return CompletableFuture.supplyAsync(() -> {
+
+            try {
+                final SearchServerRequest fulltextSearchRequest = getFulltextSearchRequest(requestData, 0, 0, false);
+                return aggregatedSearch(requestData, fulltextSearchRequest);
+            } catch (Exception e) {
+                log.error("Closed aggregated search failed", e);
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**
@@ -541,61 +551,56 @@ public class EventRetrievalService implements IEventRetrievalService {
      * @param serverRequest
      * @return
      */
-    private Future<EsAggregatedResult> aggregatedSearch(GepiRequestData requestData, SearchServerRequest serverRequest) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                // Short comment: Fetch the aggregate names of the input A IDs so we can tell in the aggregate values
-                // which argument belongs to A.
-                // Long comment: The aggregationvalue field stores the symbol of the gene top-aggregates (orthology / homology / famplex / hgnc),
-                // see de.julielab.gepi.indexing.GeneFilterBoard.orgid2topaggprefname, e.g. AKT---MTOR.
-                // For genes it is the highest orthology aggregate. For FamPlex and HGNC Groups it is the
-                // highest equal-name aggregate. The latter poses is a discrepancy because the GeneIdService does not map
-                // FamPlex or HGNC Group inputs to the equal-name aggregate. This is not an issue, however,
-                // because the equal-name aggregate always has the same name as its elements, if it exists (hence the name).
-//                final Future<Map<String, GepiConceptInfo>> aGeneInfo = requestData.getListAGePiIds() != null ? CompletableFuture.supplyAsync(() -> {
-//                    try {
-//                        return geneIdService.getGeneInfo(requestData.getAListIdsAsSet());
-//                    } catch (Exception e) {
-//                        log.error("Could not retrieve gene info");
-//                        throw new RuntimeException(e);
-//                    }
-//                }) : null;
-                final Future<Set<String>> aFamilyAndTopAggregateSymbols = requestData.getListAGePiIds() != null ? CompletableFuture.supplyAsync(() -> {
-                    try {
-                        return  geneIdService.getFamilyAndOrthologyGroupNodeProperties(requestData.getAListIdsAsSet(), PROP_PREFNAME);
-                    } catch (Exception e) {
-                        log.error("Could not retrieve family and top aggregate symbols");
-                        throw new RuntimeException(e);
-                    }
-                }) : null;
+    private EsAggregatedResult aggregatedSearch(GepiRequestData requestData, SearchServerRequest serverRequest) {
+
+        try {
+            // Short comment: Fetch the aggregate names of the input A IDs so we can tell in the aggregate values
+            // which argument belongs to A.
+            // Long comment: The aggregationvalue field stores the symbol of the gene top-aggregates (orthology / homology / famplex / hgnc),
+            // see de.julielab.gepi.indexing.GeneFilterBoard.orgid2topaggprefname, e.g. AKT---MTOR.
+            // For genes it is the highest orthology aggregate.
+            // For normal gene names this is always a match because GePI resolves the input genes to their aggregates, even when filtered
+            // for a specific taxonomy. We then still search for the aggregate but just filter for the taxonomy IDs.
+            // For FamPlex and HGNC Groups the name used in the aggregationvalue is the
+            // highest equal-name aggregate. This poses a discrepancy because the GeneIdService does not map
+            // FamPlex or HGNC Group inputs to the equal-name aggregate. This is not an issue, however,
+            // because the equal-name aggregate always has the same name as its elements, if it exists (hence "equal-name-aggregate").
+            log.debug("Fetching TopHomology aggregate names for input IDs for event reordering since the aggregated index values are built on names.");
+            final Future<Set<String>> possibleNamesInAggregationValues = requestData.getListAGePiIds() != null ? CompletableFuture.supplyAsync(() -> {
+                try {
+                    return geneIdService.getPossibleAggregationConceptNames(requestData.getAListIdsAsSet());
+                } catch (Exception e) {
+                    log.error("Could not retrieve gene info");
+                    throw new RuntimeException(e);
+                }
+            }) : null;
 
 
-                final TermsAggregation eventCountRequest = new TermsAggregation();
-                eventCountRequest.name = "events";
-                eventCountRequest.field = FIELD_AGGREGATION_VALUE;
-                eventCountRequest.size = Integer.MAX_VALUE;
+            final TermsAggregation eventCountRequest = new TermsAggregation();
+            eventCountRequest.name = "events";
+            eventCountRequest.field = FIELD_AGGREGATION_VALUE;
+            eventCountRequest.size = Integer.MAX_VALUE;
 
-                serverRequest.addAggregationCommand(eventCountRequest);
-                serverRequest.trackTotalHitsUpTo = Integer.MAX_VALUE;
+            serverRequest.addAggregationCommand(eventCountRequest);
+            serverRequest.trackTotalHitsUpTo = Integer.MAX_VALUE;
 
-                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("AggregatedSearch");
-                carrier.addSearchServerRequest(serverRequest);
-                long time = System.currentTimeMillis();
-                log.debug("Sent full-text search server request");
-                searchServerComponent.process(carrier);
-                if (log.isDebugEnabled())
-                    log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
+            ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("AggregatedSearch");
+            carrier.addSearchServerRequest(serverRequest);
+            long time = System.currentTimeMillis();
+            log.debug("Sent full-text search server request");
+            searchServerComponent.process(carrier);
+            if (log.isDebugEnabled())
+                log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
 
 
-                final Set<String> familyAndAggregateSymbols = aFamilyAndTopAggregateSymbols != null ? aFamilyAndTopAggregateSymbols.get() : Collections.emptySet();
-                EsAggregatedResult aggregatedResult = eventResponseProcessingService
-                        .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, familyAndAggregateSymbols);
-                return aggregatedResult;
-            } catch (Exception e) {
-                log.error("Open aggregated search failed", e);
-                throw new RuntimeException(e);
-            }
-        });
+            EsAggregatedResult aggregatedResult = eventResponseProcessingService
+                    .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, possibleNamesInAggregationValues.get());
+            return aggregatedResult;
+        } catch (Exception e) {
+            log.error("Open aggregated search failed", e);
+            throw new RuntimeException(e);
+        }
+
     }
 
 

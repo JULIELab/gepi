@@ -10,6 +10,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 public interface IGeneIdService {
+    Map<String, ConceptName> getAggregationRelevantConceptNames(Iterable<String> conceptIds);
+
+	Set<String> getPossibleAggregationConceptNames(Iterable<String> conceptIds);
+
 	Future<IdConversionResult> convert(Stream<String> stream, IdType from, IdType to);
 
 	Future<IdConversionResult> convert(Stream<String> stream, IdType to);
