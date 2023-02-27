@@ -16,13 +16,13 @@ import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import static de.julielab.gepi.core.services.GeneIdService.PROP_PREFNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -290,7 +290,7 @@ public class EventRetrievalServiceIntegrationTest {
     public void testAggregationsOpenSearch() throws Exception {
         final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
         Mockito.when(geneIdServiceMock.getGeneInfo(Set.of("3458"))).thenReturn(Map.of("3458", GepiConceptInfo.builder().symbol("IFNG").build()));
-        Mockito.when(geneIdServiceMock.getFamilyAndOrthologyGroupNodeProperties(Set.of("3458"), PROP_PREFNAME)).thenReturn(Set.of("IFNG"));
+        Mockito.when(geneIdServiceMock.getPossibleAggregationConceptNames(Set.of("3458"))).thenReturn(Set.of("IFNG"));
         final EventRetrievalService eventRetrievalService = new EventRetrievalService(
                 registry.getService(SymbolSource.class).valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS),
                 LoggerFactory.getLogger(EventRetrievalService.class),
@@ -312,7 +312,7 @@ public class EventRetrievalServiceIntegrationTest {
     public void testAggregationsClosedSearch() throws Exception {
         final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
         Mockito.when(geneIdServiceMock.getGeneInfo(Set.of("10243"))).thenReturn(Map.of("10243", GepiConceptInfo.builder().symbol("GPHN").build()));
-        Mockito.when(geneIdServiceMock.getFamilyAndOrthologyGroupNodeProperties(Set.of("10243"), PROP_PREFNAME)).thenReturn(Set.of("GPHN"));
+        Mockito.when(geneIdServiceMock.getPossibleAggregationConceptNames(Set.of("10243"))).thenReturn(Set.of("GPHN"));
         final EventRetrievalService eventRetrievalService = new EventRetrievalService(
                 registry.getService(SymbolSource.class).valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS),
                 LoggerFactory.getLogger(EventRetrievalService.class),
@@ -332,6 +332,7 @@ public class EventRetrievalServiceIntegrationTest {
         // We don't need to mock a call to the service because no call should be done.
         // The fulltext search does not make a difference between A and B since no A and B IDs are given.
         final IGeneIdService geneIdServiceMock = Mockito.mock(IGeneIdService.class);
+        Mockito.when(geneIdServiceMock.getPossibleAggregationConceptNames(Mockito.any())).thenReturn(Collections.emptySet());
         final EventRetrievalService eventRetrievalService = new EventRetrievalService(
                 registry.getService(SymbolSource.class).valueForSymbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS),
                 LoggerFactory.getLogger(EventRetrievalService.class),
