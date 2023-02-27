@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.services;
 
 import com.google.common.collect.Multimap;
+import de.julielab.gepi.core.retrieval.data.ConceptName;
 import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 

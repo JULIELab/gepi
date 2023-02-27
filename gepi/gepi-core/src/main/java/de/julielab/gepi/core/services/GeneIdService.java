@@ -8,6 +8,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
+import de.julielab.gepi.core.retrieval.data.ConceptName;
 import de.julielab.gepi.core.retrieval.data.GeneSymbolNormalization;
 import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
@@ -104,6 +105,8 @@ public class GeneIdService implements IGeneIdService {
      * @return IDs, names and next-on-path-IDs of the input concepts and those on the path to the gene ortholog aggregates, omitting the genes themselves because their names are never used in the aggregationvalue field.
      */
     private Map<String, ConceptName> getAggregationRelevantConceptNamesFromDatabase(Iterable<? extends String> conceptIds) {
+        log.debug("Collecting possible concept names in aggregationvalues");
+        long time = System.currentTimeMillis();
         Map<String, ConceptName> ret;
         try (Session session = driver.session()) {
             ret = session.readTransaction(tx -> {
@@ -126,9 +129,9 @@ public class GeneIdService implements IGeneIdService {
                         "    WITH f\n" +
                         "    WITH f\n" +
                         "    WHERE f:FPLX OR f:HGNC_GROUP\n" +
-                        "    MATCH p=(f)-[:IS_BROADER_THAN*]->(c) WHERE c:ID_MAP_NCBI_GENES\n" +
+                        "    MATCH p=(f)-[:IS_BROADER_THAN*..10]->(c) WHERE c:ID_MAP_NCBI_GENES\n" +
                         "    WITH c,[n in nodes(p) WHERE n:FPLX OR n:HGNC_GROUP | n.id] as ids,[n in nodes(p) WHERE n:FPLX OR n:HGNC_GROUP | n.preferredName] as familySymbols " +
-                        "    OPTIONAL MATCH (c)<-[:HAS_ELEMENT*]-(a) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY) AND NOT exists(()-[:HAS_ELEMENT]->(a)) \n" +
+                        "    OPTIONAL MATCH (c)<-[:HAS_ELEMENT*..2]-(a) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY) AND NOT exists(()-[:HAS_ELEMENT]->(a)) \n" +
                         "    RETURN ids+[COALESCE(a.id,c.id)] as ids,familySymbols + [COALESCE(a.preferredName,c.preferredName)] as symbols\n" +
                         "\n" +
                         "    UNION\n" +
@@ -138,16 +141,16 @@ public class GeneIdService implements IGeneIdService {
                         "    WHERE f:GENE_ONTOLOGY\n" +
                         "    MATCH p=(f)<-[:IS_ANNOTATED_WITH]->(c) WHERE c:ID_MAP_NCBI_GENES\n" +
                         "    WITH f, c " +
-                        "    OPTIONAL MATCH (c)<-[:HAS_ELEMENT*]-(a) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY) AND NOT exists(()-[:HAS_ELEMENT]->(a)) \n" +
+                        "    OPTIONAL MATCH (c)<-[:HAS_ELEMENT*..2]-(a) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY) AND NOT exists(()-[:HAS_ELEMENT]->(a)) \n" +
                         "    RETURN [f.id, COALESCE(a.id, c.id)] as ids,[null, COALESCE(a.preferredName,c.preferredName)] as symbols\n" +
                         "\n" +
                         "    UNION\n" +
                         "\n" +
                         "    WITH f\n" +
                         "    WITH f\n" +
-                        "    WHERE NOT (f:FPLX OR f:HGNC_GROUP OR f:GENE_ONTOLOGY OR f:ID_MAP_NCBI_GENES)\n" +
-                        "    OPTIONAL MATCH p=(c)<-[:HAS_ELEMENT*]-(a) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY) AND NOT exists(()-[:HAS_ELEMENT]->(a)) \n" +
-                        "    WITH f,[n in nodes(p) WHERE n:AGGREGATE | n.id] as ids,[n in nodes(p) WHERE n:AGGREGATE | n.preferredName] as aggregateSymbols " +
+                        "    WHERE NOT (f:FPLX OR f:HGNC_GROUP OR f:GENE_ONTOLOGY)\n" +
+                        "    OPTIONAL MATCH p=(f)<-[:HAS_ELEMENT*..2]-(a) WHERE (a:AGGREGATE_GENEGROUP OR a:AGGREGATE_TOP_ORTHOLOGY) AND NOT exists(()-[:HAS_ELEMENT]->(a)) \n" +
+                        "    WITH f,[n in nodes(p) | n.id] as ids,[n in nodes(p) | n.preferredName] as aggregateSymbols " +
                         "    RETURN COALESCE(ids, [f.id]) as ids, COALESCE(aggregateSymbols, [f.preferredName]) as symbols\n" +
                         "}\n" +
                         "return ids,symbols";
@@ -173,6 +176,8 @@ public class GeneIdService implements IGeneIdService {
                 return symbolSet;
             });
         }
+        time = System.currentTimeMillis() - time;
+        log.debug("Retrieval of possible aggregation names took {}s", time/1000);
         return ret;
     }
 

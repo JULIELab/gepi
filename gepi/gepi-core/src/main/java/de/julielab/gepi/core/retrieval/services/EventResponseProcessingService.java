@@ -62,7 +62,15 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
         final TermsAggregationResult eventCountResult = (TermsAggregationResult) searchServerResponse.getAggregationResult(eventCountRequest);
         for (ITermsAggregationUnit aggregationUnit : eventCountResult.getAggregationUnits()) {
             final String eventPairTerm = (String) aggregationUnit.getTerm();
-            final List<String> eventPair = Arrays.asList(eventPairTerm.split(AGGREGATION_VALUE_DELIMITER));
+            // Note: Unfortunately, four concepts in the current database, namely RZ-x (2x), MT-, and Cbr-madf-2-, end with a
+            // dash. This breaks this format. Since it is only a few concepts we just handle them here.
+            List<String> eventPair;
+            if (eventPairTerm.startsWith("RZ-") || eventPairTerm.startsWith("MT-"))
+                eventPair = Arrays.asList(eventPairTerm.substring(0, 3), eventPairTerm.substring(6));
+            else if (eventPairTerm.startsWith("Cbr-madf-2-"))
+                eventPair = Arrays.asList(eventPairTerm.substring(0, 11), eventPairTerm.substring(14));
+            else
+                eventPair = Arrays.asList(eventPairTerm.split(AGGREGATION_VALUE_DELIMITER));
             final int count = (int) aggregationUnit.getCount();
             if (aTopAggregateNames != null && !aTopAggregateNames.isEmpty()) {
                 // If necessary, switch argument positions in order to sort the results for A- and B-List membership

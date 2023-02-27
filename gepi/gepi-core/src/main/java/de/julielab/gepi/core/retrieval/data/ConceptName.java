@@ -1,4 +1,4 @@
-package de.julielab.gepi.core.services;
+package de.julielab.gepi.core.retrieval.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-class ConceptName {
+public class ConceptName {
     // preferredNames, for genes orthology aggregates, this is the symbol
     private String name;
     /* links to other concepts that

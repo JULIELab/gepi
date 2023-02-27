@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.services;
 
 import com.google.common.collect.Multimap;
+import de.julielab.gepi.core.retrieval.data.ConceptName;
 import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.junit.Rule;
@@ -17,7 +18,6 @@ import java.util.stream.Stream;
 
 import static de.julielab.gepi.core.services.GeneIdService.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class GeneIdServiceIntegrationTest {
     @Rule()
@@ -263,9 +263,10 @@ public class GeneIdServiceIntegrationTest {
 
     @Test
     public void getPossibleAggregationConceptNames3() {
-        // Input is the gene node. Those are omitted by this method and thus this will end in a cache exception: failed to return value
+        // Input is the gene node.
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
-        assertThatThrownBy(() -> geneIdService.getPossibleAggregationConceptNames(List.of("tid1"))).hasMessage("loadAll failed to return a value for tid1");
+        final Set<String> conceptNamesUsedInAggregationValues = geneIdService.getPossibleAggregationConceptNames(List.of("tid1"));
+        assertThat(conceptNamesUsedInAggregationValues).containsExactlyInAnyOrder("mTORtop", "mTOR", "Mtor");
     }
 
     @Test
@@ -283,6 +284,14 @@ public class GeneIdServiceIntegrationTest {
         final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
         final Set<String> conceptNamesUsedInAggregationValues = geneIdService.getPossibleAggregationConceptNames(List.of("tid6"));
         assertThat(conceptNamesUsedInAggregationValues).containsExactlyInAnyOrder("mTORtop", "AKT1");
+    }
+
+    @Test
+    public void getPossibleAggregationConceptNames6() {
+        // Input is a gene that does not have an orthology cluster.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> conceptNamesUsedInAggregationValues = geneIdService.getPossibleAggregationConceptNames(List.of("tid2"));
+        assertThat(conceptNamesUsedInAggregationValues).containsExactlyInAnyOrder("Mtor");
     }
 
 
