@@ -573,7 +573,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                     log.error("Could not retrieve gene info");
                     throw new RuntimeException(e);
                 }
-            }) : null;
+            }) : CompletableFuture.completedFuture(Collections.emptySet());
 
 
             final TermsAggregation eventCountRequest = new TermsAggregation();
