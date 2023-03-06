@@ -1,6 +1,11 @@
 package de.julielab.gepi.core.retrieval.services;
 
-import static org.junit.Assert.*;
+import de.julielab.gepi.core.retrieval.data.Argument;
+import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -9,19 +14,14 @@ import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.LoggerFactory;
-
-import de.julielab.gepi.core.retrieval.data.Argument;
-import de.julielab.gepi.core.retrieval.data.Event;
-import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class EventRetrievalServiceTest {
 	@Test
 	public void testReorderBipartiteEventResultArguments() throws Exception {
 		EventRetrievalService retrievalService = new EventRetrievalService(null,
-				LoggerFactory.getLogger(EventRetrievalService.class), null, null);
+				LoggerFactory.getLogger(EventRetrievalService.class), null, null, null);
 		Method method = retrievalService.getClass().getDeclaredMethod("reorderBipartiteEventResultArguments", Set.class,
 				Set.class, EventRetrievalResult.class);
 		method.setAccessible(true);
@@ -48,7 +48,7 @@ public class EventRetrievalServiceTest {
 	@Test
 	public void testReorderBipartiteEventResultArguments2() throws Exception {
 		EventRetrievalService retrievalService = new EventRetrievalService(null,
-				LoggerFactory.getLogger(EventRetrievalService.class), null, null);
+				LoggerFactory.getLogger(EventRetrievalService.class), null, null, null);
 		Method method = retrievalService.getClass().getDeclaredMethod("reorderBipartiteEventResultArguments", Set.class,
 				Set.class, EventRetrievalResult.class);
 		method.setAccessible(true);
@@ -80,7 +80,7 @@ public class EventRetrievalServiceTest {
 	@Test
 	public void testReorderBipartiteEventResultArguments3() throws Exception {
 		EventRetrievalService retrievalService = new EventRetrievalService(null,
-				LoggerFactory.getLogger(EventRetrievalService.class), null, null);
+				LoggerFactory.getLogger(EventRetrievalService.class), null, null, null);
 		Method method = retrievalService.getClass().getDeclaredMethod("reorderBipartiteEventResultArguments", Set.class,
 				Set.class, EventRetrievalResult.class);
 		method.setAccessible(true);
