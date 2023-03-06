@@ -54,14 +54,17 @@ public class GeneFilterBoard extends FilterBoard {
     public void setupFilters() {
         final ReplaceFilter orgid2tidReplaceFilter = new ReplaceFilter(orgid2tid);
         // We use a unique filter to handle the FPLX/HGNCG duplication issue. The GePiFamplexIdAssigner concatenates FPLX/HGNCG IDs
-        // when both databases have an entry for a entity. If we don't do de-duplication on the top aggregation level,
+        // (which are of the form FPLX:NTRK for FamPlex and HGNCG:1970 for HGNC which are the original ID of the two resources)
+        // when both databases have an entry for an entity. If we don't do de-duplication on the top aggregation level,
         // we end up with more than two arguments in such cases.
         fplxHgncConcatenatedIdSplitFilter = new RegExSplitFilter("---");
         // Due to the FPLX/HGNCG duplication issue (see comment above) we come up with more than two concept IDs in the
         // described case. The unique filter doesn't help here because the two concepts have to different conceptIds.
         // We thus replace the FPLX/HGNCG conceptIds - and only those, not gene IDs - with their aggregate. Because
         // when the two have the same name, then they also have an equal-name aggregate. While this shifts the
-        // abstraction level sort of unwanted, this is a way out of the duplication issue.
+        // abstraction level sort of unwanted, this is a way out of the duplication issue. It also does not hurt
+        // because the names are equal anyway because we determine the equality of FamPlex and HGNC Group concepts
+        // by equality of their names.
         orgid2atidReplaceFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2tidReplaceFilter, new ReplaceFilter(fplxhgncgtid2atiddirect), new UniqueFilter());
         // for adding equal name aggregates to the search field, 'arguments', that contains all the IDs that the event should be found with
         orgid2equalnameatidReplaceFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2tidReplaceFilter, new ReplaceFilter(tid2equalnameatid));
@@ -71,6 +74,7 @@ public class GeneFilterBoard extends FilterBoard {
         tid2atidAddonFilter = new AddonTermsFilter(tid2atidaddon);
         orgid2tid2atidAddonFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2tidAddonFilter, tid2atidAddonFilter);
         orgid2prefNameReplaceFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2atidReplaceFilter, conceptid2prefNameFilter, new UniqueFilter());
+        // Map original FamPlex/HGNC Group/NCBI Gene IDs to their respective top (a)tids and from there to the preferred aggregate names
         orgid2topaggprefname = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2atidReplaceFilter, new ReplaceFilter(tid2topaggPrefName), conceptid2prefNameFilter, new UniqueFilter());
         orgid2topaggFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2tidReplaceFilter, new ReplaceFilter(tid2atiddirect), new UniqueFilter());
         eg2famplexFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2topaggFilter, new UniqueFilter(), new AddonTermsFilter(tid2famplex, true, true));

@@ -6,16 +6,19 @@ import de.julielab.elastic.query.components.data.ElasticServerResponse;
 import de.julielab.elastic.query.components.data.HighlightCommand;
 import de.julielab.elastic.query.components.data.SearchServerRequest;
 import de.julielab.elastic.query.components.data.SortCommand.SortOrder;
+import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
 import de.julielab.elastic.query.components.data.query.*;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult.EventResultType;
+import de.julielab.gepi.core.services.IGeneIdService;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 /**
@@ -115,6 +118,13 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_NUM_ARGUMENTS = "numarguments";
 
+    public static final String FIELD_AGGREGATION_VALUE = "aggregationvalue";
+
+    /**
+     * The values in the field have the form symbol1---symbol2
+     */
+    public static final String AGGREGATION_VALUE_DELIMITER = "---";
+
 
     public static final String FIELD_VALUE_MOCK_ARGUMENT = "none";
 
@@ -149,21 +159,23 @@ public class EventRetrievalService implements IEventRetrievalService {
     );
     private static final int SCROLL_SIZE = 2000;
     private Logger log;
+    private IGeneIdService geneIdService;
     private ISearchServerComponent searchServerComponent;
     private String documentIndex;
     private IEventResponseProcessingService eventResponseProcessingService;
 
     public EventRetrievalService(@Symbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS) String documentIndex, Logger log,
-                                 IEventResponseProcessingService eventResponseProcessingService,
+                                 IEventResponseProcessingService eventResponseProcessingService, IGeneIdService geneIdService,
                                  ISearchServerComponent searchServerComponent) {
         this.documentIndex = documentIndex;
         this.log = log;
         this.eventResponseProcessingService = eventResponseProcessingService;
+        this.geneIdService = geneIdService;
         this.searchServerComponent = searchServerComponent;
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, boolean forCharts) {
+    public Future<EventRetrievalResult> getEvents(GepiRequestData requestData, boolean forCharts) {
         return getEvents(requestData, 0, DEFAULT_PAGE_SIZE, forCharts);
     }
 
@@ -177,8 +189,8 @@ public class EventRetrievalService implements IEventRetrievalService {
      * @return
      */
     @Override
-    public CompletableFuture<EventRetrievalResult> getEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
-        CompletableFuture<EventRetrievalResult> esResult;
+    public Future<EventRetrievalResult> getEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
+        Future<EventRetrievalResult> esResult;
         EnumSet<InputMode> inputMode = requestData.getInputMode();
         if (inputMode.contains(InputMode.AB)) {
             log.debug("Calling EventRetrievalService for AB search for rows from {}, number of rows {}, forCharts: {}", from, numRows, forCharts);
@@ -195,7 +207,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> closedSearch(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
+    public Future<EventRetrievalResult> closedSearch(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         return CompletableFuture.supplyAsync(() -> {
             try {
 
@@ -218,9 +230,8 @@ public class EventRetrievalService implements IEventRetrievalService {
                 serverRqst.index = documentIndex;
                 serverRqst.start = from;
                 serverRqst.rows = numRows;
-//                serverRqst.requestTimeout = "10m";
                 configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
-                if (!downloadAll) {
+                if (!downloadAll && numRows > 0) {
                     addHighlighting(serverRqst);
                 }
 
@@ -250,7 +261,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
 
     @Override
-    public CompletableFuture<EventRetrievalResult> closedSearch(GepiRequestData requestData) {
+    public Future<EventRetrievalResult> closedSearch(GepiRequestData requestData) {
         return closedSearch(requestData, 0, DEFAULT_PAGE_SIZE, false);
     }
 
@@ -280,12 +291,12 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> openSearch(GepiRequestData requestData) {
+    public Future<EventRetrievalResult> openSearch(GepiRequestData requestData) {
         return openSearch(requestData, 0, DEFAULT_PAGE_SIZE, false);
     }
 
     @Override
-    public CompletableFuture<EventRetrievalResult> openSearch(GepiRequestData gepiRequestData, int from, int numRows, boolean forCharts) {
+    public Future<EventRetrievalResult> openSearch(GepiRequestData gepiRequestData, int from, int numRows, boolean forCharts) {
         assert gepiRequestData.getListAGePiIds() != null : "No A-list IDs set.";
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
@@ -342,9 +353,8 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.index = documentIndex;
         serverRqst.start = from;
         serverRqst.rows = numRows;
-//        serverRqst.requestTimeout = "10m";
         configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
-        if (!downloadAll) {
+        if (!downloadAll && numRows > 0) {
             addHighlighting(serverRqst);
         }
         return serverRqst;
@@ -425,9 +435,8 @@ public class EventRetrievalService implements IEventRetrievalService {
             serverRqst.index = documentIndex;
             serverRqst.start = from;
             serverRqst.rows = numRows;
-//            serverRqst.requestTimeout = "10m";
             configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
-            if (!downloadAll) {
+            if (!downloadAll && numRows > 0) {
                 addHighlighting(serverRqst);
             }
 
@@ -464,6 +473,77 @@ public class EventRetrievalService implements IEventRetrievalService {
         time = System.currentTimeMillis() - time;
         log.debug("Determined the number of {} in the index in {} seconds", numFound, time / 1000);
         return numFound;
+    }
+
+    @Override
+    public Future<EsAggregatedResult> getAggregatedEvents(GepiRequestData requestData) {
+        Future<EsAggregatedResult> esResult;
+        EnumSet<InputMode> inputMode = requestData.getInputMode();
+        if (inputMode.contains(InputMode.AB)) {
+            esResult = closedAggregatedSearch(requestData);
+        } else if (inputMode.contains(InputMode.A)) {
+            esResult = openAggregatedSearch(requestData);
+        } else {
+            // No IDs were entered
+            esResult = getFulltextFilteredAggregatedEvents(requestData);
+        }
+        return esResult;
+    }
+
+    private Future<EsAggregatedResult> getFulltextFilteredAggregatedEvents(GepiRequestData requestData) {
+        return null;
+    }
+
+    private Future<EsAggregatedResult> openAggregatedSearch(GepiRequestData requestData) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Short comment: Fetch the aggregate names of the input A IDs so we can tell in the aggregate values
+                // which argument belongs to A.
+                // Long comment: The aggregationvalue field stores the symbol of the gene top-aggregates (orthology / homology / famplex / hgnc),
+                // see de.julielab.gepi.indexing.GeneFilterBoard.orgid2topaggprefname, e.g. AKT---MTOR.
+                // For genes it is the highest orthology aggregate. For FamPlex and HGNC Groups it is the
+                // highest equal-name aggregate. The latter poses is a discrepancy because the GeneIdService does not map
+                // FamPlex or HGNC Group inputs to the equal-name aggregate. This is not an issue, however,
+                // because the equal-name aggregate always has the same name as its elements, if it exists (hence the name).
+                final Future<Map<String, GepiConceptInfo>> aGeneInfo = CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return geneIdService.getGeneInfo(requestData.getAListIdsAsSet());
+                    } catch (Exception e) {
+                        log.error("Could not retrieve gene info");
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                final SearchServerRequest openSearchRequest = getOpenSearchRequest(requestData, 0, 0, false);
+
+                final TermsAggregation eventCountRequest = new TermsAggregation();
+                eventCountRequest.name = "events";
+                eventCountRequest.field = FIELD_AGGREGATION_VALUE;
+
+                openSearchRequest.addAggregationCommand(eventCountRequest);
+
+                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OpenAggregatedSearch");
+                carrier.addSearchServerRequest(openSearchRequest);
+                long time = System.currentTimeMillis();
+                log.debug("Sent full-text search server request");
+                searchServerComponent.process(carrier);
+                if (log.isDebugEnabled())
+                    log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
+
+
+
+                EsAggregatedResult aggregatedResult = eventResponseProcessingService
+                        .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, aGeneInfo.get().values().stream().map(GepiConceptInfo::getSymbol).collect(Collectors.toSet()));
+                return aggregatedResult;
+            } catch (Exception e) {
+                log.error("Open aggregated search failed", e);
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private Future<EsAggregatedResult> closedAggregatedSearch(GepiRequestData requestData) {
+        return null;
     }
 
 

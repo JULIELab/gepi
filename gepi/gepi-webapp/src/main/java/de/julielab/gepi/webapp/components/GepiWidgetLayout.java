@@ -1,8 +1,8 @@
 package de.julielab.gepi.webapp.components;
 
-import de.julielab.gepi.core.retrieval.data.AggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
+import de.julielab.gepi.core.retrieval.data.Neo4jAggregatedEventsRetrievalResult;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.data.ResultType;
@@ -119,8 +119,8 @@ final public class GepiWidgetLayout {
         return dataService.getData(requestData.getDataSessionId()).getUnrolledResult4charts();
     }
 
-    public Future<AggregatedEventsRetrievalResult> getNeo4jResult() {
-        return dataService.getData(requestData.getDataSessionId()).getAggregatedResult();
+    public Future<Neo4jAggregatedEventsRetrievalResult> getNeo4jResult() {
+        return dataService.getData(requestData.getDataSessionId()).getNeo4jAggregatedResult();
     }
 
     /**

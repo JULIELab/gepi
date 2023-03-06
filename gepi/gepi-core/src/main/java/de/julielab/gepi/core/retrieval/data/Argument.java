@@ -21,7 +21,6 @@ public class Argument implements Comparable<Argument> {
     private GepiConceptInfo geneInfo;
 
     public Argument(String geneId, String conceptId, String topHomologyId, String text) {
-        super();
         this.geneId = geneId;
         this.conceptId = conceptId;
         this.topHomologyId = topHomologyId;

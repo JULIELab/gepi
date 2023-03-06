@@ -53,7 +53,7 @@ public interface IGePiDataService {
      */
     JSONObject getPairedArgsCount(List<Event> e);
 
-    JSONObject getPairedArgsCount(AggregatedEventsRetrievalResult aggregatedEvents);
+    JSONObject getPairedArgsCount(Neo4jAggregatedEventsRetrievalResult aggregatedEvents);
 
     JSONObject getPairsWithCommonTarget(List<Event> evtList);
 

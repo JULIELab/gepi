@@ -92,7 +92,7 @@ public class Index {
 
     void setupRender() {
         GePiData data = dataService.getData(dataSessionId);
-        resultNonNullOnLoad = data != null && (data.getUnrolledResult4charts() != null || data.getAggregatedResult() != null);
+        resultNonNullOnLoad = data != null && (data.getUnrolledResult4charts() != null || data.getNeo4jAggregatedResult() != null);
     }
     @Inject
     private ApplicationStateManager asm;
@@ -145,13 +145,13 @@ public class Index {
         return dataService.getData(dataSessionId).getUnrolledResult4charts();
     }
 
-    private Future<AggregatedEventsRetrievalResult> getNeo4jResult() {
-        return dataService.getData(dataSessionId).getAggregatedResult();
+    private Future<Neo4jAggregatedEventsRetrievalResult> getNeo4jResult() {
+        return dataService.getData(dataSessionId).getNeo4jAggregatedResult();
     }
 
     public boolean isResultPresent() {
         Future<EventRetrievalResult> esResult = getEsResult();
-        Future<AggregatedEventsRetrievalResult> neo4jResult = getNeo4jResult();
+        Future<Neo4jAggregatedEventsRetrievalResult> neo4jResult = getNeo4jResult();
         final boolean resultPresent = (esResult != null && esResult.isDone()) || (neo4jResult != null && neo4jResult.isDone());
         log.debug("Is result present: {}", resultPresent);
         return resultPresent;
@@ -208,13 +208,13 @@ public class Index {
         if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && !datasource.equals("bcounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
         GePiData data = dataService.getData(dataSessionId);
-        if (data.getUnrolledResult4charts() == null && data.getAggregatedResult() == null)
+        if (data.getUnrolledResult4charts() == null && data.getNeo4jAggregatedResult() == null)
             throw new IllegalStateException("The ES result and the Neo4j result for dataSessionId " + dataSessionId + " are both null.");
         try {
             log.debug("Creating JSON object from results.");
             JSONObject jsonObject = null;
-            if (data.getAggregatedResult() != null) {
-                AggregatedEventsRetrievalResult aggregatedEvents = data.getAggregatedResult().get();
+            if (data.getNeo4jAggregatedResult() != null) {
+                Neo4jAggregatedEventsRetrievalResult aggregatedEvents = data.getNeo4jAggregatedResult().get();
                 log.debug("[{}] Obtained aggregated events retrieval result with {} events.", dataSessionId, aggregatedEvents.size());
                 jsonObject = dataService.getPairedArgsCount(aggregatedEvents);
             } else {

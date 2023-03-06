@@ -255,7 +255,8 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("mixedgenesource", !arg1Gene.getComponentId().equals(arg2Gene.getComponentId()));
                             document.addField("mixedgenemappingsource", !arg1Gene.getResourceEntryList(k).getComponentId().equals(arg2Gene.getResourceEntryList(l).getComponentId()));
                             document.addField("ARGUMENT_FS", argPair);
-                            // For ElasticSearch aggregations, we create terms in the form 'symbol1---symbol2'. We also sort the symbols so that the same pair of symbols is always stored in the same order.
+                            // For ElasticSearch aggregations, we create terms in the form 'symbol1---symbol2'. We also sort the symbols so that the same pair of symbols is always stored in the same order
+                            // in order to reduce the number of unique values.
                             // Then we can use ElasticSearch aggregations to count interactions occurrences instead of retrieving all documents and counting ourselves.
                             document.addField("aggregationvalue", document.getAsArrayFieldValue("argumenthomoprefnames").stream().map(IFieldValue::toString).sorted().collect(Collectors.joining("---")));
 //                            final ArrayFieldValue go1Values = new ArrayFieldValue(arg1GoPrefnames);
