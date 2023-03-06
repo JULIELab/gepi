@@ -15,29 +15,14 @@ define(["jquery", "bootstrap5/modal", "bootstrap5/tooltip", "bootstrap5/offcanva
         return readyIndicator;
     }
 
-    let displayCookieConsentModal = function () {
-         const modal = new Modal(document.getElementById('cookieConsentModal'), {backgrop:'static', focus: true, keyboard: false})
-         modal.show();
-    }
-
     let displayCookieConsentOffcanvas = function () {
             $('#cookie-consent-offcanvas-close-btn').on('click', displayRoadworksWarningToast);
             const offcanvas = new Offcanvas(document.getElementById('cookie-consent-offcanvas'), {keyboard:false, scroll: true, backdrop: false})
             offcanvas.show();
-        }
-
-    let displayRoadworksWarningOffcanvas = function () {
-        const offcanvas = new Offcanvas(document.getElementById('offcanvas-roadworks-warning'))
-        offcanvas.show();
-    }
-
-     let displayRoadworksWarningModal = function () {
-            const modal = new Modal(document.getElementById('roadworks-warning-modal'))
-            modal.show();
     }
 
     let displayRoadworksWarningToast = function () {
-             const modal = new Toast(document.getElementById('roadworks-warning-toast'), {delay:10000, autohide:false})
+             const modal = new Toast(document.getElementById('roadworks-warning-toast'), {delay:10000, autohide:true})
              modal.show();
      }
 
@@ -60,6 +45,6 @@ define(["jquery", "bootstrap5/modal", "bootstrap5/tooltip", "bootstrap5/offcanva
 
     }
 
-    return {readyForWidgets, getReadySemaphor, displayCookieConsentModal, displayCookieConsentOffcanvas, displayRoadworksWarningOffcanvas, displayRoadworksWarningModal, displayRoadworksWarningToast setupDownloadUrlCopyButton};
+    return {readyForWidgets, getReadySemaphor,  displayCookieConsentOffcanvas,  displayRoadworksWarningToast, setupDownloadUrlCopyButton};
     
 });

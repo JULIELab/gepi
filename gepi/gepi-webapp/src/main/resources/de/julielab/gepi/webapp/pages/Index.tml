@@ -54,22 +54,6 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="cookieConsentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Session ID Cookie Consent</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        This Web application uses a single cookie to remember session state information. This session state is not used for any tracking but is required for the site to provide the offered service. By using this Web site you consent to storing an anonymous session ID.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Understood</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="offcanvas offcanvas-bottom bg-secondary text-light" tabindex="-1" id="cookie-consent-offcanvas" aria-labelledby="cookie-consent-offcanvas-label">
             <div class="offcanvas-header ">
                 <!-- This empty span causes the title to be centered; this is because offcanvas-header is a flex with justify-content: space-between
@@ -85,35 +69,7 @@
                 </div>
             </div>
         </div>
-        <div class="offcanvas offcanvas-top" tabindex="-1" id="offcanvas-roadworks-warning" aria-labelledby="offcanvasRoadworksLabel">
-            <div class="offcanvas-header">
-                <!-- This empty span causes the title to be centered; this is because offcanvas-header is a flex with justify-content: space-between
-                     which distributes its child elements evenly -->
-                <span/>
-                <h5 class="offcanvas-title" id="offcanvasRoadworksLabel">Maintenance Notice</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas-roadworks-warning" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body text-center">
-                GePI currently receives an index rebuild. Until this completes, the interaction database is not complete. GePI can be used but results might be incomplete.
-            </div>
-        </div>
-        <div class="modal fade" id="roadworks-warning-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="roadworks-warning-modal-label" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="roadworks-warning-modal-label">Maintenance Notice</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        GePI currently receives an index rebuild. Until this completes, the interaction database is not complete. GePI can be used but results might be incomplete.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="toast top-0 end-0" id="roadworks-warning-toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast" id="roadworks-warning-toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
                 <img src="images/warning_amber_black_24dp.svg" class="rounded me-2" alt="Triangle with an exclamation mark in the middle."/>
                 <strong class="me-auto">Maintenance Notice</strong>

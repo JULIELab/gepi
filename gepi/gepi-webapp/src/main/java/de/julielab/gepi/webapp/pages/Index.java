@@ -134,9 +134,6 @@ public class Index {
         }
         if (!sessionExists) {
             log.info("No session exists, displaying cookie consent modal");
-//            javaScriptSupport.require("gepi/pages/index").invoke("displayCookieConsentModal");
-//            javaScriptSupport.require("gepi/pages/index").invoke("displayRoadworksWarningModal");
-//            javaScriptSupport.require("gepi/pages/index").invoke("displayRoadworksWarningOffcanvas");
             javaScriptSupport.require("gepi/pages/index").invoke("displayCookieConsentOffcanvas");
         } else {
             log.info("There already is a session");
