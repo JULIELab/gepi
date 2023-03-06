@@ -42,7 +42,7 @@
                     </div>
                     <div class="modal-body">
                         <p>Interaction data is being assembled. This may take a while depending on result size and server load. You can use the link below to fetch the download at a later time. The link is valid at least 24h.</p>
-                        <div class="alert alert-warning">Assembling the data of a session will replace previously prepared result files, even they have not been downloaded. To begin a new session for a separate download file, hit the <span class="background-well-gray">Reset Session</span> button to the right of the navigation bar.</div>
+                        <div class="alert alert-warning">Assembling the data of a session will replace previously prepared result files of the same session, even they have not been downloaded. To begin a new session for a separate download file, hit the <span class="background-well-gray">Reset Session</span> button to the right of the navigation bar.</div>
                         <div class="input-group">
                             <input type="text" id="downloadUrlCopyTextField" class="form-control input-monospace input-sm color-bg-subtle" data-autoselect="" value="${resultFileDownloadLink}" aria-label="${resultFileDownloadLink}" readonly=""/>
                             <button class="btn btn-secondary" type="button" id="downloadUrlCopyButton"/>
@@ -68,6 +68,60 @@
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Understood</button>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-bottom bg-secondary text-light" tabindex="-1" id="cookie-consent-offcanvas" aria-labelledby="cookie-consent-offcanvas-label">
+            <div class="offcanvas-header ">
+                <!-- This empty span causes the title to be centered; this is because offcanvas-header is a flex with justify-content: space-between
+                 which distributes its child elements evenly -->
+                <span/>
+                <h5 class="offcanvas-title" id="cookie-consent-offcanvas">Session ID Cookie Consent</h5>
+                <span/>
+            </div>
+            <div class="offcanvas-body text-center">
+                This Web application uses a single cookie to remember session state information. This session state is not used for any tracking but is required for the site to provide the offered service. By using this Web site you consent to the storage of an anonymous session ID.
+                <div class="mt-3">
+                <button type="button" id="cookie-consent-offcanvas-close-btn" class="btn btn-light" data-bs-dismiss="offcanvas" aria-label="Close">Understood</button>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-top" tabindex="-1" id="offcanvas-roadworks-warning" aria-labelledby="offcanvasRoadworksLabel">
+            <div class="offcanvas-header">
+                <!-- This empty span causes the title to be centered; this is because offcanvas-header is a flex with justify-content: space-between
+                     which distributes its child elements evenly -->
+                <span/>
+                <h5 class="offcanvas-title" id="offcanvasRoadworksLabel">Maintenance Notice</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas-roadworks-warning" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body text-center">
+                GePI currently receives an index rebuild. Until this completes, the interaction database is not complete. GePI can be used but results might be incomplete.
+            </div>
+        </div>
+        <div class="modal fade" id="roadworks-warning-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="roadworks-warning-modal-label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="roadworks-warning-modal-label">Maintenance Notice</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        GePI currently receives an index rebuild. Until this completes, the interaction database is not complete. GePI can be used but results might be incomplete.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="toast top-0 end-0" id="roadworks-warning-toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <img src="images/warning_amber_black_24dp.svg" class="rounded me-2" alt="Triangle with an exclamation mark in the middle."/>
+                <strong class="me-auto">Maintenance Notice</strong>
+                <small>2023-03-06</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                GePI currently receives an index rebuild. Until this completes, the interaction database is not complete. GePI can be used but results might be incomplete. This will take 3 to 4 days.
             </div>
         </div>
     </body>
