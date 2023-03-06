@@ -15,11 +15,11 @@
         </tableSchemas>
     </DBSchemaInformation>
     <DBConnectionInformation>
-        <activeDBConnection>pubmed</activeDBConnection>
+        <activeDBConnection>pubmed_lh</activeDBConnection>
 	<maxActiveDBConnections>4</maxActiveDBConnections>
         <DBConnections>
             <DBConnection name="pubmed" url="jdbc:postgresql://192.168.1.15:5432/pubmed"/>
-            <DBConnection name="pmlocalhost" url="jdbc:postgresql://localhost:5432/pubmed"/>
+            <DBConnection name="pubmed_lh" url="jdbc:postgresql://localhost:5432/pubmed"/>
         </DBConnections>
     </DBConnectionInformation>
 </databaseConnectorConfiguration>

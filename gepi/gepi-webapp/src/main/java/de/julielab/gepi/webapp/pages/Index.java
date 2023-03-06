@@ -6,6 +6,7 @@ import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.components.GepiInput;
 import de.julielab.gepi.webapp.data.GepiQueryParameters;
 import de.julielab.gepi.webapp.state.GePiSessionState;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
@@ -22,7 +23,6 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -210,9 +210,9 @@ public class Index {
             else if (data.getEsAggregatedResult() != null) {
                 final EsAggregatedResult esAggregatedResult = data.getEsAggregatedResult().get();
                 if (datasource.equals("relationCounts")) {
-                    final Map<Event, Integer> eventFrequencies = esAggregatedResult.getEventFrequencies();
+                    final List<Pair<Event, Integer>> eventFrequencies = esAggregatedResult.getEventFrequencies();
                     log.debug("[{}] Obtained ES-aggregated events retrieval result with {} events.", dataSessionId, eventFrequencies.size());
-                    jsonObject = dataService.getPairedArgsCount(eventFrequencies);
+                    jsonObject = dataService.getPairedArgsCountFromPairs(eventFrequencies);
                 } else if (datasource.equals("acounts")) {
                     JSONArray aCounts = dataService.getArgumentCount(esAggregatedResult.getASymbolFrequencies());
                     log.debug("[{}] Obtained A list counts of size {} from ES-aggregation.", dataSessionId, aCounts.size());

@@ -8,13 +8,17 @@ import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.data.InputMapping;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -53,7 +57,7 @@ public class StatsWidget extends GepiWidget {
 
     public long getNumberUniqueABPairs() {
         try {
-            return getEsAggregatedResult().get().getEventFrequencies().keySet().stream().filter(e -> e.getArity() == 2).count();
+            return getEsAggregatedResult().get().getEventFrequencies().stream().map(Pair::getLeft).filter(e -> e.getArity() == 2).count();
         } catch (InterruptedException | ExecutionException e) {
             return 0;
         }
@@ -91,13 +95,13 @@ public class StatsWidget extends GepiWidget {
         try {
             int n = 10;
             final Future<EsAggregatedResult> esAggregatedResult = getEsAggregatedResult();
-            final Map<Event, Integer> eventFrequencies = esAggregatedResult.get().getEventFrequencies();
-            final Iterator<Event> keyIt = eventFrequencies.keySet().iterator();
+            final List<Pair<Event, Integer>> eventFrequencies = esAggregatedResult.get().getEventFrequencies();
+            final Iterator<Pair<Event, Integer>> keyIt = eventFrequencies.stream().iterator();
             int i = 0;
             List<Triple<String, String, Integer>> topInteractions = new ArrayList<>(n);
             while (keyIt.hasNext() && i < n) {
-                Event e = keyIt.next();
-                final Triple<String, String, Integer> triple = new ImmutableTriple(e.getFirstArgument().getTopHomologyPreferredName(), e.getSecondArgument().getTopHomologyPreferredName(), eventFrequencies.get(e));
+                Pair<Event, Integer> p = keyIt.next();
+                final Triple<String, String, Integer> triple = new ImmutableTriple(p.getLeft().getFirstArgument().getTopHomologyPreferredName(), p.getLeft().getSecondArgument().getTopHomologyPreferredName(), p.getRight());
                 topInteractions.add(triple);
                 ++i;
             }

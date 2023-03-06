@@ -64,7 +64,11 @@ public class InputListMappingTable {
             final Multimap<String, String> convertedItems = conversionResult.getConvertedItems();
             List<InputMapping> ret = new ArrayList<>();
             // they values are always database concept or aggregate IDs
+            log.debug("Obtaining GeneInfo for {} items.", convertedItems.values().size());
+            long time = System.currentTimeMillis();
             final Map<String, GepiConceptInfo> geneInfo = geneIdService.getGeneInfo(convertedItems.values());
+            time = System.currentTimeMillis() - time;
+            log.debug("Obtaining GeneInfo took {}s", time/1000);
             for (String inputId : (Iterable<String>) () -> convertedItems.keySet().stream().sorted(String.CASE_INSENSITIVE_ORDER).iterator()) {
                 if (maxTableSize >= 0 && ret.size() == maxTableSize)
                     break;

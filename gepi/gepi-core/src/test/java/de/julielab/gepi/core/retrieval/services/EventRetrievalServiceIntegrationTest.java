@@ -304,7 +304,7 @@ public class EventRetrievalServiceIntegrationTest {
         assertThat(openAggregationResult.get().getBSymbolFrequencies().get("LBR")).isEqualTo(1);
         assertThat(openAggregationResult.get().getBSymbolFrequencies().get("CPQ")).isEqualTo(1);
         assertThat(openAggregationResult.get().getEventFrequencies())
-                .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
+                .extracting(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
                 .contains(Tuple.tuple("IFNG", "LBR", 1), Tuple.tuple("IFNG", "CPQ", 1), Tuple.tuple("IFNG", "none", 6));
     }
 
@@ -323,7 +323,7 @@ public class EventRetrievalServiceIntegrationTest {
         assertThat(closedAggregationResult.get().getASymbolFrequencies().get("GPHN")).isEqualTo(1);
         assertThat(closedAggregationResult.get().getBSymbolFrequencies().get("GLRB")).isEqualTo(1);
         assertThat(closedAggregationResult.get().getEventFrequencies())
-                .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
+                .extracting(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
                 .containsExactly(Tuple.tuple("GPHN", "GLRB", 1));
     }
 
@@ -351,7 +351,7 @@ public class EventRetrievalServiceIntegrationTest {
         assertThat(closedAggregationResult.get().getASymbolFrequencies().get("BCL2")).isEqualTo(1);
         assertThat(closedAggregationResult.get().getBSymbolFrequencies().get("IL1B")).isEqualTo(1);
         assertThat(closedAggregationResult.get().getEventFrequencies())
-                .extractingFromEntries(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
+                .extracting(e -> e.getKey().getFirstArgument().getTopHomologyPreferredName(), e -> e.getKey().getSecondArgument().getTopHomologyPreferredName(), e -> e.getValue())
                 .contains(Tuple.tuple("GPHN", "none", 3), Tuple.tuple("PGR", "none", 1), Tuple.tuple("TACR1", "none", 2), Tuple.tuple("G protein-coupled receptors", "none", 1), Tuple.tuple("CSF3", "IL1B", 1));
     }
 

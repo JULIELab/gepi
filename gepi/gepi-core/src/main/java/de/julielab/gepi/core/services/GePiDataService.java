@@ -7,6 +7,7 @@ import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
 import de.julielab.java.utilities.IOStreamUtilities;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.annotations.Log;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONArray;
@@ -218,6 +219,34 @@ public class GePiDataService implements IGePiDataService {
             }
             if (nodeIdAlreadySeen.add(e.getSecondArgument().getTopHomologyPreferredName())) {
                 nodes.add(getJsonObjectForArgument(e.getSecondArgument()));
+            }
+        }
+        nodesNLinks.put("nodes", nodes);
+        nodesNLinks.put("links", links);
+        return nodesNLinks;
+    }
+
+    @Override
+    public JSONObject getPairedArgsCountFromPairs(List<Pair<Event, Integer>> eventFrequencies) {
+        JSONArray nodes = new JSONArray();
+        JSONArray links = new JSONArray();
+        JSONObject nodesNLinks = new JSONObject();
+        Set<String> nodeIdAlreadySeen = new HashSet<>();
+        for (Pair<Event, Integer> p : eventFrequencies) {
+            final Integer count = p.getRight();
+            JSONObject link = new JSONObject();
+            link.put("source", p.getLeft().getFirstArgument().getTopHomologyPreferredName());
+            link.put("target", p.getLeft().getSecondArgument().getTopHomologyPreferredName());
+            link.put("frequency", count);
+
+
+            links.add(link);
+
+            if (nodeIdAlreadySeen.add(p.getLeft().getFirstArgument().getTopHomologyPreferredName())) {
+                nodes.add(getJsonObjectForArgument(p.getLeft().getFirstArgument()));
+            }
+            if (nodeIdAlreadySeen.add(p.getLeft().getSecondArgument().getTopHomologyPreferredName())) {
+                nodes.add(getJsonObjectForArgument(p.getLeft().getSecondArgument()));
             }
         }
         nodesNLinks.put("nodes", nodes);

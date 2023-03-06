@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.services;
 
 import de.julielab.gepi.core.retrieval.data.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
@@ -56,7 +57,10 @@ public interface IGePiDataService {
     JSONObject getPairedArgsCount(List<Event> e);
 
     JSONObject getPairedArgsCount(Neo4jAggregatedEventsRetrievalResult aggregatedEvents);
+
     JSONObject getPairedArgsCount(Map<Event, Integer> eventFrequencies);
+
+    JSONObject getPairedArgsCountFromPairs(List<Pair<Event, Integer>> eventFrequencies);
 
     JSONObject getPairsWithCommonTarget(List<Event> evtList);
 
