@@ -267,7 +267,10 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("mixedgenemappingsource", !arg1Gene.getResourceEntryList(k).getComponentId().equals(arg2Gene.getResourceEntryList(l).getComponentId()));
                             try {
                                 final Date pubDate = JCasUtil.selectSingle(jCas, Header.class).getPubTypeList(0).getPubDate();
-                                document.addField("pubdate", pubDate.getYear() + "-" + pubDate.getMonth() + "-" + pubDate.getDay());
+                                String month = pubDate.getMonth() < 10 ? "0"+pubDate.getMonth() : String.valueOf(pubDate.getMonth());
+                                String day = pubDate.getDay() < 10 ? "0"+pubDate.getDay() : String.valueOf(pubDate.getDay());
+                                final String value = pubDate.getYear() + "-" + month + "-" + day;
+                                document.addField("pubdate", value);
                             } catch (Exception e) {
                                 log.warn("Could not obtain publication date for document {}", docId, e);
                                 throw e;
