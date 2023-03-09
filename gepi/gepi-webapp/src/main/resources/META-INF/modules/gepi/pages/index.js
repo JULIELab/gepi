@@ -16,7 +16,7 @@ define(["jquery", "bootstrap5/modal", "bootstrap5/tooltip", "bootstrap5/offcanva
     }
 
     let displayCookieConsentOffcanvas = function () {
-            $('#cookie-consent-offcanvas-close-btn').on('click', displayRoadworksWarningToast);
+//            $('#cookie-consent-offcanvas-close-btn').on('click', displayRoadworksWarningToast);
             const offcanvas = new Offcanvas(document.getElementById('cookie-consent-offcanvas'), {keyboard:false, scroll: true, backdrop: false})
             offcanvas.show();
     }
