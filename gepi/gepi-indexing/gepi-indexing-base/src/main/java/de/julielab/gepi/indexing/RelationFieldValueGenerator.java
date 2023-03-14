@@ -223,7 +223,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("argumentsfamiliesgroups", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.orgid2tid2atidAddonFilter, geneFb.orgid2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2hgncFilter, geneFb.eg2gohypertidFilter, geneFb.eg2gohypertidFilter, geneFb.orgid2equalnameatidReplaceFilter, geneFb.orgid2equalnameatidReplaceFilter}, new UniqueFilter()));
                             // maps to orthologs and gene ontology terms but not to families, complexes and groups; if a family was found directly, it is included, but genes won't add the families they belong to. When searching for a family, this field won't return the family members.
                             document.addField("argumentsnoinferencefamiliesgroups", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.orgid2tid2atidAddonFilter, geneFb.orgid2tid2atidAddonFilter, geneFb.eg2gohypertidFilter, geneFb.eg2gohypertidFilter, geneFb.orgid2equalnameatidReplaceFilter, geneFb.orgid2equalnameatidReplaceFilter}, new UniqueFilter()));
-                            // maps to orthologs and gene ontology terms but not to families, plus for complexes, the IDS of their subunits is added ("top-down"
+                            // maps to orthologs and gene ontology terms but not to families, plus for complexes, the IDS of their subunits is added ("top-down")
                             document.addField("argumentscomplexes2members", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1], argPair[0], argPair[1]}, new String[]{arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath, arg1EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.orgid2tid2atidAddonFilter, geneFb.orgid2tid2atidAddonFilter, geneFb.complextid2membertidAddonFilter, geneFb.complextid2membertidAddonFilter, geneFb.eg2gohypertidFilter, geneFb.eg2gohypertidFilter, geneFb.orgid2equalnameatidReplaceFilter, geneFb.orgid2equalnameatidReplaceFilter}, new UniqueFilter()));
                             // add everything from the above into one field
                             ArrayFieldValue allArgumentsValues = new ArrayFieldValue();
@@ -265,16 +265,22 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             document.addField("genesource", createRawFieldValueForAnnotations(argPair, new String[]{"/ref/componentId"}, null, geneComponentIdProcessingfilter));
                             document.addField("mixedgenesource", !arg1Gene.getComponentId().equals(arg2Gene.getComponentId()));
                             document.addField("mixedgenemappingsource", !arg1Gene.getResourceEntryList(k).getComponentId().equals(arg2Gene.getResourceEntryList(l).getComponentId()));
-                            try {
-                                final Date pubDate = JCasUtil.selectSingle(jCas, Header.class).getPubTypeList(0).getPubDate();
-                                String month = pubDate.getMonth() < 10 ? "0"+pubDate.getMonth() : String.valueOf(pubDate.getMonth());
-                                String day = pubDate.getDay() < 10 ? "0"+pubDate.getDay() : String.valueOf(pubDate.getDay());
-                                final String value = pubDate.getYear() + "-" + month + "-" + day;
-                                document.addField("pubdate", value);
-                            } catch (Exception e) {
-                                log.warn("Could not obtain publication date for document {}", docId, e);
-                                throw e;
-                            }
+                            // omit the field for the moment because we have weird error cases where the pubdate is 00-00-00
+                            // which renders the use case for the field invalid anyway. Fix the error, then re-add here.
+                            // TODO throw exception if the data is invalid because otherwise, ElasticSearch will drop the document silently
+//                            try {
+//                                final Date pubDate = JCasUtil.selectSingle(jCas, Header.class).getPubTypeList(0).getPubDate();
+//                                // we need a year with four digits
+//                                if (pubDate.getYear() > 999) {
+//                                    String month = pubDate.getMonth() < 10 ? "0" + pubDate.getMonth() : String.valueOf(pubDate.getMonth());
+//                                    String day = pubDate.getDay() < 10 ? "0" + pubDate.getDay() : String.valueOf(pubDate.getDay());
+//                                    final String value = pubDate.getYear() + "-" + month + "-" + day;
+//                                    document.addField("pubdate", value);
+//                                }
+//                            } catch (Exception e) {
+//                                log.warn("Could not obtain publication date for document {}", docId, e);
+//                                throw e;
+//                            }
                             document.addField("ARGUMENT_FS", argPair);
                             // For ElasticSearch aggregations, we create terms in the form 'symbol1---symbol2'. We also sort the symbols so that the same pair of symbols is always stored in the same order
                             // in order to reduce the number of unique values.

@@ -76,7 +76,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
 
                             // skip events extracted from PMC abstracts when there exists a corresponding PubMed document
                             if (paragraphDocument.containsKey("textscope") && paragraphDocument.get("textscope").toString().equals("abstract") && relDoc.get("source").toString().equals("pmc") && relDoc.containsKey("pmid")) {
-                                log.debug("DEBUG MESSAGE: Event with arguments ({}, {}) from document {} omitted because it appeared in the abstract and the PubMed document {} corresponds to it", relDoc.get("argument1coveredtext"), relDoc.get("argument2coveredtext"), docId, relDoc.get("pmid"));
+                                log.debug("DEBUG MESSAGE: Event with arguments ({}) from document {} omitted because it appeared in the abstract and the PubMed document {} corresponds to it", relDoc.get("argumentcoveredtext"), docId, relDoc.get("pmid"));
                                 continue;
                             }
 
@@ -87,8 +87,10 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                             if (overlappingSentence != null)
                                 sentence2relDocs.put(overlappingSentence, relDoc);
                         } else {
-                            log.debug("Skipping interaction document {} because its arguments don't lie in the same sentence.", relDoc.getId());
+                            log.debug("Skipping interaction document {} (arguments {}) because its arguments don't lie in the same sentence.", relDoc.getId(), relDoc.get("argumentcoveredtext"));
                         }
+                        final IFieldValue texts = relDoc.get("argumentcoveredtext");
+                        log.debug("Indexing document {} (arguments {})", relDoc.getId(), texts);
                     }
                 }
                 ++i;
@@ -101,13 +103,17 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         relDocs = relDocs.stream().filter(d -> !removedDocuments.contains(d)).collect(Collectors.toList());
         // remove the temporary field for the UIMA argument objects
         relDocs.forEach(d -> d.remove("ARGUMENT_FS"));
+        relDocs.forEach(relDoc -> {   final IFieldValue texts = relDoc.get("argumentcoveredtext");
+            if ((texts+"").contains("Ptch1"))
+                System.out.println(relDoc);});
         return relDocs;
     }
 
     /**
      * <p>Abbreviations consist of a long form immediately followed be the short form. This can cause duplicates of events that actually refer to the same entity. We here recognize such cases and remove the event that refers to the short form.</p>
      * <p>This is done only if the short and long form genes have both received the same IDs.</p>
-     *  @param sentence2relDocs
+     *
+     * @param sentence2relDocs
      * @param jCas
      * @return
      */
@@ -151,13 +157,13 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                                 docIt.remove();
                                 removedDocuments.add(document);
                                 if (log.isDebugEnabled())
-                                log.debug("Removing document {} because of abbreviation-duplicity: {}-{}-{}", document.getId(), g21.getCoveredText(), document.get("maineventtype"), g22.getCoveredText());
+                                    log.debug("Removing document {} because of abbreviation-duplicity: {}-{}-{}", document.getId(), g21.getCoveredText(), document.get("maineventtype"), g22.getCoveredText());
                             } else if (g21LF4g11 || g22LF4g12) {
                                 key2doc.remove(key);
                                 removedDocuments.add(existingDoc);
                                 key2doc.put(key, document);
                                 if (log.isDebugEnabled())
-                                log.debug("Removing document {} because of abbreviation-duplicity: {}-{}-{}", existingDoc.getId(), g11.getCoveredText(), existingDoc.get("maineventtype"), g12.getCoveredText());
+                                    log.debug("Removing document {} because of abbreviation-duplicity: {}-{}-{}", existingDoc.getId(), g11.getCoveredText(), existingDoc.get("maineventtype"), g12.getCoveredText());
                             }
                         } else {
                             key2doc.put(key, document);
@@ -238,7 +244,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                 final boolean existingMixedgenesource = Boolean.parseBoolean(existingDoc.get("mixedgenesource").toString());
                 final boolean existingMixedmappingsource = Boolean.parseBoolean(existingDoc.get("mixedgenemappingsource").toString());
 
-                final boolean currentMixedgenesource =    Boolean.parseBoolean(document.get("mixedgenesource").toString());
+                final boolean currentMixedgenesource = Boolean.parseBoolean(document.get("mixedgenesource").toString());
                 final boolean currentMixedmappingsource = Boolean.parseBoolean(document.get("mixedgenemappingsource").toString());
 
                 // It is not straight forward which value the merged document should get when one relation was mixed and the other was not.
@@ -434,16 +440,16 @@ public class RelationDocumentGenerator extends DocumentGenerator {
     /**
      * <p>Creates a {@link PreanalyzedFieldValue} with added gene ID and aggregate gene ID as well as relation argument position information.</p>
      *
-     * @param jCas         The jCas.
-     * @param fullTextSpan The text containing annotation, i.e. the sentence or the paragraph-like FeatureStrucure.
-     * @param argPair      The two arguments in focus that make up the current relation document.
-     * @param relation     The relation being processed.
+     * @param jCas                     The jCas.
+     * @param fullTextSpan             The text containing annotation, i.e. the sentence or the paragraph-like FeatureStrucure.
+     * @param argPair                  The two arguments in focus that make up the current relation document.
+     * @param relation                 The relation being processed.
      * @param indexOnlyEventMetatokens
      * @return A pre-computed field value for an ElasticSearch index field. That value is not further analyzed by ElasticSearch but stored as specified here.
      * @throws CASException If CAS access fails.
      */
     private PreanalyzedFieldValue makePreanalyzedFulltextFieldValue(JCas jCas, AnnotationFS fullTextSpan, FeatureStructure[] argPair, FlattenedRelation relation, boolean indexOnlyEventMetatokens) throws CASException {
-            List<PreanalyzedToken> tokens;
+        List<PreanalyzedToken> tokens;
         if (!indexOnlyEventMetatokens) {
             FeaturePathSets featurePathSets = new FeaturePathSets();
             featurePathSets.add(new FeaturePathSet(Token.type, Arrays.asList("/:coveredText()"), null, textFb.textTokensFilter));
@@ -526,7 +532,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         tokens.add(token1);
         tokens.add(token2);
         if (triggerToken != null)
-        tokens.add(triggerToken);
+            tokens.add(triggerToken);
         if (likelihoodToken != null)
             tokens.add(likelihoodToken);
     }

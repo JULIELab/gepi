@@ -1,6 +1,7 @@
 package de.julielab.gepi.webapp.components;
 
 import com.google.common.collect.Multimap;
+import de.julielab.gepi.core.retrieval.data.GeneSymbolNormalization;
 import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
@@ -69,6 +70,9 @@ public class InputListMappingTable {
             final Map<String, GepiConceptInfo> geneInfo = geneIdService.getGeneInfo(convertedItems.values());
             time = System.currentTimeMillis() - time;
             log.debug("Obtaining GeneInfo took {}s", time/1000);
+            // store the normalized names of the items chosen for display so we can discard other names that are equal after normalization.
+            // otherwise we can search for "mmp9\nMMP9" and get the message that MMP9 was resolved and nothing was found for mmp9
+            Set<String> majoritySymbolsNormalized = new HashSet<>();
             for (String inputId : (Iterable<String>) () -> convertedItems.keySet().stream().sorted(String.CASE_INSENSITIVE_ORDER).iterator()) {
                 if (maxTableSize >= 0 && ret.size() == maxTableSize)
                     break;
@@ -89,6 +93,7 @@ public class InputListMappingTable {
                         majoritySymbol = symbol;
                     }
                 }
+                majoritySymbolsNormalized.add(GeneSymbolNormalization.normalize(majoritySymbol));
                 // get one representative of the majority symbol
                 GepiConceptInfo mappedRepresentative = infoByNames.get(majoritySymbol).get(0);
                 for (String mappedId : convertedItems.get(inputId)) {
@@ -102,7 +107,7 @@ public class InputListMappingTable {
                 ret.add(new InputMapping(inputId, mappedRepresentative));
             }
             final int maxSizeLeft = maxTableSize >= 0 ? maxTableSize - ret.size() : Integer.MAX_VALUE;
-            conversionResult.getUnconvertedItems().sorted().limit(maxSizeLeft).map(i -> new InputMapping(i, null)).forEach(ret::add);
+            conversionResult.getUnconvertedItems().filter(item -> !majoritySymbolsNormalized.contains(GeneSymbolNormalization.normalize(item))).sorted().limit(maxSizeLeft).map(i -> new InputMapping(i, null)).forEach(ret::add);
             return ret;
         } catch (InterruptedException e) {
             e.printStackTrace();
