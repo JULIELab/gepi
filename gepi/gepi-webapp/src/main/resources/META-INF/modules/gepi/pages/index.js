@@ -1,4 +1,4 @@
-define(["jquery", "bootstrap5/modal", "bootstrap5/tooltip"], function($, Modal, Tooltip){
+define(["jquery", "bootstrap5/modal", "bootstrap5/tooltip", "bootstrap5/offcanvas", "bootstrap5/toast"], function($, Modal, Tooltip, Offcanvas, Toast){
 
     // The following is synchronization code. The widgets wait for this
     // deferred object to be resolved before they render. We use this
@@ -15,10 +15,16 @@ define(["jquery", "bootstrap5/modal", "bootstrap5/tooltip"], function($, Modal, 
         return readyIndicator;
     }
 
-    let displayCookieConsentModal = function () {
-         const modal = new Modal(document.getElementById('cookieConsentModal'), {backgrop:'static', focus: true, keyboard: false})
-         modal.show();
+    let displayCookieConsentOffcanvas = function () {
+//            $('#cookie-consent-offcanvas-close-btn').on('click', displayRoadworksWarningToast);
+            const offcanvas = new Offcanvas(document.getElementById('cookie-consent-offcanvas'), {keyboard:false, scroll: true, backdrop: false})
+            offcanvas.show();
     }
+
+    let displayRoadworksWarningToast = function () {
+             const modal = new Toast(document.getElementById('roadworks-warning-toast'), {delay:10000, autohide:true})
+             modal.show();
+     }
 
     let setupDownloadUrlCopyButton = function () {
         const button = document.getElementById("downloadUrlCopyButton");
@@ -39,6 +45,6 @@ define(["jquery", "bootstrap5/modal", "bootstrap5/tooltip"], function($, Modal, 
 
     }
 
-    return {readyForWidgets, getReadySemaphor, displayCookieConsentModal, setupDownloadUrlCopyButton};
+    return {readyForWidgets, getReadySemaphor,  displayCookieConsentOffcanvas,  displayRoadworksWarningToast, setupDownloadUrlCopyButton};
     
 });
