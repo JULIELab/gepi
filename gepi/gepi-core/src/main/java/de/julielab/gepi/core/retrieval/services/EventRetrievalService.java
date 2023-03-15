@@ -364,13 +364,12 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     private void configureDeepPaging(SearchServerRequest serverRqst, boolean downloadAll, boolean forCharts, int interactionRetrievalLimit) {
-        if (downloadAll)
-            serverRqst.rows = forCharts ? Math.min(SCROLL_SIZE, interactionRetrievalLimit) : SCROLL_SIZE;
-        serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-        serverRqst.downloadCompleteResults = downloadAll && (!forCharts || interactionRetrievalLimit > 0);
-        serverRqst.downloadCompleteResultsMethod = "searchAfter";
-        serverRqst.downloadCompleteResultMethodKeepAlive = "5m";
         if (downloadAll) {
+            serverRqst.rows = forCharts ? Math.min(SCROLL_SIZE, interactionRetrievalLimit) : SCROLL_SIZE;
+            serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
+            serverRqst.downloadCompleteResults = downloadAll && (!forCharts || interactionRetrievalLimit > 0);
+            serverRqst.downloadCompleteResultsMethod = "searchAfter";
+            serverRqst.downloadCompleteResultMethodKeepAlive = "5m";
             if (forCharts && interactionRetrievalLimit < Integer.MAX_VALUE)
                 serverRqst.downloadCompleteResultsLimit = interactionRetrievalLimit;
             serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
@@ -577,7 +576,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             eventCountRequest.size = Integer.MAX_VALUE;
 
             serverRequest.addAggregationCommand(eventCountRequest);
-//            serverRequest.trackTotalHitsUpTo = Integer.MAX_VALUE;
+            serverRequest.trackTotalHitsUpTo = Integer.MAX_VALUE;
 
             ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("AggregatedSearch");
             carrier.addSearchServerRequest(serverRequest);

@@ -203,6 +203,7 @@ public class GepiInput {
         listBTextAreaValue = "";
         taxId = "";
         selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
+        includeUnary = false;
         eventLikelihood = 1;
         filterFieldsConnectionOperator = "AND";
         sentenceFilterString = "";
