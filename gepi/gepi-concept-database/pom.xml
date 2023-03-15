@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>de.julielab</groupId>
 		<artifactId>gepi</artifactId>
-		<version>0.12.2-SNAPSHOT</version>
+		<version>0.13.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>gepi-concept-database</artifactId>
