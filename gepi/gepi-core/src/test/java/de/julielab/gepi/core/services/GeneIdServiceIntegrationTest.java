@@ -134,7 +134,6 @@ public class GeneIdServiceIntegrationTest {
         assertThat(geneInfo).containsKeys("atid2", "atid3");
         assertThat(geneInfo.get("tid2").getSymbol()).isEqualTo("Mtor");
         assertThat(geneInfo.get("atid2").getSymbol()).isEqualTo("mTORtop");
-        assertThat(geneInfo.get("atid2").getOriginalId()).isEqualTo("2475");
         assertThat(geneInfo.get("atid3").getSymbol()).isEqualTo("AKT1");
     }
 

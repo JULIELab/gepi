@@ -9,7 +9,7 @@
 		</encoder>
 	</appender>
 	<logger name="de.julielab.jcore.consumer.es.ElasticSearchConsumer" level="INFO"/>
-	<logger name="de.julielab.gepi.indexing.RelationDocumentGenerator" level="DEBUG"/>
+	<logger name="de.julielab.gepi.indexing.RelationDocumentGenerator" level="INFO"/>
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>
