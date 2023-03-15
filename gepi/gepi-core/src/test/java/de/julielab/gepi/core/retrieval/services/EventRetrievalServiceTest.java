@@ -22,12 +22,12 @@ public class EventRetrievalServiceTest {
 	public void testReorderBipartiteEventResultArguments() throws Exception {
 		EventRetrievalService retrievalService = new EventRetrievalService(null,
 				LoggerFactory.getLogger(EventRetrievalService.class), null, null, null);
-		Method method = retrievalService.getClass().getDeclaredMethod("reorderClosedEventResultArguments", Set.class,
+		Method method = retrievalService.getClass().getDeclaredMethod("reorderEventResultArguments",
 				Set.class, EventRetrievalResult.class);
 		method.setAccessible(true);
 
 		Set<String> idsA = new HashSet<>(Arrays.asList("1", "2", "3"));
-		Set<String> idsB = new HashSet<>(Arrays.asList("4", "5", "6"));
+//		Set<String> idsB = new HashSet<>(Arrays.asList("4", "5", "6"));
 
 		EventRetrievalResult result = new EventRetrievalResult();
 		Builder<Event> streamBuilder = Stream.builder();
@@ -37,7 +37,7 @@ public class EventRetrievalServiceTest {
 		
 		result.setEvents(streamBuilder.build());
 		
-		method.invoke(retrievalService, idsA, idsB, result);
+		method.invoke(retrievalService, idsA,  result);
 		
 		assertEquals("1", result.getEventList().get(0).getFirstArgument().getGeneId());
 		assertEquals("4", result.getEventList().get(0).getSecondArgument().getGeneId());
@@ -49,12 +49,12 @@ public class EventRetrievalServiceTest {
 	public void testReorderBipartiteEventResultArguments2() throws Exception {
 		EventRetrievalService retrievalService = new EventRetrievalService(null, LoggerFactory.getLogger(EventRetrievalService.class),
 				null, null, null);
-		Method method = retrievalService.getClass().getDeclaredMethod("reorderClosedEventResultArguments", Set.class,
+		Method method = retrievalService.getClass().getDeclaredMethod("reorderEventResultArguments",
 				Set.class, EventRetrievalResult.class);
 		method.setAccessible(true);
 
 		Set<String> idsA = new HashSet<>(Arrays.asList("1", "2", "3"));
-		Set<String> idsB = new HashSet<>(Arrays.asList("4", "5", "6"));
+//		Set<String> idsB = new HashSet<>(Arrays.asList("4", "5", "6"));
 
 		EventRetrievalResult result = new EventRetrievalResult();
 		Builder<Event> streamBuilder = Stream.builder();
@@ -64,7 +64,7 @@ public class EventRetrievalServiceTest {
 		
 		result.setEvents(streamBuilder.build());
 		
-		method.invoke(retrievalService, idsA, idsB, result);
+		method.invoke(retrievalService, idsA,  result);
 		
 		assertEquals(2, result.getEventList().size());
 		
@@ -81,12 +81,12 @@ public class EventRetrievalServiceTest {
 	public void testReorderBipartiteEventResultArguments3() throws Exception {
 		EventRetrievalService retrievalService = new EventRetrievalService(null,
 				LoggerFactory.getLogger(EventRetrievalService.class), null, null, null);
-		Method method = retrievalService.getClass().getDeclaredMethod("reorderClosedEventResultArguments", Set.class,
+		Method method = retrievalService.getClass().getDeclaredMethod("reorderEventResultArguments",
 				Set.class, EventRetrievalResult.class);
 		method.setAccessible(true);
 
 		Set<String> idsA = new HashSet<>(Arrays.asList("1", "2", "3"));
-		Set<String> idsB = new HashSet<>(Arrays.asList("4", "5", "6"));
+//		Set<String> idsB = new HashSet<>(Arrays.asList("4", "5", "6"));
 
 		EventRetrievalResult result = new EventRetrievalResult();
 		Builder<Event> streamBuilder = Stream.builder();
@@ -96,17 +96,19 @@ public class EventRetrievalServiceTest {
 		
 		result.setEvents(streamBuilder.build());
 		
-		method.invoke(retrievalService, idsA, idsB, result);
+		method.invoke(retrievalService, idsA,  result);
 		
 		assertEquals(4, result.getEventList().size());
 		
 		for (Event event : result.getEventList()) {
 			assertTrue(idsA.contains(event.getFirstArgument().getGeneId()));
-			assertTrue(idsB.contains(event.getSecondArgument().getGeneId()));
+//			assertTrue(idsB.contains(event.getSecondArgument().getGeneId()));
 		}
 	}
 
 	private Argument getArg(String id) {
-		return new Argument(id, null, "id: " + id, null);
+		final Argument argument = new Argument(id, null, "id: " + id, null);
+		argument.setTopHomologyPreferredName(id);
+		return argument;
 	}
 }
