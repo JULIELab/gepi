@@ -37,7 +37,7 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_ALL_EVENTTYPES = "alleventtypes";
 
-    public static final String FIELD_EVENT_ARGUMENTSEARCH = "arguments";
+    public static final String FIELD_EVENT_ARGUMENTSEARCH = "argumentsfamiliesgroups";
 
     public static final String FIELD_EVENT_ARG_GENE_IDS = "argumentgeneids";
 
@@ -211,29 +211,13 @@ public class EventRetrievalService implements IEventRetrievalService {
         return CompletableFuture.supplyAsync(() -> {
             try {
 
-                Set<String> idSetA = requestData.getListAGePiIds().get().getConvertedItems().values().stream().collect(Collectors.toSet());
-
-                Set<String> idSetB = requestData.getListBGePiIds().get().getConvertedItems().values().stream().collect(Collectors.toSet());
-
-                log.debug("Retrieving bipartite events for {} A IDs and {} B IDs", idSetA.size(), idSetB.size());
+                log.debug("Retrieving closed events for {} A IDs and {} B IDs", requestData.getListAGePiIds().get().getConvertedItems().size(), requestData.getListBGePiIds().get().getConvertedItems().size());
                 if (log.isDebugEnabled())
                     log.debug("Some A target IDs are: {}", requestData.getListAGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
                 if (log.isDebugEnabled())
                     log.debug("Some B target IDs are: {}", requestData.getListBGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
 
-                BoolQuery eventQuery = EventQueries.getClosedQuery(requestData, idSetA, idSetB);
-
-                boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
-
-                SearchServerRequest serverRqst = new SearchServerRequest();
-                serverRqst.query = eventQuery;
-                serverRqst.index = documentIndex;
-                serverRqst.start = from;
-                serverRqst.rows = numRows;
-                configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
-                if (!downloadAll && numRows > 0) {
-                    addHighlighting(serverRqst);
-                }
+                SearchServerRequest serverRqst = getClosedSearchRequest(requestData, from, numRows, forCharts);
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier<>("ClosedSearch");
                 carrier.addSearchServerRequest(serverRqst);
@@ -250,13 +234,32 @@ public class EventRetrievalService implements IEventRetrievalService {
                 time = System.currentTimeMillis() - time;
                 log.debug("Retrieved {} events for closed search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.BIPARTITE);
-                reorderBipartiteEventResultArguments(idSetA, idSetB, eventResult);
+                final Set<String> possibleAggregationConceptNamesAlist = geneIdService.getPossibleAggregationConceptNames(requestData.getAListIdsAsSet());
+                reorderEventResultArguments(possibleAggregationConceptNamesAlist, eventResult);
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
                 log.error("Could not retrieve the IDs for the query", e);
             }
             return null;
         });
+    }
+
+    private SearchServerRequest getClosedSearchRequest(GepiRequestData requestData, int from, int numRows, boolean forCharts) throws ExecutionException, InterruptedException {
+        BoolQuery eventQuery = EventQueries.getClosedQuery(requestData, requestData.getAListIdsAsSet(), requestData.getBListIdsAsSet());
+
+        boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
+
+        SearchServerRequest serverRqst = new SearchServerRequest();
+        serverRqst.query = eventQuery;
+        serverRqst.index = documentIndex;
+        serverRqst.start = from;
+        serverRqst.rows = numRows;
+//        serverRqst.trackTotalHitsUpTo = Integer.MAX_VALUE;
+        configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
+        if (!downloadAll && numRows > 0) {
+            addHighlighting(serverRqst);
+        }
+        return serverRqst;
     }
 
 
@@ -267,25 +270,23 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     /**
      * Reorders the arguments of the events to make the first argument correspond to
-     * the A ID list and the second argument to the B ID list.
+     * the A input list.
      *
-     * @param idSetA      The set of list A query IDs.
-     * @param idSetB      The set of list B query IDs.
+     * @param idSetPossibleNames      All names that could appear as A-list match.
      * @param eventResult The event result as returned by the
      *                    {@link EventResponseProcessingService}.
      */
-    private void reorderBipartiteEventResultArguments(Set<String> idSetA, Set<String> idSetB,
-                                                      EventRetrievalResult eventResult) {
+    private void reorderEventResultArguments(Set<String> idSetPossibleNames,
+                                             EventRetrievalResult eventResult) {
         // reorder all arguments such that the first argument corresponds to
-        // an input ID from list A and the second argument corresponds to an
-        // ID from list B
-
+        // an input ID from list A
         for (Event e : eventResult.getEventList()) {
-            Argument firstArg = e.getFirstArgument();
-            Argument secondArg = e.getSecondArgument();
-            if (!(idSetA.contains(firstArg.getGeneId()) || idSetA.contains(firstArg.getTopHomologyId())))
-                e.swapArguments();
-            else if (!(idSetB.contains(secondArg.getGeneId()) || idSetB.contains(secondArg.getTopHomologyId())))
+            // If necessary, switch argument positions in order to sort the results for A- and B-List membership
+            // First case: The event is unary and the sole argument does not belong to A. Then is must belong to B (or we have a name mismatch)
+            if (!idSetPossibleNames.contains(e.getFirstArgument().getTopHomologyPreferredName()) && e.getFirstArgument().getTopHomologyPreferredName().equals(FIELD_VALUE_MOCK_ARGUMENT))
+               e.swapArguments();
+                // Second case: The event is binary and the A-argument is found in second place
+            else if (!idSetPossibleNames.contains(e.getFirstArgument().getTopHomologyPreferredName()) && idSetPossibleNames.contains(e.getSecondArgument().getTopHomologyPreferredName()))
                 e.swapArguments();
         }
     }
@@ -296,17 +297,17 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     @Override
-    public Future<EventRetrievalResult> openSearch(GepiRequestData gepiRequestData, int from, int numRows, boolean forCharts) {
-        assert gepiRequestData.getListAGePiIds() != null : "No A-list IDs set.";
+    public Future<EventRetrievalResult> openSearch(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
+        assert requestData.getListAGePiIds() != null : "No A-list IDs set.";
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
             try {
-                Set<String> idSet = gepiRequestData.getAListIdsAsSet();
+                Set<String> idSet = requestData.getAListIdsAsSet();
 
                 log.debug("Retrieving outside events for {} A IDs", idSet.size());
                 if (log.isDebugEnabled())
-                    log.debug("Some A target IDs are: {}", gepiRequestData.getListAGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
-                SearchServerRequest serverCmd = getOpenSearchRequest(gepiRequestData, from, numRows, forCharts);
+                    log.debug("Some A target IDs are: {}", requestData.getListAGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
+                SearchServerRequest serverCmd = getOpenSearchRequest(requestData, from, numRows, forCharts);
 
                 ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OpenSearch");
                 carrier.addSearchServerRequest(serverCmd);
@@ -324,7 +325,8 @@ public class EventRetrievalService implements IEventRetrievalService {
                 time = System.currentTimeMillis() - time;
                 log.info("Retrieved {} events for open search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.OUTSIDE);
-                reorderOutsideEventResultsArguments(idSet, eventResult);
+                final Set<String> possibleAggregationConceptNamesAlist = geneIdService.getPossibleAggregationConceptNames(requestData.getAListIdsAsSet());
+                reorderEventResultArguments(possibleAggregationConceptNamesAlist, eventResult);
                 log.debug("After reordering, the event list has {} elements", eventResult.getEventList().size());
                 return eventResult;
             } catch (InterruptedException | ExecutionException e) {
@@ -353,6 +355,7 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.index = documentIndex;
         serverRqst.start = from;
         serverRqst.rows = numRows;
+//        serverRqst.trackTotalHitsUpTo = Integer.MAX_VALUE;
         configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
         if (!downloadAll && numRows > 0) {
             addHighlighting(serverRqst);
@@ -426,19 +429,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     public CompletableFuture<EventRetrievalResult> getFulltextFilteredEvents(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
         log.debug("Returning async result");
         return CompletableFuture.supplyAsync(() -> {
-            BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData);
-
-            boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
-
-            SearchServerRequest serverRqst = new SearchServerRequest();
-            serverRqst.query = eventQuery;
-            serverRqst.index = documentIndex;
-            serverRqst.start = from;
-            serverRqst.rows = numRows;
-            configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
-            if (!downloadAll && numRows > 0) {
-                addHighlighting(serverRqst);
-            }
+            SearchServerRequest serverRqst = getFulltextSearchRequest(requestData, from, numRows, forCharts);
 
             ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("FulltextFilteredEvents");
             carrier.addSearchServerRequest(serverRqst);
@@ -457,6 +448,24 @@ public class EventRetrievalService implements IEventRetrievalService {
             eventResult.setResultType(EventResultType.FULLTEXT_FILTERED);
             return eventResult;
         });
+    }
+
+    private SearchServerRequest getFulltextSearchRequest(GepiRequestData requestData, int from, int numRows, boolean forCharts) {
+        BoolQuery eventQuery = EventQueries.getFulltextQuery(requestData);
+
+        boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
+
+        SearchServerRequest serverRqst = new SearchServerRequest();
+        serverRqst.query = eventQuery;
+        serverRqst.index = documentIndex;
+        serverRqst.start = from;
+        serverRqst.rows = numRows;
+//        serverRqst.trackTotalHitsUpTo = Integer.MAX_VALUE;
+        configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
+        if (!downloadAll && numRows > 0) {
+            addHighlighting(serverRqst);
+        }
+        return serverRqst;
     }
 
     @Override
@@ -485,56 +494,17 @@ public class EventRetrievalService implements IEventRetrievalService {
             esResult = openAggregatedSearch(requestData);
         } else {
             // No IDs were entered
-            esResult = getFulltextFilteredAggregatedEvents(requestData);
+            esResult = fulltextAggregatedSearch(requestData);
         }
         return esResult;
     }
 
-    private Future<EsAggregatedResult> getFulltextFilteredAggregatedEvents(GepiRequestData requestData) {
-        return null;
-    }
-
-    private Future<EsAggregatedResult> openAggregatedSearch(GepiRequestData requestData) {
+    @Override
+    public Future<EsAggregatedResult> openAggregatedSearch(GepiRequestData requestData) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                // Short comment: Fetch the aggregate names of the input A IDs so we can tell in the aggregate values
-                // which argument belongs to A.
-                // Long comment: The aggregationvalue field stores the symbol of the gene top-aggregates (orthology / homology / famplex / hgnc),
-                // see de.julielab.gepi.indexing.GeneFilterBoard.orgid2topaggprefname, e.g. AKT---MTOR.
-                // For genes it is the highest orthology aggregate. For FamPlex and HGNC Groups it is the
-                // highest equal-name aggregate. The latter poses is a discrepancy because the GeneIdService does not map
-                // FamPlex or HGNC Group inputs to the equal-name aggregate. This is not an issue, however,
-                // because the equal-name aggregate always has the same name as its elements, if it exists (hence the name).
-                final Future<Map<String, GepiConceptInfo>> aGeneInfo = CompletableFuture.supplyAsync(() -> {
-                    try {
-                        return geneIdService.getGeneInfo(requestData.getAListIdsAsSet());
-                    } catch (Exception e) {
-                        log.error("Could not retrieve gene info");
-                        throw new RuntimeException(e);
-                    }
-                });
-
                 final SearchServerRequest openSearchRequest = getOpenSearchRequest(requestData, 0, 0, false);
-
-                final TermsAggregation eventCountRequest = new TermsAggregation();
-                eventCountRequest.name = "events";
-                eventCountRequest.field = FIELD_AGGREGATION_VALUE;
-
-                openSearchRequest.addAggregationCommand(eventCountRequest);
-
-                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OpenAggregatedSearch");
-                carrier.addSearchServerRequest(openSearchRequest);
-                long time = System.currentTimeMillis();
-                log.debug("Sent full-text search server request");
-                searchServerComponent.process(carrier);
-                if (log.isDebugEnabled())
-                    log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
-
-
-
-                EsAggregatedResult aggregatedResult = eventResponseProcessingService
-                        .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, aGeneInfo.get().values().stream().map(GepiConceptInfo::getSymbol).collect(Collectors.toSet()));
-                return aggregatedResult;
+                return aggregatedSearch(requestData, openSearchRequest);
             } catch (Exception e) {
                 log.error("Open aggregated search failed", e);
                 throw new RuntimeException(e);
@@ -542,34 +512,89 @@ public class EventRetrievalService implements IEventRetrievalService {
         });
     }
 
-    private Future<EsAggregatedResult> closedAggregatedSearch(GepiRequestData requestData) {
-        return null;
+    @Override
+    public Future<EsAggregatedResult> closedAggregatedSearch(GepiRequestData requestData) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                final SearchServerRequest closedSearchRequest = getClosedSearchRequest(requestData, 0, 0, false);
+                return aggregatedSearch(requestData, closedSearchRequest);
+            } catch (Exception e) {
+                log.error("Closed aggregated search failed", e);
+                throw new RuntimeException(e);
+            }
+        });
     }
 
+    @Override
+    public Future<EsAggregatedResult> fulltextAggregatedSearch(GepiRequestData requestData) {
+        return CompletableFuture.supplyAsync(() -> {
+
+            try {
+                final SearchServerRequest fulltextSearchRequest = getFulltextSearchRequest(requestData, 0, 0, false);
+                return aggregatedSearch(requestData, fulltextSearchRequest);
+            } catch (Exception e) {
+                log.error("Closed aggregated search failed", e);
+                throw new RuntimeException(e);
+            }
+        });
+    }
 
     /**
-     * Reorder the arguments of the result events such that the first argument
-     * always corresponds to an ID in the query ID list.
+     * <p>Returns the aggregated event counts for the given request data and the open, closed or fulltext serverRequest that was created from the requestData.</p>
      *
-     * @param idSet       The set of query IDs.
-     * @param eventResult The event result as returned by
-     *                    {@link EventResponseProcessingService}.
+     * @param requestData
+     * @param serverRequest
+     * @return
      */
-    private void reorderOutsideEventResultsArguments(Set<String> idSet, EventRetrievalResult eventResult) {
-        // reorder all arguments such that the first argument corresponds to
-        // the input ID that caused the match
+    private EsAggregatedResult aggregatedSearch(GepiRequestData requestData, SearchServerRequest serverRequest) {
 
-        List<Event> reorderedEvents = new ArrayList<>(eventResult.getEventList());
-        for (Iterator<Event> it = reorderedEvents.iterator(); it.hasNext(); ) {
-            Event e = it.next();
-            if (e.getArity() > 1) {
-                final Argument secondArg = e.getArgument(1);
-                if (idSet.contains(secondArg.getTopHomologyId())) {
-                    e.swapArguments();
+        try {
+            // Short comment: Fetch the aggregate names of the input A IDs so we can tell in the aggregate values
+            // which argument belongs to A.
+            // Long comment: The aggregationvalue field stores the symbol of the gene top-aggregates (orthology / homology / famplex / hgnc),
+            // see de.julielab.gepi.indexing.GeneFilterBoard.orgid2topaggprefname, e.g. AKT---MTOR.
+            // For genes it is the highest orthology aggregate.
+            // For normal gene names this is always a match because GePI resolves the input genes to their aggregates, even when filtered
+            // for a specific taxonomy. We then still search for the aggregate but just filter for the taxonomy IDs.
+            // For FamPlex and HGNC Groups the name used in the aggregationvalue is the
+            // highest equal-name aggregate. This poses a discrepancy because the GeneIdService does not map
+            // FamPlex or HGNC Group inputs to the equal-name aggregate. This is not an issue, however,
+            // because the equal-name aggregate always has the same name as its elements, if it exists (hence "equal-name-aggregate").
+            log.debug("Fetching TopHomology aggregate names for input IDs for event reordering since the aggregated index values are built on names.");
+            final Future<Set<String>> possibleNamesInAggregationValues = requestData.getListAGePiIds() != null ? CompletableFuture.supplyAsync(() -> {
+                try {
+                    return geneIdService.getPossibleAggregationConceptNames(requestData.getAListIdsAsSet());
+                } catch (Exception e) {
+                    log.error("Could not retrieve gene info");
+                    throw new RuntimeException(e);
                 }
-            }
-        }
-        eventResult.setEvents(reorderedEvents);
-    }
+            }) : CompletableFuture.completedFuture(Collections.emptySet());
 
+
+            final TermsAggregation eventCountRequest = new TermsAggregation();
+            eventCountRequest.name = "events";
+            eventCountRequest.field = FIELD_AGGREGATION_VALUE;
+            eventCountRequest.size = Integer.MAX_VALUE;
+
+            serverRequest.addAggregationCommand(eventCountRequest);
+//            serverRequest.trackTotalHitsUpTo = Integer.MAX_VALUE;
+
+            ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("AggregatedSearch");
+            carrier.addSearchServerRequest(serverRequest);
+            long time = System.currentTimeMillis();
+            log.debug("Sent full-text search server request");
+            searchServerComponent.process(carrier);
+            if (log.isDebugEnabled())
+                log.debug("Server answered after {} seconds. Reading results.", (System.currentTimeMillis() - time) / 1000);
+
+
+            EsAggregatedResult aggregatedResult = eventResponseProcessingService
+                    .getEventRetrievalAggregatedResult(carrier.getSingleSearchServerResponse(), eventCountRequest, possibleNamesInAggregationValues.get());
+            return aggregatedResult;
+        } catch (Exception e) {
+            log.error("Open aggregated search failed", e);
+            throw new RuntimeException(e);
+        }
+
+    }
 }

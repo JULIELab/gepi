@@ -26,6 +26,8 @@ public class GeneFilterBoard extends FilterBoard {
     Map<String, String> fplxhgncgtid2atiddirect;
     @ExternalResource(key = "tid2famplex")
     Map<String, String[]> tid2famplex;
+    @ExternalResource(key = "complexes2members")
+    Map<String, String[]> complexes2members;
     @ExternalResource(key = "tid2hgncgroups")
     Map<String, String[]> tid2hgncgroups;
     @ExternalResource(key = "genetid2gotid")
@@ -49,6 +51,7 @@ public class GeneFilterBoard extends FilterBoard {
     Filter tid2atidAddonFilter;
     Filter fplxHgncConcatenatedIdSplitFilter;
     Filter orgid2equalnameatidReplaceFilter;
+    Filter complextid2membertidAddonFilter;
 
     @Override
     public void setupFilters() {
@@ -83,5 +86,8 @@ public class GeneFilterBoard extends FilterBoard {
         gotid2gohypertidFilter = new AddonTermsFilter(gotid2hypertid);
         eg2gohypertidFilter = new FilterChain(eg2gotidFilter, gotid2gohypertidFilter);
         eg2goprefnameFilter = new FilterChain(eg2gotidFilter, conceptid2prefNameFilter);
+        // add the members/parts/subunits of protein complexes when a complex was found; thus, when searching for AMPK-alpha,
+        // we also find AMPK
+        complextid2membertidAddonFilter = new FilterChain(fplxHgncConcatenatedIdSplitFilter, orgid2topaggFilter, new AddonTermsFilter(complexes2members));
     }
 }

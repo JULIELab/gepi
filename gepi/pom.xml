@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.julielab</groupId>
         <artifactId>julielab-parent</artifactId>
-        <version>2.4.1</version>
+        <version>2.5.0</version>
     </parent>
     <artifactId>gepi</artifactId>
     <version>0.12.2-SNAPSHOT</version>
@@ -35,8 +35,26 @@
         </pluginManagement>
         <plugins>
             <plugin>
+                <!-- We need to integrate the surefire plugin here and set the property 'junit' to true because
+                the parent does exclude jUnit 4 tests by default since it uses jUnit 5 -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <!-- Version set in pluginManagement below -->
+                <configuration>
+                    <properties>
+                        <property>
+                            <name>junit</name>
+                            <value>true</value>
+                        </property>
+                    </properties>
+                    <threadCount>1</threadCount>
+                </configuration>
+            </plugin>
+            <plugin>
                 <!-- automatically fill in the current app version to the README.md file. For this purpose, we
                 have a README.md in the readme-raw subfolder which is the actual source of the file -->
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.3.0</version>
                 <executions>
@@ -65,7 +83,7 @@
                 </executions>
             </plugin>
             <plugin>
-<!--                The jetty plugin is here with <skip>true</skip> to allow the execution of mvn jetty:run in the -->
+                <!--                The jetty plugin is here with <skip>true</skip> to allow the execution of mvn jetty:run in the -->
                 <!-- Run the application using "mvn jetty:run" -->
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>

@@ -35,7 +35,23 @@
         "type": "keyword",
         "store": true
       },
+      "pubdate": {
+        "type": "date",
+        "store": true
+      },
       "arguments": {
+        "type": "keyword",
+        "store": false
+      },
+      "argumentsfamiliesgroups": {
+        "type": "keyword",
+        "store": false
+      },
+      "argumentsnoinferencefamiliesgroups": {
+        "type": "keyword",
+        "store": false
+      },
+      "argumentscomplexes2members": {
         "type": "keyword",
         "store": false
       },

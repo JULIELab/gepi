@@ -12,12 +12,19 @@ public class GePiData {
     private Future<Neo4jAggregatedEventsRetrievalResult> neo4jAggregatedResult;
     private Future<EventRetrievalResult> unrolledResult4charts;
     private WeakReference<Future<EventRetrievalResult>> unrolledResult4download;
+    private Future<EsAggregatedResult> esAggregatesResult;
     private Future<EventRetrievalResult> pagedResult;
     private Future<IdConversionResult> listAIdConversionResult;
     private Future<IdConversionResult> listBIdConversionResult;
-    public GePiData(Future<Neo4jAggregatedEventsRetrievalResult> aggregatedResult, Future<EventRetrievalResult> unrolledResult4charts, Future<EventRetrievalResult> pagedResult, Future<IdConversionResult> listAIdConversionResult, Future<IdConversionResult> listBIdConversionResult) {
+
+    public Future<EsAggregatedResult> getEsAggregatedResult() {
+        return esAggregatesResult;
+    }
+
+    public GePiData(Future<Neo4jAggregatedEventsRetrievalResult> aggregatedResult, Future<EventRetrievalResult> unrolledResult4charts, Future<EsAggregatedResult> esAggregatesResult, Future<EventRetrievalResult> pagedResult, Future<IdConversionResult> listAIdConversionResult, Future<IdConversionResult> listBIdConversionResult) {
         this.neo4jAggregatedResult = aggregatedResult;
         this.unrolledResult4charts = unrolledResult4charts;
+        this.esAggregatesResult = esAggregatesResult;
         this.pagedResult = pagedResult;
         this.listAIdConversionResult = listAIdConversionResult;
         this.listBIdConversionResult = listBIdConversionResult;
@@ -27,6 +34,15 @@ public class GePiData {
         // for the EMPTY constant
     }
 
+    public boolean isAnyResultAvailable() {
+        if (neo4jAggregatedResult != null && neo4jAggregatedResult.isDone())
+            return true;
+        if (esAggregatesResult != null && esAggregatesResult.isDone())
+            return true;
+        if (pagedResult != null && pagedResult.isDone())
+            return true;
+        return false;
+    }
     public WeakReference<Future<EventRetrievalResult>> getUnrolledResult4download() {
         return unrolledResult4download;
     }

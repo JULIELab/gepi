@@ -333,6 +333,18 @@
                 
         <externalResourceDependency>
                         
+            <key>complexes2members</key>
+                        
+            <description>complexes2members</description>
+                        
+            <interfaceName>de.julielab.jcore.consumer.es.sharedresources.IAddonTermsProvider</interfaceName>
+                        
+            <optional>false</optional>
+                    
+        </externalResourceDependency>
+                
+        <externalResourceDependency>
+                        
             <key>tid2hgncgroups</key>
                         
             <description>tid2hgncgroups</description>
@@ -420,6 +432,32 @@
                 <configurableDataResourceSpecifier>
                                         
                     <url>file:/Users/faessler/Research/gepi/es-consumer-resources/tid2famplex.map.gz</url>
+                                        
+                    <resourceMetaData>
+                                                
+                        <name/>
+                                                
+                        <configurationParameters/>
+                                                
+                        <configurationParameterSettings/>
+                                            
+                    </resourceMetaData>
+                                    
+                </configurableDataResourceSpecifier>
+                                
+                <implementationName>de.julielab.jcore.consumer.es.sharedresources.PersistentLuceneIndexAddonTermsProvider</implementationName>
+                            
+            </externalResource>
+                        
+            <externalResource>
+                                
+                <name>complexes2members</name>
+                                
+                <description>complexes2members</description>
+                                
+                <configurableDataResourceSpecifier>
+                                        
+                    <url>file:/Users/faessler/Research/gepi/es-consumer-resources/complexes2members.map.gz</url>
                                         
                     <resourceMetaData>
                                                 
@@ -732,6 +770,14 @@
                 <key>tid2famplex</key>
                                 
                 <resourceName>tid2famplex</resourceName>
+                            
+            </externalResourceBinding>
+                        
+            <externalResourceBinding>
+                                
+                <key>complexes2members</key>
+                                
+                <resourceName>complexes2members</resourceName>
                             
             </externalResourceBinding>
                         

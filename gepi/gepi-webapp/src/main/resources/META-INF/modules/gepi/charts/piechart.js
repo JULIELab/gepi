@@ -92,7 +92,8 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
 
 
         drawPieChart(countType, parentElementId) {
-            let argCounts = data.getData(countType, this.widgetSettings.dataSessionId)['argumentcounts'];
+            let argCounts = Array.from(data.getData(countType, this.widgetSettings.dataSessionId)['argumentcounts']);
+            argCounts.sort((a,b)=>b[1]-a[1]);
             if (!argCounts || argCounts.length === 0) {
                 $('#'+parentElementId).append('<div class="alert alert-info mx-auto">There is not data to display.</div>');
                 return;
@@ -169,7 +170,7 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 .append('path')
                 .attr('class', 'slice')
                 .attr('data-bs-toggle', 'default-tooltip')
-                .attr('title', d => d.data.label)
+                .attr('title', d => d.data.label + "<br/>" + d.data.value + "<br/>" + Math.round(100 * d.data.percentage) + '%')
                 .attr('opacity', '.7')
                 .attr('d', arc)
                 .attr('fill', (d,i) => colorScale(i))
@@ -252,7 +253,9 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
         initTooltips() {
             console.log("Creating piechart tooltips on " + this.elementId)
             $('#' + this.elementId + '-outer svg .slice').each(function() {
-                 new Tooltip(this)
+                new Tooltip(this, {
+                    html: true
+                })
              });
         }      
     }

@@ -1,5 +1,6 @@
 package de.julielab.gepi.webapp.components;
 
+import de.julielab.gepi.core.retrieval.data.EsAggregatedResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.retrieval.data.Neo4jAggregatedEventsRetrievalResult;
@@ -100,15 +101,21 @@ final public class GepiWidgetLayout {
         }
     }
 
-    public Future<EventRetrievalResult> getEsResult() {
+    public Future<?> getEsResult() {
         switch (resultType) {
             case PAGED:
                 return getPagedEsResult();
             case UNROLLED:
                return getUnrolledEsResult();
+            case AGGREGATED:
+                return getAggregatedEsResult();
             default:
                 throw new IllegalArgumentException("Unknown resultType '" + resultType + "'");
         }
+    }
+
+    private Future<EsAggregatedResult> getAggregatedEsResult() {
+        return dataService.getData(requestData.getDataSessionId()).getEsAggregatedResult();
     }
 
     public Future<EventRetrievalResult> getPagedEsResult() {
@@ -165,13 +172,9 @@ final public class GepiWidgetLayout {
     public boolean isResultLoading() {
         if (!waitForData)
             return false;
-//        log.info("ESResult: {}", getEsResult());
-//        if (getEsResult() != null)
-//        log.info("ESResult done: {}", getEsResult().isDone());
-//        if (getEsResult() != null && !getEsResult().isDone()) {
-//            return true;
-//        }
-        return getEsResult() != null && !getEsResult().isDone();
+//        return getEsResult() != null && !getEsResult().isDone();
+
+        return !dataService.getData(requestData.getDataSessionId()).isAnyResultAvailable();
     }
 
     public boolean isResultAvailable() {

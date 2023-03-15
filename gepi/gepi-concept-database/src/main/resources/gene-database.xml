@@ -379,29 +379,42 @@
             </request>
             <outputfile>es-consumer-resources/tid2famplex.map.gz</outputfile>
         </export>
+        <!-- Export a map from complex - e.g. AMPK - to their members - e.g. AMPKa-g. This allows to find AMPK when searching
+        for AMPKa-g by using the part-of relationship in FamPlex -->
+        <export name="complexes2members">
+            <request>
+                <cypherquery>
+                    <!-- Obtain all the paths from complex to the gene; collect them to acquire a list of all such paths
+                    for every single complex.
+                    Do the same for the paths from the gene to their top orthology aggregate.
+                    Concatenate the memberpaths and orthology paths so we have complete paths from complex to the
+                    top orthology nodes.
+                    Each COLLECT creates a list of all results for one complex. For that reason, we use multiple
+                    REDUCE to flatten the lists. We could probably do three nested REDUCEs at the end, but it tried
+                    to keep the nesting low and so I distributed the REDUCEs a bit. -->
+                    MATCH p=(f:FPLX)&lt;-[:partof|isa*]-(c)
+                    WITH c,head([n in nodes(p) | n.id]) as family,collect([n in tail(nodes(p)) | n.id]) as memberpath
+                    OPTIONAL MATCH p2=(c)&lt;-[:HAS_ELEMENT*]-(a) WHERE (a:AGGREGATE_GENEGROUP or a:AGGREGATE_TOP_ORTHOLOGY) AND (a)&lt;-[:HAS_ROOT_CONCEPT]-()
+                    WITH family, memberpath,collect(COALESCE([n in tail(nodes(p2)) | n.id], [])) as orthologypath
+                    WITH family,REDUCE(acc=[], idlist in REDUCE(acc=[], idlist in collect(memberpath+orthologypath) | acc+idlist) | acc+idlist) as allpaths
+                    RETURN family,REDUCE(acc=head(allpaths), id IN tail(allpaths) | acc + "|" + id)
+                </cypherquery>
+            </request>
+            <outputfile>es-consumer-resources/complexes2members.map.gz</outputfile>
+        </export>
         <export name="tid2hgncgroups">
             <request>
                 <!-- Similar to the tid2famplex exporter above. -->
                 <cypherquery>
-                    MATCH p=(h:HGNC_GROUP)-[:IS_BROADER_THAN*]->(c:ID_MAP_NCBI_GENES) WHERE ()-[:HAS_ROOT_CONCEPT]->(h)
-                    WITH h,c,p OPTIONAL MATCH p2=(fh:AGGREGATE_FPLX_HGNC)-[:HAS_ELEMENT]-&gt;(h)
-                    WITH COALESCE(HEAD([n in nodes(p2) | n.id]),[])+[n in nodes(p) | n.id] AS hgncPathIds,c
+                    MATCH p=(f:FPLX)&lt;-[:partof|isa*]-(c)
+                    WITH c,head([n in nodes(p) | n.id]) as family,[n in tail(nodes(p)) | n.id] as memberpath
                     OPTIONAL MATCH p2=(c)&lt;-[:HAS_ELEMENT*]-(a) WHERE (a:AGGREGATE_GENEGROUP or a:AGGREGATE_TOP_ORTHOLOGY) AND (a)&lt;-[:HAS_ROOT_CONCEPT]-()
-                    WITH REVERSE(hgncPathIds) AS list1, COALESCE([x IN nodes(p2) | x.id],[c.id]) AS list2
-                    RETURN list2[-1],REDUCE(acc=list1[1], id IN list1[2..] | acc + "|" + id)
+                    WITH family, memberpath,COALESCE([n in tail(nodes(p2)) | n.id], []) as orthologypath
+                    RETURN family,REDUCE(acc=head(memberpath), id IN tail(memberpath)+orthologypath | acc + "|" + id)
                 </cypherquery>
             </request>
             <outputfile>es-consumer-resources/tid2hgncgroups.map.gz</outputfile>
         </export>
-        <!-- covered by tophomologyids -->
-<!--        <export name="hgncfplxconceptid2equalnameaggregatesatid">-->
-<!--            <request>-->
-<!--                <cypherquery>-->
-<!--                    MATCH (a:AGGREGATE_FPLX_HGNC)-[:HAS_ELEMENT]->(c) RETURN c.id,a.id-->
-<!--                </cypherquery>-->
-<!--            </request>-->
-<!--            <outputfile>es-consumer-resources/hgncfplxconceptid2equalnameaggregatesatid.map.gz</outputfile>-->
-<!--        </export>-->
         <export name="genetid2gotid">
             <request>
                 <!-- Map genes to their GO annotations. -->

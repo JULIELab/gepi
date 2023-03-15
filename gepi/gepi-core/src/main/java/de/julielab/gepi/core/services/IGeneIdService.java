@@ -1,14 +1,20 @@
 package de.julielab.gepi.core.services;
 
 import com.google.common.collect.Multimap;
+import de.julielab.gepi.core.retrieval.data.ConceptName;
 import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 public interface IGeneIdService {
+    Map<String, ConceptName> getAggregationRelevantConceptNames(Iterable<String> conceptIds);
+
+	Set<String> getPossibleAggregationConceptNames(Iterable<String> conceptIds);
+
 	Future<IdConversionResult> convert(Stream<String> stream, IdType from, IdType to);
 
 	Future<IdConversionResult> convert(Stream<String> stream, IdType to);
@@ -40,4 +46,7 @@ public interface IGeneIdService {
 
 	Map<String, GepiConceptInfo> getGeneInfo(Iterable<String> conceptIds);
 
+    Set<String> getGeneAggregateSymbolsForFamilyConcepts(Iterable<? extends String> conceptIds, String propertyName);
+
+    Set<String> getFamilyAndOrthologyGroupNodeProperties(Iterable<? extends String> conceptIds, String propertyName);
 }

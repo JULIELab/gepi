@@ -1,27 +1,31 @@
 package de.julielab.gepi.webapp.components;
 
 import com.google.common.collect.Multimap;
-import de.julielab.gepi.core.retrieval.data.*;
-import de.julielab.gepi.core.retrieval.services.EventRetrievalService;
-import de.julielab.gepi.core.services.GeneIdService;
+import de.julielab.gepi.core.retrieval.data.EsAggregatedResult;
+import de.julielab.gepi.core.retrieval.data.Event;
+import de.julielab.gepi.core.retrieval.data.IdConversionResult;
+import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.services.IGePiDataService;
-import de.julielab.gepi.core.services.IGeneIdService;
 import de.julielab.gepi.webapp.data.InputMapping;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.concurrent.Future;
 
 public class StatsWidget extends GepiWidget {
 
+    @Inject
+    private Logger log;
     @Inject
     private IGePiDataService dataService;
     @Property
@@ -31,10 +35,13 @@ public class StatsWidget extends GepiWidget {
     // used for A- and B items
     @Property
     private InputMapping inputMappingLoopItem;
+    @InjectComponent
+    @Property
+    private InputListMappingTable aMapping;
 
     public int getNumberUniqueASymbols() {
         try {
-            return (int) getPagedEsResult().get().getEventList().stream().map(Event::getFirstArgument).map(Argument::getPreferredName).distinct().count();
+            return getEsAggregatedResult().get().getASymbolFrequencies().size();
         } catch (InterruptedException | ExecutionException e) {
             return 0;
         }
@@ -42,7 +49,7 @@ public class StatsWidget extends GepiWidget {
 
     public int getNumberUniqueBSymbols() {
         try {
-            return (int) getPagedEsResult().get().getEventList().stream().filter(e -> e.getArity() > 1).map(Event::getSecondArgument).map(Argument::getPreferredName).distinct().count();
+            return getEsAggregatedResult().get().getBSymbolFrequencies().size();
         } catch (InterruptedException | ExecutionException e) {
             return 0;
         }
@@ -50,36 +57,57 @@ public class StatsWidget extends GepiWidget {
 
     public long getNumberUniqueABPairs() {
         try {
-            return getPagedEsResult().get().getEventList().stream().map(e -> e.getFirstArgument().getPreferredName() + "-" + e.getSecondArgument().getPreferredName()).distinct().count();
+            return getEsAggregatedResult().get().getEventFrequencies().stream().map(Pair::getLeft).filter(e -> e.getArity() == 2).count();
         } catch (InterruptedException | ExecutionException e) {
             return 0;
         }
     }
 
-    public int getNumEvents() {
+    public long getNumEvents() {
         try {
-            return getUnrolledResult4charts().get().getEventList().size();
+            return getEsAggregatedResult().get().getTotalNumEvents();
         } catch (InterruptedException | ExecutionException e) {
             return 0;
         }
     }
+
+//    public List<Triple<String, String, Integer>> getTopInteractions() {
+//        int n = 10;
+//        try {
+//            Map<Pair<String, String>, Integer> cardinalityMap = getUnrolledResult4charts().get()
+//                    .getEventList().stream()
+//                    .filter(e -> !EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT.equals(e.getFirstArgument().getTopHomologyPreferredName()) && !EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT.equals(e.getSecondArgument().getTopHomologyPreferredName()))
+//                    .map(e -> new ImmutablePair<>(e.getFirstArgument().getTopHomologyPreferredName(), e.getSecondArgument().getTopHomologyPreferredName()))
+//                    .collect(Collectors.toMap(Function.identity(), x -> 1, Integer::sum));
+//            List<Triple<String, String, Integer>> topInteractions = new ArrayList<>(cardinalityMap.size());
+//            for (Pair<String, String> symbolPair : cardinalityMap.keySet()) {
+//                Integer count = cardinalityMap.get(symbolPair);
+//                topInteractions.add(new ImmutableTriple<>(symbolPair.getLeft(), symbolPair.getRight(), count));
+//            }
+//            topInteractions.sort(Comparator.<Triple<String, String, Integer>>comparingInt(Triple::getRight).reversed());
+//            return topInteractions.subList(0, Math.min(n, topInteractions.size()));
+//        } catch (InterruptedException | ExecutionException e) {
+//            return Collections.emptyList();
+//        }
+//    }
 
     public List<Triple<String, String, Integer>> getTopInteractions() {
-        int n = 10;
         try {
-            Map<Pair<String, String>, Integer> cardinalityMap = getUnrolledResult4charts().get()
-                    .getEventList().stream()
-                    .filter(e -> !EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT.equals(e.getFirstArgument().getTopHomologyPreferredName()) && !EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT.equals(e.getSecondArgument().getTopHomologyPreferredName()))
-                    .map(e -> new ImmutablePair<>(e.getFirstArgument().getTopHomologyPreferredName(), e.getSecondArgument().getTopHomologyPreferredName()))
-                    .collect(Collectors.toMap(Function.identity(), x -> 1, Integer::sum));
-            List<Triple<String, String, Integer>> topInteractions = new ArrayList<>(cardinalityMap.size());
-            for (Pair<String, String> symbolPair : cardinalityMap.keySet()) {
-                Integer count = cardinalityMap.get(symbolPair);
-                topInteractions.add(new ImmutableTriple<>(symbolPair.getLeft(), symbolPair.getRight(), count));
+            int n = 10;
+            final Future<EsAggregatedResult> esAggregatedResult = getEsAggregatedResult();
+            final List<Pair<Event, Integer>> eventFrequencies = esAggregatedResult.get().getEventFrequencies();
+            final Iterator<Pair<Event, Integer>> keyIt = eventFrequencies.stream().iterator();
+            int i = 0;
+            List<Triple<String, String, Integer>> topInteractions = new ArrayList<>(n);
+            while (keyIt.hasNext() && i < n) {
+                Pair<Event, Integer> p = keyIt.next();
+                final Triple<String, String, Integer> triple = new ImmutableTriple(p.getLeft().getFirstArgument().getTopHomologyPreferredName(), p.getLeft().getSecondArgument().getTopHomologyPreferredName(), p.getRight());
+                topInteractions.add(triple);
+                ++i;
             }
-            topInteractions.sort(Comparator.<Triple<String, String, Integer>>comparingInt(Triple::getRight).reversed());
-            return topInteractions.subList(0, Math.min(n, topInteractions.size()));
+            return topInteractions;
         } catch (InterruptedException | ExecutionException e) {
+            log.error("Could not obtain top interactions", e);
             return Collections.emptyList();
         }
     }
@@ -107,9 +135,5 @@ public class StatsWidget extends GepiWidget {
     public boolean isBList() {
         return requestData.getInputMode().contains(InputMode.AB);
     }
-
-    @InjectComponent
-    @Property
-    private InputListMappingTable aMapping;
 
 }

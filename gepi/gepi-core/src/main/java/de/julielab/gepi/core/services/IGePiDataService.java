@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.services;
 
 import de.julielab.gepi.core.retrieval.data.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -45,6 +47,7 @@ public interface IGePiDataService {
      * @return JSONArray - json array of tuples (itself realised as an json array)
      */
     JSONArray getArgumentCount(List<Event> e, int argumentPosition);
+    JSONArray getArgumentCount(Map<String, Integer> aSymbolFrequencies);
 
     /**
      * input structure required for sankey graph
@@ -54,6 +57,10 @@ public interface IGePiDataService {
     JSONObject getPairedArgsCount(List<Event> e);
 
     JSONObject getPairedArgsCount(Neo4jAggregatedEventsRetrievalResult aggregatedEvents);
+
+    JSONObject getPairedArgsCount(Map<Event, Integer> eventFrequencies);
+
+    JSONObject getPairedArgsCountFromPairs(List<Pair<Event, Integer>> eventFrequencies);
 
     JSONObject getPairsWithCommonTarget(List<Event> evtList);
 
@@ -81,4 +88,5 @@ public interface IGePiDataService {
     boolean isDownloadExcelFileReady(long dataSessionId) throws IOException;
 
     Path getTempXlsDataFile(long dataSessionId);
+
 }

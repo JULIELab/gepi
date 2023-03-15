@@ -1,6 +1,7 @@
 package de.julielab.gepi.core.services;
 
 import com.google.common.collect.Multimap;
+import de.julielab.gepi.core.retrieval.data.ConceptName;
 import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
 import org.junit.Rule;
@@ -10,11 +11,14 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.harness.junit.rule.Neo4jRule;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static de.julielab.gepi.core.services.GeneIdService.*;
 import static org.assertj.core.api.Assertions.assertThat;
+
 public class GeneIdServiceIntegrationTest {
     @Rule()
     public Neo4jRule neo4j = new Neo4jRule().withFixture(graphDatabaseService -> {
@@ -129,20 +133,176 @@ public class GeneIdServiceIntegrationTest {
         final Map<String, GepiConceptInfo> geneInfo = geneIdService.getGeneInfo(conversionResult.getTargetIds());
         assertThat(geneInfo).containsKeys("atid2", "atid3");
         assertThat(geneInfo.get("tid2").getSymbol()).isEqualTo("Mtor");
-        assertThat(geneInfo.get("atid2").getSymbol()).isEqualTo("mTOR");
-        assertThat(geneInfo.get("atid2").getOriginalId()).isEqualTo("2475");
+        assertThat(geneInfo.get("atid2").getSymbol()).isEqualTo("mTORtop");
         assertThat(geneInfo.get("atid3").getSymbol()).isEqualTo("AKT1");
     }
+
+    @Test
+    public void getSymbolsFromFamilyConceptNode() {
+        // We want the homology top aggregate symbol for a HGNC_GROUP concept. The top homology has AKT1 as symbol,
+        // the actual gene "Akt1" for differentiation.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getGeneAggregateSymbolsForFamilyConcepts(List.of("tid8"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("AKT", "AKT1");
+    }
+
+    @Test
+    public void getSymbolsFromFamilyConceptNode2() {
+        // We want the homology top aggregate symbol for a FPLX concept. However, the connected rat:Mtor node
+        // does not have a top aggregate. So its own symbol should be returned.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getGeneAggregateSymbolsForFamilyConcepts(List.of("tid9"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("MTOR_FAMILY", "Mtor");
+    }
+
+    @Test
+    public void getSymbolsFromFamilyConceptNode3() {
+        // We want the symbols of the AMPK start node, its sub-family children and the top-orthology aggregate symbol
+        // of its genes. All those elements could appear due hyponym resolution when we search for AMPK
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getGeneAggregateSymbolsForFamilyConcepts(List.of("tid10"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("AMPK", "AMPK_ALPHA", "AMPK_BETA", "PRKAA1", "PRKAB1");
+    }
+
+    @Test
+    public void getFamilyAndOrthologyGroupNodeProperties() {
+        // getFamilyAndOrthologyGroupNodeProperties() tests are very similar to the getSymbolsFromFamilyConceptNode() tests except that the
+        // getFamilyAndOrthologyGroupNodeProperties() has a conditional return value that does what
+        // getSymbolsFromFamilyConceptNode() does when applied to a family node or, if applied to another node,
+        // just returns that node's target property.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getFamilyAndOrthologyGroupNodeProperties(List.of("tid8"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("AKT", "AKT1");
+    }
+
+    @Test
+    public void getFamilyAndOrthologyGroupNodeProperties2() {
+        // getFamilyAndOrthologyGroupNodeProperties() tests are very similar to the getSymbolsFromFamilyConceptNode() tests except that the
+        // getFamilyAndOrthologyGroupNodeProperties() has a conditional return value that does what
+        // getSymbolsFromFamilyConceptNode() does when applied to a family node or, if applied to another node,
+        // just returns that node's target property.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getFamilyAndOrthologyGroupNodeProperties(List.of("tid9"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("MTOR_FAMILY", "Mtor");
+    }
+
+    @Test
+    public void getFamilyAndOrthologyGroupNodeProperties3() {
+        // getFamilyAndOrthologyGroupNodeProperties() tests are very similar to the getSymbolsFromFamilyConceptNode() tests except that the
+        // getFamilyAndOrthologyGroupNodeProperties() has a conditional return value that does what
+        // getSymbolsFromFamilyConceptNode() does when applied to a family node or, if applied to another node,
+        // just returns that node's target property.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getFamilyAndOrthologyGroupNodeProperties(List.of("tid10"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("AMPK", "AMPK_ALPHA", "AMPK_BETA", "PRKAA1", "PRKAB1");
+    }
+
+    @Test
+    public void getFamilyAndOrthologyGroupNodeProperties4() {
+        // Here we start from a top aggregate instead of a family concept so we just expect the orthology name back
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> symbols = geneIdService.getFamilyAndOrthologyGroupNodeProperties(List.of("atid2"), PROP_PREFNAME);
+        assertThat(symbols).containsExactlyInAnyOrder("mTORtop");
+    }
+
+    @Test
+    public void getConceptNamesFromDatabase() {
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Map<String, ConceptName> conceptNames = geneIdService.getAggregationRelevantConceptNames(List.of("atid2"));
+        final ConceptName mtor = conceptNames.get("atid2");
+        assertThat(mtor).extracting(ConceptName::getName).isEqualTo("mTORtop");
+        assertThat(mtor.getNextToOrthologyClusters()).isEmpty();
+    }
+
+    @Test
+    public void getConceptNamesFromDatabase2() {
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+
+        final Map<String, ConceptName> conceptNames4ampka = geneIdService.getAggregationRelevantConceptNames(List.of("tid11"));
+        assertThat(conceptNames4ampka.keySet()).containsExactly("tid11");
+        final ConceptName ampka = conceptNames4ampka.get("tid11");
+        assertThat(ampka).extracting(ConceptName::getName).isEqualTo("AMPK_ALPHA");
+        assertThat(ampka.getNextToOrthologyClusters()).containsExactlyInAnyOrder("tid12");
+
+        final Map<String, ConceptName> conceptNames = geneIdService.getAggregationRelevantConceptNames(List.of("tid10"));
+        assertThat(conceptNames.keySet()).containsExactly("tid10");
+        final ConceptName ampk = conceptNames.get("tid10");
+        assertThat(ampk).extracting(ConceptName::getName).isEqualTo("AMPK");
+        assertThat(ampk.getNextToOrthologyClusters()).containsExactlyInAnyOrder("tid11", "tid14");
+    }
+
+    @Test
+    public void getConceptNamesFromDatabase3() {
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Map<String, ConceptName> conceptNames = geneIdService.getAggregationRelevantConceptNames(List.of("tid6"));
+        assertThat(conceptNames.keySet()).containsExactly("tid6");
+        final ConceptName goTerm = conceptNames.get("tid6");
+        // GO term
+        assertThat(goTerm).extracting(ConceptName::getName).isNull();
+        assertThat(goTerm.getNextToOrthologyClusters()).containsExactlyInAnyOrder("atid2", "atid3");
+    }
+
+    @Test
+    public void getPossibleAggregationConceptNames() {
+        // Input is the top orthology node
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> conceptNamesUsedInAggregationValues = geneIdService.getPossibleAggregationConceptNames(List.of("atid2"));
+        assertThat(conceptNamesUsedInAggregationValues).containsExactly("mTORtop");
+    }
+
+    @Test
+    public void getPossibleAggregationConceptNames2() {
+        // Input is an intermediate orthology node. Here, the algorithm needs to be a bit fuzzy: We only need mTORtop but we
+        // also get mTOR from the intermediate. This could be avoided in the Cypher query. But then the Gauva Cache complaints about
+        // not-returned elements.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> conceptNamesUsedInAggregationValues = geneIdService.getPossibleAggregationConceptNames(List.of("atid0"));
+        assertThat(conceptNamesUsedInAggregationValues).containsExactly("mTORtop", "mTOR");
+    }
+
+    @Test
+    public void getPossibleAggregationConceptNames3() {
+        // Input is the gene node.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> conceptNamesUsedInAggregationValues = geneIdService.getPossibleAggregationConceptNames(List.of("tid1"));
+        assertThat(conceptNamesUsedInAggregationValues).containsExactlyInAnyOrder("mTORtop", "mTOR", "Mtor");
+    }
+
+    @Test
+    public void getPossibleAggregationConceptNames4() {
+        // Input is AMPK, we should get quite a few names
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> conceptNamesUsedInAggregationValues = geneIdService.getPossibleAggregationConceptNames(List.of("tid10"));
+        assertThat(conceptNamesUsedInAggregationValues).containsExactlyInAnyOrder("AMPK", "AMPK_ALPHA", "AMPK_BETA", "PRKAA1", "PRKAB1");
+    }
+
+    @Test
+    public void getPossibleAggregationConceptNames5() {
+        // Input is the GO term. We only expect the orthology aggregates name to be returned, not the GO term name because that
+        // is never used in the aggregationvalue.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> conceptNamesUsedInAggregationValues = geneIdService.getPossibleAggregationConceptNames(List.of("tid6"));
+        assertThat(conceptNamesUsedInAggregationValues).containsExactlyInAnyOrder("mTORtop", "AKT1");
+    }
+
+    @Test
+    public void getPossibleAggregationConceptNames6() {
+        // Input is a gene that does not have an orthology cluster.
+        final GeneIdService geneIdService = new GeneIdService(LoggerFactory.getLogger(GeneIdService.class), neo4j.boltURI().toString());
+        final Set<String> conceptNamesUsedInAggregationValues = geneIdService.getPossibleAggregationConceptNames(List.of("tid2"));
+        assertThat(conceptNamesUsedInAggregationValues).containsExactlyInAnyOrder("Mtor");
+    }
+
 
     private void setupDB(GraphDatabaseService graphDatabaseService) {
         // Example graph with two groups of genes: mTOR and Akt1.
         // This graph does not show the real data but is shaped to cover the test cases.
         //                            f:FACET
-        //                 ----------------------------
-        //                /             |             \
-        //     t:(mTOR,atid2)  r:CONCEPT(mTOR,tid2) a3:(Akt1,atid3)
-        //       /       \                             /        \
-        //    a(atid0)  a2(atid1)                 akth(tid3)    aktm(tid4)
+        //                 ---------------------------------------------------------------------
+        //               /             |             \                  \                     \
+        //     t(mTORtop,atid2)  r(Mtor,tid2)      a3(AKT1,atid3)     prkaa1(PRKAA1,tid12)    prkab1(PRKAB1, tid13)
+        //       /       \                             /      \
+        //    a(atid0)  a2(atid1)                 akth(tid3)  aktm(tid4)
         //    /     \         |
         // h(tid0)  m(tid1)  d(tid7)
         //
@@ -151,33 +311,57 @@ public class GeneIdServiceIntegrationTest {
         //  u(MTOR_HUMAN,tid5)--h(tid0)
         //  go(GO:1234,tid6)--h(tid0)
         //  go(GO:1234,tid6)--akth(tid3)
+        //
+        // Families:
+        // akt(HGNC_GROUP:AKT, tid8)--akth(tid3)
+        // mf(FPLX:MTOR, tid9)--r(tid2)
+        // ampk(FPLX:AMPK, tid10)--ampka(tid11)
+        // ampka(FPLX:AMPKA, tid11)--PRKAA1(tid12)
+        // ampkb(FPLX:AMPKB, tid14)--PRKAB1(tid13)
         final String testData = "CREATE (f:FACET {id:'fid0', name:'Genes'})," +
                 "(a:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',id:'atid0'})," +
                 "(a2:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',id:'atid1'})," +
-                "(t:AGGREGATE_TOP_ORTHOLOGY:AGGREGATE:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',id:'atid2',originalId:'2475'})," +
+                "(t:AGGREGATE_TOP_ORTHOLOGY:AGGREGATE:CONCEPT {preferredName:'mTORtop',preferredName_normalized:'mtor',id:'atid2',originalId:'2475'})," +
                 "(h:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mTOR',preferredName_normalized:'mtor',originalId:'2475',id:'tid0',taxId:'9606'})," +
-                "(m:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_normalized:'mtor',originalId:'56717',id:'tid1',taxId:'10090'}),"+
-                "(d:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mtor',preferredName_normalized:'mtor',originalId:'324254',id:'tid7',taxId:'7955'}),"+
+                "(m:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_normalized:'mtor',originalId:'56717',id:'tid1',taxId:'10090'})," +
+                "(d:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'mtor',preferredName_normalized:'mtor',originalId:'324254',id:'tid7',taxId:'7955'})," +
                 "(r:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Mtor',preferredName_normalized:'mtor',originalId:'56718',id:'tid2',taxId:'10116'})," +
-                "(f)-[:HAS_ROOT_CONCEPT]->(t),"+
-                "(f)-[:HAS_ROOT_CONCEPT]->(r),"+
-                "(t)-[:HAS_ELEMENT]->(a),"+
-                "(t)-[:HAS_ELEMENT]->(a2),"+
-                "(a)-[:HAS_ELEMENT]->(h),"+
-                "(a)-[:HAS_ELEMENT]->(m),"+
-                "(a2)-[:HAS_ELEMENT]->(d),"+
+                "(f)-[:HAS_ROOT_CONCEPT]->(t)," +
+                "(f)-[:HAS_ROOT_CONCEPT]->(r)," +
+                "(t)-[:HAS_ELEMENT]->(a)," +
+                "(t)-[:IS_BROADER_THAN]->(a)," +
+                "(t)-[:HAS_ELEMENT]->(a2)," +
+                "(t)-[:IS_BROADER_THAN]->(a2)," +
+                "(a)-[:HAS_ELEMENT]->(h)," +
+                "(a)-[:IS_BROADER_THAN]->(h)," +
+                "(a)-[:HAS_ELEMENT]->(m)," +
+                "(a)-[:IS_BROADER_THAN]->(m)," +
+                "(a2)-[:HAS_ELEMENT]->(d)," +
+                "(a2)-[:IS_BROADER_THAN]->(d)," +
                 "(a3:AGGREGATE_GENEGROUP:AGGREGATE:CONCEPT {preferredName:'AKT1',preferredName_normalized:'akt1',id:'atid3'})," +
-                "(akth:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'AKT1',preferredName_normalized:'akt1',originalId:'207',id:'tid3',taxId:'9606'}),"+
-                "(aktm:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Akt1',preferredName_normalized:'akt1',originalId:'11651',id:'tid4',taxId:'10090'}),"+
-                "(f)-[:HAS_ROOT_CONCEPT]->(a3),"+
-                "(a3)-[:HAS_ELEMENT]->(akth),"+
-                "(a3)-[:HAS_ELEMENT]->(aktm),"+
-                // some example mappings (see https://stackoverflow.com/questions/14886667/how-to-query-for-properties-with-dashes-in-neo4j-using-cypher for the UniProtKB-ID property in back ticks)
-                "(u:UNIPROT:CONCEPT {originalId:'P42345',id:'tid5',`sourceIds1`:'MTOR_HUMAN'}),"+
-                "(go:GENE_ONTOLOGY:CONCEPT {originalId:'GO:1234',id:'tid6'}),"+
-                "(u)-[:IS_MAPPED_TO]->(h),"+
-                "(g)<-[:IS_ANNOTATED_WITH]-(h),"+
-                "(g)<-[:IS_ANNOTATED_WITH]-(akth)";
+                "(akth:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Akt1',preferredName_normalized:'akt1',originalId:'207',id:'tid3',taxId:'9606'})," +
+                "(aktm:ID_MAP_NCBI_GENES:CONCEPT {preferredName:'Akt1',preferredName_normalized:'akt1',originalId:'11651',id:'tid4',taxId:'10090'})," +
+                "(f)-[:HAS_ROOT_CONCEPT]->(a3)," +
+                "(a3)-[:HAS_ELEMENT]->(akth)," +
+                "(a3)-[:HAS_ELEMENT]->(aktm)," +
+                "(u:UNIPROT:CONCEPT {originalId:'P42345',id:'tid5',sourceIds1:'MTOR_HUMAN'})," +
+                "(go:GENE_ONTOLOGY:CONCEPT {originalId:'GO:1234',id:'tid6'})," +
+                "(u)-[:IS_MAPPED_TO]->(h)," +
+                "(go)<-[:IS_ANNOTATED_WITH]-(h)," +
+                "(go)<-[:IS_ANNOTATED_WITH]-(akth)," +
+                "(akt:HGNC_GROUP:CONCEPT {id:'tid8',preferredName:'AKT'})," +
+                "(mf:FPLX:CONCEPT {id:'tid9',preferredName:'MTOR_FAMILY'})," +
+                "(ampk:FPLX:CONCEPT {id:'tid10',preferredName:'AMPK'})," +
+                "(ampka:FPLX:CONCEPT {id:'tid11',preferredName:'AMPK_ALPHA'})," +
+                "(ampkb:FPLX:CONCEPT {id:'tid14',preferredName:'AMPK_BETA'})," +
+                "(prkaa1:ID_MAP_NCBI_GENES:CONCEPT {id:'tid12',preferredName:'PRKAA1'})," +
+                "(prkab1:ID_MAP_NCBI_GENES:CONCEPT {id:'tid13',preferredName:'PRKAB1'})," +
+                "(akt)-[:IS_BROADER_THAN]->(akth)," +
+                "(mf)-[:IS_BROADER_THAN]->(r)," +
+                "(ampk)-[:IS_BROADER_THAN]->(ampka),"+
+                "(ampk)-[:IS_BROADER_THAN]->(ampkb),"+
+                "(ampka)-[:IS_BROADER_THAN]->(prkaa1),"+
+                "(ampkb)-[:IS_BROADER_THAN]->(prkab1)";
         try (final Transaction tx = graphDatabaseService.beginTx()) {
             tx.execute(testData);
             tx.commit();

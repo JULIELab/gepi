@@ -1,5 +1,6 @@
 package de.julielab.gepi.webapp.components;
 
+import de.julielab.gepi.core.retrieval.data.EsAggregatedResult;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GepiRequestData;
 import de.julielab.gepi.core.retrieval.data.Neo4jAggregatedEventsRetrievalResult;
@@ -44,6 +45,10 @@ public class GepiWidget {
 
     public Future<EventRetrievalResult> getUnrolledResult4charts() {
         return dataService.getData(requestData.getDataSessionId()).getUnrolledResult4charts();
+    }
+
+    public Future<EsAggregatedResult> getEsAggregatedResult() {
+        return dataService.getData(requestData.getDataSessionId()).getEsAggregatedResult();
     }
 
     public Future<EventRetrievalResult> getUnrolledResult4download() {

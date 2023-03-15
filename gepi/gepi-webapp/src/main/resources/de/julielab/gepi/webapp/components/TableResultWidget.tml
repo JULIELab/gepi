@@ -12,7 +12,7 @@
 
     <div>${viewmode}</div>
         <t:grid source="eventSource" row="eventrow" model="tableModel" rowsPerPage="${rowsperpage}"
-                pagerPosition="bottom" inplace="true" empty="block:no_data_block" t:id="resultTable">
+                pagerPosition="top" inplace="true" empty="block:no_data_block" t:id="resultTable">
             <p:firstArgumentPreferredNameCell>
                 <a href="${getArgumentLink(1)}" target="_blank"
                    data-bs-toggle="none" data-placement="top"

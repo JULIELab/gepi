@@ -24,14 +24,14 @@
 <!--	<logger name="de.julielab.gepi.webapp" level="DEBUG"/>-->
 	<logger name="de.julielab.gepi.webapp.pages.Index" level="debug"/>
 <!--	<logger name="de.julielab.gepi.webapp.components.GepiWidgetLayout" level="INFO"/>-->
-<!--	<logger name="de.julielab.gepi.core.services.GepiCoreModule.IGeneIdService" level="DEBUG"/>-->
+	<logger name="de.julielab.gepi.core.services.GepiCoreModule.IGeneIdService" level="DEBUG"/>
 		<logger name="de.julielab.gepi.core.services.GepiCoreModule.IGePiDataService" level="DEBUG"/>
 <!--	<logger name="de.julielab.gepi.core.services.GepiCoreModule.IEventRetrievalService" level="DEBUG"/>-->
-	<logger	name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ElasticSearchComponent" level="TRACE" />
+<!--	<logger	name="de.julielab.elastic.query.services.ElasticQueryComponentsModule.ElasticSearchComponent" level="TRACE" />-->
 	<!--
-	<logger name="de.julielab.gepi.webapp.pages.Index" level="DEBUG"/>
+	<logger name="de.julielab.gepi.webapp.pages.Index" level="DEBUG"/>-->
 	<logger name="de.julielab.gepi.webapp.components.GepiInput" level="DEBUG"/>
-	<logger name="de.julielab.gepi.core.services.GepiCoreModule.IEventRetrievalService" level="TRACE"/>-->
+	<!--<logger name="de.julielab.gepi.core.services.GepiCoreModule.IEventRetrievalService" level="TRACE"/>-->
 <!--	<logger name="de.julielab.gepi.webapp.EventPagesDataSource" level="DEBUG"/>-->
 	<!--<logger name="de.julielab.gepi.webapp.components.TableResultWidget" level="DEBUG"/>
 	<logger name="de.julielab.gepi.webapp.components.GepiWidgetLayout" level="DEBUG"/>

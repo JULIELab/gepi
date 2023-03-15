@@ -51,4 +51,10 @@ public interface IEventRetrievalService {
     long getTotalNumberOfEvents();
 
     Future<EsAggregatedResult> getAggregatedEvents(GepiRequestData requestData);
+
+    Future<EsAggregatedResult> openAggregatedSearch(GepiRequestData requestData);
+
+    Future<EsAggregatedResult> closedAggregatedSearch(GepiRequestData requestData);
+
+    Future<EsAggregatedResult> fulltextAggregatedSearch(GepiRequestData requestData);
 }

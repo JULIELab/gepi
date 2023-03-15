@@ -6,6 +6,7 @@ import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.components.GepiInput;
 import de.julielab.gepi.webapp.data.GepiQueryParameters;
 import de.julielab.gepi.webapp.state.GePiSessionState;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.SymbolConstants;
@@ -24,7 +25,6 @@ import org.slf4j.Logger;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * Start page of application gepi-webapp.
@@ -140,20 +140,9 @@ public class Index {
         }
     }
 
-    private Future<EventRetrievalResult> getEsResult() {
-        log.debug("persistent dataSessionId for getEsResult: {}", dataSessionId);
-        return dataService.getData(dataSessionId).getUnrolledResult4charts();
-    }
-
-    private Future<Neo4jAggregatedEventsRetrievalResult> getNeo4jResult() {
-        return dataService.getData(dataSessionId).getNeo4jAggregatedResult();
-    }
-
     public boolean isResultPresent() {
-        Future<EventRetrievalResult> esResult = getEsResult();
-        Future<Neo4jAggregatedEventsRetrievalResult> neo4jResult = getNeo4jResult();
-        final boolean resultPresent = (esResult != null && esResult.isDone()) || (neo4jResult != null && neo4jResult.isDone());
-        log.debug("Is result present: {}", resultPresent);
+        final boolean resultPresent = dataService.getData(dataSessionId).isAnyResultAvailable();
+        log.debug("Is any result available: {}", resultPresent);
         return resultPresent;
     }
 
@@ -208,16 +197,35 @@ public class Index {
         if (!datasource.equals("relationCounts") && !datasource.equals("acounts") && !datasource.equals("bcounts"))
             throw new IllegalArgumentException("Unknown data source " + datasource);
         GePiData data = dataService.getData(dataSessionId);
-        if (data.getUnrolledResult4charts() == null && data.getNeo4jAggregatedResult() == null)
+        if (data.getEsAggregatedResult() == null && data.getUnrolledResult4charts() == null && data.getNeo4jAggregatedResult() == null)
             throw new IllegalStateException("The ES result and the Neo4j result for dataSessionId " + dataSessionId + " are both null.");
         try {
             log.debug("Creating JSON object from results.");
             JSONObject jsonObject = null;
             if (data.getNeo4jAggregatedResult() != null) {
                 Neo4jAggregatedEventsRetrievalResult aggregatedEvents = data.getNeo4jAggregatedResult().get();
-                log.debug("[{}] Obtained aggregated events retrieval result with {} events.", dataSessionId, aggregatedEvents.size());
+                log.debug("[{}] Obtained Neo4j-aggregated events retrieval result with {} events.", dataSessionId, aggregatedEvents.size());
                 jsonObject = dataService.getPairedArgsCount(aggregatedEvents);
-            } else {
+            }
+            else if (data.getEsAggregatedResult() != null) {
+                final EsAggregatedResult esAggregatedResult = data.getEsAggregatedResult().get();
+                if (datasource.equals("relationCounts")) {
+                    final List<Pair<Event, Integer>> eventFrequencies = esAggregatedResult.getEventFrequencies();
+                    log.debug("[{}] Obtained ES-aggregated events retrieval result with {} events.", dataSessionId, eventFrequencies.size());
+                    jsonObject = dataService.getPairedArgsCountFromPairs(eventFrequencies);
+                } else if (datasource.equals("acounts")) {
+                    JSONArray aCounts = dataService.getArgumentCount(esAggregatedResult.getASymbolFrequencies());
+                    log.debug("[{}] Obtained A list counts of size {} from ES-aggregation.", dataSessionId, aCounts.size());
+                    jsonObject = new JSONObject();
+                    jsonObject.put("argumentcounts", aCounts);
+                } else if (datasource.equals("bcounts")) {
+                    JSONArray bCounts = dataService.getArgumentCount(esAggregatedResult.getBSymbolFrequencies());
+                    log.debug("[{}] Obtained B list counts of size {} from ES-aggregation.", dataSessionId, bCounts.size());
+                    jsonObject = new JSONObject();
+                    jsonObject.put("argumentcounts", bCounts);
+                }
+            }
+            else {
                 if (datasource.equals("relationCounts")) {
                     List<Event> eventList = data.getUnrolledResult4charts().get().getEventList();
                     log.debug("[{}] Obtained unrolled list of individual events of size {}.", dataSessionId, eventList.size());

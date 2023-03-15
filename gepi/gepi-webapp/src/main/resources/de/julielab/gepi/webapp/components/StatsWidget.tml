@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" t:type="gepiwidgetlayout"
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" t:type="gepiwidgetlayout"
      widgettitle="Result Statistics" t:clientId="stats_widget" class="${classes}" sizeClass="widget-large"
-     esResult="esResult" resultType="UNROLLED"
+     esResult="esResult" resultType="AGGREGATED"
      viewMode="viewMode" useTapestryZoneUpdates="true" requestData="requestData" downloadable="false" waitForData="true"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="tapestry:parameter ">
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <div class="row">
         <div class="col-lg-6 col-xxl">
             <div class="card">
