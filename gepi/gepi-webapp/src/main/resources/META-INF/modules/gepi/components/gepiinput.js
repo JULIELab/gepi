@@ -20,7 +20,6 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
         observeFormSubmit();
         observeInputFetchArea();
         setupInputExamples();
-        setupTooltips();
         let running = false;
         window.addEventListener('resize', () => {
             if (!running) {
@@ -233,8 +232,6 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
             const formElementIds = {
                 listaTextAreaId                : "lista",
                 listbTextAreaId                : "listb",
-                interactionLimitTextFieldId    : "intagglimit",
-                interactionNoLimitCheckboxId   : "intaggnolimit",
                 orgTextFieldId                 : "organismInput",
                 eventTypeChecklistId           : "eventtypes",
                 negRegulationCheckboxSelector  : "#eventtypes input[value='Negative_regulation']",
@@ -302,8 +299,6 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
         function resetInputFields(formElementIds) {
             const listaTextArea = document.getElementById(formElementIds.listaTextAreaId);
             const listbTextArea = document.getElementById(formElementIds.listbTextAreaId);
-            const interactionLimitTextField = document.getElementById(formElementIds.interactionLimitTextFieldId);
-            const interactionNoLimitCheckbox = document.getElementById(formElementIds.interactionNoLimitCheckboxId);
             const orgTextField = document.getElementById(formElementIds.orgTextFieldId);
             const eventTypeCheckboxes = document.querySelectorAll(`#${formElementIds.eventTypeChecklistId} input`);
             const radioLikelihoodNegRadio = document.querySelector(`input[clientid='${formElementIds.radioLikelihoodNegRadioClientId}'`);
@@ -315,8 +310,6 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
 
             listaTextArea.value = "";
             listbTextArea.value = "";
-            interactionLimitTextField.value = "500";
-            interactionNoLimitCheckbox.checked = false;
             orgTextField.value = "";
             eventTypeCheckboxes.forEach(box => box.checked=true);
             includeUnaryCheckbox.checked = false;
@@ -328,12 +321,6 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
 
             togglelistb();
         }
-
-        function setupTooltips() {
-            const retrieveAllInterationsCheckbox = document.getElementById("intaggnolimit");
-            new Tooltip(retrieveAllInterationsCheckbox, {"trigger":"hover"});
-        }
-
     };
 
 

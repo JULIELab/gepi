@@ -153,10 +153,6 @@ public class GepiInput {
 
     @Property
     @Persist(TabPersistentField.TAB)
-    private Integer interactionRetrievalLimitForAggregations;
-
-    @Property
-    @Persist(TabPersistentField.TAB)
     private boolean interactionRetrievalLimitForAggregationsNoLimit;
 
     /**
@@ -210,7 +206,6 @@ public class GepiInput {
         paragraphFilterString = "";
         sectionNameFilterString = "";
         docId = "";
-        interactionRetrievalLimitForAggregations = INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
     }
 
     public ValueEncoder getEventTypeEncoder() {
@@ -228,8 +223,6 @@ public class GepiInput {
             eventLikelihood = 1;
         if (selectedEventTypes == null)
             selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
-        if (interactionRetrievalLimitForAggregations == null)
-            interactionRetrievalLimitForAggregations = INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
     }
 
     void onValidateFromInputForm() {
@@ -266,7 +259,6 @@ public class GepiInput {
         this.dataSessionId = dataSessionId;
         this.includeUnary = queryParameters.isIncludeUnary();
         this.docId = queryParameters.getDocid();
-        this.interactionRetrievalLimitForAggregations = queryParameters.getInteractionRetrievalLimitForAggregations();
         executeSearch();
     }
 
@@ -297,7 +289,7 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, interactionRetrievalLimitForAggregationsNoLimit ? Integer.MAX_VALUE : interactionRetrievalLimitForAggregations, dataSessionId);
+        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
         Future<EventRetrievalResult> unrolledResult4Charts = null;//eventRetrievalService.getEvents(requestData, true);

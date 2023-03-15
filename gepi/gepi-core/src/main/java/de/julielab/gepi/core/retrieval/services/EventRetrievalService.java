@@ -1,10 +1,7 @@
 package de.julielab.gepi.core.retrieval.services;
 
 import de.julielab.elastic.query.components.ISearchServerComponent;
-import de.julielab.elastic.query.components.data.ElasticSearchCarrier;
-import de.julielab.elastic.query.components.data.ElasticServerResponse;
-import de.julielab.elastic.query.components.data.HighlightCommand;
-import de.julielab.elastic.query.components.data.SearchServerRequest;
+import de.julielab.elastic.query.components.data.*;
 import de.julielab.elastic.query.components.data.SortCommand.SortOrder;
 import de.julielab.elastic.query.components.data.aggregation.TermsAggregation;
 import de.julielab.elastic.query.components.data.query.*;
@@ -160,13 +157,13 @@ public class EventRetrievalService implements IEventRetrievalService {
     private static final int SCROLL_SIZE = 2000;
     private Logger log;
     private IGeneIdService geneIdService;
-    private ISearchServerComponent searchServerComponent;
-    private String documentIndex;
+    final private ISearchServerComponent<SearchCarrier<ElasticServerResponse>> searchServerComponent;
+    final private String documentIndex;
     private IEventResponseProcessingService eventResponseProcessingService;
 
     public EventRetrievalService(@Symbol(GepiCoreSymbolConstants.INDEX_DOCUMENTS) String documentIndex, Logger log,
                                  IEventResponseProcessingService eventResponseProcessingService, IGeneIdService geneIdService,
-                                 ISearchServerComponent searchServerComponent) {
+                                 ISearchServerComponent<SearchCarrier<ElasticServerResponse>> searchServerComponent) {
         this.documentIndex = documentIndex;
         this.log = log;
         this.eventResponseProcessingService = eventResponseProcessingService;
@@ -255,7 +252,7 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.start = from;
         serverRqst.rows = numRows;
 //        serverRqst.trackTotalHitsUpTo = Integer.MAX_VALUE;
-        configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
+        configureDeepPaging(serverRqst, downloadAll);
         if (!downloadAll && numRows > 0) {
             addHighlighting(serverRqst);
         }
@@ -309,7 +306,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                     log.debug("Some A target IDs are: {}", requestData.getListAGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
                 SearchServerRequest serverCmd = getOpenSearchRequest(requestData, from, numRows, forCharts);
 
-                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier("OpenSearch");
+                ElasticSearchCarrier<ElasticServerResponse> carrier = new ElasticSearchCarrier<>("OpenSearch");
                 carrier.addSearchServerRequest(serverCmd);
                 long time = System.currentTimeMillis();
                 log.debug("Sent open search server request");
@@ -356,22 +353,20 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.start = from;
         serverRqst.rows = numRows;
 //        serverRqst.trackTotalHitsUpTo = Integer.MAX_VALUE;
-        configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
+        configureDeepPaging(serverRqst, downloadAll);
         if (!downloadAll && numRows > 0) {
             addHighlighting(serverRqst);
         }
         return serverRqst;
     }
 
-    private void configureDeepPaging(SearchServerRequest serverRqst, boolean downloadAll, boolean forCharts, int interactionRetrievalLimit) {
+    private void configureDeepPaging(SearchServerRequest serverRqst, boolean downloadAll) {
         if (downloadAll) {
-            serverRqst.rows = forCharts ? Math.min(SCROLL_SIZE, interactionRetrievalLimit) : SCROLL_SIZE;
-            serverRqst.fieldsToReturn = forCharts ? FIELDS_FOR_CHARTS : FIELDS_FOR_TABLE;
-            serverRqst.downloadCompleteResults = downloadAll && (!forCharts || interactionRetrievalLimit > 0);
+            serverRqst.rows = SCROLL_SIZE;
+            serverRqst.fieldsToReturn =  FIELDS_FOR_TABLE;
+            serverRqst.downloadCompleteResults = downloadAll;
             serverRqst.downloadCompleteResultsMethod = "searchAfter";
             serverRqst.downloadCompleteResultMethodKeepAlive = "5m";
-            if (forCharts && interactionRetrievalLimit < Integer.MAX_VALUE)
-                serverRqst.downloadCompleteResultsLimit = interactionRetrievalLimit;
             serverRqst.addSortCommand("_shard_doc", SortOrder.ASCENDING);
         }
     }
@@ -460,7 +455,7 @@ public class EventRetrievalService implements IEventRetrievalService {
         serverRqst.start = from;
         serverRqst.rows = numRows;
 //        serverRqst.trackTotalHitsUpTo = Integer.MAX_VALUE;
-        configureDeepPaging(serverRqst, downloadAll, forCharts, requestData.getEventRetrievalLimitForAggregations());
+        configureDeepPaging(serverRqst, downloadAll);
         if (!downloadAll && numRows > 0) {
             addHighlighting(serverRqst);
         }

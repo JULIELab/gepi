@@ -71,24 +71,6 @@
             <t:errors globalOnly="false"/>
         </div>
         <div class="card">
-            <div class="card-header text-center">Limit for retrieved interactions for charts and statistics
-                <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
-                        data-bs-toggle="default-tooltip"
-                        title="The result page includes statistics and charts. There is a trade-off between loading times and the accurate display of these elements. The limit for the numbers of interactions included in the Web page statistics and charts can be chosen here. When downloading the data, always all interactions are retrieved, regardless of this limit."/>
-            </div>
-            <div class="card-body">
-                <h6 class="card-subtitle mb-3 text-muted">Specify a limit of interactions to be used for the calculation of statistics and charts on the Web page</h6>
-                <div class="input-group">
-<!--                 <t:label for="intagglimit">Limit</t:label>-->
-                    <t:textfield t:id="intagglimit" id="intagglimit" t:clientId="intagglimit" value="interactionRetrievalLimitForAggregations"/>
-                    <div class="input-group-text">
-                        <t:label class="me-2" for="intaggnolimit">Retrieve all</t:label>
-                        <t:checkbox t:id="intaggnolimit" id="intaggnolimit" t:clientId="intaggnolimit" class="form-check-input" value="interactionRetrievalLimitForAggregationsNoLimit" title="Caution: Retrieving all interactions will take a long time in which no statistics and charts will be displayed."/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card">
             <div class="card-header text-center">Filter the results by organism
                 <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
                         data-bs-toggle="default-tooltip"
