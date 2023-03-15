@@ -367,6 +367,6 @@ public class GepiInput {
     }
 
     public String getFulltextFilterTooltip() {
-        return "The document context is stored with the interactions and can be used for filter purposes. The supported query syntax is described in the ElasticSearch <a target=\"_blank\" class=\"link-secondary\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-simple-query-string-query.html\">documentation</a>.";
+        return "The document context is stored with the interactions and can be used for filter purposes. Use '+' for AND, '|' for OR and quotes for multi word phrases. The complete query syntax is described <a target=\"_blank\" class=\"link-light\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-simple-query-string-query.html\">here</a><br/>(click to keep this tooltip open).";
     }
 }

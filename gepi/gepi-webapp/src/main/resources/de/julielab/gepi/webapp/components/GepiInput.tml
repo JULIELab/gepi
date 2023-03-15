@@ -172,7 +172,7 @@
             <div class="card-body">
                 <t:TextField t:id="sentencefilter" id="sentencefilter" t:clientId="sentencefilter"
                              value="sentencefilterstring"
-                             placeholder="Provide keywords that must appear in the sentence of the interaction"/>
+                             placeholder="Filter on sentence level, e.g. ((high | elevated) + &quot;blood sugar&quot;~2) | diabetes"/>
                 <div class="row mt-3 mb-3">
                     <div class="col-12 text-center mx-auto">
                         <div class="btn-group" role="group"
@@ -194,7 +194,7 @@
                 </div>
                 <t:TextField t:id="paragraphfilter" id="paragraphfilter" t:clientId="paragraphfilter"
                              value="paragraphfilterstring"
-                             placeholder="Provide keywords that must appear in the paragraph or abstract of the interaction"/>
+                             placeholder="Filter on paragraph or abstract level, e.g. ((high | elevated) + &quot;blood sugar&quot;~2) | diabetes"/>
             </div>
         </div>
         <div class="card">
@@ -203,12 +203,12 @@
                 interactions
                 <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
                         data-bs-toggle="default-tooltip"
-                        title="The result will only contain interactions that appear within a section with a heading or main document title that matches the filter."/>
+                        title="The result will only contain interactions that appear within a section with a heading or main document title that matches the filter. Uses the same query syntax the sentence or paragraph fields above."/>
             </div>
             <div class="card-body">
                 <t:TextField t:id="sectionnamefilter" id="sectionnamefilter" t:clientId="sectionnamefilter"
                              value="sectionnamefilterstring"
-                             placeholder="Provide keywords that must appear in the section headings or document title"/>
+                             placeholder="Provide query that must match the section headings or document title of returned interactions"/>
             </div>
         </div>
         <div class="card">
