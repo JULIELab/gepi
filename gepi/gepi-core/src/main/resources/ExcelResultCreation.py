@@ -1,37 +1,28 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import pandas as pd
-from pandas import ExcelWriter
 import csv
+import pandas as pd
+import regex
 import sys
-import os
 from datetime import date
+from pandas import ExcelWriter
 
-def makeArgumentSymbolPivotTable(df, column, order):
-    givengenesfreq = df.pivot_table('docid', index=column, columns=['arg1matchtype','arg2matchtype'],aggfunc='count', fill_value=0)
-    # We want to order to pivot table counted arg1symbol occurrences with respect to the match type.
-    # We cannot know if a specific match type combination is actually in the data, so we iterate over the possible
-    # combinations and try.
-    for o in order:
-        if o in givengenesfreq:
-            givengenesfreq.sort_values(by=o,ascending=False,inplace=True)
-            break
-    # Here we summarize over all exact arg1 events:
-    givengenesfreq[('exact','sum')] = 0
-    if ('exact', 'exact') in givengenesfreq:
-        givengenesfreq[('exact', 'sum')] += givengenesfreq[('exact','exact')]
-    if ('exact', 'fuzzy') in givengenesfreq:
-        givengenesfreq[('exact', 'sum')] += givengenesfreq[('exact','fuzzy')]
-    # Here we summarize over all fuzzy arg1 events:
-    givengenesfreq[('fuzzy','sum')] = 0
-    if ('fuzzy', 'exact') in givengenesfreq:
-        givengenesfreq[('fuzzy', 'sum')] += givengenesfreq[('fuzzy','exact')]
-    if ('fuzzy', 'fuzzy') in givengenesfreq:
-        givengenesfreq[('fuzzy', 'sum')] += givengenesfreq[('fuzzy','fuzzy')]
-    givengenesfreq = givengenesfreq[[o for o in order if o in givengenesfreq]]
-    givengenesfreq[('both','total sum')] = givengenesfreq[('exact','sum')] + givengenesfreq[('fuzzy','sum')]
-    return givengenesfreq
+
+def makeNorm2MajorityMap(originalDf, rx):
+    allsymbols = pd.concat([originalDf['arg1symbol'], originalDf['arg2symbol']])
+    allsymbolsnorm = allsymbols.apply(lambda x: rx.sub('', x.lower()))
+    df2 = pd.DataFrame({'norm': allsymbolsnorm, 'symbol': allsymbols})
+    # Map each normalized gene to its majority symbol.
+    # This is a Series where the index is the normalized name and the value is majority symbol.
+    norm2symbol = df2.groupby('norm').agg(lambda s: s.value_counts().index[0])
+    return norm2symbol
+
+def mapNormalizedColumnToMajoritySymbol(df, column, norm2symbol):
+    df[column] = df[column].map(lambda x: norm2symbol.query(f'norm=="{x}"')['symbol'].iloc[0])
+
+def mapNormalizedIndexToMajoritySymbol(df, norm2symbol):
+    df.index = df.index.map(lambda x: norm2symbol.query(f'norm=="{x}"')['symbol'].iloc[0])
 
 def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterString,sectionNameFilterString):
     header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "relationtypes", "factuality", "docid", "eventid", "fulltextmatchtype", "context"]
@@ -57,64 +48,52 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
     columnsorder=[ 'arg1symbol',  'arg2symbol', 'arg1text', 'arg2text', 'arg1entrezid', 'arg2entrezid',
           'relationtypes', 'factuality', 'docid', 'eventid', 'fulltextmatchtype', 'context']
     df = df[columnsorder]
-    #df = df.query('arg1entrezid != arg2entrezid')
-    # Input genes argument counts
-    order=[('exact', 'exact'),
-          ('exact', 'fuzzy'),
-          ('exact',   'sum'),
-          ('fuzzy', 'exact'),
-          ('fuzzy', 'fuzzy'),
-          ('fuzzy', 'sum')]
 
-    # Arg1 counts
-    #givengenesfreq = makeArgumentSymbolPivotTable(df, 'arg1symbol', order)
-    #givengenesfreq.rename(columns={'exact':'exact match', 'fuzzy':'fuzzy match'},inplace=True)
-    givengenesfreq = df[['docid', 'arg1symbol']].groupby('arg1symbol').count()
+    # Create a df where all symbols are normalized.
+    # Use that df to make all statistical calculations.
+    # After calculations are done, map the normalized symbols to the most occuring of its original variants.
+    rx = regex.compile("\\p{P}+|\\s+")
+    normalizedArguments = df[['arg1symbol', 'arg2symbol']].apply(lambda series: series.apply(lambda s: rx.sub('', s.lower())))
+    dfNorm = pd.DataFrame({'docid':df['docid'], 'arg1symbol': normalizedArguments['arg1symbol'], 'arg2symbol': normalizedArguments['arg2symbol']})
+    norm2symbol = makeNorm2MajorityMap(df, rx)
+    
+    # Arg1 counts, calculated on the normalized argument names
+    givengenesfreq = dfNorm[['docid', 'arg1symbol']].groupby('arg1symbol').count()
     givengenesfreq.columns = ['frequency']
     givengenesfreq.sort_values(by='frequency',ascending=False,inplace=True)
+    mapNormalizedIndexToMajoritySymbol(givengenesfreq, norm2symbol)
     # Arg2 counts
-    #othergenesfreq = makeArgumentSymbolPivotTable(df, 'arg2symbol', order)
-    #othergenesfreq.rename(columns={'exact':'exact match', 'fuzzy':'fuzzy match'},inplace=True)
-    othergenesfreq = df[['docid', 'arg2symbol']].groupby('arg2symbol').count()
+    othergenesfreq = dfNorm[['docid', 'arg2symbol']].groupby('arg2symbol').count()
     othergenesfreq.columns = ['frequency']
     othergenesfreq.sort_values(by='frequency',ascending=False,inplace=True)
+    mapNormalizedIndexToMajoritySymbol(othergenesfreq, norm2symbol)
     # Directionless counts
     bothgenesfreq = givengenesfreq.add(othergenesfreq, fill_value=0)
     bothgenesfreq.sort_values(by='frequency',ascending=False,inplace=True)
     bothgenesfreq.index.name = 'symbol'
-    #for o in [('exact match', 'exact match'),
-    #          ('exact match', 'fuzzy match'),
-    #          ('exact match',   'sum'),
-    #          ('fuzzy match', 'exact match'),
-    #          ('fuzzy match', 'fuzzy match'),
-    #          ('fuzzy match', 'sum')]:
-    #    if o in bothgenesfreq:
-    #        bothgenesfreq.sort_values(by=o,ascending=False,inplace=True)
-    #        break
+    mapNormalizedIndexToMajoritySymbol(bothgenesfreq, norm2symbol)
     # Relation counts
-    #relfreq = makeArgumentSymbolPivotTable(df, ['arg1symbol','arg2symbol'], order)
-    relfreq = df.pivot_table(values="docid", index=["arg1symbol", "arg2symbol"], aggfunc="count")
+    relfreq = dfNorm.pivot_table(values="docid", index=["arg1symbol", "arg2symbol"], aggfunc="count")
     relfreq.rename(columns={'docid':'numrelations'}, inplace=True)
     relfreq.sort_values(by='numrelations',ascending=False,inplace=True)
-    # Index resets
-    # othergenesfreq.reset_index(inplace=True)
-    # givengenesfreq.reset_index(inplace=True)
-    # print(givengenesfreq.head())
-    # relfreq.reset_index(inplace=True)
+    relfreq.reset_index(inplace=True)
+    mapNormalizedColumnToMajoritySymbol(relfreq, 'arg1symbol', norm2symbol)
+    mapNormalizedColumnToMajoritySymbol(relfreq, 'arg2symbol', norm2symbol)
+    relfreq.set_index(['arg1symbol', 'arg2symbol'],inplace=True)
     # Distinct gene interaction partner counts
-    giventodistinctothercount = df[['arg1symbol', 'arg2symbol']].drop_duplicates().groupby(['arg1symbol']).count().sort_values(by=["arg2symbol"], ascending=False)
+    giventodistinctothercount = dfNorm[['arg1symbol', 'arg2symbol']].drop_duplicates().groupby(['arg1symbol']).count().sort_values(by=["arg2symbol"], ascending=False)
     giventodistinctothercount.rename(columns={'arg2symbol': 'interaction_partner_count'},inplace=True)
     giventodistinctothercount.reset_index(inplace=True)
-
+    mapNormalizedColumnToMajoritySymbol(giventodistinctothercount, 'arg1symbol', norm2symbol)
     # Make lists of argument pairs in both directions for concatenation and distinct counting
-    arg1arg2 = df[['arg1symbol', 'arg2symbol']]
-    arg2arg1 = df[['arg2symbol', 'arg1symbol']]
+    arg1arg2 = dfNorm[['arg1symbol', 'arg2symbol']]
+    arg2arg1 = dfNorm[['arg2symbol', 'arg1symbol']]
     # Switch the column names so that they match arg1arg2
     arg2arg1 = arg2arg1.rename(columns={'arg1symbol':'arg2symbol', 'arg2symbol':'arg1symbol'})
     allgenesdistinctcounts = pd.concat([arg1arg2, arg2arg1]).drop_duplicates().groupby(['arg1symbol']).count().sort_values(by=["arg2symbol"], ascending=False)
     allgenesdistinctcounts.reset_index(inplace=True)
     allgenesdistinctcounts.rename(columns={'arg1symbol':'symbol', 'arg2symbol':'count'},inplace=True)
-
+    mapNormalizedColumnToMajoritySymbol(allgenesdistinctcounts, 'symbol', norm2symbol)
     resultsdesc = pd.DataFrame({'column':columnsorder, 'description':columndesc})
     print(f'Writing results to {output}.')
     with ExcelWriter(output, mode="w") as ew:
@@ -146,15 +125,16 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
         frontpage.write(11,0, 'respective event was found.')
         resultsdesc.to_excel(ew, startrow=7, index=False, sheet_name='Frontpage')
         #frontpage.write(24,0,  'Description of the sheets:', bold)
-        frontpage.write(25,0,  'Description of the sheets:')
+
+        frontpage.write(26,0,  'Description of the sheets:')
         if 'A' in inputMode or 'AB' in inputMode:
-            frontpage.write(26,0,  '"Given Genes Statistics" shows how often the input gene symbols were found in relations with other genes.')
-            frontpage.write(27,0,  '"Event Partner Statistics" shows the same but from the perspective of the interaction partners of the input genes.')
-            frontpage.write(28,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results. The value "none" indicates unary events without a second interaction partner.')
-            frontpage.write(29,0,  '"Input Gene Event Diversity" shows for each input gene symbol how many different interaction partners it has in the results.')
-            frontpage.write(30,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results.')
+            frontpage.write(27,0,  '"Given Genes Statistics" shows how often the input gene symbols were found in relations with other genes.')
+            frontpage.write(28,0,  '"Event Partner Statistics" shows the same but from the perspective of the interaction partners of the input genes.')
+            frontpage.write(29,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results. The value "none" indicates unary events without a second interaction partner.')
+            frontpage.write(30,0,  '"Input Gene Event Diversity" shows for each input gene symbol how many different interaction partners it has in the results.')
+            frontpage.write(31,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results.')
         else:
-            frontpage.write(26,0,  '"Gene Interaction Statistics" shows how often gene symbols were found in relations with other genes.')
+            frontpage.write(27,0,  '"Gene Interaction Statistics" shows how often gene symbols were found in relations with other genes.')
             frontpage.write(28,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results.')
             frontpage.write(29,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results. The value "none" indicates the number of unary events without a second interaction partner.')
 
