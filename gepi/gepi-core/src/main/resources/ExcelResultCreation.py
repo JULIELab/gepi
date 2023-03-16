@@ -52,38 +52,39 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
     # Create a df where all symbols are normalized.
     # Use that df to make all statistical calculations.
     # After calculations are done, map the normalized symbols to the most occuring of its original variants.
-    dfNorm = df[['docid', 'arg1symbol', 'arg2symbol']]
     rx = regex.compile("\\p{P}+|\\s+")
-    dfNorm.loc[:,'arg1symbol': 'arg2symbol'] = dfNorm[['arg1symbol', 'arg2symbol']].apply(lambda series: series.apply(lambda s: rx.sub('', s.lower())))
-   
+    normalizedArguments = df[['arg1symbol', 'arg2symbol']].apply(lambda series: series.apply(lambda s: rx.sub('', s.lower())))
+    dfNorm = pd.DataFrame({'docid':df['docid'], 'arg1symbol': normalizedArguments['arg1symbol'], 'arg2symbol': normalizedArguments['arg2symbol']})
     norm2symbol = makeNorm2MajorityMap(df, rx)
     
     # Arg1 counts, calculated on the normalized argument names
     givengenesfreq = dfNorm[['docid', 'arg1symbol']].groupby('arg1symbol').count()
     givengenesfreq.columns = ['frequency']
     givengenesfreq.sort_values(by='frequency',ascending=False,inplace=True)
-    #print(givengenesfreq.head(), file=sys.stderr)
-    #print(norm2symbol.head(), file=sys.stderr)
-    #print(norm2symbol.query('norm=="cdh5"')['symbol'], file=sys.stderr)
-    #print(norm2symbol.query('norm=="cdh5"')['symbol'].iloc[0], file=sys.stderr)
     mapNormalizedIndexToMajoritySymbol(givengenesfreq, norm2symbol)
     # Arg2 counts
     othergenesfreq = dfNorm[['docid', 'arg2symbol']].groupby('arg2symbol').count()
     othergenesfreq.columns = ['frequency']
     othergenesfreq.sort_values(by='frequency',ascending=False,inplace=True)
+    mapNormalizedIndexToMajoritySymbol(othergenesfreq, norm2symbol)
     # Directionless counts
     bothgenesfreq = givengenesfreq.add(othergenesfreq, fill_value=0)
     bothgenesfreq.sort_values(by='frequency',ascending=False,inplace=True)
     bothgenesfreq.index.name = 'symbol'
+    mapNormalizedIndexToMajoritySymbol(bothgenesfreq, norm2symbol)
     # Relation counts
     relfreq = dfNorm.pivot_table(values="docid", index=["arg1symbol", "arg2symbol"], aggfunc="count")
     relfreq.rename(columns={'docid':'numrelations'}, inplace=True)
     relfreq.sort_values(by='numrelations',ascending=False,inplace=True)
+    relfreq.reset_index(inplace=True)
+    mapNormalizedColumnToMajoritySymbol(relfreq, 'arg1symbol', norm2symbol)
+    mapNormalizedColumnToMajoritySymbol(relfreq, 'arg2symbol', norm2symbol)
+    relfreq.set_index(['arg1symbol', 'arg2symbol'],inplace=True)
     # Distinct gene interaction partner counts
     giventodistinctothercount = dfNorm[['arg1symbol', 'arg2symbol']].drop_duplicates().groupby(['arg1symbol']).count().sort_values(by=["arg2symbol"], ascending=False)
     giventodistinctothercount.rename(columns={'arg2symbol': 'interaction_partner_count'},inplace=True)
     giventodistinctothercount.reset_index(inplace=True)
-
+    mapNormalizedColumnToMajoritySymbol(giventodistinctothercount, 'arg1symbol', norm2symbol)
     # Make lists of argument pairs in both directions for concatenation and distinct counting
     arg1arg2 = dfNorm[['arg1symbol', 'arg2symbol']]
     arg2arg1 = dfNorm[['arg2symbol', 'arg1symbol']]
@@ -92,7 +93,7 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
     allgenesdistinctcounts = pd.concat([arg1arg2, arg2arg1]).drop_duplicates().groupby(['arg1symbol']).count().sort_values(by=["arg2symbol"], ascending=False)
     allgenesdistinctcounts.reset_index(inplace=True)
     allgenesdistinctcounts.rename(columns={'arg1symbol':'symbol', 'arg2symbol':'count'},inplace=True)
-
+    mapNormalizedColumnToMajoritySymbol(allgenesdistinctcounts, 'symbol', norm2symbol)
     resultsdesc = pd.DataFrame({'column':columnsorder, 'description':columndesc})
     print(f'Writing results to {output}.')
     with ExcelWriter(output, mode="w") as ew:
