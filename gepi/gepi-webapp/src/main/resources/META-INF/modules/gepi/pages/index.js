@@ -28,21 +28,24 @@ define(["jquery", "bootstrap5/modal", "bootstrap5/tooltip", "bootstrap5/offcanva
 
     let setupDownloadUrlCopyButton = function () {
         const button = document.getElementById("downloadUrlCopyButton");
-        const copyMessageTooltip = new Tooltip(button, {"trigger":"click", "title": "Copied!"})
+        let tooltipTitle = window.isSecureContext ? "Copied!" : "Copy failed: Connect via HTTPS to enable automatic copying."
+        let tooltipHideDelay = window.isSecureContext ? 2000 : 7000;
+        const copyMessageTooltip = new Tooltip(button, {"trigger":"click", "title": tooltipTitle})
         $(button).on("click", () => {
             // Get the text field
             const copyText = document.getElementById("downloadUrlCopyTextField");
 
             // Select the text field
             copyText.select();
-            copyText.setSelectionRange(0, 99999); // For mobile devices
+            if (window.isSecureContext) {
+                copyText.setSelectionRange(0, 99999); // For mobile devices
+                console.log("COPYING; is secure context: "+ window.isSecureContext)
+                 // Copy the text inside the text field
+                navigator.clipboard.writeText(copyText.value);
 
-             // Copy the text inside the text field
-            navigator.clipboard.writeText(copyText.value);
-
-            setTimeout(() => copyMessageTooltip.hide(), 2000);
+             }
+             setTimeout(() => copyMessageTooltip.hide(), tooltipHideDelay);
         });
-
     }
 
     return {readyForWidgets, getReadySemaphor,  displayCookieConsentOffcanvas,  displayRoadworksWarningToast, setupDownloadUrlCopyButton};
