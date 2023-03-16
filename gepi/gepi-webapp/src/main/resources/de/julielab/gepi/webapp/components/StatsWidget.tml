@@ -3,7 +3,7 @@
      widgettitle="Result Statistics" t:clientId="stats_widget" class="${classes}" sizeClass="widget-large"
      esResult="esResult" resultType="AGGREGATED"
      viewMode="viewMode" useTapestryZoneUpdates="true" requestData="requestData" downloadable="false" waitForData="true"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+>
     <div class="row">
         <div class="col-lg-6 col-xxl">
             <div class="card">
@@ -12,19 +12,19 @@
                     <table class="table">
                         <tr>
                             <th>Number unique A-genes</th>
-                            <td><span class="badge text-bg-primary">${numberUniqueASymbols}</span></td>
+                            <td><span class="badge text-bg-primary" title="The number of unique genes from the A-List that events were returned for if A was given, the first interaction argument otherwise. Refer to the pie or bar charts to see which gene occurred how often." data-bs-toggle="default-tooltip">${numberUniqueASymbols}</span></td>
                         </tr>
                         <tr>
                             <th>Number unique B-genes</th>
-                            <td><span class="badge text-bg-primary">${numberUniqueBSymbols}</span></td>
+                            <td><span class="badge text-bg-primary" title="The number of unique genes from the B-List that events were returned for if B was given, the second interaction argument otherwise.. Refer to the pie or bar charts to see which gene occurred how often." data-bs-toggle="default-tooltip">${numberUniqueBSymbols}</span></td>
                         </tr>
                         <tr>
                             <th>Number unique A-B gene pairs</th>
-                            <td><span class="badge text-bg-primary">${numberUniqueABPairs}</span></td>
+                            <td><span class="badge text-bg-primary" title="The number of unique combination of A-List and B-List genes in the result." data-bs-toggle="default-tooltip">${numberUniqueABPairs}</span></td>
                         </tr>
                         <tr>
                             <th>Total number of interactions</th>
-                            <td><span class="badge text-bg-primary">${numEvents}</span></td>
+                            <td><span class="badge text-bg-primary" title="The total number of interactions in the result, including repetitions of A-B combinations." data-bs-toggle="default-tooltip">${numEvents}</span></td>
                         </tr>
                     </table>
                 </div>
