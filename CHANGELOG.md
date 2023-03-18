@@ -8,6 +8,7 @@
 
 #### General Enhancements
 
+- [**enhancement**] Use requirements.txt in Docker build [#255](https://github.com/JULIELab/gepi/issues/255)
 - [**enhancement**] Add helpful descriptions, tooltips etc [#248](https://github.com/JULIELab/gepi/issues/248)
 - [**enhancement**] Remove interaction limit input field [#246](https://github.com/JULIELab/gepi/issues/246)
 - [**enhancement**] Show actual number of table pages [#243](https://github.com/JULIELab/gepi/issues/243)
