@@ -71,7 +71,7 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
     bothgenesfreq = givengenesfreq.add(othergenesfreq, fill_value=0)
     bothgenesfreq.sort_values(by='frequency',ascending=False,inplace=True)
     bothgenesfreq.index.name = 'symbol'
-    mapNormalizedIndexToMajoritySymbol(bothgenesfreq, norm2symbol)
+    # No need to adapt the symbols in bothgenesfreq because its just an addition of given- and othergenesfreq which have already been processed
     # Relation counts
     relfreq = dfNorm.pivot_table(values="docid", index=["arg1symbol", "arg2symbol"], aggfunc="count")
     relfreq.rename(columns={'docid':'numrelations'}, inplace=True)
