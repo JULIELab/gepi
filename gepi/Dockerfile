@@ -39,7 +39,7 @@ CMD ["bash", "-c", "mvn -f /var/gepi/dev --projects gepi-webapp --also-make jett
 FROM jetty:10.0.9-jre11-slim-openjdk as production
 USER root
 COPY requirements.txt .
-RUN apt-get update -y && apt-get install -y python3.9 && apt-get install -y python3-pip && pip install pandas==1.3.2 openpyxl==3.0.9 xlsxwriter==3.0.1
+RUN apt-get update -y && apt-get install -y python3.9 && apt-get install -y python3-pip && pip install -r requirements.txt
 USER jetty
 RUN java -jar "$JETTY_HOME/start.jar" --add-modules=ssl,https
 COPY gepi-webapp/target/gepi-webapp.war /var/lib/jetty/webapps/ROOT.war
