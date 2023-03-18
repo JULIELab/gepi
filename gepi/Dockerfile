@@ -29,7 +29,8 @@ RUN --mount=type=cache,target=/root/.m2 mvn --settings maven-settings-docker.xml
 
 FROM jetty:10.0.11-jdk11-openjdk as development
 USER root
-RUN apt-get update -y && apt-get install -y maven && apt-get install -y python3.9 && apt-get install -y python3-pip && pip install pandas==1.3.2 openpyxl==3.0.9 xlsxwriter==3.0.1
+COPY requirements.txt .
+RUN apt-get update -y && apt-get install -y maven && apt-get install -y python3.9 && apt-get install -y python3-pip && pip install -r requirements.txt
 USER jetty
 COPY --from=dependencies --chown=jetty:jetty /usr/share/maven/ref/repository /var/lib/jetty/.m2/repository
 COPY --from=dependencies --chown=jetty:jetty /usr/share/maven/ref/repository/de/julielab/gepi-test-data /var/lib/jetty/.m2/repository/de/julielab/gepi-test-data
@@ -37,6 +38,7 @@ CMD ["bash", "-c", "mvn -f /var/gepi/dev --projects gepi-webapp --also-make jett
 
 FROM jetty:10.0.9-jre11-slim-openjdk as production
 USER root
+COPY requirements.txt .
 RUN apt-get update -y && apt-get install -y python3.9 && apt-get install -y python3-pip && pip install pandas==1.3.2 openpyxl==3.0.9 xlsxwriter==3.0.1
 USER jetty
 RUN java -jar "$JETTY_HOME/start.jar" --add-modules=ssl,https
