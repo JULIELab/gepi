@@ -224,7 +224,7 @@ of testing facilities designed for use with TestNG (http://testng.org/), so it's
     <parent>
         <groupId>de.julielab</groupId>
         <artifactId>gepi</artifactId>
-        <version>0.13.0</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 </project>
