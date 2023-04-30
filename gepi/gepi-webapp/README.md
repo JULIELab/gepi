@@ -11,4 +11,3 @@ GePi is basically a Java servlet web application. Realized with Apache Tapestry,
 
 * openpyxl v3.0.9
 * xlsxwriter v3.0.1
-* regex 2021.8.28
