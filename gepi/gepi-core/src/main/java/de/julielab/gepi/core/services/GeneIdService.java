@@ -30,14 +30,14 @@ import java.util.stream.Stream;
 import static org.neo4j.driver.Values.parameters;
 
 public class GeneIdService implements IGeneIdService {
-    public static final Pattern CONCEPT_ID_PATTERN = Pattern.compile("[at]id[0-9]+");
+    public static final Pattern CONCEPT_ID_PATTERN = Pattern.compile("a?tid[0-9]+");
 
     public static final Pattern GENE_ID_PATTERN = Pattern.compile("(gene:)?[0-9]+", Pattern.CASE_INSENSITIVE);
     public static final Pattern UP_MNEMONIC_PATTERN = Pattern.compile("(up:|UP:)?[A-Z0-9]+_[A-Z0-9]+");
     // https://www.uniprot.org/help/accession_numbers
     public static final Pattern UP_ACCESSION_PATTERN = Pattern.compile("(up:|UP:)?[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}");
     public static final Pattern FPLX_PATTERN = Pattern.compile("(fplx:|FPLX:).*");
-    public static final Pattern HGNCG_PATTERN = Pattern.compile("(hgncg:|HGNCG:).*");
+    public static final Pattern HGNCG_PATTERN = Pattern.compile("(hgncg:|HGNCG:)([0-9]*)");
     public static final Pattern HGNC_PATTERN = Pattern.compile("(hgnc:|HGNC:)?HGNC:.*");
     public static final Pattern GO_PATTERN = Pattern.compile("(go:|GO:)?GO:.*");
     // https://www.ensembl.org/info/genome/stable_ids/index.html
