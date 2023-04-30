@@ -141,7 +141,7 @@ public class GepiQueryParameters {
                 sentenceFilterString = decodeUrlEncoding(sentenceFilterString);
             paragraphFilterString = request.getParameter(PARAGRAPHFILTER);
             if (paragraphFilterString != null)
-                paragraphFilterString = decodeUrlEncoding(sentenceFilterString);
+                paragraphFilterString = decodeUrlEncoding(paragraphFilterString);
             sectionNameFilterString = request.getParameter(SECTIONNAMEFILTER);
             if (sectionNameFilterString != null)
                 sectionNameFilterString = decodeUrlEncoding(sectionNameFilterString);
@@ -162,7 +162,8 @@ public class GepiQueryParameters {
                 .replaceAll("\\$00252[Cc]", ",")
                 .replaceAll("\\$002522", "\"")
                 .replaceAll("\\$007[Cc]", "|")
-                .replaceAll("\\$002[Bb]","+");
+                .replaceAll("\\$002[Bb]","+")
+                .replaceAll("\\$00250[Aa]", "\n");
     }
 
     public int getInteractionRetrievalLimitForAggregations() {
