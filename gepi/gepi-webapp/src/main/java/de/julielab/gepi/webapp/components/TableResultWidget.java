@@ -272,7 +272,8 @@ public class TableResultWidget extends GepiWidget {
         String conceptId = argument.getConceptId();
         String originalId = argument.getGeneId();
         // Retrieving the gene info for each argument in sequence is inefficient. Thus, the info has been pre-fetched in
-        // EventPagesDataSource and is now quickly accessed through the cache.
+        // EventPagesDataSource and is now quickly accessed through the cache. Don't try to get the gene ID from it
+        // since we don't fetch it for efficiency reasons.
         GepiConceptInfo targetInfo = conceptId.equals(EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT) || !GeneIdService.CONCEPT_ID_PATTERN.matcher(conceptId).matches() ? null : geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
         if (targetInfo == null)
             return "#";
