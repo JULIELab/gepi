@@ -71,26 +71,6 @@ public class StatsWidget extends GepiWidget {
         }
     }
 
-//    public List<Triple<String, String, Integer>> getTopInteractions() {
-//        int n = 10;
-//        try {
-//            Map<Pair<String, String>, Integer> cardinalityMap = getUnrolledResult4charts().get()
-//                    .getEventList().stream()
-//                    .filter(e -> !EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT.equals(e.getFirstArgument().getTopHomologyPreferredName()) && !EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT.equals(e.getSecondArgument().getTopHomologyPreferredName()))
-//                    .map(e -> new ImmutablePair<>(e.getFirstArgument().getTopHomologyPreferredName(), e.getSecondArgument().getTopHomologyPreferredName()))
-//                    .collect(Collectors.toMap(Function.identity(), x -> 1, Integer::sum));
-//            List<Triple<String, String, Integer>> topInteractions = new ArrayList<>(cardinalityMap.size());
-//            for (Pair<String, String> symbolPair : cardinalityMap.keySet()) {
-//                Integer count = cardinalityMap.get(symbolPair);
-//                topInteractions.add(new ImmutableTriple<>(symbolPair.getLeft(), symbolPair.getRight(), count));
-//            }
-//            topInteractions.sort(Comparator.<Triple<String, String, Integer>>comparingInt(Triple::getRight).reversed());
-//            return topInteractions.subList(0, Math.min(n, topInteractions.size()));
-//        } catch (InterruptedException | ExecutionException e) {
-//            return Collections.emptyList();
-//        }
-//    }
-
     public List<Triple<String, String, Integer>> getTopInteractions() {
         try {
             int n = 10;

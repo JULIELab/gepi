@@ -3,6 +3,7 @@
 
 import csv
 import pandas as pd
+import re
 import regex
 import sys
 from datetime import date
@@ -23,6 +24,19 @@ def mapNormalizedColumnToMajoritySymbol(df, column, norm2symbol):
 
 def mapNormalizedIndexToMajoritySymbol(df, norm2symbol):
     df.index = df.index.map(lambda x: norm2symbol.query(f'norm=="{x}"')['symbol'].iloc[0])
+
+def makeGeneHyperlink(value):
+    url = ""
+    id = ""
+    if re.match(r"[0-9]+", value):
+        id = value
+        url = "https://www.ncbi.nlm.nih.gov/gene/{}"
+    elif "HGNCG" in value:
+        id = re.search(r"HGNCG:([0-9]+)", value).group(1)
+        url = "https://www.genenames.org/data/genegroup/#!/group/{}"
+    elif "FPLX" in value:
+        url = "https://github.com/sorgerlab/famplex/{}"
+    return f'=HYPERLINK("{url.format(id)}", "{value}")'
 
 def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterString,sectionNameFilterString):
     header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "relationtypes", "factuality", "docid", "eventid", "fulltextmatchtype", "context"]
@@ -95,6 +109,8 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
     allgenesdistinctcounts.rename(columns={'arg1symbol':'symbol', 'arg2symbol':'count'},inplace=True)
     mapNormalizedColumnToMajoritySymbol(allgenesdistinctcounts, 'symbol', norm2symbol)
     resultsdesc = pd.DataFrame({'column':columnsorder, 'description':columndesc})
+    df['arg1entrezid'] = df['arg1entrezid'].apply(makeGeneHyperlink)
+    df['arg2entrezid'] = df['arg2entrezid'].apply(makeGeneHyperlink)
     print(f'Writing results to {output}.')
     with ExcelWriter(output, mode="w") as ew:
         pd.DataFrame().to_excel(ew, sheet_name='Frontpage')
