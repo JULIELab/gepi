@@ -1,4 +1,5 @@
 # GePI NLP Pipeline Experiments
+
 This directory contains code and scripts for the evaluation of the main parts of the GePI NLP pipeline, GNormPlus and BioSem. 
 **This code and pipelines are not used anywhere else in GePI but are here for evaluation purposes only.**
 There are experiments to show the evaluation scores of the GNormPlus version used in GePI and experiments to show the impact of the gene recognition step on event extraction with BioSem.
