@@ -36,7 +36,7 @@
 set -eu
 
 RES_DIR=$1
-for pipeline_dir in bc2-processing bc3-processing nlm-gene-processing; do
+for pipeline_dir in pubmed/preprocessing pmc/preprocessing; do
 	echo "Linking GNormPlus resources from $RES_DIR into $pipeline_dir"
 	cd $pipeline_dir;
 	for f in Ab3P BioC.dtd CRF Dictionary Library identify_abbr path_Ab3P tmBioC.key; do

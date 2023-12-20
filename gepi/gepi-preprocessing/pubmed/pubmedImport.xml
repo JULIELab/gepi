@@ -1,0 +1,17 @@
+<medlineconfig>
+	<!-- NOTE: This file is to be used from within the literature update docker container.
+	This is why the paths carry the '/mnt' prefix. -->
+	<directories>
+		<directory>/var/data/data_corpora/MEDLINE/medline/original_download/</directory>
+		<directory>/var/data/data_corpora/MEDLINE/medline/updates</directory>
+	</directories>
+	<documentdeletions>
+		<deletion>
+			<deleter>database</deleter>
+			<tables>
+				<table>_data._data</table>
+				<table>_data_xmi.documents</table>
+			</tables>
+		</deletion>
+	</documentdeletions>
+</medlineconfig>
