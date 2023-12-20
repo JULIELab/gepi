@@ -67,7 +67,8 @@
                                        target="_blank">
                                         <cite title="PMID9794375">PMID9794375</cite>
                                     </a>
-                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:10971,docid:9794375,includeunary=true,paragraphfilter=after%20differential%20stimulation}" class="link-light btn btn-info float-end" target="_blank">Show in GePI</t:pagelink>
+<!--                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:10971,docid:9794375,includeunary=true,paragraphfilter=after%20differential%20stimulation}" class="link-light btn btn-info float-end" target="_blank">Show in GePI</t:pagelink>-->
+                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:10971,docid:9794375,includeunary=true}" class="link-light btn btn-info float-end" target="_blank">Show in GePI</t:pagelink>
                                 </div>
                             </div>
                             where the <span class="trigger">phosophorylation</span> of an entity is discussed without the mention of another entity.
@@ -96,7 +97,7 @@
                                 <tr>
                                     <th>database</th>
                                     <th>prefix</th>
-                                    <th>example<t:pagelink page="Index" parameters="literal:{alist:gene%3A2475%2Cens%3AENSG00000198793%2Chgnc%3AHGNC%3A3942%2Cup%3AP42345%2Cup%3AMTOR_HUMAN%2Chgncg%3A1900%2Cfplx%3AAMPK%2Cgo%3AGO%3A0016301}" class="link-light btn btn-info float-end" target="_blank" title="Click to start an example search for all the IDs in this table." data-bs-toggle="default-tooltip">Show in GePI</t:pagelink></th>
+                                    <th>example<t:pagelink page="Index" parameters="literal:{alist:gene%3A2475%0Aens%3AENSG00000198793%0Ahgnc%3AHGNC%3A3942%0Aup%3AP42345%0Aup%3AMTOR_HUMAN%0Ahgncg%3A1900%0Afplx%3AAMPK%0Ago%3AGO%3A0016301}" class="link-light btn btn-info float-end" target="_blank" title="Click to start an example search for all the IDs in this table." data-bs-toggle="default-tooltip">Show in GePI</t:pagelink></th>
                                 </tr>
                                 <tbody class="table-group-divider">
                                     <tr>
@@ -329,11 +330,11 @@
                             to the gene list specification and also match the provided full-text filters. See <a href="#search-full-text" class="link-secondary">full-text search</a> for information about the exact full-text query mechanisms.
                             <div>
                                 <code>
-                                    <t:pagelink page="Index" anchor="tableresult_widget" class="me-2" parameters="literal:{alist:bmp1%2Cbmp2%2Csmad1}" target="_blank" title="Click to start a reference search without a full-text filter." data-bs-toggle="default-tooltip">
+                                    <t:pagelink page="Index" anchor="tableresult_widget" class="me-2" parameters="literal:{alist:bmp1%0Abmp2%0Asmad1}" target="_blank" title="Click to start a reference search without a full-text filter." data-bs-toggle="default-tooltip">
                                         Show without filter</t:pagelink>
                                 </code>
                                 <code>
-                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1%2Cbmp2%2Csmad1,sentencefilter=stress}" target="_blank" title="Click to start a filtered search where only assertion level interactions are returned." data-bs-toggle="default-tooltip">
+                                    <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1%0Abmp2%0Asmad1,sentencefilter=stress}" target="_blank" title="Click to start a filtered search where only assertion level interactions are returned." data-bs-toggle="default-tooltip">
                                         Show with filter</t:pagelink>
                                 </code>
                             </div>

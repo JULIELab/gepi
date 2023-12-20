@@ -30,14 +30,14 @@ import java.util.stream.Stream;
 import static org.neo4j.driver.Values.parameters;
 
 public class GeneIdService implements IGeneIdService {
-    public static final Pattern CONCEPT_ID_PATTERN = Pattern.compile("[at]id[0-9]+");
+    public static final Pattern CONCEPT_ID_PATTERN = Pattern.compile("a?tid[0-9]+");
 
     public static final Pattern GENE_ID_PATTERN = Pattern.compile("(gene:)?[0-9]+", Pattern.CASE_INSENSITIVE);
     public static final Pattern UP_MNEMONIC_PATTERN = Pattern.compile("(up:|UP:)?[A-Z0-9]+_[A-Z0-9]+");
     // https://www.uniprot.org/help/accession_numbers
     public static final Pattern UP_ACCESSION_PATTERN = Pattern.compile("(up:|UP:)?[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}");
     public static final Pattern FPLX_PATTERN = Pattern.compile("(fplx:|FPLX:).*");
-    public static final Pattern HGNCG_PATTERN = Pattern.compile("(hgncg:|HGNCG:).*");
+    public static final Pattern HGNCG_PATTERN = Pattern.compile("(hgncg:|HGNCG:)([0-9]*)");
     public static final Pattern HGNC_PATTERN = Pattern.compile("(hgnc:|HGNC:)?HGNC:.*");
     public static final Pattern GO_PATTERN = Pattern.compile("(go:|GO:)?GO:.*");
     // https://www.ensembl.org/info/genome/stable_ids/index.html
@@ -583,7 +583,7 @@ public class GeneIdService implements IGeneIdService {
                 // property and which one in the divergent property. This depends on traversing order and is not determined
                 // beforehand. Get both properties so we can decide which one to use. FamPlex IDs are a readable name,
                 // HGNC Group IDs are numbers.
-                final String query = "MATCH (c:CONCEPT) WHERE c.id IN $conceptIds RETURN c.id,c.preferredName,labels(c)";
+                final String query = "MATCH (c:CONCEPT) WHERE c.id IN $conceptIds RETURN c.id,c.originalId,c.preferredName,labels(c)";
                 final Value parameters = parameters("conceptIds", conceptIds);
                 Result result = tx.run(
                         query,
@@ -592,7 +592,7 @@ public class GeneIdService implements IGeneIdService {
                 while (result.hasNext()) {
                     Record record = result.next();
                     String conceptId = record.get("c.id").asString();
-//                    String originalId = record.get("c.originalId").asString();
+                    String originalId = record.get("c.originalId").asString();
                     String preferredName = record.get("c.preferredName").asString();
                     List<String> labels = record.get("labels(c)").asList(Value::asString);
                     // For FamPlex-HGNCGroup aggregates, get the HGNC Group ID. For HGNC, we can give direct links
@@ -600,7 +600,7 @@ public class GeneIdService implements IGeneIdService {
 //                    if (labels.contains("AGGREGATE_FPLX_HGNC") && !StringUtils.isNumeric(originalId))
 //                        originalId = divergentOriginalId.asList(Value::asString).stream().filter(StringUtils::isNumeric).limit(1).findAny().get();
                     innerGeneInfo.put(conceptId, GepiConceptInfo.builder()
-                            //.originalId(originalId)
+                            .originalId(originalId)
                             .conceptId(conceptId).symbol(preferredName).labels(new HashSet<>(labels)).build());
                 }
                 return innerGeneInfo;

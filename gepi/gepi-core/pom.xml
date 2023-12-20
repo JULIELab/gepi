@@ -7,14 +7,14 @@
     <parent>
         <groupId>de.julielab</groupId>
         <artifactId>gepi</artifactId>
-        <version>0.12.2-SNAPSHOT</version>
+        <version>1.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <dependencies>
         <dependency>
             <groupId>de.julielab</groupId>
             <artifactId>julielab-elastic-query-components</artifactId>
-            <version>1.7.1</version>
+            <version>1.7.2</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>

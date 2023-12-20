@@ -1,5 +1,42 @@
 # Changelog
 
+## v1.0.0 (18/03/2023)
+
+#### Speed Improvements
+
+- [**performance**] Replace retrieval of all event documents with aggregations [#226](https://github.com/JULIELab/gepi/issues/226)
+
+#### General Enhancements
+
+- [**enhancement**] Use requirements.txt in Docker build [#255](https://github.com/JULIELab/gepi/issues/255)
+- [**enhancement**] Add helpful descriptions, tooltips etc [#248](https://github.com/JULIELab/gepi/issues/248)
+- [**enhancement**] Remove interaction limit input field [#246](https://github.com/JULIELab/gepi/issues/246)
+- [**enhancement**] Show actual number of table pages [#243](https://github.com/JULIELab/gepi/issues/243)
+- [**enhancement**] Add the publication date to the index [#233](https://github.com/JULIELab/gepi/issues/233)
+- [**bug**][**enhancement**] Update argument1 and argument2 index fields with FamPlex, HGNC and equal name aggregate IDs [#222](https://github.com/JULIELab/gepi/issues/222)
+- [**enhancement**] (re)add fields for ES aggregations to index [#208](https://github.com/JULIELab/gepi/issues/208)
+- [**enhancement**] Update to ElasticSearch 7.17.8. [#197](https://github.com/JULIELab/gepi/issues/197)
+- [**enhancement**] Integrate GO -> gene mapping [#187](https://github.com/JULIELab/gepi/issues/187)
+- [**enhancement**] Integrate HGNC -> gene ID mapping [#186](https://github.com/JULIELab/gepi/issues/186)
+
+#### Bug Fixes
+
+- [**bug**] Fix download crash for fulltext-only data [#253](https://github.com/JULIELab/gepi/issues/253)
+- [**bug**] Make copy button for download link work on Windows [#249](https://github.com/JULIELab/gepi/issues/249)
+- [**bug**] Normalize interaction arguments in Excel sheet argument statistics [#245](https://github.com/JULIELab/gepi/issues/245)
+- [**bug**] Reset retrieval of unary events in new session [#236](https://github.com/JULIELab/gepi/issues/236)
+- [**bug**] Investigate AKT search behavior [#227](https://github.com/JULIELab/gepi/issues/227)
+- [**bug**] Update concept manager for gene ontology correction [#225](https://github.com/JULIELab/gepi/issues/225)
+- [**bug**] Fix download button on the new ResultDownload page [#217](https://github.com/JULIELab/gepi/issues/217)
+- [**bug**] Take care to avoid AGGREGATE_EQUAL_NAMES nodes when fetching geneInfo [#194](https://github.com/JULIELab/gepi/issues/194)
+
+#### Miscellaneous Changes
+
+- [**closed**] Integrate UniProt Accession or Mnemomic -> NCBI Gene ID mapping [#120](https://github.com/JULIELab/gepi/issues/120)
+- [**closed**] Integrate ID mapping [#117](https://github.com/JULIELab/gepi/issues/117)
+
+---
+
 ## v0.12.1 (15/01/2023)
 
 #### General Enhancements

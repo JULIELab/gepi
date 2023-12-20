@@ -1,7 +1,7 @@
 # GNormPlus experiments carried out for GePI
 For GePI, the JULIE Lab derived a GNormPlus version from the official September 2022 release. The JULIE Lab version outputs family names and can be used in UIMA components with multi-threading capabilities.
 
-The experiments in this directory use the JULIE Lab version of GNormPlus within UIMA pipelines. Such pipelines are also used for GePI data processing and indexing. Thus, the conditions of the experiments are as close as to production code as possible.
+The experiments in this directory use the JULIE Lab version of GNormPlus within UIMA pipelines. Such pipelines are also used for GePI data processing and indexing. Thus, the conditions of these experiments are as close as possible to the production code.
 
 There is experimental code for data sets from BioCreative II, BioCreative III and NLM-Gene. The data sets themselves are not included in this repository. They must be obtained from the official places:
 * BioCreative data sets: https://biocreative.bioinformatics.udel.edu/

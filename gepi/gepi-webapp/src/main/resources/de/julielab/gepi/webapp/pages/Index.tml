@@ -42,7 +42,7 @@
                     </div>
                     <div class="modal-body">
                         <p>Interaction data is being assembled. This may take a while depending on result size and server load. You can use the link below to fetch the download at a later time. The link is valid at least 24h.</p>
-                        <div class="alert alert-warning">Assembling the data of a session will replace previously prepared result files of the same session, even they have not been downloaded. To begin a new session for a separate download file, hit the <span class="background-well-gray">Reset Session</span> button to the right of the navigation bar.</div>
+                        <div class="alert alert-warning">Assembling the data of a session will replace previously prepared result files on the server of the same session, even if they have not been downloaded. To begin a new session for a separate download file, hit the <span class="background-well-gray">Reset Session</span> button to the right of the navigation bar.</div>
                         <div class="input-group">
                             <input type="text" id="downloadUrlCopyTextField" class="form-control input-monospace input-sm color-bg-subtle" data-autoselect="" value="${resultFileDownloadLink}" aria-label="${resultFileDownloadLink}" readonly=""/>
                             <button class="btn btn-secondary" type="button" id="downloadUrlCopyButton"/>

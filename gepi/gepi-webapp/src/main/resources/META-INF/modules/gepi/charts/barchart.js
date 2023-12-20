@@ -197,12 +197,13 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 .range([0, width])
                 .domain(argCounts.map(d => d.label))
                 .padding(0.2);
-            svg.append("g")
+            let labels = svg.append("g")
                 .attr("transform", `translate(0, ${height})`)
                 .call(d3.axisBottom(x))
                 .selectAll("text")
                 .attr("transform", "translate(-10,0)rotate(-45)")
                 .style("text-anchor", "end");
+
 
             // Add Y axis
             const y = d3.scaleLinear()
@@ -236,6 +237,12 @@ define(['jquery', 'gepi/charts/data', 'gepi/pages/index', 'gepi/components/widge
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
                 .text(this.displayPercentages ? "percent" : "frequency");
+
+            labels.selectAll("text")
+                .data(argCounts)
+
+            labels.enter()
+                .attr('title', d => d.label + "<br />count: " + d.value + "<br />fraction: " + (Math.round(100 * d.percentage) + '%'))
 
             // Bars
             svg.selectAll("mybar")

@@ -58,6 +58,10 @@ public class InputListMappingTable {
         }
         return true;
     }
+//
+//    public String getTargetTooltipText() {
+//        return inputMappingLoopItem.getConceptSourceLink();
+//    }
 
     public List<InputMapping> getInputMapping() {
         try {

@@ -5,7 +5,7 @@
                  http://www.julielab.de/conceptdb/facets/default http://www.julielab.de/conceptdb/facets/defaultfacet-1.1.0.xsd
                  http://julielab.de/conceptdb/concepts/bioportal http://www.julielab.de/conceptdb/concepts/bioportalconcepts-1.1.0.xsd">
     <versioning>
-        <version>0.12.2</version>
+        <version>1.0.1</version>
     </versioning>
     <connection>
         <uri>http://localhost:7474</uri>

@@ -1,5 +1,6 @@
 package de.julielab.gepi.webapp.components;
 
+import de.julielab.gepi.core.retrieval.data.Argument;
 import de.julielab.gepi.core.retrieval.data.EventRetrievalResult;
 import de.julielab.gepi.core.retrieval.data.GepiConceptInfo;
 import de.julielab.gepi.core.retrieval.data.InputMode;
@@ -38,6 +39,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+
+import static de.julielab.gepi.core.services.GeneIdService.HGNCG_PATTERN;
 
 @Import(stylesheet = {"context:css-components/tablewidget.css"})
 public class TableResultWidget extends GepiWidget {
@@ -264,19 +268,26 @@ public class TableResultWidget extends GepiWidget {
     }
 
     public String getArgumentLink(int argPosition) {
-        String conceptId = argPosition == 1 ? eventRow.getEvent().getFirstArgument().getConceptId() : eventRow.getEvent().getSecondArgument().getConceptId();
+        Argument argument = argPosition == 1 ? eventRow.getEvent().getFirstArgument() : eventRow.getEvent().getSecondArgument();
+        String conceptId = argument.getConceptId();
+        String originalId = argument.getGeneId();
         // Retrieving the gene info for each argument in sequence is inefficient. Thus, the info has been pre-fetched in
         // EventPagesDataSource and is now quickly accessed through the cache.
         GepiConceptInfo targetInfo = conceptId.equals(EventRetrievalService.FIELD_VALUE_MOCK_ARGUMENT) || !GeneIdService.CONCEPT_ID_PATTERN.matcher(conceptId).matches() ? null : geneIdService.getGeneInfo(List.of(conceptId)).get(conceptId);
         if (targetInfo == null)
             return "#";
-        if (targetInfo.getLabels().contains("HGNC_GROUP") || targetInfo.getLabels().contains("AGGREGATE_FPLX_HGNC"))
+        if (targetInfo.getLabels().contains("HGNC_GROUP") || targetInfo.getLabels().contains("AGGREGATE_FPLX_HGNC")) {
             // for groups that appear in HGNC and FamPlex, we prefer the HGNC ID since we can link to it
-            return "https://www.genenames.org/data/genegroup/#!/group/" + targetInfo.getOriginalId();
+            final Matcher m = HGNCG_PATTERN.matcher(originalId);
+            if(!m.find())
+                // this should not happen
+                return "#";
+            return "https://www.genenames.org/data/genegroup/#!/group/" + m.group(2);
+        }
         if (targetInfo.getLabels().contains("FPLX"))
             return "https://github.com/sorgerlab/famplex/";
         if (targetInfo.getLabels().contains("ID_MAP_NCBI_GENES"))
-            return "https://www.ncbi.nlm.nih.gov/gene/" + targetInfo.getOriginalId();
+            return "https://www.ncbi.nlm.nih.gov/gene/" + originalId;
         return "#";
     }
 

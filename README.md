@@ -1,2 +1,3 @@
-# GePi
-GePi (GEne - Protein Interaction) will be a tool for quick and convenient access to gene - protein interaction mentions automatically extracted from the biomedical literature, i.e. PubMed and PubMed Central (Open Access Subset).
+# GePI
+GePi (GEne - Protein Interaction) is a web portal that offers access to interactions between genes and gene products automatically extracted from the PubMed and the open access subset of PubMed Central.
+

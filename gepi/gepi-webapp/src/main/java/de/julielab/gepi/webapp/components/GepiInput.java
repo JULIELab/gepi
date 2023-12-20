@@ -153,10 +153,6 @@ public class GepiInput {
 
     @Property
     @Persist(TabPersistentField.TAB)
-    private Integer interactionRetrievalLimitForAggregations;
-
-    @Property
-    @Persist(TabPersistentField.TAB)
     private boolean interactionRetrievalLimitForAggregationsNoLimit;
 
     /**
@@ -203,13 +199,13 @@ public class GepiInput {
         listBTextAreaValue = "";
         taxId = "";
         selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
+        includeUnary = false;
         eventLikelihood = 1;
         filterFieldsConnectionOperator = "AND";
         sentenceFilterString = "";
         paragraphFilterString = "";
         sectionNameFilterString = "";
         docId = "";
-        interactionRetrievalLimitForAggregations = INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
     }
 
     public ValueEncoder getEventTypeEncoder() {
@@ -227,8 +223,6 @@ public class GepiInput {
             eventLikelihood = 1;
         if (selectedEventTypes == null)
             selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
-        if (interactionRetrievalLimitForAggregations == null)
-            interactionRetrievalLimitForAggregations = INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
     }
 
     void onValidateFromInputForm() {
@@ -265,7 +259,6 @@ public class GepiInput {
         this.dataSessionId = dataSessionId;
         this.includeUnary = queryParameters.isIncludeUnary();
         this.docId = queryParameters.getDocid();
-        this.interactionRetrievalLimitForAggregations = queryParameters.getInteractionRetrievalLimitForAggregations();
         executeSearch();
     }
 
@@ -296,7 +289,7 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, interactionRetrievalLimitForAggregationsNoLimit ? Integer.MAX_VALUE : interactionRetrievalLimitForAggregations, dataSessionId);
+        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
         Future<EventRetrievalResult> unrolledResult4Charts = null;//eventRetrievalService.getEvents(requestData, true);
@@ -366,6 +359,6 @@ public class GepiInput {
     }
 
     public String getFulltextFilterTooltip() {
-        return "The document context is stored with the interactions and can be used for filter purposes. The supported query syntax is described in the ElasticSearch <a target=\"_blank\" class=\"link-secondary\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-simple-query-string-query.html\">documentation</a>.";
+        return "The document context is stored with the interactions and can be used for filter purposes. Use '+' for AND, '|' for OR and quotes for multi word phrases. The complete query syntax is described <a target=\"_blank\" class=\"link-light\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-simple-query-string-query.html\">here</a><br/>(click to keep this tooltip open).";
     }
 }
