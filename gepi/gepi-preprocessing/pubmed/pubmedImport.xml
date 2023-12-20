@@ -1,11 +1,14 @@
 <medlineconfig>
-	<!-- NOTE: This file is to be used from within the literature update docker container.
-	This is why the paths carry the '/mnt' prefix. -->
 	<directories>
-		<directory>/var/data/data_corpora/MEDLINE/medline/original_download/</directory>
-		<directory>/var/data/data_corpora/MEDLINE/medline/updates</directory>
+		<!-- Provide at least one path to PubMed XML to be imported
+		into the database. -->
+		<directory>path to medline baseline</directory>
+		<directory>path to medline update files</directory>
 	</directories>
 	<documentdeletions>
+		<!-- This can be left untouched. It causes the removal
+		of documents that are marked as deleted in the MEDLINE
+		update files from the database. -->
 		<deletion>
 			<deleter>database</deleter>
 			<tables>
