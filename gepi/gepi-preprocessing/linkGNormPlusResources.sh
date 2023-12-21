@@ -36,6 +36,7 @@
 set -eu
 
 RES_DIR=$1
+BASE_DIR=`pwd`
 for pipeline_dir in pubmed/preprocessing pmc/preprocessing; do
 	echo "Linking GNormPlus resources from $RES_DIR into $pipeline_dir"
 	cd $pipeline_dir;
@@ -45,5 +46,5 @@ for pipeline_dir in pubmed/preprocessing pmc/preprocessing; do
 		fi;
 		ln -s $RES_DIR/$f
 	done;
-	cd ..
+	cd $BASE_DIR x
 done;
