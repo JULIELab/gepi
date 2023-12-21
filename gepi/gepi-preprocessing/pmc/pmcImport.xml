@@ -1,0 +1,6 @@
+<medlineconfig>
+	<directories>
+		<directory>path to PMC bulk download files</directory>
+	</directories>
+	<documentdeletions/>
+</medlineconfig>

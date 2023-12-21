@@ -1,5 +1,7 @@
 **/lib
 **/desc
+jcore-pipeline-runner-*.jar
+biosem-event-extractor-*.jar
 jcore-bionlpgold-pred-gene-merge-ae/target
 bionlp-st-ge-gene-recognition/data/
 bionlp-st-ge-gene-recognition/missing_configuration.txt
