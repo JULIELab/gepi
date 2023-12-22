@@ -9,4 +9,4 @@ build/
 gepi-indexing-pipeline/lib
 gepi-indexing-pipeline/resources
 gepi-indexing-pipeline/config/jcore-pipeline-config.jar
-
+missing_configuration.txt
