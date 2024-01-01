@@ -1,2 +1,13 @@
 .DS_Store
 .idea
+pom.xml.versionsBackup
+
+# GNormPlus files required for pipelines
+Ab3P
+BioC.dtd
+CRF
+Dictionary
+Library
+identify_abbr
+path_Ab3P
+tmBioC.key

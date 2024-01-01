@@ -1,0 +1,20 @@
+<medlineconfig>
+	<directories>
+		<!-- Provide at least one path to PubMed XML to be imported
+		into the database. -->
+		<directory>path to medline baseline</directory>
+		<directory>path to medline update files</directory>
+	</directories>
+	<documentdeletions>
+		<!-- This can be left untouched. It causes the removal
+		of documents that are marked as deleted in the MEDLINE
+		update files from the database. -->
+		<deletion>
+			<deleter>database</deleter>
+			<tables>
+				<table>_data._data</table>
+				<table>_data_xmi.documents</table>
+			</tables>
+		</deletion>
+	</documentdeletions>
+</medlineconfig>

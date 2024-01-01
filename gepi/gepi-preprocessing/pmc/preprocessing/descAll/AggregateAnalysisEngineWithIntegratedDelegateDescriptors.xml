@@ -1,0 +1,972 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+        
+    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+        
+    <primitive>false</primitive>
+        
+    <delegateAnalysisEngineSpecifiers>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.jsbd.main.SentenceAnnotator-0">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.jsbd.main.SentenceAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>JCoRe Sentence Annotator</name>
+                                        
+                    <description>This is the UIMA Wrapper for the JULIE Sentence Boundary Detector.</description>
+                                        
+                    <version>2.5.0-SNAPSHOT</version>
+                                        
+                    <vendor>JULIE Lab Jena, Germany</vendor>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>ModelFilename</name>
+                                                        
+                            <description>Filename for the trained JSBD model</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>Postprocessing</name>
+                                                        
+                            <description>Indicates whether postprocessing (and which filter) should be run. Default: no
+                    postprocessing</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>SentenceDelimiterTypes</name>
+                                                        
+                            <description>Qualified names of types that should never begin or end within a sentence. With other
+                    words, sentences should not begin within such a type but end after it or begin before it and end
+                    within or after it.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>true</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>CutAwayTypes</name>
+                                                        
+                            <description>An array of fully qualified type names. Document text covered by annotations of these types
+                    will be ignored from sentence splitting. This means that sentence splitting happens as if the
+                    covered text of these annotations would not exist in the text. This helps for references, for
+                    example, which otherwise might confuse the sentence splitting. A post-processing step tries to
+                    extend sentences include such annotations if they appear directly after the sentence (e.g.
+                    references: '...as Smith et al. have shown.1 Further text follows...').</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>true</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>MaximumSentenceLength</name>
+                                                        
+                            <description>Optional. If given, this parameter defines the maximum length in characters any sentence will have. If the machine learning algorithm produces sentences exceeding the given maximum length, they will be split first by newline and, if necessary, also at semicoli. If there are still too large sentences then, they will be split at whitespaces to stay within the given bound. Defaults to 0 which means no maximum length.</description>
+                                                        
+                            <type>Integer</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>ModelFilename</name>
+                                                        
+                            <value>
+                                                                
+                                <string>de/julielab/jcore/ae/jsbd/model/jsbd-biomed-oversampled-abstracts-split-at-punctuation.mod.gz</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>SentenceDelimiterTypes</name>
+                                                        
+                            <value>
+                                                                
+                                <array>
+                                                                        
+                                    <string>de.julielab.jcore.types.Title</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.AbstractText</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.AbstractSectionHeading</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.AbstractSection</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Section</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Paragraph</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Zone</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Caption</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Figure</string>
+                                                                        
+                                    <string>de.julielab.jcore.types.Table</string>
+                                                                    
+                                </array>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>MaximumSentenceLength</name>
+                                                        
+                            <value>
+                                                                
+                                <integer>800</integer>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>CutAwayTypes</name>
+                                                        
+                            <value>
+                                                                
+                                <array>
+                                                                        
+                                    <string>de.julielab.jcore.types.pubmed.InternalReference</string>
+                                                                    
+                                </array>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>Postprocessing</name>
+                                                        
+                            <value>
+                                                                
+                                <string>biomed</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-morpho-syntax-types"/>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-document-structure-pubmed-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <typePriorities/>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs/>
+                                                        
+                            <outputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Sentence</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                                
+                <resourceManagerConfiguration/>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.jtbd.main.TokenAnnotator-1">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.jtbd.main.TokenAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>JCoRe Token Annotator</name>
+                                        
+                    <description>for English in the Biomedical Domain</description>
+                                        
+                    <version>2.5.0-SNAPSHOT</version>
+                                        
+                    <vendor>JULIE Lab Jena, Germany</vendor>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>ModelFilename</name>
+                                                        
+                            <description>Filename for the trained JTBD model</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>UseDocText</name>
+                                                        
+                            <description>Defines if sentence annotation should be taken into account.</description>
+                                                        
+                            <type>Boolean</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>ModelFilename</name>
+                                                        
+                            <value>
+                                                                
+                                <string>de/julielab/jcore/ae/jtbd/model/jtbd-biomed-original_mallet.gz</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-morpho-syntax-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Sentence</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Token</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.opennlp.postag.PosTagAnnotator-2">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.opennlp.postag.PosTagAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>JCoRe OpenNLP POS Tagger</name>
+                                        
+                    <description/>
+                                        
+                    <version>2.5.0-SNAPSHOT</version>
+                                        
+                    <vendor>JULIE Lab Jena, Germany</vendor>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>modelFile</name>
+                                                        
+                            <description>The OpenNLP model file. This file should already include the tag dictionary by delivering it into the training process.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>tagset</name>
+                                                        
+                            <description>The UIMA POSTag subtype to be used for the POS annotations.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>modelFile</name>
+                                                        
+                            <value>
+                                                                
+                                <string>de/julielab/jcore/ae/opennlp/postag/model/opennlp-postag-pennbioie.bin.gz</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>tagset</name>
+                                                        
+                            <value>
+                                                                
+                                <string>de.julielab.jcore.types.PennBioIEPOSTag</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-morpho-syntax-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <typePriorities/>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Token</type>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Sentence</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.POSTag</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                                
+                <resourceManagerConfiguration/>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.acronymtagger.main.AcronymAnnotator-3">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.acronymtagger.main.AcronymAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>JCoRe AcronymAnnotator</name>
+                                        
+                    <description/>
+                                        
+                    <version>2.5.0-SNAPSHOT</version>
+                                        
+                    <vendor>JULIE Lab Jena, Germany</vendor>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>ConsistencyAnno</name>
+                                                        
+                            <description>set true if AcronymAnnotator should annotate every occurence of shortforms in the text</description>
+                                                        
+                            <type>Boolean</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>MaxLength</name>
+                                                        
+                            <description>Define how far (how many words, ignoring stopwords) the AE is supposed too look for the beginning of the fullform.</description>
+                                                        
+                            <type>Integer</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>true</mandatory>
+                                                    
+                        </configurationParameter>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>Postprocessing</name>
+                                                        
+                            <description>Activates a post processing that unifies overlapping abbreviations and fullforms.</description>
+                                                        
+                            <type>Boolean</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>ConsistencyAnno</name>
+                                                        
+                            <value>
+                                                                
+                                <boolean>true</boolean>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>MaxLength</name>
+                                                        
+                            <value>
+                                                                
+                                <integer>5</integer>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>Postprocessing</name>
+                                                        
+                            <value>
+                                                                
+                                <boolean>true</boolean>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-morpho-syntax-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <typePriorities/>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Sentence</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Abbreviation</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                                
+                <resourceManagerConfiguration/>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.biolemmatizer.BioLemmatizer-4">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.biolemmatizer.BioLemmatizer</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>BioLemmatizer</name>
+                                        
+                    <description/>
+                                        
+                    <version>2.4.0</version>
+                                        
+                    <vendor>JULIE Lab Jena, Germany</vendor>
+                                        
+                    <configurationParameters/>
+                                        
+                    <configurationParameterSettings/>
+                                        
+                    <typeSystemDescription/>
+                                        
+                    <typePriorities/>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities/>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                                
+                <resourceManagerConfiguration/>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+                
+        <delegateAnalysisEngine key="de.julielab.jcore.ae.biosem.BioSemEventAnnotator-5">
+                        
+            <analysisEngineDescription>
+                                
+                <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                                
+                <primitive>true</primitive>
+                                
+                <annotatorImplementationName>de.julielab.jcore.ae.biosem.BioSemEventAnnotator</annotatorImplementationName>
+                                
+                <analysisEngineMetaData>
+                                        
+                    <name>JCoRe BioSEM Event Annotator</name>
+                                        
+                    <description/>
+                                        
+                    <version>2.6.0-SNAPSHOT</version>
+                                        
+                    <vendor/>
+                                        
+                    <configurationParameters>
+                                                
+                        <configurationParameter>
+                                                        
+                            <name>ComponentId</name>
+                                                        
+                            <description>Optional. If set, the 'componentId' feature of the created annotations will be set to the value of this parameter.</description>
+                                                        
+                            <type>String</type>
+                                                        
+                            <multiValued>false</multiValued>
+                                                        
+                            <mandatory>false</mandatory>
+                                                    
+                        </configurationParameter>
+                                            
+                    </configurationParameters>
+                                        
+                    <configurationParameterSettings>
+                                                
+                        <nameValuePair>
+                                                        
+                            <name>ComponentId</name>
+                                                        
+                            <value>
+                                                                
+                                <string>BioSemEventAnnotatorST11</string>
+                                                            
+                            </value>
+                                                    
+                        </nameValuePair>
+                                            
+                    </configurationParameterSettings>
+                                        
+                    <typeSystemDescription>
+                                                
+                        <imports>
+                                                        
+                            <import name="de.julielab.jcore.types.jcore-semantics-biology-types"/>
+                                                    
+                        </imports>
+                                            
+                    </typeSystemDescription>
+                                        
+                    <typePriorities/>
+                                        
+                    <fsIndexCollection/>
+                                        
+                    <capabilities>
+                                                
+                        <capability>
+                                                        
+                            <inputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.Gene</type>
+                                                            
+                            </inputs>
+                                                        
+                            <outputs>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.EventTrigger</type>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.EventMention</type>
+                                                                
+                                <type allAnnotatorFeatures="true">de.julielab.jcore.types.ArgumentMention</type>
+                                                            
+                            </outputs>
+                                                        
+                            <languagesSupported/>
+                                                    
+                        </capability>
+                                            
+                    </capabilities>
+                                        
+                    <operationalProperties>
+                                                
+                        <modifiesCas>true</modifiesCas>
+                                                
+                        <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                                
+                        <outputsNewCASes>false</outputsNewCASes>
+                                            
+                    </operationalProperties>
+                                    
+                </analysisEngineMetaData>
+                                
+                <externalResourceDependencies>
+                                        
+                    <externalResourceDependency>
+                                                
+                        <key>TrainedDB</key>
+                                                
+                        <description>The BioSem database in which triggers and event rules have been learned. New predictions are mode based on the rules in this database.</description>
+                                                
+                        <interfaceName>de.julielab.jcore.ae.biosem.DBUtilsProvider</interfaceName>
+                                                
+                        <optional>false</optional>
+                                            
+                    </externalResourceDependency>
+                                    
+                </externalResourceDependencies>
+                                
+                <resourceManagerConfiguration>
+                                        
+                    <externalResources>
+                                                
+                        <externalResource>
+                                                        
+                            <name>TrainedDB</name>
+                                                        
+                            <description/>
+                                                        
+                            <fileResourceSpecifier>
+                                                                
+                                <fileUrl>file:de/julielab/jcore/ae/biosem/conf/biosemannotator-st11.properties</fileUrl>
+                                                            
+                            </fileResourceSpecifier>
+                                                        
+                            <implementationName>de.julielab.jcore.ae.biosem.DBUtilsProviderImpl</implementationName>
+                                                    
+                        </externalResource>
+                                            
+                    </externalResources>
+                                        
+                    <externalResourceBindings>
+                                                
+                        <externalResourceBinding>
+                                                        
+                            <key>TrainedDB</key>
+                                                        
+                            <resourceName>TrainedDB</resourceName>
+                                                    
+                        </externalResourceBinding>
+                                            
+                    </externalResourceBindings>
+                                    
+                </resourceManagerConfiguration>
+                            
+            </analysisEngineDescription>
+                    
+        </delegateAnalysisEngine>
+            
+    </delegateAnalysisEngineSpecifiers>
+        
+    <flowController>
+                
+        <flowControllerDescription>
+                        
+            <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+                        
+            <implementationName>de.julielab.jcore.flow.annotationdefined.AnnotationDefinedFlowController</implementationName>
+                        
+            <processingResourceMetaData>
+                                
+                <name>JCoRe Annotation Defined Flow Controller</name>
+                                
+                <description>This flow controller relies on an annotation of type ToVisit to be present in the CAS. If there is no such annotation, the default fixed flow of the aggregate engine using this flow controller is used. Otherwise, die names of the components to pass the CAS to are taken from the annotation. If the annotation exists but defines to components to be visited by the CAS, no components are visited at all.</description>
+                                
+                <version>placeholder</version>
+                                
+                <vendor>JULIE Lab, Germany</vendor>
+                                
+                <configurationParameters/>
+                                
+                <configurationParameterSettings/>
+                                
+                <typeSystemDescription>
+                                        
+                    <imports>
+                                                
+                        <import name="de.julielab.jcore.types.jcore-casflow-types"/>
+                                            
+                    </imports>
+                                    
+                </typeSystemDescription>
+                                
+                <capabilities/>
+                                
+                <operationalProperties>
+                                        
+                    <modifiesCas>false</modifiesCas>
+                                        
+                    <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                                        
+                    <outputsNewCASes>false</outputsNewCASes>
+                                    
+                </operationalProperties>
+                            
+            </processingResourceMetaData>
+                    
+        </flowControllerDescription>
+            
+    </flowController>
+        
+    <analysisEngineMetaData>
+                
+        <name>AggregateAnalysisEngineWithIntegratedDelegateDescriptors</name>
+                
+        <configurationParameters/>
+                
+        <configurationParameterSettings/>
+                
+        <flowConstraints>
+                        
+            <fixedFlow>
+                                
+                <node>de.julielab.jcore.ae.jsbd.main.SentenceAnnotator-0</node>
+                                
+                <node>de.julielab.jcore.ae.jtbd.main.TokenAnnotator-1</node>
+                                
+                <node>de.julielab.jcore.ae.opennlp.postag.PosTagAnnotator-2</node>
+                                
+                <node>de.julielab.jcore.ae.acronymtagger.main.AcronymAnnotator-3</node>
+                                
+                <node>de.julielab.jcore.ae.biolemmatizer.BioLemmatizer-4</node>
+                                
+                <node>de.julielab.jcore.ae.biosem.BioSemEventAnnotator-5</node>
+                            
+            </fixedFlow>
+                    
+        </flowConstraints>
+                
+        <capabilities/>
+                
+        <operationalProperties>
+                        
+            <modifiesCas>true</modifiesCas>
+                        
+            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+                        
+            <outputsNewCASes>false</outputsNewCASes>
+                    
+        </operationalProperties>
+            
+    </analysisEngineMetaData>
+    
+</analysisEngineDescription>

@@ -71,12 +71,16 @@
                                 <resource>
                                     <directory>${basedir}/readme-raw</directory>
                                     <filtering>true</filtering>
+                                    <excludes>
+                                        <exclude>gepi-webapp.png</exclude>
+                                    </excludes>
                                 </resource>
                             </resources>
                             <nonFilteredFileExtensions>
                                 <nonFilteredFileExtension>xls</nonFilteredFileExtension>
                                 <nonFilteredFileExtension>zip</nonFilteredFileExtension>
                                 <nonFilteredFileExtension>gz</nonFilteredFileExtension>
+                                <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
                             </nonFilteredFileExtensions>
                         </configuration>
                     </execution>

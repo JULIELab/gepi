@@ -4,7 +4,54 @@
 
 The core of GePI is a web application for the user-friendly retrieval of descriptions of biomolecular interactions from the scientific literature, [PubMed](https://pubmed.ncbi.nlm.nih.gov/) (PM) and the [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc/) (PMC) [open access subset](https://www.ncbi.nlm.nih.gov/pmc/tools/openftlist/). To this end, [JCoRe](https://github.com/JULIELab/jcore-base) pipeline components are used to form a number of [UIMA](https://uima.apache.org/) pipelines for the processing of PM and PMC in order to extract the interactions.
 
+## Overview of databases and processes to create a GePI instance from scratch
+
+A complete, running GePI web application requires the following databases, resources, pipelines and tools to be available.
+
+Databases:
+* a [Neo4j](https://neo4j.com/) database (community edition) in version 4.x to store data about genes/proteins and static relationships between them like protein clusters, gene groups, GO annotations, alternative IDs (UniProt, Hugo, ...) etc. in the [gene concept database](#building-the-neo4j-gene-concept-database),
+* an [ElasticSearch](https://www.elastic.co/de/elasticsearch) in version 7.x to index interactions for efficient retrieval,
+* a PostgreSQL database to hold literature documents and annotations.
+
+Resources:
+* database files for genes, gene groups, GO terms that are imported into Neo4j,
+* PubMed and PMC XML files.
+
+[UIMA pipelines](#automatic-extraction-of-interactions-from-the-literature):
+* interaction extraction NLP pipeline,
+* extraction indexing pipeline for indexing into ElasticSearch.
+
+Tools:
+* the CoStoSys executable JAR to import PubMed/PMC XML files into the PostgreSQL database,
+* (optional) the [JCoRe Pipeline Builder CLI](https://github.com/JULIELab/jcore-pipeline-modules/tree/master/jcore-pipeline-builder-cli) to view or alter the UIMA pipelines.
+
+The dependencies between the main parts are depicted in the image below. The PostgreSQL database has been left out for simplicity.
+
+![Schematic display of GePIs main components and how they depend on each other.](./readme-raw/gepi-webapp.png)
+
+
+## Building the Neo4j gene concept database
+The gene concept database integrates a number of separate resources that have links to each other. They are imported into a specific graph model in a [Neo4j](https://neo4j.com/) graph database.
+The database is then used in two functions:
+1. data is exported for usage in the NLP interaction extraction pipeline,
+2. the GePI web server communicates with the concept database for ID conversion, group and family resolution and other purposes required to run GePI.
+
+For details about building the concept database please refer to the README in the `gepi-concept-database` directory.
+
+## Automatic extraction of interactions from the literature
+GePI leverages two kinds of document processing pipelines.
+1. NLP preprocessing for basic linguistic annotations - e.g. sentences, tokens, abbreviations - and the primary semantic items of interest, i.e. genes/proteins, families and groups and interactions between them. These pipelines are located in the `gepi-preprocessing` folder.
+2. Transformation of the linguistic annotations into an ElasticSearch index for efficient retrieval. The respective pipelines can be found in the `gepi-indexing` directory.
+
+The pipelines are built using [UIMA](https://uima.apache.org/) pipelines comprised of [JCoRe](https://github.com/JULIELab/jcore-base) components. They can be most easily be viewed and edited via the [JCoRe Pipeline Builder CLI](https://github.com/JULIELab/jcore-pipeline-modules/tree/master/jcore-pipeline-builder-cli) that has been used to create the pipelines.
+
+All data is managed with [JeDIS](https://julielab.de/jedis/). This means that text documents as well as UIMA annotations are stored in a PostgreSQL database. The JCoRe readers and writers used in the pipelines read from and write into the database in a specific format that is specified through [CoStoSys](https://github.com/JULIELab/costosys). To use the existing pipelines, no specific knowledge of JeDIS or CoStoSys is required. A PostgreSQL database is needed, though, and the CoStoSys configuration files - named `costosys.xml` and placed in the `config/` subdirectories of the pipelines - must be adapted to use that database.
+
+See the respective pipeline subdirectories for more information.
+
 ## Running the web application
+
+
 
 The GePI web application is a Java servlet application built on the [Apache Tapestry](https://tapestry.apache.org/) web framework. It can be run in any servlet container like [Apache Tomcat](https://tomcat.apache.org/), [Eclipse Glassfish](https://glassfish.org/) or [Eclipse Jetty](https://www.eclipse.org/jetty/). GePI has always been run within Jetty. For modularization and deployment simplicity, GePI is preferred to run in a [Docker](https://www.docker.com/) environment. This is not a strict requirement but the GePI documentation describes Docker deployments.
 

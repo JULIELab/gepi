@@ -19,15 +19,9 @@
                     
         </delegateAnalysisEngine>
                 
-        <delegateAnalysisEngine key="Flair BioNLP Gene Tagger">
+        <delegateAnalysisEngine key="JCoRe GNormPlus Annotator">
                         
-            <import location="Flair BioNLP Gene Tagger.xml"/>
-                    
-        </delegateAnalysisEngine>
-                
-        <delegateAnalysisEngine key="JCoRe GNormPlus No Gene Recognition">
-                        
-            <import location="JCoRe GNormPlus No Gene Recognition.xml"/>
+            <import location="JCoRe GNormPlus Annotator.xml"/>
                     
         </delegateAnalysisEngine>
             
@@ -51,9 +45,7 @@
                                 
                 <node>JCoRe Token Annotator</node>
                                 
-                <node>Flair BioNLP Gene Tagger</node>
-                                
-                <node>JCoRe GNormPlus No Gene Recognition</node>
+                <node>JCoRe GNormPlus Annotator</node>
                             
             </fixedFlow>
                     
