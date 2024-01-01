@@ -18,8 +18,9 @@ Resources:
 * PubMed and PMC XML files.
 
 [UIMA pipelines](#automatic-extraction-of-interactions-from-the-literature):
-* interaction extraction NLP pipeline,
-* extraction indexing pipeline for indexing into ElasticSearch.
+* interaction extraction NLP pipeline (does not require gene concept data from the Neo4j database),
+* indexing pipeline that sends extracted information in
+to ElasticSearch for indexing (requires gene concept data from the Neo4j database and can thus be only run successfully after the concept database has been built).
 
 Tools:
 * the CoStoSys executable JAR to import PubMed/PMC XML files into the PostgreSQL database,
