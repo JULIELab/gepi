@@ -6,11 +6,37 @@ The core of GePI is a web application for the user-friendly retrieval of descrip
 
 ## Overview of databases and processes to create a GePI instance from scratch
 
-A complete, running GePI web application requires the following databases and resources to be available:
-* a [Neo4j](https://neo4j.com/) database (community edition) in versioj 4.x to store data about genes/proteins and static relationships between them like protein clusters, gene groups, GO annotations, alternative IDs (UniProt, Hugo, ...) etc.,
+A complete, running GePI web application requires the following databases, resources, pipelines and tools to be available.
+
+Databases:
+* a [Neo4j](https://neo4j.com/) database (community edition) in version 4.x to store data about genes/proteins and static relationships between them like protein clusters, gene groups, GO annotations, alternative IDs (UniProt, Hugo, ...) etc. in the [gene concept database](#building-the-neo4j-gene-concept-database),
 * an [ElasticSearch](https://www.elastic.co/de/elasticsearch) in version 7.x to index interactions for efficient retrieval,
+* a PostgreSQL database to hold literature documents and annotations.
+
+Resources:
+* database files for genes, gene groups, GO terms that are imported into Neo4j,
+* PubMed and PMC XML files.
+
+[UIMA pipelines](#automatic-extraction-of-interactions-from-the-literature):
+* interaction extraction NLP pipeline,
+* extraction indexing pipeline for indexing into ElasticSearch.
+
+Tools:
+* the CoStoSys executable JAR to import PubMed/PMC XML files into the PostgreSQL database,
+* (optional) the [JCoRe Pipeline Builder CLI](https://github.com/JULIELab/jcore-pipeline-modules/tree/master/jcore-pipeline-builder-cli) to view or alter the UIMA pipelines.
+
+The dependencies between the main parts are depicted in the image below. The PostgreSQL database has been left out for simplicity.
 
 ![Schematic display of GePIs main components and how they depend on each other.](./readme-raw/gepi-webapp.png)
+
+
+## Building the Neo4j gene concept database
+The gene concept database integrates a number of separate resources that have links to each other. They are imported into a specific graph model in a [Neo4j](https://neo4j.com/) graph database.
+The database is then used in two functions:
+1. data is exported for usage in the NLP interaction extraction pipeline,
+2. the GePI web server communicates with the concept database for ID conversion, group and family resolution and other purposes required to run GePI.
+
+For details about building the concept database please refer to the README in the `gepi-concept-database` directory.
 
 ## Automatic extraction of interactions from the literature
 GePI leverages two kinds of document processing pipelines.
