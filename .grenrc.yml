@@ -8,5 +8,6 @@
     General Enhancements: ["enhancement"]
     Bug Fixes: ["bug"]
     Evaluation and Reproducibility: ["evaluation"]
+    Documentation: ["documentation"]
     Miscellaneous Changes: ["closed"] 
   changelogFilename: "CHANGELOG.md"
