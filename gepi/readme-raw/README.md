@@ -4,6 +4,12 @@
 
 The core of GePI is a web application for the user-friendly retrieval of descriptions of biomolecular interactions from the scientific literature, [PubMed](https://pubmed.ncbi.nlm.nih.gov/) (PM) and the [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc/) (PMC) [open access subset](https://www.ncbi.nlm.nih.gov/pmc/tools/openftlist/). To this end, [JCoRe](https://github.com/JULIELab/jcore-base) pipeline components are used to form a number of [UIMA](https://uima.apache.org/) pipelines for the processing of PM and PMC in order to extract the interactions.
 
+## Reference for this work
+
+GePI is described in
+
+Erik Faessler, Udo Hahn, Sascha Schäuble, GePI: large-scale text mining, customized retrieval and flexible filtering of gene/protein interactions, *Nucleic Acids Research*, Volume 51, Issue W1, 5 July 2023, Pages W237–W242, https://doi.org/10.1093/nar/gkad445
+
 ## Overview of databases and processes to create a GePI instance from scratch
 
 A complete, running GePI web application requires the following databases, resources, pipelines and tools to be available.

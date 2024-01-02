@@ -45,7 +45,7 @@
                         Can I do the NLP processing on my own?
                     </dt>
                     <dd>
-                        All the required components and code is freely available, see <a href="#nlp-tools" class="link-secondary">above</a>.
+                        All the required components and code are freely available, see <a href="#gepi-open-source" class="link-secondary">below</a>.
                         However, PubMed and PubMed central
                         (open access subset) are large text repositories and require significant
                         computational resources for reasonable processing times. As a rule of thumb, 50-60 CPU cores
@@ -59,7 +59,7 @@
                     <dd>
                         <ul>
                             <li>NLP pipeline: <a href="#nlp-tools" class="link-secondary">JCoRe </a><a href="uima.apache.org/" target="_blank" class="link-secondary">UIMA</a> components (see above)</li>
-                            <li><a href="https://neo4j.com/" target="_blank" class="link-secondary">Neo4j</a> 4.4</li>
+                            <li><a href="https://neo4j.com/" target="_blank" class="link-secondary">Neo4j</a> 4.4 with the <a href="https://github.com/JULIELab/julielab-neo4j-server-plugins/tree/master" target="_blank" class="link-secondary">JULIE Lab Neo4j Concept Server Plugin</a></li>
                             <li><a href="https://elastic.co/" target="_blank" class="link-secondary">ElasticSearch</a> 7.18 with the <a href="https://github.com/JULIELab/elasticsearch-mapper-preanalyzed/tree/7.17.8-mvn" target="_blank" class="link-secondary">Preanalyzed Mapper Plugin</a></li>
                             <li><a href="https://tapestry.apache.org/" target="_blank" class="link-secondary">Tapestry</a> 5.8</li>
                         </ul>
@@ -87,12 +87,11 @@
                         Show this example in GePI</t:pagelink>
                         </p>
                     </dd>
-                    <dt>
+                    <dt id="gepi-open-source">
                         Is GePI open source?
                     </dt>
                     <dl>
-                        As soon as the scientific paper describing GePI is published, the complete code will be made public on GitHub.
-                        <!--Yes! The complete GePI source code is available on GitHub at  TODO -->
+                        It is! Please find the complete source code and documentation at <a href="https://github.com/JULIELab/gepi" target="_blank" class="link-secondary">https://github.com/JULIELab/gepi</a>.
                     </dl>
                 </dl>
             </div>
