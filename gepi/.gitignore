@@ -6,6 +6,7 @@ target/
 *.iml
 *.log
 build/
+costosys.xml
 gepi-indexing-pipeline/lib
 gepi-indexing-pipeline/resources
 gepi-indexing-pipeline/config/jcore-pipeline-config.jar
