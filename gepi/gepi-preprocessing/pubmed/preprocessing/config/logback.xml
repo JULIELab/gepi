@@ -18,8 +18,6 @@
         </encoder>
     </appender>
     <logger name="de.julielab.jcore.reader.db" level="INFO"/>
-    <logger name="de.julielab.jcore.multiplier" level="INFO"/>
-	    <!-- <logger name="de.julielab.jcore.multiplier.gnp.GNormPlusMultiplierLogic" level="TRACE"/> -->
     <root level="INFO">
 	    <appender-ref ref="STXOUT"/>
             <appender-ref ref="FILE" />
