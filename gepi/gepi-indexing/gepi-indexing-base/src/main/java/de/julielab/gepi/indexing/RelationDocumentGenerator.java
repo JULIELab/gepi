@@ -103,9 +103,6 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         relDocs = relDocs.stream().filter(d -> !removedDocuments.contains(d)).collect(Collectors.toList());
         // remove the temporary field for the UIMA argument objects
         relDocs.forEach(d -> d.remove("ARGUMENT_FS"));
-        relDocs.forEach(relDoc -> {   final IFieldValue texts = relDoc.get("argumentcoveredtext");
-            if ((texts+"").contains("Ptch1"))
-                System.out.println(relDoc);});
         return relDocs;
     }
 
