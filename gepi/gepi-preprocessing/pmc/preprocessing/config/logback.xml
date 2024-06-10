@@ -20,6 +20,8 @@
     <!--    <logger name="de.julielab.jcore.reader.db" level="DEBUG"/>
     <logger name="de.julielab.jcore.multiplier" level="DEBUG"/>
 	<logger name="de.julielab.jcore.multiplier.gnp.GNormPlusMultiplierLogic" level="TRACE"/> -->
+	<logger name="de.julielab.jcore.flow.annotationdefined.AnnotationDefinedFlow" level="INFO"/>
+	<logger name="de.julielab.jcore.reader.xml.XMLDBMultiplier" level="TRACE"/>
     <root level="INFO">
 	    <appender-ref ref="STXOUT"/>
             <appender-ref ref="FILE" />

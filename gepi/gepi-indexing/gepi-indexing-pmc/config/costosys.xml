@@ -8,7 +8,7 @@
     </DBSchemaInformation>
     <DBConnectionInformation>
         <activeDBConnection>pmc</activeDBConnection>
-	<maxActiveDBConnections>3</maxActiveDBConnections>
+        <maxActiveDBConnections>3</maxActiveDBConnections>
         <DBConnections>
             <DBConnection name="pmc" url="jdbc:postgresql://192.168.1.15:5432/pmc"/>
             <DBConnection name="pmc_lh" url="jdbc:postgresql://localhost:5432/pmc"/>

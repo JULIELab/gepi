@@ -4,10 +4,10 @@
         <activePostgresSchema>public</activePostgresSchema>
         <activeTableSchema>medline_2017</activeTableSchema>
         <tableSchemas>
-	 <tableSchema name="xmi_text_view">
-		<field name="pmid" primaryKey="true" retrieve="true" type="text"/>
-		<field name="base_document" retrieve="true" type="bytea" gzip="true"/>
-	    </tableSchema>
+            <tableSchema name="xmi_text_view">
+                <field name="pmid" primaryKey="true" retrieve="true" type="text"/>
+                <field name="base_document" retrieve="true" type="bytea" gzip="true"/>
+            </tableSchema>
             <tableSchema forEach="." name="xmi_anno_view">
                 <field name="pmid" primaryKey="true" retrieve="true" type="text" xpath="PMID"/>
                 <field gzip="true" name="xmi" retrieve="true" returnXMLFragment="true" type="bytea" xpath="."/>
@@ -15,8 +15,8 @@
         </tableSchemas>
     </DBSchemaInformation>
     <DBConnectionInformation>
-        <activeDBConnection>pubmed_lh</activeDBConnection>
-	<maxActiveDBConnections>4</maxActiveDBConnections>
+        <activeDBConnection>pubmed</activeDBConnection>
+        <maxActiveDBConnections>4</maxActiveDBConnections>
         <DBConnections>
             <DBConnection name="pubmed" url="jdbc:postgresql://192.168.1.15:5432/pubmed"/>
             <DBConnection name="pubmed_lh" url="jdbc:postgresql://localhost:5432/pubmed"/>
