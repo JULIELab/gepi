@@ -79,7 +79,7 @@ public class AppModule {
 
         configuration.override(SymbolConstants.CORS_ENABLED, true);
         configuration.override(SymbolConstants.CORS_ALLOWED_ORIGINS, "*");
-        configuration.override(SymbolConstants.CORS_MAX_AGE, "5");
+        configuration.add(SymbolConstants.CORS_MAX_AGE, "5");
     }
 
     public static void contributeApplicationDefaults(
