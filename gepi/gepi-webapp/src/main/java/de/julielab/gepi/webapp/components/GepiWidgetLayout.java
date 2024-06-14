@@ -139,13 +139,13 @@ final public class GepiWidgetLayout {
         Link toggleViewModeEventLink = resources.createEventLink("toggleViewMode");
         Link refreshContentEventLink = resources.createEventLink("refreshContent");
         log.error("Created event link for refreshContent: {}", refreshContentEventLink);
-        log.error("Created event link for refreshContent (absolute URI): {}", refreshContentEventLink.toAbsoluteURI());
+        log.error("Created event link for refreshContent (absolute URI): {}", refreshContentEventLink.toAbsoluteURI().replace(":80", ""));
         JSONObject widgetSettings = new JSONObject();
         widgetSettings.put("handleId", getResizeHandleId());
         widgetSettings.put("widgetId", clientId);
         widgetSettings.put("viewMode", "small");
-        widgetSettings.put("toggleViewModeUrl", toggleViewModeEventLink.toAbsoluteURI());
-        widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI());
+        widgetSettings.put("toggleViewModeUrl", toggleViewModeEventLink.toAbsoluteURI().replace(":80", ""));
+        widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI().replace(":80", ""));
         widgetSettings.put("zoneElementId", widgetZone.getClientId());
         widgetSettings.put("useTapestryZoneUpdates", useTapestryZoneUpdates);
         widgetSettings.put("dataSessionId", requestData.getDataSessionId());
