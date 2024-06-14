@@ -138,7 +138,8 @@ final public class GepiWidgetLayout {
     public JSONObject getWidgetSettings() {
         Link toggleViewModeEventLink = resources.createEventLink("toggleViewMode");
         Link refreshContentEventLink = resources.createEventLink("refreshContent");
-        System.out.println("Created event link for refreshContent: " + refreshContentEventLink);
+        log.error("Created event link for refreshContent: {}", refreshContentEventLink);
+        log.error("Created event link for refreshContent (absolute URI): {}", refreshContentEventLink.toAbsoluteURI());
         JSONObject widgetSettings = new JSONObject();
         widgetSettings.put("handleId", getResizeHandleId());
         widgetSettings.put("widgetId", clientId);
