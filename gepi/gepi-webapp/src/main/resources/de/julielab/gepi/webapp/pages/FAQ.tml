@@ -7,6 +7,15 @@
                 <div class="card-title text-center">Frequently Asked Questions</div>
             </div>
             <div class="card-body">
+                <dt id="cite">
+                    How to cite GePI?
+                </dt>
+                <dd>
+                    Please cite the following paper in your work:
+                    <p>
+                        Erik Faessler, Udo Hahn, Sascha Schäuble, <tt>GePI</tt>: large-scale text mining, customized retrieval and flexible filtering of gene/protein interactions, <em>Nucleic Acids Research</em>, Volume 51, Issue W1, 5 July 2023, Pages W237–W242, https://doi.org/10.1093/nar/gkad445
+                    </p>
+                </dd>
                 <dl>
                     <dt>
                         Which browsers and operating systems were tested with GePI?
