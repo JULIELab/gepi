@@ -122,7 +122,7 @@ public class Index {
 
     void afterRender() {
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
-        javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI());
+        javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI().replace(":80", ""));
         javaScriptSupport.require("gepi/pages/index").invoke("setupDownloadUrlCopyButton");
         if (isResultPresent()) {
             // If there already is data at loading the page, the input panel is already hidden (see #getShowInputClass)
