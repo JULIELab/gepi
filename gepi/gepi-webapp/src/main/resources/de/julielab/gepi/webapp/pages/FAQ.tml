@@ -13,7 +13,7 @@
                 <dd>
                     Please cite the following paper in your work:
                     <p>
-                        Erik Faessler, Udo Hahn, Sascha Schäuble, <tt>GePI</tt>: large-scale text mining, customized retrieval and flexible filtering of gene/protein interactions, <em>Nucleic Acids Research</em>, Volume 51, Issue W1, 5 July 2023, Pages W237–W242, https://doi.org/10.1093/nar/gkad445
+                        Erik Faessler, Udo Hahn, Sascha Schäuble, <tt>GePI</tt>: large-scale text mining, customized retrieval and flexible filtering of gene/protein interactions, <em>Nucleic Acids Research</em>, Volume 51, Issue W1, 5 July 2023, Pages W237–W242, <a href="https://doi.org/10.1093/nar/gkad445" class="link-secondary" target="_blank">https://doi.org/10.1093/nar/gkad445</a>
                     </p>
                 </dd>
                 <dl>
