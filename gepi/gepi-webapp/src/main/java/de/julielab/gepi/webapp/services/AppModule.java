@@ -64,7 +64,7 @@ public class AppModule {
 
         // The application version is primarily useful as it appears in
         // any exception reports (HTML or textual).
-        configuration.override(SymbolConstants.APPLICATION_VERSION, "1.0.2");
+        configuration.override(SymbolConstants.APPLICATION_VERSION, "1.0.3-SNAPSHOT");
         // Avoid Ajax-requests waiting for each other. This would make asynchronous lading of
         // dashboard elements impossible
         configuration.override(SymbolConstants.SESSION_LOCKING_ENABLED, false);
@@ -79,6 +79,7 @@ public class AppModule {
 
         configuration.override(SymbolConstants.CORS_ENABLED, true);
         configuration.override(SymbolConstants.CORS_ALLOWED_ORIGINS, "*");
+        configuration.add(SymbolConstants.CORS_MAX_AGE, "5");
     }
 
     public static void contributeApplicationDefaults(
