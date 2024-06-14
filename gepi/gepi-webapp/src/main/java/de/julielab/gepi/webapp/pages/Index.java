@@ -420,7 +420,7 @@ public class Index {
     private PageRenderLinkSource pageRenderLS;
 
     public String getResultFileDownloadLink() {
-        return pageRenderLS.createPageRenderLinkWithContext(ResultDownload.class, dataSessionId).toAbsoluteURI();
+        return pageRenderLS.createPageRenderLinkWithContext(ResultDownload.class, dataSessionId).toAbsoluteURI().replace(":80", "");
     }
 
 }
