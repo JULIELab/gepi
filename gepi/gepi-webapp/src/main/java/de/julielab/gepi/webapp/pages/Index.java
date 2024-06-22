@@ -1,9 +1,11 @@
 package de.julielab.gepi.webapp.pages;
 
 import de.julielab.gepi.core.retrieval.data.*;
+import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.components.GepiInput;
+import de.julielab.gepi.webapp.components.TableResultWidget;
 import de.julielab.gepi.webapp.data.GepiQueryParameters;
 import de.julielab.gepi.webapp.state.GePiSessionState;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,6 +27,7 @@ import org.slf4j.Logger;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Start page of application gepi-webapp.
@@ -78,6 +81,8 @@ public class Index {
 
     @InjectComponent
     private GepiInput gepiInput;
+    @InjectComponent
+    private TableResultWidget tableResultWidget;
     private boolean sessionExists = false;
     @InjectPage
     private ResultDownload resultDownload;
@@ -113,11 +118,17 @@ public class Index {
         if (gepiQueryParameters.isValidRequest()) {
             log.info("Received valid query parameters for GePI search.");
             gepiInput.executeSearch(gepiQueryParameters, dataSessionId);
-            return this;
+            return tableResultWidget.onDownload();
+            //return this;
         } else {
             log.debug("Query parameters did not contain a valid GePI search.");
         }
         return null;
+    }
+    @Inject
+    private IEventRetrievalService eventRetrievalService;
+    public Future<EventRetrievalResult> getUnrolledResult4download() {
+        return dataService.getData(requestData.getDataSessionId()).getUnrolledResult4download().get();
     }
 
     void afterRender() {

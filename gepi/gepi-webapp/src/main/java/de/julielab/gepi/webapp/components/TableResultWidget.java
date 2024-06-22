@@ -226,7 +226,7 @@ public class TableResultWidget extends GepiWidget {
      * Pressing the Download Link/Button for the Table View
      */
     @Log
-    StreamResponse onDownload() {
+    public StreamResponse onDownload() {
         return new StreamResponse() {
 
             private Path statisticsFile;
