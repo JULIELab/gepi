@@ -1,11 +1,13 @@
 package de.julielab.gepi.core.services;
 
 import de.julielab.gepi.core.retrieval.data.*;
+import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
@@ -83,10 +85,29 @@ public interface IGePiDataService {
 
     String getDownloadFileCreationStatus(long dataSessionId) throws IOException;
 
+    Path writeOverviewTsvFile(List<Event> events, long dataSessionId) throws IOException;
+
     boolean existsTempStatusFile(long dataSessionId) throws IOException;
 
     boolean isDownloadExcelFileReady(long dataSessionId) throws IOException;
 
     Path getTempXlsDataFile(long dataSessionId);
+
+    /**
+     * Returns the complete event result list that has been <em>cached before</em> via to {@link GePiData#setUnrolledResult4download(WeakReference)}
+     * <em>before</em>. Otherwise, this method will return an empty EventRetrievalResult.
+     * @param dataSessionId The session ID of the data to be returned.
+     * @return The event result list set to the GePiData previously or an empty EventRetrievalResult.
+     */
+    Future<EventRetrievalResult> getUnrolledResult4download(long dataSessionId);
+
+    /**
+     * Returns the previously cached retrieval result from GePiData or, if that does not yet exist, uses the eventRetrievalService
+     * to fetch the result and cache it for future requests in GePiData.
+     * @param requestData The request data to retrieve the results for.
+     * @param eventRetrievalService The eventRetrievalService to obtain the result list, if necessary.
+     * @return The complete result list of the current request.
+     */
+    Future<EventRetrievalResult> getUnrolledResult4download(GepiRequestData requestData, IEventRetrievalService eventRetrievalService);
 
 }

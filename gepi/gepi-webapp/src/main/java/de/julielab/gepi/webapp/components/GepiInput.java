@@ -263,7 +263,7 @@ public class GepiInput {
     }
 
     public void executeSearch() {
-        log.debug("Setting newsearch to true");
+        log.debug("Setting newsearch to true. dataSessionId is {}", dataSessionId);
         newSearch = true;
         List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Regulation, EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
         if (selectedEventTypeNames.isEmpty())

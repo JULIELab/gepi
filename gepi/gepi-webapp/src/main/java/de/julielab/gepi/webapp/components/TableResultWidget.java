@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.FieldPosition;
@@ -234,18 +233,19 @@ public class TableResultWidget extends GepiWidget {
             @Override
             public void prepareResponse(Response response) {
                 try {
-                    Future<EventRetrievalResult> unrolledResult4download = getUnrolledResult4download();
-                    // Check if we have the download data cached. Otherwise, get it and cache it
-                    if (unrolledResult4download == null) {
-                        long time = System.currentTimeMillis();
-                        log.info("[{}] Retrieving unrolled result for Excel sheet creation.", requestData.getDataSessionId());
-                        unrolledResult4download = eventRetrievalService.getEvents(requestData, 0, Integer.MAX_VALUE, false);
-                        // We use a weak reference for the complete data since it requires much memory because of all
-                        // the context data. The GC should be able to evict it, if necessary.
-                        dataService.getData(requestData.getDataSessionId()).setUnrolledResult4download(new WeakReference<>(unrolledResult4download));
-                        time = System.currentTimeMillis() - time;
-                        log.info("[{}] Unrolled result retrieval for Excel sheet creation took {} seconds", requestData.getDataSessionId(), time / 1000);
-                    }
+//                    Future<EventRetrievalResult> unrolledResult4download = getUnrolledResult4download();
+//                    // Check if we have the download data cached. Otherwise, get it and cache it
+//                    if (unrolledResult4download == null) {
+//                        long time = System.currentTimeMillis();
+//                        log.info("[{}] Retrieving unrolled result for Excel sheet creation.", requestData.getDataSessionId());
+//                        unrolledResult4download = eventRetrievalService.getEvents(requestData, 0, Integer.MAX_VALUE, false);
+//                        // We use a weak reference for the complete data since it requires much memory because of all
+//                        // the context data. The GC should be able to evict it, if necessary.
+//                        dataService.getData(requestData.getDataSessionId()).setUnrolledResult4download(new WeakReference<>(unrolledResult4download));
+//                        time = System.currentTimeMillis() - time;
+//                        log.info("[{}] Unrolled result retrieval for Excel sheet creation took {} seconds", requestData.getDataSessionId(), time / 1000);
+//                    }
+                    final Future<EventRetrievalResult> unrolledResult4download = dataService.getUnrolledResult4download(requestData, eventRetrievalService);
                     statisticsFile = dataService.getOverviewExcel(unrolledResult4download, requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
 
                     response.setHeader("Content-Length", "" + Files.size(statisticsFile)); // output into file

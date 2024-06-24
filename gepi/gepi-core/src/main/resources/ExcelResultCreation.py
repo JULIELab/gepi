@@ -39,7 +39,6 @@ def makeGeneHyperlink(value):
     return f'=HYPERLINK("{url.format(id)}", "{value}")'
 
 def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterString,sectionNameFilterString):
-    header = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "relationtypes", "factuality", "docid", "eventid", "fulltextmatchtype", "context"]
     columndesc=[ 'Input gene symbol',
                  'Event partner gene symbol',
                  'the document text of the input gene in the found sentence',
@@ -52,7 +51,10 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
                  'Internal event ID. Useful to find unique identifiers for each event.',
                  'Place of fulltext filter match. Only applicable if filter terms were specified.',
                  'The textual context from the literature in which the event was found. That is the sentence enclosing the event by default. In case of a paragraph-level filter query this can also be the enclosing paragraph. This would then be indicated by the value of the fulltextmatchtype column.']
-    df = pd.read_csv(input, names=header,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object,'fulltextmatchtype':object,'factuality':object},quoting=csv.QUOTE_NONE,keep_default_na=False)
+    df = pd.read_csv(input,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object,'fulltextmatchtype':object,'factuality':object},quoting=csv.QUOTE_NONE,keep_default_na=False)
+    # The header should be included in the TSV file anyway. But in case we change the names there let's use a fixed
+    # set of headers here. As long as the columns themselves don't change, everything will work fine.
+    df.columns = ["arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "relationtypes", "factuality", "docid", "eventid", "fulltextmatchtype", "context"]
     print(f'Read {len(df)} data rows from {input}.')
     # Remove duplicates in the event types and sort them alphabetically
     reltypes=df["relationtypes"]

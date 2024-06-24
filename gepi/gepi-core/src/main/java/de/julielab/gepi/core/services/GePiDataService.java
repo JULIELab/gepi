@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.retrieval.data.*;
 import de.julielab.gepi.core.retrieval.data.Argument.ComparisonMode;
+import de.julielab.gepi.core.retrieval.services.IEventRetrievalService;
 import de.julielab.java.utilities.IOStreamUtilities;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -382,9 +384,18 @@ public class GePiDataService implements IGePiDataService {
             throw new FileNotFoundException("The Excel file " + xlsFile.toAbsolutePath() + " does not exist.");
     }
 
-    private void writeOverviewTsvFile(List<Event> events, Path file) throws IOException {
+    public Path writeOverviewTsvFile(List<Event> events, long dataSessionId) throws IOException {
+        final Path tempTsvDataFile = getTempTsvDataFile(dataSessionId);
+        writeOverviewTsvFile(events, tempTsvDataFile);
+        return tempTsvDataFile;
+    }
+
+    public void writeOverviewTsvFile(List<Event> events, Path file) throws IOException {
         log.debug("Writing event statistics tsv file to {}", file);
+        List<String> header = Arrays.asList("arg1symbol", "arg2symbol", "arg1text", "arg2text", "arg1entrezid", "arg2entrezid",  "relationtypes", "factuality", "docid", "eventid", "fulltextmatchtype", "context");
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file.toFile(), UTF_8))) {
+            bw.write(String.join("\t", header));
+            bw.newLine();
             List<String> row = new ArrayList<>();
             for (Event e : events) {
                 row.add(e.getFirstArgument().getPreferredName());
@@ -393,8 +404,6 @@ public class GePiDataService implements IGePiDataService {
                 row.add(e.getSecondArgument().getText());
                 row.add(e.getFirstArgument().getGeneId());
                 row.add(e.getSecondArgument().getGeneId());
-//                row.add(e.getFirstArgument().getMatchType());
-//                row.add(e.getSecondArgument().getMatchType());
                 row.add(String.join(",", e.getAllEventTypes()));
                 row.add(likelihoodNames.get(e.getLikelihood()));
                 row.add(e.getDocId());
@@ -436,6 +445,26 @@ public class GePiDataService implements IGePiDataService {
         source.put("id", argument.getTopHomologyPreferredName());
         source.put("name", argument.getTopHomologyPreferredName());
         return source;
+    }
+
+    public Future<EventRetrievalResult> getUnrolledResult4download(long dataSessionId) {
+        return getData(dataSessionId).getUnrolledResult4download().get();
+    }
+
+    public Future<EventRetrievalResult> getUnrolledResult4download(GepiRequestData requestData, IEventRetrievalService eventRetrievalService) {
+        Future<EventRetrievalResult> unrolledResult4download = getUnrolledResult4download(requestData.getDataSessionId());
+        // Check if we have the download data cached. Otherwise, get it and cache it
+        if (unrolledResult4download == null) {
+            long time = System.currentTimeMillis();
+            log.info("[{}] Retrieving unrolled result for Excel sheet creation.", requestData.getDataSessionId());
+            unrolledResult4download = eventRetrievalService.getEvents(requestData, 0, Integer.MAX_VALUE, false);
+            // We use a weak reference for the complete data since it requires much memory because of all
+            // the context data. The GC should be able to evict it, if necessary.
+            getData(requestData.getDataSessionId()).setUnrolledResult4download(new WeakReference<>(unrolledResult4download));
+            time = System.currentTimeMillis() - time;
+            log.info("[{}] Unrolled result retrieval for Excel sheet creation took {} seconds", requestData.getDataSessionId(), time / 1000);
+        }
+        return unrolledResult4download;
     }
 
 }

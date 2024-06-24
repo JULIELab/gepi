@@ -26,6 +26,12 @@ public class GepiQueryParameters {
     public static final String INCLUDE_UNARY = "includeunary";
     public static final String DOCID = "docid";
     public static final String INTERACTION_RETRIEVAL_LIMIT = "interactionretrievalllimit";
+    /**
+     * "web" for a GePI HTML page to be rendered in the browser,
+     * "excel" for the Excel sheet download,
+     * "tsv" for the pure result table in TSV format
+     */
+    public static final String FORMAT = "format";
     private String listATextAreaValue;
     private String listBTextAreaValue;
     private String taxId;
@@ -39,6 +45,7 @@ public class GepiQueryParameters {
     private boolean includeUnary;
     private boolean formdata;
     private int interactionRetrievalLimitForAggregations;
+    private String format;
 
     public GepiQueryParameters(Request request) {
         readParameters(request);
@@ -97,6 +104,10 @@ public class GepiQueryParameters {
         return includeUnary;
     }
 
+    public String getFormat() {
+        return format;
+    }
+
     private void readParameters(Request request) {
         formdata = request.getParameter("t:formdata") != null;
         // If the request comes from the input form, this GepiQueryParameters query is invalid anyway.
@@ -148,6 +159,7 @@ public class GepiQueryParameters {
             docid = request.getParameter(DOCID);
             includeUnary = Boolean.parseBoolean(request.getParameter(INCLUDE_UNARY));
             interactionRetrievalLimitForAggregations = INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
+            format = request.getParameter(FORMAT) != null ? request.getParameter(FORMAT).toLowerCase() : null;
             try {
                 interactionRetrievalLimitForAggregations = Integer.parseInt(request.getParameter(INTERACTION_RETRIEVAL_LIMIT));
             } catch (NumberFormatException e) {
