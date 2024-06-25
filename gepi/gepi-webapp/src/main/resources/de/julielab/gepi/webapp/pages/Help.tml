@@ -486,6 +486,50 @@
                             factuality ratings and textual references. Additionally, basic statistics about interaction
                             and interaction partner frequencies are included in separate sheets.
                         </p>
+                        <h2 id="api">API</h2>
+                        <p>
+                            GePI offers a Web-API that allows programmatic access. All elements of the input form can be
+                            expressed through the API. As a result, the excel sheet
+                            (see <a href="#result-download" class="link-secondary">above</a>) or a tab-separated file
+                            flatly listing all retrieved interactions can be obtained.
+                        </p>
+                        <p>
+                            The API is realized through URL request parameters, i.e. the GePI Web address followed by a
+                            single question mark (<code>?</code>) and parameter-value pairs. A parameter-value pair
+                            is separated by an equal sign (<code>=</code>) and a sequence of such pairs are separated by
+                            the ampersand characters (<code>&amp;</code>). For example:
+                            <pre><code>
+                                https://gepi.coling.uni-jena.de?alist=mtor&amp;blist=jun
+                            </code>
+                            </pre>
+                        </p>
+                        <p>
+                            A comprehensive list of parameters and their possible values is given in the table below.<br/>
+                            NOTE:
+                            <ul>
+                                <li>If a parameter is multi-valued - like <code>alist</code> and <code>blist</code>, for
+                                example - multiple values are separated via commata (<code>,</code>)</li>
+                                <li><em>Whitespaces and special characters must be <a href="https://en.wikipedia.org/wiki/Percent-encoding" class="link-secondary" target="_blank">URL-encoded</a>.</em></li>
+                            </ul>
+                            <table class="table">
+                                <thead><tr><th scope="col">name</th><th scope="col">description</th><th scope="col">examples</th><th>default</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>alist</code></td><td>Items of list A as described in <a href="#input-specification" class="link-secondary">Input Specification</a>.</td><td>mtor,s6k</td><td>default</td></tr>
+                                    <tr><td><code>blist</code></td><td>Items of list B as described in <a href="#input-specification" class="link-secondary">Input Specification</a>.</td><td>mtor,s6k</td><td>default</td></tr>
+                                    <tr><td><code>taxids</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>eventtypes</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>factuality</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>filterconnector</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>sentencefilter</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>paragraphfilter</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>sectionnamefilter</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>includeunary</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>docid</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>limit</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>format</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                </tbody>
+                            </table>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -557,6 +601,9 @@
                                                 </ul>
                                             </li>
                                         </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#api">API</a>
                                     </li>
                                 </ul>
                             </nav>

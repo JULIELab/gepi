@@ -130,10 +130,6 @@ public class Index {
                 case "tsv":
                     final Future<EventRetrievalResult> unrolledRetrievalResult = dataService.getUnrolledResult4download(requestData, eventRetrievalService);
                     try {
-                        log.info("requestData: {}", requestData);
-                        log.info("dataService: {}", dataService);
-                        log.info("unrolledRetrievalResult: {}", unrolledRetrievalResult);
-                        log.info("unrolledRetrievalResult.get(): {}", unrolledRetrievalResult.get());
                         final Path tsvFile = dataService.writeOverviewTsvFile(unrolledRetrievalResult.get().getEventList(), requestData.getDataSessionId());
                         return new StreamResponse() {
 

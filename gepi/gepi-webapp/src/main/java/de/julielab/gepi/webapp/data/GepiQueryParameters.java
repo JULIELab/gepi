@@ -19,13 +19,13 @@ public class GepiQueryParameters {
     public static final String TAXID = "taxids";
     public static final String EVENTTYPES = "eventtypes";
     public static final String FACTUALITY = "factuality";
-    public static final String FILTERFIELDSCONNECTIONOPERATOR = "filterfieldsconnectionoperator";
+    public static final String FILTERFIELDSCONNECTIONOPERATOR = "filterconnector";
     public static final String SENTENCEFILTER = "sentencefilter";
     public static final String PARAGRAPHFILTER = "paragraphfilter";
     public static final String SECTIONNAMEFILTER = "sectionnamefilter";
     public static final String INCLUDE_UNARY = "includeunary";
     public static final String DOCID = "docid";
-    public static final String INTERACTION_RETRIEVAL_LIMIT = "interactionretrievalllimit";
+    public static final String INTERACTION_RETRIEVAL_LIMIT = "limit";
     /**
      * "web" for a GePI HTML page to be rendered in the browser,
      * "excel" for the Excel sheet download,
