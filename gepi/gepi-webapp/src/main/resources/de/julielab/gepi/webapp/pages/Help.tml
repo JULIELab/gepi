@@ -210,7 +210,7 @@
                         </p>
                         <h3 id="filter-types">Filter types</h3>
                         <p>
-                            <em>Result filters.</em> A GePI search can be filtered for species via NCBI Taxonomy identifiers, interaction types, and factuality level.
+                            <em>Result filters.</em> A GePI search can be filtered for species via <a href="https://www.ncbi.nlm.nih.gov/taxonomy" class="link-secondary" target="_blank">NCBI Taxonomy</a> identifiers, interaction types, and factuality level.
                             These filters cannot constitute searches of their own but exist to solely to restrict the search defined by the methods described above.
                         </p>
                         <p>
@@ -219,7 +219,7 @@
                         </p>
                         <p>
                         <h5 id="filter-taxonomy">Taxonomy filter</h5>
-                            A comma-separated list of NCBI Taxonomy IDs may be provided to filter on the interaction partners.
+                            A comma-separated list of <a href="https://www.ncbi.nlm.nih.gov/taxonomy" class="link-secondary" target="_blank">NCBI Taxonomy</a> IDs may be provided to filter on the interaction partners.
                             NCBI Gene entries are always assigned a exactly one taxonomy ID. The GePI text processing pipeline also assigns species to protein families
                             based on the species discussed in the respective document. The species are stored as taxonomy IDs in the interaction database and
                             also used for species filter purposes. In case no species is mentioned at all - which commonly happens in PubMed abstracts - the human
@@ -512,21 +512,21 @@
                                 <li><em>Whitespaces and special characters must be <a href="https://en.wikipedia.org/wiki/Percent-encoding" class="link-secondary" target="_blank">URL-encoded</a>.</em></li>
                             </ul>
                             <table class="table">
-                                <thead><tr><th scope="col">name</th><th scope="col">description</th><th scope="col">examples</th><th>default</th></tr></thead>
+                                <thead><tr><th scope="col">name</th><th scope="col">description</th><th scope="col">examples</th></tr></thead>
                                 <tbody>
-                                    <tr><td><code>alist</code></td><td>Items of list A as described in <a href="#input-specification" class="link-secondary">Input Specification</a>.</td><td>mtor,s6k</td><td>default</td></tr>
-                                    <tr><td><code>blist</code></td><td>Items of list B as described in <a href="#input-specification" class="link-secondary">Input Specification</a>.</td><td>mtor,s6k</td><td>default</td></tr>
-                                    <tr><td><code>taxids</code></td><td>description</td><td>example</td><td>default</td></tr>
-                                    <tr><td><code>eventtypes</code></td><td>description</td><td>example</td><td>default</td></tr>
-                                    <tr><td><code>factuality</code></td><td>description</td><td>example</td><td>default</td></tr>
-                                    <tr><td><code>filterconnector</code></td><td>description</td><td>example</td><td>default</td></tr>
-                                    <tr><td><code>sentencefilter</code></td><td>description</td><td>example</td><td>default</td></tr>
-                                    <tr><td><code>paragraphfilter</code></td><td>description</td><td>example</td><td>default</td></tr>
-                                    <tr><td><code>sectionnamefilter</code></td><td>description</td><td>example</td><td>default</td></tr>
-                                    <tr><td><code>includeunary</code></td><td>description</td><td>example</td><td>default</td></tr>
-                                    <tr><td><code>docid</code></td><td>description</td><td>example</td><td>default</td></tr>
-                                    <tr><td><code>limit</code></td><td>description</td><td>example</td><td>default</td></tr>
-                                    <tr><td><code>format</code></td><td>description</td><td>example</td><td>default</td></tr>
+                                    <tr><td><code>alist</code></td><td>Items of list A as described in <a href="#input-specification" class="link-secondary">Input Specification</a>.</td><td>mtor,s6k</td></tr>
+                                    <tr><td><code>blist</code></td><td>Items of list B as described in <a href="#input-specification" class="link-secondary">Input Specification</a>.</td><td>mtor,s6k</td></tr>
+                                    <tr><td><code>taxids</code></td><td>Organism IDs from the <a href="https://www.ncbi.nlm.nih.gov/taxonomy" class="link-secondary" target="_blank">NCBI Taxonomy</a>.</td><td>9606</td></tr>
+                                    <tr><td><code>eventtypes</code></td><td>description</td><td>example</td></tr>
+                                    <tr><td><code>factuality</code></td><td>description</td><td>example</td></tr>
+                                    <tr><td><code>filterconnector</code></td><td>description</td><td>example</td></tr>
+                                    <tr><td><code>sentencefilter</code></td><td>description</td><td>example</td></tr>
+                                    <tr><td><code>paragraphfilter</code></td><td>description</td><td>example</td></tr>
+                                    <tr><td><code>sectionnamefilter</code></td><td>description</td><td>example</td></tr>
+                                    <tr><td><code>includeunary</code></td><td>description</td><td>example</td></tr>
+                                    <tr><td><code>docid</code></td><td>description</td><td>example</td></tr>
+                                    <tr><td><code>limit</code></td><td>description</td><td>example</td></tr>
+                                    <tr><td><code>format</code></td><td>description</td><td>example</td></tr>
                                 </tbody>
                             </table>
                         </p>
