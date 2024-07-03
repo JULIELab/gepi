@@ -53,6 +53,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         Multimap<Sentence, Document> sentence2relDocs = HashMultimap.create();
         String docId = getDocumentId(jCas);
         Map<FlattenedRelation, Collection<Zone>> zoneIndex = JCasUtil.indexCovering(jCas, FlattenedRelation.class, Zone.class);
+        Map<Caption, Collection<Title>> captionTitleIndex = JCasUtil.indexCovered(jCas, Caption.class, Title.class);
         Map<FlattenedRelation, Collection<Sentence>> sentIndex = JCasUtil.indexCovering(jCas, FlattenedRelation.class, Sentence.class);
         try {
             int i = 0;
@@ -72,7 +73,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                             Sentence overlappingSentence = overlappingSentences.stream().findAny().get();
                             sentenceDocument = createSentenceDocument(jCas, docId, i, overlappingSentence, argPair, rel);
                             // Likewise for the paragraph-like containing annotation of the relation
-                            Document paragraphDocument = createParagraphDocument(jCas, docId, rel, argPair, zoneIndex);
+                            Document paragraphDocument = createParagraphDocument(jCas, docId, rel, argPair, zoneIndex, captionTitleIndex);
 
                             // skip events extracted from PMC abstracts when there exists a corresponding PubMed document
                             if (paragraphDocument.containsKey("textscope") && paragraphDocument.get("textscope").toString().equals("abstract") && relDoc.get("source").toString().equals("pmc") && relDoc.containsKey("pmid")) {
@@ -337,7 +338,7 @@ public class RelationDocumentGenerator extends DocumentGenerator {
         return docId;
     }
 
-    private Document createParagraphDocument(JCas jCas, String docId, FlattenedRelation rel, FeatureStructure[] argPair, Map<FlattenedRelation, Collection<Zone>> zoneIndex) throws CASException, FieldGenerationException {
+    private Document createParagraphDocument(JCas jCas, String docId, FlattenedRelation rel, FeatureStructure[] argPair, Map<FlattenedRelation, Collection<Zone>> zoneIndex, Map<Caption, Collection<Title>> captionTitleIndex) throws CASException, FieldGenerationException {
         List<Zone> zonesAscending = zoneIndex.get(rel).stream().sorted(Comparator.comparingInt(z -> z.getEnd() - z.getBegin())).collect(Collectors.toList());
         ArrayFieldValue zoneHeadings = new ArrayFieldValue();
         IFieldValue textScope = null;
@@ -373,8 +374,12 @@ public class RelationDocumentGenerator extends DocumentGenerator {
                 if (textScope == null)
                     textScope = new RawToken("body");
             } else if (z instanceof Caption) {
-                zoneHeadings.add(new RawToken(removeSectionNumbering(z.getCoveredText())));
-                textScope = new RawToken(((Caption) z).getCaptionType());
+                // Try to find Titles overlapping this Caption. If there is one, it should be the Caption Heading.
+                final Optional<Title> titleOpt = captionTitleIndex.get(z).stream().findAny();
+                if (titleOpt.isPresent()) {
+                    zoneHeadings.add(new RawToken(removeSectionNumbering(titleOpt.get().getCoveredText())));
+                    textScope = new RawToken(((Caption) z).getCaptionType());
+                }
             }
         }
         // If we couldn't find one of the specified structures, use the smallest one
