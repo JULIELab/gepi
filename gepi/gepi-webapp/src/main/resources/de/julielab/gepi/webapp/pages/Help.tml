@@ -497,11 +497,8 @@
                             The API is realized through URL request parameters, i.e. the GePI Web address followed by a
                             single question mark (<code>?</code>) and parameter-value pairs. A parameter-value pair
                             is separated by an equal sign (<code>=</code>) and a sequence of such pairs are separated by
-                            the ampersand characters (<code>&amp;</code>). For example:
-                            <pre><code>
-                                https://gepi.coling.uni-jena.de?alist=mtor&amp;blist=jun
-                            </code>
-                            </pre>
+                            the ampersand characters (<code>&amp;</code>).
+                            For example: <pre><code>https://gepi.coling.uni-jena.de?alist=mtor&amp;blist=jun</code></pre>
                         </p>
                         <p>
                             A comprehensive list of parameters and their possible values is given in the table below.<br/>
@@ -520,13 +517,13 @@
                                     <tr><td><code>eventtypes</code></td><td>A list of items in {<code>Regulation</code>, <code>Positive_regulation</code>, <code>Negative_regulation</code>, <code>Binding</code>, <code>Localization</code>, <code>Phosphorylation</code>}. Omitting this parameter leads to no restrictions in event types.</td><td>Regulation,Phosphorylation</td></tr>
                                     <tr><td><code>factuality</code></td><td>A number between 0 and 6 (inclusive). Represents the minimum factuality rating of returned events where 0 means a negated event statement and 6 means an assertive statement.</td><td>3</td></tr>
                                     <tr><td><code>filterconnector</code></td><td>One of {<code>AND</code> or <code>OR</code>}. Specifies how <code>sentencefilter</code> and <code>paragraphfilter</code> (see blow) are combined. I.e. must only one filter match or must both match for an event to be returned by the search?</td><td>AND</td></tr>
-                                    <tr><td><code>sentencefilter</code></td><td>Sentence-level filter keywords. See <a href="#search-full-text" class="link-secondary">Full-text Search</a>.</td><td>obesity</td></tr>
-                                    <tr><td><code>paragraphfilter</code></td><td>Paragraph- or abstract-level filter keywords. See <a href="#search-full-text" class="link-secondary">Full-text Search</a>.</td><td>obesity</td></tr>
-                                    <tr><td><code>sectionnamefilter</code></td><td>description</td><td>example</td></tr>
-                                    <tr><td><code>includeunary</code></td><td>description</td><td>example</td></tr>
-                                    <tr><td><code>docid</code></td><td>description</td><td>example</td></tr>
-                                    <tr><td><code>limit</code></td><td>description</td><td>example</td></tr>
-                                    <tr><td><code>format</code></td><td>description</td><td>example</td></tr>
+                                    <tr><td><code>sentencefilter</code></td><td>Sentence-level filter query. See <a href="#search-full-text" class="link-secondary">Full-text Search</a>.</td><td>obesity</td></tr>
+                                    <tr><td><code>paragraphfilter</code></td><td>Paragraph- or abstract-level filter query. See <a href="#search-full-text" class="link-secondary">Full-text Search</a>.</td><td>obesity</td></tr>
+                                    <tr><td><code>sectionnamefilter</code></td><td>Query to match any title/heading in a document. Is matched against document title, section headings, caption headings etc.</td><td>results</td></tr>
+                                    <tr><td><code>includeunary</code></td><td>Whether to include events like <span class="fst-italic">phosphorylation of BRCA2</span>. False by default.</td><td>true</td></tr>
+                                    <tr><td><code>docid</code></td><td>Can be a single document ID from PubMed or PMC. Note that PMC document IDs are prefixed with <span class="fst-italic">PMC</span>.</td><td>PMC4502726</td></tr>
+                                    <tr><td><code>limit</code></td><td>The maximum number of events to return. Defaults to unlimited.</td><td>100</td></tr>
+                                    <tr><td><code>format</code></td><td>The download file format. One of <code>excel</code>, <code>tsv</code> or <code>web</code> where the last options returns the GePI result page which is not useful for download.</td><td>tsv</td></tr>
                                 </tbody>
                             </table>
                         </p>
