@@ -263,7 +263,7 @@ public class GepiInput {
     }
 
     public void executeSearch() {
-        log.debug("Setting newsearch to true");
+        log.debug("Setting newsearch to true. dataSessionId is {}", dataSessionId);
         newSearch = true;
         List<String> selectedEventTypeNames = selectedEventTypes.stream().flatMap(e -> e == EventTypes.Regulation ? Stream.of(EventTypes.Regulation, EventTypes.Positive_regulation, EventTypes.Negative_regulation) : Stream.of(e)).map(EventTypes::name).collect(Collectors.toList());
         if (selectedEventTypeNames.isEmpty())
@@ -292,16 +292,16 @@ public class GepiInput {
         requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
-        Future<EventRetrievalResult> unrolledResult4Charts = null;//eventRetrievalService.getEvents(requestData, true);
+        Future<EventRetrievalResult> unrolledResult4Charts = null;
         Future<EsAggregatedResult> aggregatedResult = eventRetrievalService.getAggregatedEvents(requestData);
         final String[] aLines = listATextAreaValue != null ? listATextAreaValue.split("\n") : new String[0];
         final String[] bLines = listBTextAreaValue != null ? listBTextAreaValue.split("\n") : new String[0];
-        log.info("[{}] A input, first elements: {}", dataSessionId, Arrays.asList(aLines).subList(0, Math.min(5, aLines.length)));
-        log.info("[{}] B input, first elements: {}", dataSessionId, Arrays.asList(bLines).subList(0, Math.min(5, bLines.length)));
-        log.info("[{}] taxIds: {}", dataSessionId, taxId);
-        log.info("[{}] sentence filter: {}", dataSessionId, sentenceFilterString);
-        log.info("[{}] paragraph filter: {}", dataSessionId, paragraphFilterString);
-        log.info("[{}] section filter: {}", dataSessionId, sectionNameFilterString);
+        log.info("[Session {}] A input, first elements (out of {}): {}", dataSessionId, Arrays.asList(aLines).subList(0, Math.min(5, aLines.length)), aLines.length);
+        log.info("[Session {}] B input, first elements (out of {}): {}", dataSessionId, Arrays.asList(bLines).subList(0, Math.min(5, bLines.length)), bLines.length);
+        log.info("[Session {}] taxIds: {}", dataSessionId, taxId);
+        log.info("[Session {}] sentence filter: {}", dataSessionId, sentenceFilterString);
+        log.info("[Session {}] paragraph filter: {}", dataSessionId, paragraphFilterString);
+        log.info("[Session {}] section filter: {}", dataSessionId, sectionNameFilterString);
 
         data = new GePiData(neo4jResult, unrolledResult4Charts, aggregatedResult,pagedEsResult, listAGePiIds, listBGePiIds);
         log.debug("Setting newly retrieved data for dataSessionId: {}", dataSessionId);

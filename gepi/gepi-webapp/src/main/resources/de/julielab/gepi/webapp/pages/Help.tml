@@ -26,7 +26,7 @@
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
                                         <p class="fs-6">
-                                            <span class="entity">Fibroblast growth factor-1</span> (<span class="entity">FGF-1</span>) <span class="trigger">enhances</span>
+                                            <span class="entity">Fibroblast growth factor-1</span> (<span class="entity">FGF-1</span>) <span class="trigger">enhances</span>&nbsp;
                                             <span class="entity">IL-2</span> production and nuclear translocation of <span class="entity">NF-kappaB</span> in <span class="entity">FGF receptor</span>-bearing Jurkat T cells.
                                         </p>
                                     </blockquote>
@@ -210,7 +210,7 @@
                         </p>
                         <h3 id="filter-types">Filter types</h3>
                         <p>
-                            <em>Result filters.</em> A GePI search can be filtered for species via NCBI Taxonomy identifiers, interaction types, and factuality level.
+                            <em>Result filters.</em> A GePI search can be filtered for species via <a href="https://www.ncbi.nlm.nih.gov/taxonomy" class="link-secondary" target="_blank">NCBI Taxonomy</a> identifiers, interaction types, and factuality level.
                             These filters cannot constitute searches of their own but exist to solely to restrict the search defined by the methods described above.
                         </p>
                         <p>
@@ -219,7 +219,7 @@
                         </p>
                         <p>
                         <h5 id="filter-taxonomy">Taxonomy filter</h5>
-                            A comma-separated list of NCBI Taxonomy IDs may be provided to filter on the interaction partners.
+                            A comma-separated list of <a href="https://www.ncbi.nlm.nih.gov/taxonomy" class="link-secondary" target="_blank">NCBI Taxonomy</a> IDs may be provided to filter on the interaction partners.
                             NCBI Gene entries are always assigned a exactly one taxonomy ID. The GePI text processing pipeline also assigns species to protein families
                             based on the species discussed in the respective document. The species are stored as taxonomy IDs in the interaction database and
                             also used for species filter purposes. In case no species is mentioned at all - which commonly happens in PubMed abstracts - the human
@@ -486,6 +486,49 @@
                             factuality ratings and textual references. Additionally, basic statistics about interaction
                             and interaction partner frequencies are included in separate sheets.
                         </p>
+                        <h2 id="api">API</h2>
+                        <p>
+                            GePI offers a Web-API that allows programmatic access. All elements of the input form can be
+                            expressed through the API. As a result, the excel sheet
+                            (see <a href="#result-download" class="link-secondary">above</a>) or a tab-separated file
+                            flatly listing all retrieved interactions can be obtained.
+                        </p>
+                        <p>
+                            The API is realized through URL request parameters, i.e. the GePI Web address followed by a
+                            single question mark (<code>?</code>) and parameter-value pairs. A parameter-value pair
+                            is separated by an equal sign (<code>=</code>) and a sequence of such pairs are separated by
+                            the ampersand characters (<code>&amp;</code>).
+                            For example: <pre><code>https://gepi.coling.uni-jena.de?alist=mtor&amp;blist=jun</code></pre>
+                        </p>
+                        <p>
+                            A comprehensive list of parameters and their possible values is given in the table below.<br/>
+                            NOTE:
+                            <ul>
+                                <li>If a parameter is multi-valued - like <code>alist</code> and <code>blist</code>, for
+                                example - multiple values are separated via commata (<code>,</code>)</li>
+                                <li><em>Whitespaces and special characters must be <a href="https://en.wikipedia.org/wiki/Percent-encoding" class="link-secondary" target="_blank">URL-encoded</a>.</em></li>
+                            </ul>
+                            <table class="table">
+                                <thead><tr><th scope="col">name</th><th scope="col">description</th><th scope="col">examples</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>alist</code></td><td>Items of list A as described in <a href="#input-specification" class="link-secondary">Input Specification</a>.</td><td>mtor,s6k</td></tr>
+                                    <tr><td><code>blist</code></td><td>Items of list B as described in <a href="#input-specification" class="link-secondary">Input Specification</a>.</td><td>mtor,s6k</td></tr>
+                                    <tr><td><code>taxids</code></td><td>Organism IDs from the <a href="https://www.ncbi.nlm.nih.gov/taxonomy" class="link-secondary" target="_blank">NCBI Taxonomy</a>.</td><td>9606</td></tr>
+                                    <tr><td><code>eventtypes</code></td><td>A list of items in {<code>Regulation</code>, <code>Positive_regulation</code>, <code>Negative_regulation</code>, <code>Binding</code>, <code>Localization</code>, <code>Phosphorylation</code>}. Omitting this parameter leads to no restrictions in event types.</td><td>Regulation,Phosphorylation</td></tr>
+                                    <tr><td><code>factuality</code></td><td>A number between 0 and 6 (inclusive). Represents the minimum factuality rating of returned events where 0 means a negated event statement and 6 means an assertive statement.</td><td>3</td></tr>
+                                    <tr><td><code>filterconnector</code></td><td>One of {<code>AND</code> or <code>OR</code>}. Specifies how <code>sentencefilter</code> and <code>paragraphfilter</code> (see blow) are combined. I.e. must only one filter match or must both match for an event to be returned by the search?</td><td>AND</td></tr>
+                                    <tr><td><code>sentencefilter</code></td><td>Sentence-level filter query. See <a href="#search-full-text" class="link-secondary">Full-text Search</a>.</td><td>obesity</td></tr>
+                                    <tr><td><code>paragraphfilter</code></td><td>Paragraph- or abstract-level filter query. See <a href="#search-full-text" class="link-secondary">Full-text Search</a>.</td><td>obesity</td></tr>
+                                    <tr><td><code>sectionnamefilter</code></td><td>Query to match any title/heading in a document. Is matched against document title, section headings, caption headings etc.</td><td>results</td></tr>
+                                    <tr><td><code>includeunary</code></td><td>Whether to include events like <span class="fst-italic">phosphorylation of BRCA2</span>. False by default.</td><td>true</td></tr>
+                                    <tr><td><code>docid</code></td><td>Can be a single document ID from PubMed or PMC. Note that PMC document IDs are prefixed with <span class="fst-italic">PMC</span>.</td><td>PMC4502726</td></tr>
+                                    <tr><td><code>limit</code></td><td>The maximum number of events to return. Defaults to unlimited.</td><td>100</td></tr>
+                                    <tr><td><code>format</code></td><td>The download file format. One of <code>excel</code>, <code>tsv</code> or <code>web</code> where the last options returns the GePI result page which is not useful for download.</td><td>tsv</td></tr>
+                                </tbody>
+                            </table>
+                            The API parameters correspond to the input form elements on the <t:pagelink page="Index" class="link-secondary">GePI query input page</t:pagelink>. Refer
+                            the tooltips there for more information on each parameter.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -557,6 +600,9 @@
                                                 </ul>
                                             </li>
                                         </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#api">API</a>
                                     </li>
                                 </ul>
                             </nav>

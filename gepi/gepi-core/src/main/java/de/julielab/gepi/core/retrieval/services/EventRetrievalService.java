@@ -229,7 +229,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 eventResult.setStartRow(from);
                 eventResult.setEndRow(from + numRows - 1);
                 time = System.currentTimeMillis() - time;
-                log.debug("Retrieved {} events for closed search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
+                log.info("[Session {}] Retrieved {} events for closed search from ElasticSearch in {} seconds with forCharts={}", requestData.getDataSessionId(), eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.BIPARTITE);
                 final Set<String> possibleAggregationConceptNamesAlist = geneIdService.getPossibleAggregationConceptNames(requestData.getAListIdsAsSet());
                 reorderEventResultArguments(possibleAggregationConceptNamesAlist, eventResult);
@@ -320,7 +320,7 @@ public class EventRetrievalService implements IEventRetrievalService {
                 eventResult.setStartRow(from);
                 eventResult.setEndRow(from + numRows - 1);
                 time = System.currentTimeMillis() - time;
-                log.info("Retrieved {} events for open search from ElasticSearch in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
+                log.info("[Session {}] Retrieved {} events for open search from ElasticSearch in {} seconds with forCharts={}", requestData.getDataSessionId(), eventResult.getEventList().size(), time / 1000, forCharts);
                 eventResult.setResultType(EventResultType.OUTSIDE);
                 final Set<String> possibleAggregationConceptNamesAlist = geneIdService.getPossibleAggregationConceptNames(requestData.getAListIdsAsSet());
                 reorderEventResultArguments(possibleAggregationConceptNamesAlist, eventResult);
@@ -438,7 +438,7 @@ public class EventRetrievalService implements IEventRetrievalService {
             eventResult.setStartRow(from);
             eventResult.setEndRow(from + numRows - 1);
             time = System.currentTimeMillis() - time;
-            log.info("Retrieved {} fulltext-filtered events in {} seconds with forCharts={}", eventResult.getEventList().size(), time / 1000, forCharts);
+            log.info("[Session {}] Retrieved {} fulltext-filtered events in {} seconds with forCharts={}", requestData.getDataSessionId(), eventResult.getEventList().size(), time / 1000, forCharts);
             eventResult.setResultType(EventResultType.FULLTEXT_FILTERED);
             return eventResult;
         });
