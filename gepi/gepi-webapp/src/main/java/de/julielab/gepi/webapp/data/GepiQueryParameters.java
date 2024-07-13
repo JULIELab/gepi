@@ -160,6 +160,8 @@ public class GepiQueryParameters {
             includeUnary = Boolean.parseBoolean(request.getParameter(INCLUDE_UNARY));
             interactionRetrievalLimitForAggregations = INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
             format = request.getParameter(FORMAT) != null ? request.getParameter(FORMAT).toLowerCase() : null;
+            if (format == null)
+                format = "web";
             try {
                 interactionRetrievalLimitForAggregations = Integer.parseInt(request.getParameter(INTERACTION_RETRIEVAL_LIMIT));
             } catch (NumberFormatException e) {

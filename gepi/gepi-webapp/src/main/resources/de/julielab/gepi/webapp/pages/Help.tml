@@ -26,7 +26,7 @@
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
                                         <p class="fs-6">
-                                            <span class="entity">Fibroblast growth factor-1</span> (<span class="entity">FGF-1</span>) <span class="trigger">enhances</span>
+                                            <span class="entity">Fibroblast growth factor-1</span> (<span class="entity">FGF-1</span>) <span class="trigger">enhances</span>&nbsp;
                                             <span class="entity">IL-2</span> production and nuclear translocation of <span class="entity">NF-kappaB</span> in <span class="entity">FGF receptor</span>-bearing Jurkat T cells.
                                         </p>
                                     </blockquote>
@@ -526,6 +526,8 @@
                                     <tr><td><code>format</code></td><td>The download file format. One of <code>excel</code>, <code>tsv</code> or <code>web</code> where the last options returns the GePI result page which is not useful for download.</td><td>tsv</td></tr>
                                 </tbody>
                             </table>
+                            The API parameters correspond to the input form elements on the <t:pagelink page="Index" class="link-secondary">GePI query input page</t:pagelink>. Refer
+                            the tooltips there for more information on each parameter.
                         </p>
                     </div>
                 </div>
