@@ -77,8 +77,8 @@ public class AppModule {
         // in the early stages of development.
         configuration.override(SymbolConstants.PRODUCTION_MODE, true);
 
-        configuration.override(SymbolConstants.CORS_ENABLED, true);
-        configuration.override(SymbolConstants.CORS_ALLOWED_ORIGINS, "*");
+//        configuration.override(SymbolConstants.CORS_ENABLED, true);
+//        configuration.override(SymbolConstants.CORS_ALLOWED_ORIGINS, "*");
         configuration.add(SymbolConstants.CORS_MAX_AGE, "5");
     }
 

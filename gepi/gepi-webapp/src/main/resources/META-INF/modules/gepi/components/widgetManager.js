@@ -64,7 +64,7 @@ define(['jquery', 't5/core/zone', 'gepi/pages/index'], function($, zoneManager, 
 
   Widget.prototype.ajaxRefresh = function() {
     console.log('[trace] Issueing update of zone with ID ' + this.zoneElementId);
-    index.getReadySemaphor().done(() => zoneManager.deferredZoneUpdate(this.zoneElementId, this.refreshContentsUrl));
+    index.getReadySemaphor().done(() => zoneManager.deferredZoneUpdate(this.zoneElementId, this.refreshContentsUrl.replace(":80", "")));
     console.log('[trace] Returned from update of zone with ID ' + this.zoneElementId);
   };
 

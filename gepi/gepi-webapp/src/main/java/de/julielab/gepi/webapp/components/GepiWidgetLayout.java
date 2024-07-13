@@ -142,8 +142,8 @@ final public class GepiWidgetLayout {
         widgetSettings.put("handleId", getResizeHandleId());
         widgetSettings.put("widgetId", clientId);
         widgetSettings.put("viewMode", "small");
-        widgetSettings.put("toggleViewModeUrl", toggleViewModeEventLink.toAbsoluteURI());
-        widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI());
+        widgetSettings.put("toggleViewModeUrl", toggleViewModeEventLink.toAbsoluteURI().replace(":80", ""));
+        widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI().replace(":80", ""));
         widgetSettings.put("zoneElementId", widgetZone.getClientId());
         widgetSettings.put("useTapestryZoneUpdates", useTapestryZoneUpdates);
         widgetSettings.put("dataSessionId", requestData.getDataSessionId());
