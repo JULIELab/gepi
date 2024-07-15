@@ -173,7 +173,7 @@ public class Index {
 
     void afterRender() {
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
-        javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI().replace(":80", ""));
+        javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI(productionMode));
         javaScriptSupport.require("gepi/pages/index").invoke("setupDownloadUrlCopyButton");
         if (isResultPresent()) {
             // If there already is data at loading the page, the input panel is already hidden (see #getShowInputClass)
@@ -466,12 +466,14 @@ public class Index {
         return requestData.getInputMode().contains(InputMode.AB);
     }
 
-
+    @Inject
+    @Symbol(SymbolConstants.PRODUCTION_MODE)
+    private boolean productionMode;
     @Inject
     private PageRenderLinkSource pageRenderLS;
 
     public String getResultFileDownloadLink() {
-        return pageRenderLS.createPageRenderLinkWithContext(ResultDownload.class, dataSessionId).toAbsoluteURI().replace(":80", "");
+        return pageRenderLS.createPageRenderLinkWithContext(ResultDownload.class, dataSessionId).toAbsoluteURI(productionMode);
     }
 
 }

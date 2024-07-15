@@ -10,10 +10,12 @@ import de.julielab.gepi.webapp.data.ResultType;
 import de.julielab.gepi.webapp.pages.Index;
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.http.Link;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -82,6 +84,9 @@ final public class GepiWidgetLayout {
     private String viewMode;
     @InjectPage
     private Index index;
+    @Inject
+    @Symbol(SymbolConstants.PRODUCTION_MODE)
+    private boolean productionMode;
 
     void setupRender() {
         if (getEsResult() == null)
@@ -142,8 +147,8 @@ final public class GepiWidgetLayout {
         widgetSettings.put("handleId", getResizeHandleId());
         widgetSettings.put("widgetId", clientId);
         widgetSettings.put("viewMode", "small");
-        widgetSettings.put("toggleViewModeUrl", toggleViewModeEventLink.toAbsoluteURI().replace(":80", ""));
-        widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI().replace(":80", ""));
+        widgetSettings.put("toggleViewModeUrl", toggleViewModeEventLink.toAbsoluteURI(productionMode));
+        widgetSettings.put("refreshContentsUrl", refreshContentEventLink.toAbsoluteURI(productionMode));
         widgetSettings.put("zoneElementId", widgetZone.getClientId());
         widgetSettings.put("useTapestryZoneUpdates", useTapestryZoneUpdates);
         widgetSettings.put("dataSessionId", requestData.getDataSessionId());

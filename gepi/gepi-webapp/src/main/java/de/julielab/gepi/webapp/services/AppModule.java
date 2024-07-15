@@ -75,11 +75,7 @@ public class AppModule {
 
         // This is something that should be removed when going to production, but is useful
         // in the early stages of development.
-        configuration.override(SymbolConstants.PRODUCTION_MODE, true);
-
-//        configuration.override(SymbolConstants.CORS_ENABLED, true);
-//        configuration.override(SymbolConstants.CORS_ALLOWED_ORIGINS, "*");
-        configuration.add(SymbolConstants.CORS_MAX_AGE, "5");
+        configuration.override(SymbolConstants.PRODUCTION_MODE, false);
     }
 
     public static void contributeApplicationDefaults(
