@@ -175,6 +175,7 @@ public class Index {
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI(productionMode));
         javaScriptSupport.require("gepi/pages/index").invoke("setupDownloadUrlCopyButton");
+        javaScriptSupport.require("gepi/pages/index").invoke("displayRoadworksWarningToast");
         if (isResultPresent()) {
             // If there already is data at loading the page, the input panel is already hidden (see #getShowInputClass)
             // and we can display the widgets.

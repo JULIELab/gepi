@@ -31,6 +31,34 @@
                         
             <configurationParameter>
                                 
+                <name>docIdTransformBeforeDeletionRegex</name>
+                                
+                <description>Optional regular expression to match and then replace (parts) of document IDs before deletion using the docIdTransformBeforeDeletionReplacement parameter value. Can be used when deleteDocumentsBeforeIndexing is set to true. Then, a Matcher with the given regular expression is created and document IDs are transformed using Matcher.replaceAll(&lt;replacement&gt;) for the deletion step.</description>
+                                
+                <type>String</type>
+                                
+                <multiValued>false</multiValued>
+                                
+                <mandatory>false</mandatory>
+                            
+            </configurationParameter>
+                        
+            <configurationParameter>
+                                
+                <name>docIdTransformBeforeDeletionReplacement</name>
+                                
+                <description>Optional replacement String to be used to transform document IDs before deletion. Requires docIdTransformBeforeDeletionRegex to be specified. Then, document IDs used for deletion are matched with that regular expression and matches are replaced with this replacement String using Matcher.replace(&lt;replacement&gt;) where the Matcher was created with the regular expression.</description>
+                                
+                <type>String</type>
+                                
+                <multiValued>false</multiValued>
+                                
+                <mandatory>false</mandatory>
+                            
+            </configurationParameter>
+                        
+            <configurationParameter>
+                                
                 <name>documentIdField</name>
                                 
                 <description>Required when deleteDocumentsBeforeIndexing is set to true. This should be an existing index field that contains the document ID of each CAS. It is used to remove existing index documents related to the CAS document ID prior to indexing.</description>
@@ -195,7 +223,7 @@
                                 
                 <value>
                                         
-                    <string>gepi_1.0_3</string>
+                    <string>gepi_1.0_2</string>
                                     
                 </value>
                             
@@ -253,7 +281,31 @@
                                 
                 <value>
                                         
-                    <boolean>false</boolean>
+                    <boolean>true</boolean>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>docIdTransformBeforeDeletionRegex</name>
+                                
+                <value>
+                                        
+                    <string>^([^_]+)_.*$</string>
+                                    
+                </value>
+                            
+            </nameValuePair>
+                        
+            <nameValuePair>
+                                
+                <name>docIdTransformBeforeDeletionReplacement</name>
+                                
+                <value>
+                                        
+                    <string>$1</string>
                                     
                 </value>
                             

@@ -16,6 +16,10 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
  */
 @Import(stylesheet = {"context:css-components/layout.css", "bootstrap-custom.css"})
 public class Layout {
+	@Property
+	@Parameter(value = "false")
+	boolean showResetButton;
+
 	@Inject
 	private ComponentResources resources;
 

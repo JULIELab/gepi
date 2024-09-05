@@ -27,6 +27,10 @@
       "enabled": false
     },
     "properties": {
+      "source": {
+        "type": "text",
+        "store": true
+      },
       "pmid": {
         "type": "keyword",
         "store": true
@@ -103,6 +107,9 @@
         "type": "keyword",
         "store": true
       },
+      "argument1taxid": {
+        "type": "keyword"
+      },
       "argument1coveredtext": {
         "type": "text",
         "store": true,
@@ -159,6 +166,9 @@
       "argument2geneid": {
         "type": "keyword",
         "store": true
+      },
+      "argument2taxid": {
+        "type": "keyword"
       },
       "argument2coveredtext": {
         "type": "text",
@@ -314,15 +324,7 @@
           "headings": {
             "type": "text",
             "norms": false,
-            "store": true,
-            "copy_to": ["paragraph.headingscompletion", "paragraph.headingskw"]
-          },
-          "headingskw": {
-            "type": "keyword",
             "store": true
-          },
-          "headingscompletion": {
-            "type": "completion"
           },
           "textscope": {
             "type": "keyword",

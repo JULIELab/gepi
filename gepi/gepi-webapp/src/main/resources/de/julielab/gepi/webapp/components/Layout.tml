@@ -35,9 +35,11 @@
                         </t:loop>
                     </ul>
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <t:EventLink id="resetlink" event="reset" class="nav-link">Reset Session</t:EventLink>
-                        </li>
+                        <t:if test="showResetButton">
+                            <li class="nav-item">
+                                <t:EventLink id="resetlink" event="reset" class="nav-link">Reset Session</t:EventLink>
+                            </li>
+                        </t:if>
                     </ul>
                     <span class="ms-5 navbar-text">GePI Version ${symbol:tapestry.application-version}</span>
 <!--                    <ul id="filteroptions" class="nav navbar-nav hidden">-->

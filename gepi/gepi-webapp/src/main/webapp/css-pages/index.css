@@ -186,3 +186,14 @@ a:active, a:hover {
     background-color: #f6f8fa;
     width: 40px;
 }
+
+#maintenanceCard {
+    margin-left: 24px;
+    margin-right: 24px;
+}
+
+#roadworks-warning-toast {
+    right: 0;
+    top: 70px;
+    z-index: 10;
+}

@@ -184,7 +184,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
                             String arg2EntryIdPath = "/ref/resourceEntryList[" + l + "]/entryId";
                             document.addField("argument1", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[0], argPair[0], argPair[0], argPair[0], argPair[0]}, new String[]{arg1EntryIdPath, arg1EntryIdPath, arg1EntryIdPath, arg1EntryIdPath, arg1EntryIdPath}, new Filter[]{geneFb.orgid2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2gohypertidFilter, geneFb.orgid2equalnameatidReplaceFilter}, new UniqueFilter()));
 //                            document.addField("argument1geneid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, null));
-//                            document.addField("argument1taxid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2taxidReplaceFilter));
+                            document.addField("argument1taxid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.egid2taxidReplaceFilter));
 //                            document.addField("argument1conceptid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2tidReplaceFilter));
 //                            document.addField("argument1tophomoid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2tophomoFilter));
 //                            document.addField("argument1famplexid", createRawFieldValueForAnnotation(argPair[0], arg1EntryIdPath, geneFb.eg2famplexFilter));
@@ -202,7 +202,7 @@ public class RelationFieldValueGenerator extends FieldValueGenerator {
 //                            document.addField("argument1genemappingsource", createRawFieldValueForAnnotation(argPair[0], "/ref/resourceEntryList[" + k + "]/componentId", geneComponentIdProcessingfilter));
                             document.addField("argument2", createRawFieldValueForParallelAnnotations(new FeatureStructure[]{argPair[1], argPair[1], argPair[1], argPair[1], argPair[1]}, new String[]{arg2EntryIdPath, arg2EntryIdPath, arg2EntryIdPath, arg2EntryIdPath, arg2EntryIdPath}, new Filter[]{geneFb.orgid2tid2atidAddonFilter, geneFb.eg2famplexFilter, geneFb.eg2hgncFilter, geneFb.eg2gohypertidFilter, geneFb.orgid2equalnameatidReplaceFilter}, new UniqueFilter()));
 //                            document.addField("argument2geneid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, null));
-//                            document.addField("argument2taxid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2taxidReplaceFilter));
+                            document.addField("argument2taxid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.egid2taxidReplaceFilter));
 //                            document.addField("argument2conceptid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tidReplaceFilter));
 //                            document.addField("argument2tophomoid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2tophomoFilter));
 //                            document.addField("argument2famplexid", createRawFieldValueForAnnotation(argPair[1], arg2EntryIdPath, geneFb.eg2famplexFilter));
