@@ -81,12 +81,6 @@ public class AppModule {
         // symbol source at the top). This is here to give a default value when the property is not included in the
         // configuration file.
         configuration.add("gepi.maintenance", false);
-
-        configuration.override(SymbolConstants.CORS_ENABLED, "true");
-        configuration.override(SymbolConstants.CORS_ALLOWED_ORIGINS, "*");
-        configuration.override(SymbolConstants.CORS_ALLOW_CREDENTIALS, "true");
-        configuration.override(SymbolConstants.CORS_EXPOSE_HEADERS, "X-Custom-Header");
-        configuration.add(SymbolConstants.CORS_MAX_AGE, "3600");
     }
 
     public static void contributeApplicationDefaults(
