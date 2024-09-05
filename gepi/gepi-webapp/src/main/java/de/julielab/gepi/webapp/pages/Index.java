@@ -172,7 +172,12 @@ public class Index {
     }
 
     void afterRender() {
+        System.out.println("Server Name: " + request.getServerName());
         System.out.println("Server Port: " + request.getServerPort());
+        System.out.println("Local Port: " + request.getLocalPort());
+        System.out.println("Is Secure: " + request.isSecure());
+        System.out.println("Path: " + request.getPath());
+        System.out.println("Remote Host: " + request.getRemoteHost());
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI(productionMode));
         javaScriptSupport.require("gepi/pages/index").invoke("setupDownloadUrlCopyButton");
