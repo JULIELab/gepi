@@ -86,7 +86,7 @@ public class AppModule {
         configuration.override(SymbolConstants.CORS_ALLOWED_ORIGINS, "*");
         configuration.override(SymbolConstants.CORS_ALLOW_CREDENTIALS, "true");
         configuration.override(SymbolConstants.CORS_EXPOSE_HEADERS, "X-Custom-Header");
-        configuration.override(SymbolConstants.CORS_MAX_AGE, "3600");
+        configuration.add(SymbolConstants.CORS_MAX_AGE, "3600");
     }
 
     public static void contributeApplicationDefaults(
