@@ -172,6 +172,7 @@ public class Index {
     }
 
     void afterRender() {
+        System.out.println("Server Port: " + request.getServerPort());
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI(productionMode));
         javaScriptSupport.require("gepi/pages/index").invoke("setupDownloadUrlCopyButton");
