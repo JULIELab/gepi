@@ -178,6 +178,8 @@ public class Index {
         System.out.println("Is Secure: " + request.isSecure());
         System.out.println("Path: " + request.getPath());
         System.out.println("Remote Host: " + request.getRemoteHost());
+        for (var name : request.getAttributeNames())
+            System.out.println("Attribute " + name + ": " + request.getAttribute(name));
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI(productionMode));
         javaScriptSupport.require("gepi/pages/index").invoke("setupDownloadUrlCopyButton");
