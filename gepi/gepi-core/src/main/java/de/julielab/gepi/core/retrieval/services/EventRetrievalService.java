@@ -117,6 +117,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_AGGREGATION_VALUE = "aggregationvalue";
 
+    public static final String FIELD_SOURCE = "source";
+
     /**
      * The values in the field have the form symbol1---symbol2
      */

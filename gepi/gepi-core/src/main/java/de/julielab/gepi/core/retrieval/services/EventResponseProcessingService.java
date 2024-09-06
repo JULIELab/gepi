@@ -113,6 +113,7 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
             Optional<Integer> likelihood = eventDocument.get(FIELD_EVENT_LIKELIHOOD);
             Optional<String> sentence = eventDocument.get(FIELD_EVENT_SENTENCE_TEXT);
             Optional<String> paragraph = eventDocument.get(FIELD_EVENT_PARAGRAPH_TEXT);
+            String source = (String)eventDocument.get(FIELD_SOURCE).get(); // pubmed or pmc
             List<String> sentenceArgumentHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_ARGUMENTS);
             List<String> sentenceTriggerHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT_TRIGGER);
             List<String> sentenceFilterHl = eventDocument.getHighlights().get(FIELD_EVENT_SENTENCE_TEXT);
@@ -170,9 +171,12 @@ public class EventResponseProcessingService implements IEventResponseProcessingS
 
             Event event = new Event();
             event.setArity(eventArity);
-            // Only one ID is present currently
-            pmid.ifPresent(event::setDocId);
-            pmcid.ifPresent(event::setDocId);
+
+            if (source.equals("pubmed") && pmid.isPresent())
+                event.setDocId(pmid.get());
+            else if (source.equals("pmc") && pmcid.isPresent())
+                event.setDocId(pmcid.get());
+
             event.setEventId(eventId);
             event.setArguments(arguments);
             if (likelihood.isPresent())
