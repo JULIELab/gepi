@@ -4,18 +4,19 @@ import de.julielab.gepi.core.GepiCoreSymbolConstants;
 import de.julielab.gepi.core.services.ConfigurationSymbolProvider;
 import de.julielab.gepi.core.services.GepiCoreModule;
 import de.julielab.gepi.webapp.base.TabPersistentField;
-import de.julielab.gepi.webapp.state.GePiSessionState;
-import de.julielab.gepi.webapp.state.GePiSessionStateCreator;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.MetaDataConstants;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.commons.MappedConfiguration;
 import org.apache.tapestry5.commons.OrderedConfiguration;
 import org.apache.tapestry5.http.Link;
-import org.apache.tapestry5.http.services.*;
+import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.annotations.*;
+import org.apache.tapestry5.ioc.annotations.Autobuild;
+import org.apache.tapestry5.ioc.annotations.Contribute;
+import org.apache.tapestry5.ioc.annotations.ImportModule;
+import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.services.ApplicationDefaults;
 import org.apache.tapestry5.ioc.services.ParallelExecutor;
 import org.apache.tapestry5.ioc.services.SymbolProvider;
@@ -24,7 +25,6 @@ import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.services.*;
 import org.apache.tapestry5.services.javascript.JavaScriptStack;
 import org.apache.tapestry5.services.javascript.StackExtension;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -121,10 +121,10 @@ public class AppModule {
         conf.override("jquery-library", StackExtension.library("classpath:META-INF/assets/jquery-3.6.0.min.js"));
     }
 
-    @Contribute(RequestHandler.class)
-    public static void contributeRequestFilters(final OrderedConfiguration<RequestFilter> filters) {
-        filters.addInstance(GePiRequestFilter.class.getSimpleName(), GePiRequestFilter.class, "after:ErrorFilter");
-    }
+//    @Contribute(RequestHandler.class)
+//    public static void contributeRequestFilters(final OrderedConfiguration<RequestFilter> filters) {
+//        filters.addInstance(GePiRequestFilter.class.getSimpleName(), GePiRequestFilter.class, "after:ErrorFilter");
+//    }
 
     @Startup
     public static void scheduleJobs(ParallelExecutor pExecutor, PeriodicExecutor executor, IStatisticsCollector statisticsCollector, ITempFileCleaner tempFileCleaner) {
@@ -159,54 +159,54 @@ public class AppModule {
      * a service named "RequestFilter" we use an explicit service id that we can reference
      * inside the contribution method.
      */
-    @ServiceId("timingFilter")
-    public RequestFilter buildTimingFilter(final Logger log) {
-        return new RequestFilter() {
-            public boolean service(Request request, Response response, RequestHandler handler)
-                    throws IOException {
-                long startTime = System.currentTimeMillis();
-
-                try {
-                    // The responsibility of a filter is to invoke the corresponding method
-                    // in the handler. When you chain multiple filters together, each filter
-                    // received a handler that is a bridge to the next filter.
-
-                    return handler.service(request, response);
-                } finally {
-                    long elapsed = System.currentTimeMillis() - startTime;
-
-                    log.info("Request time: {} ms", elapsed);
-                }
-            }
-        };
-    }
-
-    @ServiceId("sessionCheckFilter")
-    public RequestFilter buildSessionCheckFilter(final Logger log, PageRenderLinkSource pageRenderLinkSource) {
-        return (request, response, handler) -> {
-            Session session = request.getSession(false);
-//            log.debug("Session is {}", session);
-            if (session != null) {
-                for (String name : session.getAttributeNames()) {
-                    log.debug("Session attribute {} has value {}", name, session.getAttribute(name));
-                }
-                log.debug("dataSessionId is {}", session.getAttribute("dataSessionId"));
-            }
-//            Link linkToRequestedPage = pageRenderLinkSource.createPageRenderLink(Index.class.getSimpleName());
-//            boolean targetsIndex = request.getPath().contains(Index.class.getSimpleName());
-//            if (!targetsIndex && session == null) {
-//                log.debug("Sending redirect to Index page because the session is null.");
-//                response.sendRedirect(linkToRequestedPage);
-//            } else if (!targetsIndex) {
-//                Object dataSessionId = session.getAttribute("dataSessionId");
-//                if (dataSessionId == null || ((long) dataSessionId) == 0) {
-//                    log.debug("Sending redirect to Index page because dataSessionId is 0.");
-//                    response.sendRedirect(linkToRequestedPage);
+//    @ServiceId("timingFilter")
+//    public RequestFilter buildTimingFilter(final Logger log) {
+//        return new RequestFilter() {
+//            public boolean service(Request request, Response response, RequestHandler handler)
+//                    throws IOException {
+//                long startTime = System.currentTimeMillis();
+//
+//                try {
+//                    // The responsibility of a filter is to invoke the corresponding method
+//                    // in the handler. When you chain multiple filters together, each filter
+//                    // received a handler that is a bridge to the next filter.
+//
+//                    return handler.service(request, response);
+//                } finally {
+//                    long elapsed = System.currentTimeMillis() - startTime;
+//
+//                    log.info("Request time: {} ms", elapsed);
 //                }
 //            }
-            return handler.service(request, response);
-        };
-    }
+//        };
+//    }
+
+//    @ServiceId("sessionCheckFilter")
+//    public RequestFilter buildSessionCheckFilter(final Logger log, PageRenderLinkSource pageRenderLinkSource) {
+//        return (request, response, handler) -> {
+//            Session session = request.getSession(false);
+////            log.debug("Session is {}", session);
+//            if (session != null) {
+//                for (String name : session.getAttributeNames()) {
+//                    log.debug("Session attribute {} has value {}", name, session.getAttribute(name));
+//                }
+//                log.debug("dataSessionId is {}", session.getAttribute("dataSessionId"));
+//            }
+////            Link linkToRequestedPage = pageRenderLinkSource.createPageRenderLink(Index.class.getSimpleName());
+////            boolean targetsIndex = request.getPath().contains(Index.class.getSimpleName());
+////            if (!targetsIndex && session == null) {
+////                log.debug("Sending redirect to Index page because the session is null.");
+////                response.sendRedirect(linkToRequestedPage);
+////            } else if (!targetsIndex) {
+////                Object dataSessionId = session.getAttribute("dataSessionId");
+////                if (dataSessionId == null || ((long) dataSessionId) == 0) {
+////                    log.debug("Sending redirect to Index page because dataSessionId is 0.");
+////                    response.sendRedirect(linkToRequestedPage);
+////                }
+////            }
+//            return handler.service(request, response);
+//        };
+//    }
 
     /**
      * This is a contribution to the RequestHandler service configuration. This is how we extend
@@ -215,18 +215,18 @@ public class AppModule {
      * from the same module.  Without @Local, there would be an error due to the other service(s)
      * that implement RequestFilter (defined in other modules).
      */
-    @Contribute(RequestHandler.class)
-    public void addTimingFilter(OrderedConfiguration<RequestFilter> configuration,
-                                @InjectService("timingFilter")
-                                        RequestFilter filter,
-                                @InjectService("sessionCheckFilter") RequestFilter sessionCheckFilter) {
-        // Each contribution to an ordered configuration has a name, When necessary, you may
-        // set constraints to precisely control the invocation order of the contributed filter
-        // within the pipeline.
-
-//        configuration.add("Timing", filter);
-//        configuration.add("SessionCheck", sessionCheckFilter);
-    }
+//    @Contribute(RequestHandler.class)
+//    public void addTimingFilter(OrderedConfiguration<RequestFilter> configuration,
+//                                @InjectService("timingFilter")
+//                                        RequestFilter filter,
+//                                @InjectService("sessionCheckFilter") RequestFilter sessionCheckFilter) {
+//        // Each contribution to an ordered configuration has a name, When necessary, you may
+//        // set constraints to precisely control the invocation order of the contributed filter
+//        // within the pipeline.
+//
+////        configuration.add("Timing", filter);
+////        configuration.add("SessionCheck", sessionCheckFilter);
+//    }
 
     /**
      * This sets up the custom "tab" state persistence strategy.
@@ -239,11 +239,11 @@ public class AppModule {
         configuration.add(TabPersistentField.TAB, new TabPersistentField(loggerSource.getLogger(TabPersistentField.class), asm));
     }
 
-    public void contributeApplicationStateManager(
-            MappedConfiguration<Class<?>, ApplicationStateContribution> configuration, @Inject Request request,
-            @Autobuild GePiSessionStateCreator sessionStateCreator) {
-        configuration.add(GePiSessionState.class, new ApplicationStateContribution("session", sessionStateCreator));
-    }
+//    public void contributeApplicationStateManager(
+//            MappedConfiguration<Class<?>, ApplicationStateContribution> configuration, @Inject Request request,
+//            @Autobuild GePiSessionStateCreator sessionStateCreator) {
+//        configuration.add(GePiSessionState.class, new ApplicationStateContribution("session", sessionStateCreator));
+//    }
 
     /**
      * Redirect the user to the intended page when browsing through
@@ -267,4 +267,10 @@ public class AppModule {
             }
         };
     }
+
+//    public static void contributeMappedEntityManager(Configuration<String> configuration,
+//                                                     @Symbol(TapestryHttpInternalConstants.TAPESTRY_APP_PACKAGE_PARAM) String appRootPackage)
+//    {
+//        configuration.add(appRootPackage + ".data.api.v1");
+//    }
 }
