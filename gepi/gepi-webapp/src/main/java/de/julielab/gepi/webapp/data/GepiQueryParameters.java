@@ -17,6 +17,8 @@ public class GepiQueryParameters {
     public static final String ALIST = "alist";
     public static final String BLIST = "blist";
     public static final String TAXID = "taxids";
+    public static final String TAXIDA = "taxidsA";
+    public static final String TAXIDB = "taxidsB";
     public static final String EVENTTYPES = "eventtypes";
     public static final String FACTUALITY = "factuality";
     public static final String FILTERFIELDSCONNECTIONOPERATOR = "filterconnector";
@@ -35,6 +37,8 @@ public class GepiQueryParameters {
     private String listATextAreaValue;
     private String listBTextAreaValue;
     private String taxId;
+    private String taxIdA;
+    private String taxIdB;
     private List<EventTypes> selectedEventTypes;
     private int eventLikelihood;
     private String filterFieldsConnectionOperator;
@@ -124,6 +128,8 @@ public class GepiQueryParameters {
             if (listBTextAreaValue != null)
                 listBTextAreaValue = Arrays.stream(listBTextAreaValue.split("[\n,]")).map(this::decodeUrlEncoding).collect(Collectors.joining("\n"));
             taxId = request.getParameter(TAXID);
+            taxIdA = request.getParameter(TAXIDA);
+            taxIdB = request.getParameter(TAXIDB);
             selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
             final String eventTypesString = request.getParameter(EVENTTYPES);
             if (!StringUtils.isBlank(eventTypesString)) {
@@ -186,5 +192,13 @@ public class GepiQueryParameters {
 
     public void setInteractionRetrievalLimitForAggregations(int interactionRetrievalLimitForAggregations) {
         this.interactionRetrievalLimitForAggregations = interactionRetrievalLimitForAggregations;
+    }
+
+    public String getTaxIdA() {
+        return taxIdA;
+    }
+
+    public String getTaxIdB() {
+        return taxIdB;
     }
 }

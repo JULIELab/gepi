@@ -138,6 +138,10 @@
                                 </tbody>
                             </table>
                         </p>
+                        <p>
+                            Regardless of the specific source database, GePI will map the input to all of its orthologs according to the NCBI Gene <a href="https://ftp.ncbi.nlm.nih.gov/gene/DATA/" class="link-secondary" target="_blank"><code>gene_orthologs.gz</code></a> file. Thus, interaction retrieval will be performed across all species with that gene.
+                            Species can be restricted using the <a class="link-secondary" href="#filter-taxonomy">NCBI Taxonomy filters</a> described further below.
+                        </p>
                         <h3 id="search-types">Search types</h3>
                         <p>
 
@@ -220,10 +224,10 @@
                         <p>
                         <h5 id="filter-taxonomy">Taxonomy filter</h5>
                             A comma-separated list of <a href="https://www.ncbi.nlm.nih.gov/taxonomy" class="link-secondary" target="_blank">NCBI Taxonomy</a> IDs may be provided to filter on the interaction partners.
-                            NCBI Gene entries are always assigned a exactly one taxonomy ID. The GePI text processing pipeline also assigns species to protein families
-                            based on the species discussed in the respective document. The species are stored as taxonomy IDs in the interaction database and
-                            also used for species filter purposes. In case no species is mentioned at all - which commonly happens in PubMed abstracts - the human
-                            taxonomy ID 9606 is assigned as this the most frequent organism discussed in PubMed.
+                            NCBI Gene entries are always assigned exactly one taxonomy ID. The GePI text processing pipeline also assigns species to protein families
+                            based on the species discussed in the respective document. In case no species is mentioned at all in a document - which commonly happens in PubMed abstracts - the human
+                            taxonomy ID 9606 is assigned as this the most frequent organism discussed in PubMed. The species are stored as taxonomy IDs in the interaction database and
+                            can be used for species filter purposes. GePI offers taxonomy filters for 1) List A or B, 2) only List A and 3) only List B. The semantics is that in case 1) an interaction will be retrieved if either of its arguments matches any of the specified species. In case 2),
                             <div>
                             <code>
                                 <t:pagelink page="Index" parameters="literal:{alist:mtor}" class="me-2" target="_blank" title="Click to start an example open search for mTOR. The 'Gene A ID' column shows different gene IDs for mTOR that belong to different species." data-bs-toggle="default-tooltip">

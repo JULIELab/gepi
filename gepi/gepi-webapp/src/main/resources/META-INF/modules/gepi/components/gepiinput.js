@@ -10,6 +10,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
 
         observelistbchange();
         togglelistb();
+        toggleSidedTaxFilters();
         observelistachange();
         setuplistfileselectors();
         setuplistfiledragndrop(listaId);
@@ -52,6 +53,7 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
         function observelistachange() {
             $(lista).on("input change", function() {
                 togglelistb();
+                toggleSidedTaxFilters();
             });
         }
 
@@ -173,6 +175,22 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
                 listbelements.attr("disabled", false);
                 selectFile.removeClass("disabled");
                 listbdiv.tooltip("disable");
+            }
+        }
+
+        /*
+         * Deactivates or activates the List A- and List B-specific tax ID filters.
+         */
+        function toggleSidedTaxFilters() {
+            let islistaempty = $(lista).val().length == 0;
+            let taxidElements = $("#organismInputA, #organismInputB");
+            let sidedTaxIdFilterDiv = $("#sidedTaxIdFilterDiv")
+            if (islistaempty) {
+                taxidElements.attr("disabled", true);
+                sidedTaxIdFilterDiv.tooltip("enable");
+            } else {
+                taxidElements.attr("disabled", false);
+                sidedTaxIdFilterDiv.tooltip("disable");
             }
         }
 

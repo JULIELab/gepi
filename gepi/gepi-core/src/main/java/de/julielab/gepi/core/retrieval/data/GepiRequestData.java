@@ -22,13 +22,17 @@ public class GepiRequestData implements Cloneable {
     private boolean includeUnary;
     private int eventLikelihood;
     private String[] taxId;
+    private String[] taxIdsA;
+    private String[] taxIdsB;
     private String sectionNameFilterString;
     private int pageSize = 10;
 
-    public GepiRequestData(List<String> eventTypes, boolean includeUnary, int eventLikelihood, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String[] taxId, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, String docId, long dataSessionId) {
+    public GepiRequestData(List<String> eventTypes, boolean includeUnary, int eventLikelihood, Future<IdConversionResult> listAGePiIds, Future<IdConversionResult> listBGePiIds, String[] taxId, String[] taxIdA, String[] taxIdB, String sentenceFilterString, String paragraphFilterString, String filterFieldsConnectionOperator, String sectionNameFilterString, EnumSet<InputMode> inputMode, String docId, long dataSessionId) {
         this.includeUnary = includeUnary;
         this.eventLikelihood = eventLikelihood;
         this.taxId = taxId;
+        this.taxIdsA = taxIdA;
+        this.taxIdsB = taxIdB;
         this.sectionNameFilterString = sectionNameFilterString;
         this.eventTypes = eventTypes;
         this.listAGePiIds = listAGePiIds;
@@ -202,5 +206,13 @@ public class GepiRequestData implements Cloneable {
                 ", inputMode=" + inputMode +
                 ", dataSessionId=" + dataSessionId +
                 '}';
+    }
+
+    public String[] getTaxIdsB() {
+        return taxIdsB;
+    }
+
+    public String[] getTaxIdsA() {
+        return taxIdsA;
     }
 }

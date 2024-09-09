@@ -27,11 +27,19 @@ public class EventQueries {
         a1b2Clause.addQuery(listA1Query);
         a1b2Clause.addQuery(listB2Query);
         a1b2Clause.occur = MUST;
+        // List B can be empty if there is a taxId filter on the B-side. This is then still a form of a closed search.
+        // However, this results in a B-query that has an empty list of terms which causes
+        // ElasticSearch to not retrieve anything.
+        if (listB2Query.terms.isEmpty())
+            a1b2Clause.queries.remove(listB2Query);
 
         BoolClause a2b1Clause = new BoolClause();
         a2b1Clause.addQuery(listA2Query);
         a2b1Clause.addQuery(listB1Query);
         a2b1Clause.occur = MUST;
+        // Analogous to the a1b2Clause above.
+        if (listB1Query.terms.isEmpty())
+            a1b2Clause.queries.remove(listB1Query);
 
         BoolQuery a1b2Query = new BoolQuery();
         a1b2Query.addClause(a1b2Clause);
@@ -82,13 +90,22 @@ public class EventQueries {
         }
         if (requestData.getEventLikelihood() > 1)
             addEventLikelihoodFilter(eventQuery, requestData.getEventLikelihood());
-        if (requestData.getTaxId() != null && requestData.getTaxId().length > 0) {
-            final TermsQuery taxQuery = new TermsQuery(Arrays.stream(requestData.getTaxId()).collect(Collectors.toList()));
-            taxQuery.field = FIELD_EVENT_TAX_IDS;
-            BoolClause taxIdFilterClause = new BoolClause();
-            taxIdFilterClause.occur = FILTER;
-            taxIdFilterClause.addQuery(taxQuery);
-            eventQuery.addClause(taxIdFilterClause);
+        addTaxIdFilter(eventQuery, requestData.getTaxId(), FIELD_EVENT_TAX_IDS);
+        if (requestData.getTaxIdsA() != null && requestData.getTaxIdsA().length > 0) {
+            final TermsQuery taxQuery = new TermsQuery(Arrays.stream(requestData.getTaxIdsA()).collect(Collectors.toList()));
+            taxQuery.field = FIELD_EVENT_ARG1_TAX_ID;
+            a1b2Clause.addQuery(taxQuery);
+            final TermsQuery taxQuery2 = new TermsQuery(Arrays.stream(requestData.getTaxIdsA()).collect(Collectors.toList()));
+            taxQuery2.field = FIELD_EVENT_ARG2_TAX_ID;
+            a2b1Clause.addQuery(taxQuery2);
+        }
+        if (requestData.getTaxIdsB() != null && requestData.getTaxIdsB().length > 0) {
+            final TermsQuery taxQuery = new TermsQuery(Arrays.stream(requestData.getTaxIdsB()).collect(Collectors.toList()));
+            taxQuery.field = FIELD_EVENT_ARG2_TAX_ID;
+            a1b2Clause.addQuery(taxQuery);
+            final TermsQuery taxQuery2 = new TermsQuery(Arrays.stream(requestData.getTaxIdsB()).collect(Collectors.toList()));
+            taxQuery2.field = FIELD_EVENT_ARG1_TAX_ID;
+            a2b1Clause.addQuery(taxQuery2);
         }
         if (requestData.getDocId() != null && !requestData.getDocId().isBlank()) {
             final MultiMatchQuery docIdQuery = new MultiMatchQuery();
@@ -100,6 +117,17 @@ public class EventQueries {
             eventQuery.addClause(docIdFilterClause);
         }
         return eventQuery;
+    }
+
+    private static void addTaxIdFilter(BoolQuery eventQuery, String[] taxId, String indexSearchField) {
+        if (taxId != null && taxId.length > 0) {
+            final TermsQuery taxQuery = new TermsQuery(Arrays.stream(taxId).collect(Collectors.toList()));
+            taxQuery.field = indexSearchField;
+            BoolClause taxIdFilterClause = new BoolClause();
+            taxIdFilterClause.occur = FILTER;
+            taxIdFilterClause.addQuery(taxQuery);
+            eventQuery.addClause(taxIdFilterClause);
+        }
     }
 
     public static BoolQuery getOpenQuery(GepiRequestData requestData) throws InterruptedException, ExecutionException {
@@ -156,14 +184,8 @@ public class EventQueries {
         }
         if (requestData.getEventLikelihood() > 1)
             addEventLikelihoodFilter(eventQuery, requestData.getEventLikelihood());
-        if (requestData.getTaxId() != null && requestData.getTaxId().length > 0) {
-            final TermsQuery taxQuery = new TermsQuery(Arrays.stream(requestData.getTaxId()).collect(Collectors.toList()));
-            taxQuery.field = FIELD_EVENT_TAX_IDS;
-            BoolClause taxIdFilterClause = new BoolClause();
-            taxIdFilterClause.occur = FILTER;
-            taxIdFilterClause.addQuery(taxQuery);
-            eventQuery.addClause(taxIdFilterClause);
-        }
+        addTaxIdFilter(eventQuery, requestData.getTaxId(), FIELD_EVENT_TAX_IDS);
+        addTaxIdFilter(eventQuery, requestData.getTaxIdsA(), FIELD_EVENT_ARG1_TAX_ID);
         if (requestData.getDocId() != null && !requestData.getDocId().isBlank()) {
             final MultiMatchQuery docIdQuery = new MultiMatchQuery();
             docIdQuery.query = requestData.getDocId();
@@ -197,7 +219,6 @@ public class EventQueries {
         final String paragraphFilter = requestData.getParagraphFilterString();
         final String sectionNameFilter = requestData.getSectionNameFilterString();
         final int eventLikelihood = requestData.getEventLikelihood();
-        final String[] taxIds = requestData.getTaxId();
         final String docId = requestData.getDocId();
 
         if (eventTypes != null && !eventTypes.isEmpty()) {
@@ -236,14 +257,9 @@ public class EventQueries {
         if (eventLikelihood > 1) {
             addEventLikelihoodFilter(eventQuery, eventLikelihood);
         }
-        if (taxIds != null && taxIds.length > 0) {
-            final TermsQuery taxQuery = new TermsQuery(Arrays.stream(taxIds).collect(Collectors.toList()));
-            taxQuery.field = FIELD_EVENT_TAX_IDS;
-            BoolClause taxIdFilterClause = new BoolClause();
-            taxIdFilterClause.occur = FILTER;
-            taxIdFilterClause.addQuery(taxQuery);
-            eventQuery.addClause(taxIdFilterClause);
-        }
+        addTaxIdFilter(eventQuery, requestData.getTaxId(), FIELD_EVENT_TAX_IDS);
+        addTaxIdFilter(eventQuery, requestData.getTaxIdsA(), FIELD_EVENT_ARG1_TAX_ID);
+        addTaxIdFilter(eventQuery, requestData.getTaxIdsB(), FIELD_EVENT_ARG2_TAX_ID);
         if (docId != null && docId.isBlank()) {
             final MultiMatchQuery docIdQuery = new MultiMatchQuery();
             docIdQuery.query = docId;
@@ -269,7 +285,7 @@ public class EventQueries {
         final SimpleQueryStringQuery textFilterQuery = new SimpleQueryStringQuery();
         textFilterQuery.flags = List.of(SimpleQueryStringQuery.Flag.ALL);
         textFilterQuery.query = filterQuery;
-        textFilterQuery.fields = Arrays.asList(field);
+        textFilterQuery.fields = List.of(field);
         final BoolClause textFilterClause = new BoolClause();
         textFilterClause.addQuery(textFilterQuery);
         textFilterClause.occur = occur;

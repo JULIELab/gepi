@@ -75,7 +75,7 @@ public class AppModule {
 
         // This is something that should be removed when going to production, but is useful
         // in the early stages of development.
-        configuration.override(SymbolConstants.PRODUCTION_MODE, true);
+        configuration.override(SymbolConstants.PRODUCTION_MODE, false);
 
         // This symbol is meant to be controlled through a configuration properties file (loaded with the contributed
         // symbol source at the top). This is here to give a default value when the property is not included in the

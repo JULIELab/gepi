@@ -85,7 +85,6 @@ public class GePiDataService implements IGePiDataService {
         return id;
     }
 
-    @Log
     @Override
     public GePiData getData(long sessionId) {
         GePiData data = dataCache.getIfPresent(sessionId);
