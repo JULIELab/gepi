@@ -251,6 +251,8 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
                 listaTextAreaId                : "lista",
                 listbTextAreaId                : "listb",
                 orgTextFieldId                 : "organismInput",
+                orgTextFieldIdA                : "organismInputA",
+                orgTextFieldIdB                : "organismInputB",
                 eventTypeChecklistId           : "eventtypes",
                 negRegulationCheckboxSelector  : "#eventtypes input[value='Negative_regulation']",
                 radioLikelihoodNegRadioClientId: "radio_likelihood_negation",
@@ -318,6 +320,8 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
             const listaTextArea = document.getElementById(formElementIds.listaTextAreaId);
             const listbTextArea = document.getElementById(formElementIds.listbTextAreaId);
             const orgTextField = document.getElementById(formElementIds.orgTextFieldId);
+            const orgTextFieldA = document.getElementById(formElementIds.orgTextFieldIdA);
+            const orgTextFieldB = document.getElementById(formElementIds.orgTextFieldIdB);
             const eventTypeCheckboxes = document.querySelectorAll(`#${formElementIds.eventTypeChecklistId} input`);
             const radioLikelihoodNegRadio = document.querySelector(`input[clientid='${formElementIds.radioLikelihoodNegRadioClientId}'`);
             const includeUnaryCheckbox = document.getElementById(formElementIds.includeUnaryId);
@@ -329,6 +333,8 @@ define(["jquery", "gepi/pages/index", "gepi/charts/data", "bootstrap5/tooltip"],
             listaTextArea.value = "";
             listbTextArea.value = "";
             orgTextField.value = "";
+            orgTextFieldA.value = "";
+            orgTextFieldB.value = "";
             eventTypeCheckboxes.forEach(box => box.checked=true);
             includeUnaryCheckbox.checked = false;
             radioLikelihoodNegRadio.checked = true;
