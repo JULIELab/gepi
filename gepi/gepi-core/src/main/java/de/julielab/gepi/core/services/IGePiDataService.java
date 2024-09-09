@@ -9,7 +9,6 @@ import org.apache.tapestry5.json.JSONObject;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -75,13 +74,10 @@ public interface IGePiDataService {
      * <p>To do this, the event data is written to a temporary file, a Python-Pandas script is applied and the
      * resulting Excel file is then read back in the form of the InputStream.</p>
      * @param events The events to create the result workbook for.
-     * @param inputMode
-     * @param sentenceFilterString
-     * @param paragraphFilterString
-     * @param sectionNameFilterString
+     * @param requestData
      * @return An InputStream of the created Excel file.
      */
-    Path getOverviewExcel(Future<EventRetrievalResult> events, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException, ExecutionException, InterruptedException;
+    Path getOverviewExcel(Future<EventRetrievalResult> events, GepiRequestData requestData) throws IOException, ExecutionException, InterruptedException;
 
     String getDownloadFileCreationStatus(long dataSessionId) throws IOException;
 

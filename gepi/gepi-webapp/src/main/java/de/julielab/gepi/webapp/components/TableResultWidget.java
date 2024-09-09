@@ -16,6 +16,7 @@ import de.julielab.gepi.webapp.data.EventTypes;
 import de.julielab.java.utilities.FileUtilities;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.StreamResponse;
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
@@ -24,6 +25,7 @@ import org.apache.tapestry5.http.Link;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
@@ -93,6 +95,9 @@ public class TableResultWidget extends GepiWidget {
     private LoggerSource loggerSource;
     @Environmental
     private JavaScriptSupport javaScriptSupport;
+    @Inject
+    @Symbol(SymbolConstants.PRODUCTION_MODE)
+    private boolean productionMode;
 
 //    @Property
 //    private List<String> selectedColumns;
@@ -246,7 +251,7 @@ public class TableResultWidget extends GepiWidget {
 //                        log.info("[{}] Unrolled result retrieval for Excel sheet creation took {} seconds", requestData.getDataSessionId(), time / 1000);
 //                    }
                     final Future<EventRetrievalResult> unrolledResult4download = dataService.getUnrolledResult4download(requestData, eventRetrievalService);
-                    statisticsFile = dataService.getOverviewExcel(unrolledResult4download, requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
+                    statisticsFile = dataService.getOverviewExcel(unrolledResult4download, requestData);
 
                     response.setHeader("Content-Length", "" + Files.size(statisticsFile)); // output into file
                     response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getFileName());
@@ -293,7 +298,7 @@ public class TableResultWidget extends GepiWidget {
 
     public void afterRender() {
         final Link downloadEventLink = resources.createEventLink("download");
-        javaScriptSupport.require("gepi/charts/tablewidget").invoke("download").with(downloadEventLink.toAbsoluteURI().replace(":80", ""));
+        javaScriptSupport.require("gepi/charts/tablewidget").invoke("download").with(downloadEventLink.toAbsoluteURI(productionMode));
         javaScriptSupport.require("gepi/charts/tablewidget").invoke("setupHighlightTooltips");
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
     }
