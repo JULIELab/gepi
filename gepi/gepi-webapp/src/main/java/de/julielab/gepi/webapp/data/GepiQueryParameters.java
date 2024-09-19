@@ -170,6 +170,14 @@ public class GepiQueryParameters {
         }
     }
 
+    /**
+     * This method is required for the help pages. For some reason, Tapestry converts the percent-URL-encodings
+     * in the HTML attributes into these dollar-sign encodings which are then not translated back.
+     *
+     * The API - when used with cURL, for example - works just fine.
+     * @param encodedString
+     * @return
+     */
     private String decodeUrlEncoding(String encodedString) {
         return encodedString.replaceAll("\\$002520", " ")
                 .replaceAll("\\$00253[Aa]", ":")

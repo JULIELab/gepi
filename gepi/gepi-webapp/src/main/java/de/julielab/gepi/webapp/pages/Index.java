@@ -6,6 +6,7 @@ import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.base.TabPersistentField;
 import de.julielab.gepi.webapp.components.GepiInput;
 import de.julielab.gepi.webapp.components.TableResultWidget;
+import de.julielab.gepi.webapp.data.GepiQueryParameters;
 import de.julielab.gepi.webapp.state.GePiSessionState;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.ComponentResources;
@@ -121,10 +122,10 @@ public class Index {
             sessionExists = true;
         }
 
-//        final GepiQueryParameters gepiQueryParameters = new GepiQueryParameters(request);
-//        if (gepiQueryParameters.isValidRequest()) {
-//            log.info("Received valid query parameters for GePI search.");
-//            gepiInput.executeSearch(gepiQueryParameters, dataSessionId);
+        final GepiQueryParameters gepiQueryParameters = new GepiQueryParameters(request);
+        if (gepiQueryParameters.isValidRequest()) {
+            log.info("Received valid query parameters for GePI search.");
+            gepiInput.executeSearch(gepiQueryParameters, dataSessionId);
 //            switch (gepiQueryParameters.getFormat()) {
 //                case "excel":
 //                    return tableResultWidget.onDownload();
@@ -160,10 +161,10 @@ public class Index {
 //                    return dataService;
 //                default: return this;
 //            }
-//            //return this;
-//        } else {
-//            log.debug("Query parameters did not contain a valid GePI search.");
-//        }
+            return this;
+        } else {
+            log.debug("Query parameters did not contain a valid GePI search.");
+        }
         return null;
     }
     @Inject

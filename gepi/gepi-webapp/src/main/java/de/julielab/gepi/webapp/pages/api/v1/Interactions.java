@@ -60,7 +60,6 @@ public class Interactions {
     @Persist(TabPersistentField.TAB)
     private long dataSessionId;
 
-    //@RestInfo(consumes = "application/json")
     @OnEvent(EventConstants.HTTP_GET)
     Object onHttpGet() {
         if (requestData == null) {
