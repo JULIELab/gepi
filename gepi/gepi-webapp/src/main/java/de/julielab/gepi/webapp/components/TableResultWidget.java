@@ -16,6 +16,7 @@ import de.julielab.gepi.webapp.data.EventTypes;
 import de.julielab.java.utilities.FileUtilities;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.StreamResponse;
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
@@ -24,6 +25,7 @@ import org.apache.tapestry5.http.Link;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
@@ -87,6 +89,9 @@ public class TableResultWidget extends GepiWidget {
     @Property
     @Persist(TabPersistentField.TAB)
     private Format contextFormat;
+    @Inject
+    @Symbol(SymbolConstants.PRODUCTION_MODE)
+    private boolean productionMode;
     @Inject
     private IEventRetrievalService eventRetrievalService;
     @Inject
@@ -293,7 +298,7 @@ public class TableResultWidget extends GepiWidget {
 
     public void afterRender() {
         final Link downloadEventLink = resources.createEventLink("download");
-        javaScriptSupport.require("gepi/charts/tablewidget").invoke("download").with(downloadEventLink.toAbsoluteURI().replace(":80", ""));
+        javaScriptSupport.require("gepi/charts/tablewidget").invoke("download").with(downloadEventLink.toAbsoluteURI(productionMode));
         javaScriptSupport.require("gepi/charts/tablewidget").invoke("setupHighlightTooltips");
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
     }
