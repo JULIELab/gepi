@@ -117,12 +117,12 @@ public class GepiQueryParameters {
             if (listATextAreaValue == null)
                 listATextAreaValue = request.getParameter(ALIST);
             if (listATextAreaValue != null)
-                listATextAreaValue = Arrays.stream(listATextAreaValue.split("[\n,]")).map(this::decodeUrlEncoding).collect(Collectors.joining("\n"));
+                listATextAreaValue = Arrays.stream(decodeUrlEncoding(listATextAreaValue).split("[\n,]")).collect(Collectors.joining("\n"));
             listBTextAreaValue = request.getParameter(LISTB);
             if (listBTextAreaValue == null)
                 listBTextAreaValue = request.getParameter(BLIST);
             if (listBTextAreaValue != null)
-                listBTextAreaValue = Arrays.stream(listBTextAreaValue.split("[\n,]")).map(this::decodeUrlEncoding).collect(Collectors.joining("\n"));
+                listBTextAreaValue = Arrays.stream(decodeUrlEncoding(listBTextAreaValue).split("[\n,]")).collect(Collectors.joining("\n"));
             taxId = request.getParameter(TAXID);
             selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
             final String eventTypesString = request.getParameter(EVENTTYPES);
