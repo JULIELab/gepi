@@ -498,7 +498,8 @@
                             flatly listing all retrieved interactions can be obtained.
                         </p>
                         <p>
-                            The API is realized through URL request parameters, i.e. the GePI Web address followed by a
+                            The API currently works through HTTP GET requests (POST is not yet supported) and
+                            is realized through URL request parameters, i.e. the GePI Web address followed by a
                             single question mark (<code>?</code>) and parameter-value pairs. A parameter-value pair
                             is separated by an equal sign (<code>=</code>) and a sequence of such pairs are separated by
                             the ampersand characters (<code>&amp;</code>).

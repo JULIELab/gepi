@@ -360,7 +360,7 @@ public class GepiInput {
     private Future<IdConversionResult> convertToAggregateIds(String input, String listName) {
         if (input != null) {
             List<String> inputList = Stream.of(input.split("[\n]")).map(String::trim).filter(Predicate.not(String::isBlank)).collect(Collectors.toList());
-            log.debug("Got {} input IDs from {}", inputList.size(), listName);
+            log.debug("Got {} input IDs from {} for conversion to GePI IDs", inputList.size(), listName);
             IdType toIdType = IdType.GEPI_AGGREGATE;
             return geneIdService.convert(inputList.stream(),  toIdType);
         }
