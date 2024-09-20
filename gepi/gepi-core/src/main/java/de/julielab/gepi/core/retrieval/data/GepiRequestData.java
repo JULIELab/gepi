@@ -194,6 +194,11 @@ public class GepiRequestData implements Cloneable {
         return this;
     }
 
+    public GepiRequestData withMinimumEventLikelihood(int eventLikelihood) {
+        this.eventLikelihood = eventLikelihood;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "GepiRequestData{" +

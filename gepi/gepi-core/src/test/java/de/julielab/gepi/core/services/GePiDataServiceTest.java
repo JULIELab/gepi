@@ -82,7 +82,7 @@ public class GePiDataServiceTest {
         final EventRetrievalResult eventRetrievalResult = new EventRetrievalResult();
         eventRetrievalResult.setEvents(events);
 
-        final GepiRequestData requestData = new GepiRequestData().withDataSessionId(1234).withInputMode(EnumSet.of(InputMode.A));
+        final GepiRequestData requestData = new GepiRequestData().withDataSessionId(1234).withInputMode(EnumSet.of(InputMode.A)).withEventTypes("Phosphorylation").withMinimumEventLikelihood(1);
         Path outputFile = gePiDataService.getOverviewExcel(CompletableFuture.completedFuture(eventRetrievalResult), requestData);
         assertThat(outputFile).exists();
     }
