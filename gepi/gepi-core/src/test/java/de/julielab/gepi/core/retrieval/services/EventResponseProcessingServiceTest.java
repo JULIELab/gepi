@@ -13,8 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS;
-import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.FIELD_NUM_ARGUMENTS;
+import static de.julielab.gepi.core.retrieval.services.EventRetrievalService.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class EventResponseProcessingServiceTest {
@@ -33,7 +32,7 @@ public class EventResponseProcessingServiceTest {
     private IElasticServerResponse getESResponseWithHighlighting(Map<String, List<String>> sentenceHighlights) {
         final IElasticServerResponse response = Mockito.mock(IElasticServerResponse.class, inv -> null);
 
-        Mockito.when(response.getDocumentResults()).thenReturn(Stream.of(getSearchServerDocument(Map.of(EventRetrievalService.FIELD_PMID, "1234", EventRetrievalService.FIELD_EVENT_ARG_CONCEPT_IDS, List.of("tid007", "tid006"),FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS, List.of("atid1", "atid2"), FIELD_NUM_ARGUMENTS, 1), sentenceHighlights)));
+        Mockito.when(response.getDocumentResults()).thenReturn(Stream.of(getSearchServerDocument(Map.of(EventRetrievalService.FIELD_PMID, "1234", EventRetrievalService.FIELD_EVENT_ARG_CONCEPT_IDS, List.of("tid007", "tid006"),FIELD_EVENT_ARG_TOP_HOMOLOGY_IDS, List.of("atid1", "atid2"), FIELD_NUM_ARGUMENTS, 1, FIELD_SOURCE, "pubmed"), sentenceHighlights)));
         Mockito.when(response.getNumFound()).thenReturn(1L);
         return response;
     }
