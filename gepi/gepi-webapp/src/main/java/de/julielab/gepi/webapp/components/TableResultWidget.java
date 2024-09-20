@@ -98,9 +98,6 @@ public class TableResultWidget extends GepiWidget {
     private LoggerSource loggerSource;
     @Environmental
     private JavaScriptSupport javaScriptSupport;
-    @Inject
-    @Symbol(SymbolConstants.PRODUCTION_MODE)
-    private boolean productionMode;
 
     @Inject
     private IGeneIdService geneIdService;

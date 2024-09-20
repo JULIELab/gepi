@@ -58,7 +58,7 @@ def writeresults(input,output,searchParameters):
                  'Factuality level of the event as determined by text expressions like "suggest", "may" etc.',
                  'PubMed or PMC document ID. PMC documents carry the "PMC" prefix.',
                  'Internal event ID. Useful to find unique identifiers for each event.',
-                 'Place of fulltext filter match. Only applicable if filter terms were specified.',
+             #    'Place of fulltext filter match. Only applicable if filter terms were specified.',
                  'The textual context from the literature in which the event was found. That is the sentence enclosing the event by default. In case of a paragraph-level filter query this can also be the enclosing paragraph. This would then be indicated by the value of the fulltextmatchtype column.']
     df = pd.read_csv(input,sep="\t",dtype={'arg1entrezid': object,'arg2entrezid':object,'docid':object,'relationtypes':object,'fulltextmatchtype':object,'factuality':object},quoting=csv.QUOTE_NONE,keep_default_na=False)
     # The header should be included in the TSV file anyway. But in case we change the names there let's use a fixed
@@ -71,7 +71,9 @@ def writeresults(input,output,searchParameters):
         types = list(set(reltypes.at[i].split(',')))
         reltypes.at[i]= ','.join(types)
     columnsorder=[ 'arg1symbol',  'arg2symbol', 'arg1text', 'arg2text', 'arg1entrezid', 'arg2entrezid',
-          'relationtypes', 'factuality', 'docid', 'eventid', 'fulltextmatchtype', 'context']
+          'relationtypes', 'factuality', 'docid', 'eventid',
+          #         'fulltextmatchtype',
+          'context']
     df = df[columnsorder]
 
     # Create a df where all symbols are normalized.
