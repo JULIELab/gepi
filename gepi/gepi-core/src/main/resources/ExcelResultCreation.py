@@ -9,6 +9,15 @@ import sys
 from datetime import date
 from pandas import ExcelWriter
 
+class Counter:
+    # Helper class to count rows
+    def __init__(self, start=0):
+        self.value = start
+
+    def inc(self, amount=1):
+        current_value = self.value
+        self.value += amount
+        return current_value
 
 def makeNorm2MajorityMap(originalDf, rx):
     allsymbols = pd.concat([originalDf['arg1symbol'], originalDf['arg2symbol']])
@@ -38,7 +47,7 @@ def makeGeneHyperlink(value):
         url = "https://github.com/sorgerlab/famplex/{}"
     return f'=HYPERLINK("{url.format(id)}", "{value}")'
 
-def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterString,sectionNameFilterString):
+def writeresults(input,output,searchParameters):
     columndesc=[ 'Input gene symbol',
                  'Event partner gene symbol',
                  'the document text of the input gene in the found sentence',
@@ -117,7 +126,7 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
     with ExcelWriter(output, mode="w") as ew:
         pd.DataFrame().to_excel(ew, sheet_name='Frontpage')
         df.to_excel(ew, sheet_name="Results", index=False)
-        if 'A' in inputMode or 'AB' in inputMode:
+        if 'A' in searchParameters['inputMode'] or 'AB' in searchParameters['inputMode']:
             givengenesfreq.to_excel(ew, sheet_name="Given Genes Statistics")
             othergenesfreq.to_excel(ew, sheet_name="Event Partner Statistics")
             relfreq.to_excel(ew, sheet_name="Event Statistics")
@@ -130,41 +139,55 @@ def writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterStri
         frontpage = ew.sheets['Frontpage']
         #frontpage.hide_gridlines(2)
         bold = ew.book.add_format({'bold': True})
-        frontpage.write(0,0, f'This is a GePi statistics file which contains results of event extraction. Creation date is {date.today()}.')
-        frontpage.write(1,0, 'The contained worksheets contain the actual text mining results as well as statistics extracted from them.')
-        frontpage.write(2,0, 'The result was obtained using the following filter terms:')
-        frontpage.write(3,0, f'Sentence level filter query: {sentenceFilterString}')
-        frontpage.write(4,0, f'Paragraph level filter query: {paragraphFilterString}')
-        frontpage.write(5,0, f'Section Heading filter query: {sectionNameFilterString}')
-        frontpage.write(6,0, 'Only molecular events that were described in a sentence or a paragraph containing the filter terms was returned for this result.')
-        frontpage.write(8,0, 'The "Results" sheet is a large table containing the gene event arguments, an indication of how well the text matched')
-        frontpage.write(9,0, 'a gene synonym, the recognized type of the event (such as "phosphorylation" or "regulation"),')
-        frontpage.write(10,0, 'the document ID (PubMed ID for PubMed results, PMC ID for PubMed Central results) and the sentence in which the')
-        frontpage.write(11,0, 'respective event was found.')
-        resultsdesc.to_excel(ew, startrow=7, index=False, sheet_name='Frontpage')
+        c = Counter()
+        frontpage.write(c.inc(),0, f'This is a GePI statistics file which contains results of event extraction. Creation date is {date.today()}.')
+        frontpage.write(c.inc(),0, 'The contained worksheets contain the actual text mining results as well as statistics extracted from them.')
+        frontpage.write(c.inc(),0, 'The result was obtained using the following filter terms:')
+        frontpage.write(c.inc(),0, f'Sentence level filter query: {searchParameters["sentenceFilterString"]}')
+        frontpage.write(c.inc(),0, f'Paragraph level filter query: {searchParameters["paragraphFilterString"]}')
+        frontpage.write(c.inc(),0, f'Section Heading filter query: {searchParameters["sectionNameFilterString"]}')
+        frontpage.write(c.inc(),0, f'Event types included: {searchParameters["eventTypes"]}')
+        frontpage.write(c.inc(),0, f'Unary events allowed: {searchParameters["includeUnary"]}')
+        frontpage.write(c.inc(),0, f'Minimum event likelihood: {searchParameters["likelihood"]}')
+        frontpage.write(c.inc(),0, f'Organism filter A or B: {searchParameters["taxId"]}')
+        frontpage.write(c.inc(),0, f'Organism filter A: {searchParameters["taxIdsA"]}')
+        frontpage.write(c.inc(),0, f'Organism filter B: {searchParameters["taxIdsB"]}')
+        frontpage.write(c.inc(),0, 'Only molecular events that were described in a sentence or a paragraph containing the filter terms was returned for this result.')
+        frontpage.write(c.inc(),0, 'The "Results" sheet is a large table containing the gene event arguments, an indication of how well the text matched')
+        frontpage.write(c.inc(),0, 'a gene synonym, the recognized type of the event (such as "phosphorylation" or "regulation"),')
+        frontpage.write(c.inc(),0, 'the document ID (PubMed ID for PubMed results, PMC ID for PubMed Central results) and the sentence in which the respective event was found.')
+        c.inc()
+        resultsdesc.to_excel(ew, startrow=c.inc(14), index=False, sheet_name='Frontpage')
         #frontpage.write(24,0,  'Description of the sheets:', bold)
 
-        frontpage.write(26,0,  'Description of the sheets:')
-        if 'A' in inputMode or 'AB' in inputMode:
-            frontpage.write(27,0,  '"Given Genes Statistics" shows how often the input gene symbols were found in relations with other genes.')
-            frontpage.write(28,0,  '"Event Partner Statistics" shows the same but from the perspective of the interaction partners of the input genes.')
-            frontpage.write(29,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results. The value "none" indicates unary events without a second interaction partner.')
-            frontpage.write(30,0,  '"Input Gene Event Diversity" shows for each input gene symbol how many different interaction partners it has in the results.')
-            frontpage.write(31,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results.')
+        frontpage.write(c.inc(),0,  'Description of the sheets:')
+        if 'A' in searchParameters['inputMode'] or 'AB' in searchParameters['inputMode']:
+            frontpage.write(c.inc(),0,  '"Given Genes Statistics" shows how often the input gene symbols were found in relations with other genes.')
+            frontpage.write(c.inc(),0,  '"Event Partner Statistics" shows the same but from the perspective of the interaction partners of the input genes.')
+            frontpage.write(c.inc(),0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results. The value "none" indicates unary events without a second interaction partner.')
+            frontpage.write(c.inc(),0,  '"Input Gene Event Diversity" shows for each input gene symbol how many different interaction partners it has in the results.')
+            frontpage.write(c.inc(),0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results.')
         else:
-            frontpage.write(27,0,  '"Gene Interaction Statistics" shows how often gene symbols were found in relations with other genes.')
-            frontpage.write(28,0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results.')
-            frontpage.write(29,0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results. The value "none" indicates the number of unary events without a second interaction partner.')
+            frontpage.write(c.inc(),0,  '"Gene Interaction Statistics" shows how often gene symbols were found in relations with other genes.')
+            frontpage.write(c.inc(),0,  '"Event Statistics" lists the extracted events grouped by their combination of input and event partner genes. In other words, it counts how often two genes interact with each other in the results.')
+            frontpage.write(c.inc(),0,  '"Gene Argument Event Diversity" shows for each gene that participated in an event the number of different interaction partners in the results. The value "none" indicates the number of unary events without a second interaction partner.')
 
     return df
 
 if __name__ == "__main__":
     input     = sys.argv[1]
     output    = sys.argv[2]
-    inputMode = sys.argv[3].split(' ')
-    sentenceFilterString = sys.argv[4]
-    paragraphFilterString = sys.argv[5]
-    sectionNameFilterString = sys.argv[6]
-
-    writeresults(input,output,inputMode,sentenceFilterString,paragraphFilterString,sectionNameFilterString)
+    searchParameters = {
+        'inputMode': sys.argv[3].split(' '),
+        'sentenceFilterString': sys.argv[4],
+        'paragraphFilterString': sys.argv[5],
+        'sectionNameFilterString': sys.argv[6],
+        'eventTypes': sys.argv[7].split(' '),
+        'includeUnary': sys.argv[8],
+        'likelihood': sys.argv[9],
+        'taxId': sys.argv[10],
+        'taxIdsA': sys.argv[11],
+        'taxIdsB': sys.argv[12]
+    }
+    writeresults(input,output,searchParameters)
 

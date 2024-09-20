@@ -98,6 +98,9 @@ public class TableResultWidget extends GepiWidget {
     private LoggerSource loggerSource;
     @Environmental
     private JavaScriptSupport javaScriptSupport;
+    @Inject
+    @Symbol(SymbolConstants.PRODUCTION_MODE)
+    private boolean productionMode;
 
     @Inject
     private IGeneIdService geneIdService;
@@ -189,7 +192,7 @@ public class TableResultWidget extends GepiWidget {
             public void prepareResponse(Response response) {
                 try {
                     final Future<EventRetrievalResult> unrolledResult4download = dataService.getUnrolledResult4download(requestData, eventRetrievalService);
-                    statisticsFile = dataService.getOverviewExcel(unrolledResult4download, requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
+                    statisticsFile = dataService.getOverviewExcel(unrolledResult4download, requestData);
 
                     response.setHeader("Content-Length", "" + Files.size(statisticsFile)); // output into file
                     response.setHeader("Content-disposition", "attachment; filename=" + statisticsFile.getFileName());

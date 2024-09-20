@@ -4,7 +4,6 @@ import com.google.common.collect.Multimap;
 import de.julielab.gepi.core.retrieval.data.EsAggregatedResult;
 import de.julielab.gepi.core.retrieval.data.Event;
 import de.julielab.gepi.core.retrieval.data.IdConversionResult;
-import de.julielab.gepi.core.retrieval.data.InputMode;
 import de.julielab.gepi.core.services.IGePiDataService;
 import de.julielab.gepi.webapp.data.InputMapping;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -94,12 +93,12 @@ public class StatsWidget extends GepiWidget {
 
     public int getInputSize(String list, String type) {
         try {
-            final IdConversionResult idConversionResult = list.equalsIgnoreCase("a") ? requestData.getListAGePiIds().get() : requestData.getListBGePiIds().get();
-            if (type.equalsIgnoreCase("converted")) {
-                final Multimap<String, String> convertedItems = idConversionResult.getConvertedItems();
+            final Future<IdConversionResult> idConversionResult = list.equalsIgnoreCase("a") ? requestData.getListAGePiIds() : requestData.getListBGePiIds();
+            if (idConversionResult != null && type.equalsIgnoreCase("converted")) {
+                final Multimap<String, String> convertedItems = idConversionResult.get().getConvertedItems();
                 return convertedItems.keySet().size();
             }
-            return (int) idConversionResult.getUnconvertedItems().count();
+            return (int) (idConversionResult != null ? idConversionResult.get().getUnconvertedItems().count() : 0);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -109,11 +108,11 @@ public class StatsWidget extends GepiWidget {
     }
 
     public boolean isAList() {
-        return requestData.getInputMode().contains(InputMode.A) || isBList();
+        return requestData.getListAGePiIds() != null;
     }
 
     public boolean isBList() {
-        return requestData.getInputMode().contains(InputMode.AB);
+        return requestData.getListBGePiIds() != null;
     }
 
 }

@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -85,7 +86,6 @@ public class GePiDataService implements IGePiDataService {
         return id;
     }
 
-    @Log
     @Override
     public GePiData getData(long sessionId) {
         GePiData data = dataCache.getIfPresent(sessionId);
@@ -323,7 +323,8 @@ public class GePiDataService implements IGePiDataService {
     }
 
     @Override
-    public Path getOverviewExcel(Future<EventRetrievalResult> eventRetrievalResult, long dataSessionId, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException, ExecutionException, InterruptedException {
+    public Path getOverviewExcel(Future<EventRetrievalResult> eventRetrievalResult, GepiRequestData requestData) throws IOException, ExecutionException, InterruptedException {
+        final long dataSessionId = requestData.getDataSessionId();
         long time = System.currentTimeMillis();
         log.info("Creating event statistics Excel file for dataSessionId {}", dataSessionId);
         final Path tempStatusFile = getTempStatusFile(dataSessionId);
@@ -337,7 +338,7 @@ public class GePiDataService implements IGePiDataService {
         Path xlsFile = getTempXlsDataFile(dataSessionId);
         writeOverviewTsvFile(eventRetrievalResult.get().getEventList(), tsvFile);
         updateDownloadFileCreationsStatus("Step 2 of 3: Retrieval of all interactions has finished. Creating Excel file.", dataSessionId);
-        createExcelSummaryFile(tsvFile, xlsFile, inputMode, sentenceFilterString, paragraphFilterString, sectionNameFilterString);
+        createExcelSummaryFile(tsvFile, xlsFile, requestData);
         updateDownloadFileCreationsStatus(EXCEL_FILE_SUCCESS_STATE + " The file is ready for download.", dataSessionId);
         time = System.currentTimeMillis() - time;
         log.info("Excel sheet creation took {} seconds", time / 1000);
@@ -367,8 +368,33 @@ public class GePiDataService implements IGePiDataService {
         Files.writeString(tempStatusFile, status);
     }
 
-    private void createExcelSummaryFile(Path tsvFile, Path xlsFile, EnumSet<InputMode> inputMode, String sentenceFilterString, String paragraphFilterString, String sectionNameFilterString) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder().command("python3", "-c", excelResultCreationScript, tsvFile.toAbsolutePath().toString(), xlsFile.toAbsolutePath().toString(), inputMode.stream().map(InputMode::name).collect(Collectors.joining(" ")), sentenceFilterString != null ? sentenceFilterString : "<none>", paragraphFilterString != null ? paragraphFilterString : "<none>", sectionNameFilterString != null ? sectionNameFilterString : "<none>");
+    private void createExcelSummaryFile(Path tsvFile, Path xlsFile, GepiRequestData requestData) throws IOException {
+        final EnumSet<InputMode> inputMode = requestData.getInputMode();
+        final String sentenceFilterString = requestData.getSentenceFilterString();
+        final String paragraphFilterString = requestData.getParagraphFilterString();
+        final String sectionNameFilterString = requestData.getSectionNameFilterString();
+        final List<String> eventTypes = requestData.getEventTypes();
+        final boolean includeUnary = requestData.isIncludeUnary();
+        final String[] taxId = requestData.getTaxId();
+        final String[] taxIdsA = requestData.getTaxIdsA();
+        final String[] taxIdsB = requestData.getTaxIdsB();
+        Map<Integer, String> likelihood2string = Map.of(1, "negation", 2, "low", 3, "investigation", 4, "moderate", 5, "high", 6, "assertion");
+
+        ProcessBuilder builder = new ProcessBuilder().command("python3", "-c",
+                excelResultCreationScript,
+                tsvFile.toAbsolutePath().toString(),
+                xlsFile.toAbsolutePath().toString(),
+                inputMode.stream().map(InputMode::name).collect(Collectors.joining(" ")),
+                sentenceFilterString != null ? sentenceFilterString : "<none>",
+                paragraphFilterString != null ? paragraphFilterString : "<none>",
+                sectionNameFilterString != null ? sectionNameFilterString : "<none>",
+                eventTypes.stream().collect(Collectors.joining(" ")),
+                Boolean.toString(includeUnary),
+                likelihood2string.get(requestData.getEventLikelihood()),
+                taxId != null ? Stream.of(taxId).collect(Collectors.joining(" ")) : "<none>",
+                taxIdsA != null ? Stream.of(taxIdsA).collect(Collectors.joining(" ")) : "<none>",
+                taxIdsB != null ? Stream.of(taxIdsB).collect(Collectors.joining(" ")) : "<none>"
+        );
         log.info("xls builder command: {}", builder.command());
         Process process = builder.start();
         InputStream processInput = process.getInputStream();

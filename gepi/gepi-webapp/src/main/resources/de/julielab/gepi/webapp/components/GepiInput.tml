@@ -74,12 +74,18 @@
             <div class="card-header text-center">Filter the results by organism
                 <button type="button" class="btn btn-outline-light widget-tool-symbol info float-end"
                         data-bs-toggle="default-tooltip"
-                        title="Acceptable items are species IDs from the NCBI Taxonomy. Examples include 9606 for human or 10090 for mus musculus. Refer to the NCBI Taxonomy web page for a comprehensive catalogue of species."/>
+                        title="Adds an organism filter to the input lists. If List B is empty but an organism filter for List B is given, all genes/proteins with the specified species will be eligible for retrieval on the B-side. The input-list-specific organism filters have no effect on fulltext-only retrieval when both input lists are empty. Acceptable items are species IDs from the NCBI Taxonomy. Examples include 9606 for human or 10090 for mus musculus. Refer to the NCBI Taxonomy web page for a comprehensive catalogue of species."/>
             </div>
             <div class="card-body">
                 <h6 class="card-subtitle mb-3 text-muted">Add multiple IDs separated by commas</h6>
-                <t:label for="organismInput">NCBI Taxonomy IDs</t:label> <!--https://www.ncbi.nlm.nih.gov/taxonomy-->
+                <t:label for="organismInput">NCBI Taxonomy IDs (List A or B)</t:label> <!--https://www.ncbi.nlm.nih.gov/taxonomy-->
                 <t:textfield t:id="organismInput" id="organismInput" t:clientId="organismInput" value="taxId"/>
+                <div id="sidedTaxIdFilterDiv" data-bs-toggle="tooltip" title="Becomes available as soon as at least one identifier is added to List A. Then, these organism filters specify the organisms for which List A or List B results may be obtained.">
+                    <t:label for="organismInputA">NCBI Taxonomy IDs (List A)</t:label> <!--https://www.ncbi.nlm.nih.gov/taxonomy-->
+                    <t:textfield t:id="organismInputA" id="organismInputA" t:clientId="organismInputA" value="taxIdA"/>
+                    <t:label for="organismInput">NCBI Taxonomy IDs (List B)</t:label> <!--https://www.ncbi.nlm.nih.gov/taxonomy-->
+                    <t:textfield t:id="organismInputB" id="organismInputB" t:clientId="organismInputB" value="taxIdB"/>
+                </div>
             </div>
         </div>
         <div class="card">

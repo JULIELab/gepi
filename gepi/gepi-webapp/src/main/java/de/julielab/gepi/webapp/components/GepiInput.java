@@ -35,6 +35,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,6 +91,14 @@ public class GepiInput {
     @Property
     @Persist(TabPersistentField.TAB)
     private String taxId;
+
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private String taxIdA;
+
+    @Property
+    @Persist(TabPersistentField.TAB)
+    private String taxIdB;
 
     @Inject
     private ComponentResources resources;
@@ -203,6 +212,8 @@ public class GepiInput {
         listATextAreaValue = "";
         listBTextAreaValue = "";
         taxId = "";
+        taxIdA = "";
+        taxIdB = "";
         selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
         includeUnary = false;
         eventLikelihood = 1;
@@ -256,6 +267,8 @@ public class GepiInput {
         this.listATextAreaValue = queryParameters.getListATextAreaValue();
         this.listBTextAreaValue = queryParameters.getListBTextAreaValue();
         this.taxId = queryParameters.getTaxId();
+        this.taxIdA = queryParameters.getTaxIdA();
+        this.taxIdB = queryParameters.getTaxIdB();
         this.eventLikelihood = queryParameters.getEventLikelihood();
         this.sentenceFilterString = queryParameters.getSentenceFilterString();
         this.paragraphFilterString = queryParameters.getParagraphFilterString();
@@ -274,8 +287,9 @@ public class GepiInput {
         if (selectedEventTypeNames.isEmpty())
             selectedEventTypeNames = EnumSet.allOf(EventTypes.class).stream().map(Enum::name).distinct().collect(Collectors.toList());
         boolean isAListPresent = listATextAreaValue != null && listATextAreaValue.trim().length() > 0;
-        boolean isABSearchRequest = listATextAreaValue != null && listATextAreaValue.trim().length() > 0 && listBTextAreaValue != null
-                && listBTextAreaValue.trim().length() > 0;
+        // when there are taxId filters for A and B, then this is also a closed search
+        boolean isABSearchRequest = (listATextAreaValue != null && listATextAreaValue.trim().length() > 0) && ((listBTextAreaValue != null
+                && listBTextAreaValue.trim().length() > 0) || (taxIdB != null && !taxIdB.isEmpty()));
         boolean isSentenceFilterPresent = sentenceFilterString != null && !sentenceFilterString.isBlank();
         boolean isParagraphFilterPresent = paragraphFilterString != null && !paragraphFilterString.isBlank();
         boolean isSectionNameFilterPresent = sectionNameFilterString != null && !sectionNameFilterString.isBlank();
@@ -294,7 +308,8 @@ public class GepiInput {
             else
                 inputMode = EnumSet.of(InputMode.FULLTEXT_QUERY);
         }
-        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxId != null ? taxId.split("\\s*,\\s*") : null, sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, dataSessionId);
+        Function<String, String[]> taxIdSplit = taxId -> taxId != null ? taxId.split("\\s*,\\s*") : null;
+        requestData = new GepiRequestData(selectedEventTypeNames, includeUnary, eventLikelihood, listAGePiIds, listBGePiIds, taxIdSplit.apply(taxId), taxIdSplit.apply(taxIdA),taxIdSplit.apply(taxIdB),sentenceFilterString, paragraphFilterString, filterFieldsConnectionOperator, sectionNameFilterString, inputMode, docId, dataSessionId);
         log.debug("Fetching events from ElasticSearch");
         Future<EventRetrievalResult> pagedEsResult = eventRetrievalService.getEvents(requestData, 0, TableResultWidget.ROWS_PER_PAGE, false);
         Future<EventRetrievalResult> unrolledResult4Charts = null;
@@ -304,6 +319,8 @@ public class GepiInput {
         log.info("[Session {}] A input, first elements (out of {}): {}", dataSessionId, Arrays.asList(aLines).subList(0, Math.min(5, aLines.length)), aLines.length);
         log.info("[Session {}] B input, first elements (out of {}): {}", dataSessionId, Arrays.asList(bLines).subList(0, Math.min(5, bLines.length)), bLines.length);
         log.info("[Session {}] taxIds: {}", dataSessionId, taxId);
+        log.info("[Session {}] taxIdsA: {}", dataSessionId, taxIdA);
+        log.info("[Session {}] taxIdsB: {}", dataSessionId, taxIdB);
         log.info("[Session {}] sentence filter: {}", dataSessionId, sentenceFilterString);
         log.info("[Session {}] paragraph filter: {}", dataSessionId, paragraphFilterString);
         log.info("[Session {}] section filter: {}", dataSessionId, sectionNameFilterString);
@@ -348,7 +365,7 @@ public class GepiInput {
     private Future<IdConversionResult> convertToAggregateIds(String input, String listName) {
         if (input != null) {
             List<String> inputList = Stream.of(input.split("[\n]")).map(String::trim).filter(Predicate.not(String::isBlank)).collect(Collectors.toList());
-            log.debug("Got {} input IDs from {}", inputList.size(), listName);
+            log.debug("Got {} input IDs from {} for conversion to GePI IDs", inputList.size(), listName);
             IdType toIdType = IdType.GEPI_AGGREGATE;
             return geneIdService.convert(inputList.stream(),  toIdType);
         }

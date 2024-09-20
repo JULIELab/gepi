@@ -55,6 +55,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_EVENT_ARG1_GENE_ID = "argument1geneid";
 
+    public static final String FIELD_EVENT_ARG1_TAX_ID = "argument1taxid";
+
     public static final String FIELD_EVENT_ARG1_CONCEPT_ID = "argument1conceptid";
 
     public static final String FIELD_EVENT_ARG1_TOP_HOMOLOGY_ID = "argument1tophomoid";
@@ -70,6 +72,8 @@ public class EventRetrievalService implements IEventRetrievalService {
     public static final String FIELD_EVENT_ARGUMENT2SEARCH = "argument2";
 
     public static final String FIELD_EVENT_ARG2_GENE_ID = "argument2geneid";
+
+    public static final String FIELD_EVENT_ARG2_TAX_ID = "argument2taxid";
 
     public static final String FIELD_EVENT_ARG2_CONCEPT_ID = "argument2conceptid";
 
@@ -211,10 +215,10 @@ public class EventRetrievalService implements IEventRetrievalService {
         return CompletableFuture.supplyAsync(() -> {
             try {
 
-                log.debug("Retrieving closed events for {} A IDs and {} B IDs", requestData.getListAGePiIds().get().getConvertedItems().size(), requestData.getListBGePiIds().get().getConvertedItems().size());
+                log.debug("Retrieving closed events for {} A IDs and {} B IDs", requestData.getListAGePiIds().get().getConvertedItems().size(), requestData.getListBGePiIds() != null ? requestData.getListBGePiIds().get().getConvertedItems().size() : 0);
                 if (log.isDebugEnabled())
                     log.debug("Some A target IDs are: {}", requestData.getListAGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
-                if (log.isDebugEnabled())
+                if (requestData.getListBGePiIds() != null && log.isDebugEnabled())
                     log.debug("Some B target IDs are: {}", requestData.getListBGePiIds().get().getTargetIds().stream().limit(10).collect(Collectors.joining(", ")));
 
                 SearchServerRequest serverRqst = getClosedSearchRequest(requestData, from, numRows, forCharts);
@@ -245,7 +249,8 @@ public class EventRetrievalService implements IEventRetrievalService {
     }
 
     private SearchServerRequest getClosedSearchRequest(GepiRequestData requestData, int from, int numRows, boolean forCharts) throws ExecutionException, InterruptedException {
-        BoolQuery eventQuery = EventQueries.getClosedQuery(requestData, requestData.getAListIdsAsSet(), requestData.getBListIdsAsSet());
+        // List B might be empty because its also valid if there is tax ID filter on the B-side
+        BoolQuery eventQuery = EventQueries.getClosedQuery(requestData, requestData.getAListIdsAsSet(), requestData.getListBGePiIds() != null ? requestData.getBListIdsAsSet() : Collections.emptySet());
 
         boolean downloadAll = forCharts || numRows == Integer.MAX_VALUE;
 
