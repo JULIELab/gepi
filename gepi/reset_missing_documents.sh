@@ -31,15 +31,28 @@ fi
 HEADER="-H Content-Type:application/json"
 curl -XPOST $ES_URL/$ES_INDEX/_search $HEADER -d '{
 	"query": {
-		"match_all": {}
-	},
+      "match": {
+        "source": "pubmed"
+      }
+  },
+  "size": 0,
 	"aggs": {
 		"pmids": {
 			"terms": {
 				"field": "pmid",
 				"size": 10000000
 			}
-		},
+		}
+	}
+}' > pmid_es_docid_aggregation.json
+curl -XPOST $ES_URL/$ES_INDEX/_search $HEADER -d '{
+	"query": {
+      "match": {
+        "source": "pmc"
+      }
+  },
+  "size": 0,
+	"aggs": {
 		"pmcids": {
 			"terms": {
 				"field": "pmcid",
@@ -47,15 +60,15 @@ curl -XPOST $ES_URL/$ES_INDEX/_search $HEADER -d '{
 			}
 		}
 	}
-}' > es_docid_aggregation.json
-grep -oE 'key":"[0-9]+' es_docid_aggregation.json | grep  -oE '[0-9]+' > pmid_es.txt
-grep -oE 'key":"PMC[0-9]+' es_docid_aggregation.json | grep  -oE 'PMC[0-9]+' > pmcid_es.txt
+}' > pmcid_es_docid_aggregation.json
+grep -oE 'key":"[0-9]+' pmid_es_docid_aggregation.json | grep  -oE '[0-9]+' > pmid_es.txt
+grep -oE 'key":"PMC[0-9]+' pmcid_es_docid_aggregation.json | grep  -oE 'PMC[0-9]+' > pmcid_es.txt
 
 echo "PubMed: Got `wc -l pmid_pg.txt` IDs from Postgres and `wc -l pmid_es.txt` from ElasticSearch"
 echo "PMC: Got `wc -l pmcid_pg.txt` IDs from Postgres and `wc -l pmcid_es.txt` from ElasticSearch"
 
-cat pmid_es.txt pmid_pg.txt | sort | uniq > pmid_missing.txt
-cat pmcid_es.txt pmcid_pg.txt | sort | uniq > pmcid_missing.txt
+cat pmid_es.txt pmid_pg.txt | sort | uniq -u > pmid_missing.txt
+cat pmcid_es.txt pmcid_pg.txt | sort | uniq -u > pmcid_missing.txt
 
 echo "Missing PubMed: Got `wc -l pmid_missing.txt` unique doc IDs; assuming those are missing from ElasticSearch"
 echo "Missing PMC: Got `wc -l pmcid_missing.txt` unique doc IDs; assuming those are missing from ElasticSearch"

@@ -90,9 +90,9 @@
                     </dd>
                     <dt>Why do full-text query or filter results highlight words that do not seem to match a query term?</dt>
                     <dd>
-                        For full-text queries GePI expands abbreviations. Consider the abbreviation <em>cyclic mechanical stress (CMS)</em>, used for example in <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2654047/" class="link-secondary" target="_blank">PMC2654047</a>. It is introduced at the beginning of the document and then used throughout the text. Thus, the query <em>stress</em> would only work on the first occurrence of the term when the long form is given. To allow matches for all the other places, too, we internally expand abbreviations to make such matches possible.
+                        For full-text queries GePI expands abbreviations. Consider the abbreviation <em>oscillatory shear stress (OS)</em>, used for example in <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10835076/" class="link-secondary" target="_blank">PMC10835076</a>. It is introduced at the beginning of the document and then used throughout the text. Thus, the query <em>stress</em> would only work on the first occurrence of the term when the long form is given. To allow matches for all the other places, too, we internally expand abbreviations to make such matches possible.
                         <p>
-                        <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{alist:bmp1%2Cbmp2%2Csmad1,sentencefilter:stress}" target="_blank" class="link-light btn btn-info" title="Click to start an example search filtered by the word 'stress' that will be found in abbreviations." data-bs-toggle="default-tooltip">
+                        <t:pagelink page="Index" anchor="tableresult_widget" parameters="literal:{docid:PMC10835076,alist:bmp1%2Cbmp2%2Csmad1,sentencefilter:stress}" target="_blank" class="link-light btn btn-info" title="Click to start an example search filtered by the word 'stress' that will be found in abbreviations." data-bs-toggle="default-tooltip">
                         Show this example in GePI</t:pagelink>
                         </p>
                     </dd>

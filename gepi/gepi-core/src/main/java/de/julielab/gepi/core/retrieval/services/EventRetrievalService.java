@@ -121,6 +121,8 @@ public class EventRetrievalService implements IEventRetrievalService {
 
     public static final String FIELD_AGGREGATION_VALUE = "aggregationvalue";
 
+    public static final String FIELD_SOURCE = "source";
+
     /**
      * The values in the field have the form symbol1---symbol2
      */
@@ -135,6 +137,7 @@ public class EventRetrievalService implements IEventRetrievalService {
     public static final List<String> FIELDS_FOR_TABLE = Arrays.asList(
             FIELD_PMID,
             FIELD_PMCID,
+            FIELD_SOURCE,
             FIELD_EVENT_LIKELIHOOD,
             FIELD_EVENT_SENTENCE_TEXT,
 //            FIELD_EVENT_PARAGRAPH_TEXT,
