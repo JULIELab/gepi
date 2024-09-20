@@ -152,6 +152,14 @@ By default, the project-internal configuration file `configuration.properties.je
 
 Important note: ***Do not edit the `README.md` file in the module roots*** if there exists a `readme-raw` subdirectory. The file in the root is just a Maven-filtered copy of the `readme-raw/README.md` file. The Maven filtering replaces Maven properties like the project version in the `readme-raw/README.md` file and puts the result in the module root, overriding the previous `README.md` file.
 
+### Update the Interaction Test Data
+
+The <code>gepi-core</code> and <code>gepi-webapp</code> projects employ interactions in JSON format for its integration tests. These interactions have the exact form that is sent to ElasticSearch in production. In tests it is also sent to an ElasticSearch server running in a Docker container using the Testcontainers project. The test data is managed in the <code>gepi/gepi-test-data/<code> project where the data files are placed.
+To place the test data into the <code>gepi-core/target/generated-resources</code> directory - where it belongs - the whole GePI project must be built:
+1) Navigate to the <code>gepi/gepi</code> directory of the repository.
+2) Use <code>mvn clean package -DskipTests</code>
+This can also be used to update the test data if the contents of the <code>gepi-test-data</code> module has changed, e.g. due to an index schema change that made a re-creation of the test data necessary.
+
 ### Update version
 
 Update the new version number in the following places:
