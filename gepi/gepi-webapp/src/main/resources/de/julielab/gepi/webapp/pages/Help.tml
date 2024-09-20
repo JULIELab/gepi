@@ -500,11 +500,11 @@
                         <p>
                             The API currently works through HTTP GET requests (POST is not yet supported) and
                             is realized through URL request parameters, i.e. the GePI Web address followed by 
-                            <code>/api/v1/</code>, a
+                            <code>/api/v1/interactions</code>, a
                             single question mark (<code>?</code>) and parameter-value pairs. A parameter-value pair
                             is separated by an equal sign (<code>=</code>) and a sequence of such pairs are separated by
                             the ampersand characters (<code>&amp;</code>).
-                            For example: <pre><code>https://gepi.coling.uni-jena.de/api/v1?alist=mtor&amp;blist=jun</code></pre>
+                            For example: <pre><code>https://gepi.coling.uni-jena.de/api/v1/interactions?alist=mtor&amp;blist=jun</code></pre>
                         </p>
                         <p>
                             A comprehensive list of parameters and their possible values is given in the table below.<br/>
