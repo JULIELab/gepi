@@ -296,7 +296,7 @@ public class GeneIdService implements IGeneIdService {
         return CompletableFuture.supplyAsync(() -> {
             long time = System.currentTimeMillis();
             final Multimap<IdType, String> idsByType = determineIdTypes(stream);
-            log.debug("Starting to convert {} input IDs for GePI retrieval.");
+            log.debug("Starting to convert {} input IDs for GePI retrieval.", idsByType.values().size());
             final List<Future<IdConversionResult>> convertedIds = new ArrayList<>();
             for (IdType from : idsByType.keySet()) {
                 final Collection<String> sourceIds = idsByType.get(from);
