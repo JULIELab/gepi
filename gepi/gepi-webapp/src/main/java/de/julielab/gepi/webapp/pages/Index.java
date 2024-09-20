@@ -8,16 +8,13 @@ import de.julielab.gepi.webapp.components.GepiInput;
 import de.julielab.gepi.webapp.components.TableResultWidget;
 import de.julielab.gepi.webapp.data.GepiQueryParameters;
 import de.julielab.gepi.webapp.state.GePiSessionState;
-import de.julielab.java.utilities.FileUtilities;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
-import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.http.services.Request;
-import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONArray;
@@ -27,10 +24,6 @@ import org.apache.tapestry5.services.PageRenderLinkSource;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -86,8 +79,17 @@ public class Index {
     @Inject
     private IGePiDataService dataService;
 
+    public GepiInput getGepiInput() {
+        return gepiInput;
+    }
+
     @InjectComponent
     private GepiInput gepiInput;
+
+    public TableResultWidget getTableResultWidget() {
+        return tableResultWidget;
+    }
+
     @InjectComponent
     private TableResultWidget tableResultWidget;
     private boolean sessionExists = false;
@@ -124,42 +126,42 @@ public class Index {
         if (gepiQueryParameters.isValidRequest()) {
             log.info("Received valid query parameters for GePI search.");
             gepiInput.executeSearch(gepiQueryParameters, dataSessionId);
-            switch (gepiQueryParameters.getFormat()) {
-                case "excel":
-                    return tableResultWidget.onDownload();
-                case "tsv":
-                    final Future<EventRetrievalResult> unrolledRetrievalResult = dataService.getUnrolledResult4download(requestData, eventRetrievalService);
-                    try {
-                        final Path tsvFile = dataService.writeOverviewTsvFile(unrolledRetrievalResult.get().getEventList(), requestData.getDataSessionId());
-                        return new StreamResponse() {
-
-                            @Override
-                            public void prepareResponse(Response response) {
-                                try {
-                                    response.setHeader("Content-Length", "" + Files.size(tsvFile)); // output into file
-                                    response.setHeader("Content-disposition", "attachment; filename=" + tsvFile.getFileName());
-                                } catch (Exception e) {
-                                    log.error("Could not create TSV result for dataSessionId {}", requestData.getDataSessionId(), e);
-                                }
-                            }
-
-                            @Override
-                            public InputStream getStream() throws IOException {
-                                return FileUtilities.getInputStreamFromFile(tsvFile.toFile());
-                            }
-
-                            @Override
-                            public String getContentType() {
-                                return "text/csv";
-                            }
-                        };
-                    } catch (Exception e) {
-                     log.error("Could not serve TSV file due to Exception", e);
-                    }
-                    return dataService;
-                default: return this;
-            }
-            //return this;
+//            switch (gepiQueryParameters.getFormat()) {
+//                case "excel":
+//                    return tableResultWidget.onDownload();
+//                case "tsv":
+//                    final Future<EventRetrievalResult> unrolledRetrievalResult = dataService.getUnrolledResult4download(requestData, eventRetrievalService);
+//                    try {
+//                        final Path tsvFile = dataService.writeOverviewTsvFile(unrolledRetrievalResult.get().getEventList(), requestData.getDataSessionId());
+//                        return new StreamResponse() {
+//
+//                            @Override
+//                            public void prepareResponse(Response response) {
+//                                try {
+//                                    response.setHeader("Content-Length", "" + Files.size(tsvFile)); // output into file
+//                                    response.setHeader("Content-disposition", "attachment; filename=" + tsvFile.getFileName());
+//                                } catch (Exception e) {
+//                                    log.error("Could not create TSV result for dataSessionId {}", requestData.getDataSessionId(), e);
+//                                }
+//                            }
+//
+//                            @Override
+//                            public InputStream getStream() throws IOException {
+//                                return FileUtilities.getInputStreamFromFile(tsvFile.toFile());
+//                            }
+//
+//                            @Override
+//                            public String getContentType() {
+//                                return "text/csv";
+//                            }
+//                        };
+//                    } catch (Exception e) {
+//                     log.error("Could not serve TSV file due to Exception", e);
+//                    }
+//                    return dataService;
+//                default: return this;
+//            }
+            return this;
         } else {
             log.debug("Query parameters did not contain a valid GePI search.");
         }
@@ -172,18 +174,18 @@ public class Index {
     }
 
     void afterRender() {
-        System.out.println("Server Name: " + request.getServerName());
-        System.out.println("Server Port: " + request.getServerPort());
-        System.out.println("Local Port: " + request.getLocalPort());
-        System.out.println("Is Secure: " + request.isSecure());
-        System.out.println("Path: " + request.getPath());
-        System.out.println("Remote Host: " + request.getRemoteHost());
-        for (var name : request.getAttributeNames())
-            System.out.println("Attribute " + name + ": " + request.getAttribute(name));
+//        System.out.println("Server Name: " + request.getServerName());
+//        System.out.println("Server Port: " + request.getServerPort());
+//        System.out.println("Local Port: " + request.getLocalPort());
+//        System.out.println("Is Secure: " + request.isSecure());
+//        System.out.println("Path: " + request.getPath());
+//        System.out.println("Remote Host: " + request.getRemoteHost());
+//        for (var name : request.getAttributeNames())
+//            System.out.println("Attribute " + name + ": " + request.getAttribute(name));
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
         javaScriptSupport.require("gepi/charts/data").invoke("setDataUrl").with(resources.createEventLink("loadDataToClient").toAbsoluteURI(productionMode));
         javaScriptSupport.require("gepi/pages/index").invoke("setupDownloadUrlCopyButton");
-        javaScriptSupport.require("gepi/pages/index").invoke("displayRoadworksWarningToast");
+//        javaScriptSupport.require("gepi/pages/index").invoke("displayRoadworksWarningToast");
         if (isResultPresent()) {
             // If there already is data at loading the page, the input panel is already hidden (see #getShowInputClass)
             // and we can display the widgets.

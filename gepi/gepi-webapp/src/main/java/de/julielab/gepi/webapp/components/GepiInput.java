@@ -179,6 +179,11 @@ public class GepiInput {
      */
     @ActivationRequestParameter
     private boolean reset;
+
+    public GepiRequestData getRequestData() {
+        return requestData;
+    }
+
     /**
      * TODO This is here to allow for paging requests. It overlaps with {@link #data} which should be sorted out at some point.
      */

@@ -117,12 +117,12 @@ public class GepiQueryParameters {
             if (listATextAreaValue == null)
                 listATextAreaValue = request.getParameter(ALIST);
             if (listATextAreaValue != null)
-                listATextAreaValue = Arrays.stream(listATextAreaValue.split("[\n,]")).map(this::decodeUrlEncoding).collect(Collectors.joining("\n"));
+                listATextAreaValue = Arrays.stream(decodeUrlEncoding(listATextAreaValue).split("[\n,]")).collect(Collectors.joining("\n"));
             listBTextAreaValue = request.getParameter(LISTB);
             if (listBTextAreaValue == null)
                 listBTextAreaValue = request.getParameter(BLIST);
             if (listBTextAreaValue != null)
-                listBTextAreaValue = Arrays.stream(listBTextAreaValue.split("[\n,]")).map(this::decodeUrlEncoding).collect(Collectors.joining("\n"));
+                listBTextAreaValue = Arrays.stream(decodeUrlEncoding(listBTextAreaValue).split("[\n,]")).collect(Collectors.joining("\n"));
             taxId = request.getParameter(TAXID);
             selectedEventTypes = new ArrayList<>(EnumSet.allOf(EventTypes.class));
             final String eventTypesString = request.getParameter(EVENTTYPES);
@@ -161,7 +161,7 @@ public class GepiQueryParameters {
             interactionRetrievalLimitForAggregations = INTERACTION_RETRIEVAL_LIMIT_FOR_AGGREGATIONS;
             format = request.getParameter(FORMAT) != null ? request.getParameter(FORMAT).toLowerCase() : null;
             if (format == null)
-                format = "web";
+                format = "tsv";
             try {
                 interactionRetrievalLimitForAggregations = Integer.parseInt(request.getParameter(INTERACTION_RETRIEVAL_LIMIT));
             } catch (NumberFormatException e) {
@@ -170,6 +170,14 @@ public class GepiQueryParameters {
         }
     }
 
+    /**
+     * This method is required for the help pages. For some reason, Tapestry converts the percent-URL-encodings
+     * in the HTML attributes into these dollar-sign encodings which are then not translated back.
+     *
+     * The API - when used with cURL, for example - works just fine.
+     * @param encodedString
+     * @return
+     */
     private String decodeUrlEncoding(String encodedString) {
         return encodedString.replaceAll("\\$002520", " ")
                 .replaceAll("\\$00253[Aa]", ":")

@@ -16,6 +16,7 @@ import de.julielab.gepi.webapp.data.EventTypes;
 import de.julielab.java.utilities.FileUtilities;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.StreamResponse;
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.*;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
@@ -24,6 +25,7 @@ import org.apache.tapestry5.http.Link;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.LoggerSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
@@ -88,58 +90,31 @@ public class TableResultWidget extends GepiWidget {
     @Persist(TabPersistentField.TAB)
     private Format contextFormat;
     @Inject
+    @Symbol(SymbolConstants.PRODUCTION_MODE)
+    private boolean productionMode;
+    @Inject
     private IEventRetrievalService eventRetrievalService;
     @Inject
     private LoggerSource loggerSource;
     @Environmental
     private JavaScriptSupport javaScriptSupport;
 
-//    @Property
-//    private List<String> selectedColumns;
     @Inject
     private IGeneIdService geneIdService;
-//    @Inject
-//    private TypeCoercer typeCoercer;
-//
-//    public ValueEncoder getColumnsEncoder() {
-//        return new StringValueEncoder();
-//    }
-//
-//    public SelectModel getColumnsModel() {
-//        return new SelectModelImpl(tableModel.getPropertyNames().stream().map(p -> new OptionModelImpl(p)).toArray(OptionModel[]::new));
-//    }
 
-//    @Inject
-//    private AjaxResponseRenderer ajaxResponseRenderer;
-//
-//    @InjectComponent
-//    private GepiWidgetLayout gepiWidgetLayout;
-//
-    // for columns selection
-//    public void onSuccessFromColumnsForm() {
-//        tableModel.include(selectedColumns.toArray(String[]::new));
-//        ajaxResponseRenderer.addRender(gepiWidgetLayout.getBodyZone());
-//    }
 
     @Log
     void setupRender() {
         getEventSource();
         List<String> availableColumns = new ArrayList<>(List.of("firstArgumentPreferredName",
                 "secondArgumentPreferredName",
-//                "firstArgumentText",
-//                "secondArgumentText",
                 "firstArgumentGeneId",
                 "secondArgumentGeneId",
-//                "firstArgumentMatchType",
-//                "secondArgumentMatchType",
                 "allEventTypes",
                 "factuality",
                 "fulltextMatchSource",
                 "docId",
-//                "eventId",
                 "context"
-//                ,
-//                "geneMappingSources"
         ));
         if (inputMode != null && !inputMode.contains(InputMode.FULLTEXT_QUERY))
             availableColumns.remove("fulltextMatchSource");
@@ -149,16 +124,10 @@ public class TableResultWidget extends GepiWidget {
 
         tableModel.get("firstArgumentPreferredName").label("Gene A Symbol");
         tableModel.get("secondArgumentPreferredName").label("Gene B Symbol");
-//        tableModel.get("firstArgumentText").label("Gene A Text");
-//        tableModel.get("secondArgumentText").label("Gene B Text");
         tableModel.get("firstArgumentGeneId").label("Gene A Gene ID");
         tableModel.get("secondArgumentGeneId").label("Gene B Gene ID");
-//        tableModel.get("firstArgumentMatchType").label("gene A match type");
-//        tableModel.get("secondArgumentMatchType").label("gene B match type");
         tableModel.get("allEventTypes").label("Relation Types");
         tableModel.get("docId").label("Document ID");
-//        tableModel.get("eventId").label("event id");
-//        tableModel.get("geneMappingSources").label("gene tagger");
         // Disable the sorting buttons. Since we reorder the event arguments so that arguments from list A
         // always appear as the "first" argument, we cannot sort in ElasticSearch because there is no fixed
         // field we could sort on for the gene arguments. Other columns would be possible to sort on but
@@ -177,28 +146,14 @@ public class TableResultWidget extends GepiWidget {
                 return source;
             }
         };
-//        selectedColumns = tableModel.getPropertyNames();
     }
 
-    /**
-     * When the form containing the filter elements is submitted, we want to re-render the table via AJAX
-     */
-//    void onValidateFromFilterCriteria() {
-//        if (request.isXHR()) {
-//            ajaxResponseRenderer.addRender(tableZone);
-//        }
-//    }
     public EventPagesDataSource getEventSource() {
-//        FilteredGepiRequestData filteredRequest = new FilteredGepiRequestData(requestData);
-//        filteredRequest.setEventTypeFilter(filterEventType);
         return new EventPagesDataSource(loggerSource.getLogger(EventPagesDataSource.class), dataService.getData(requestData.getDataSessionId()).getPagedResult(), eventRetrievalService, geneIdService, requestData);
     }
 
     void onUpdateTableData() {
         log.debug("Waiting for table data.");
-//            beanEvents = getEsResult().get().getEventList().stream()
-//                    .map(e -> new BeanModelEvent(e))
-//                    .collect(Collectors.toList());
         log.debug("Table data was loaded.");
 
     }
@@ -233,18 +188,6 @@ public class TableResultWidget extends GepiWidget {
             @Override
             public void prepareResponse(Response response) {
                 try {
-//                    Future<EventRetrievalResult> unrolledResult4download = getUnrolledResult4download();
-//                    // Check if we have the download data cached. Otherwise, get it and cache it
-//                    if (unrolledResult4download == null) {
-//                        long time = System.currentTimeMillis();
-//                        log.info("[{}] Retrieving unrolled result for Excel sheet creation.", requestData.getDataSessionId());
-//                        unrolledResult4download = eventRetrievalService.getEvents(requestData, 0, Integer.MAX_VALUE, false);
-//                        // We use a weak reference for the complete data since it requires much memory because of all
-//                        // the context data. The GC should be able to evict it, if necessary.
-//                        dataService.getData(requestData.getDataSessionId()).setUnrolledResult4download(new WeakReference<>(unrolledResult4download));
-//                        time = System.currentTimeMillis() - time;
-//                        log.info("[{}] Unrolled result retrieval for Excel sheet creation took {} seconds", requestData.getDataSessionId(), time / 1000);
-//                    }
                     final Future<EventRetrievalResult> unrolledResult4download = dataService.getUnrolledResult4download(requestData, eventRetrievalService);
                     statisticsFile = dataService.getOverviewExcel(unrolledResult4download, requestData.getDataSessionId(), requestData.getInputMode(), requestData.getSentenceFilterString(), requestData.getParagraphFilterString(), requestData.getSectionNameFilterString());
 
@@ -293,7 +236,7 @@ public class TableResultWidget extends GepiWidget {
 
     public void afterRender() {
         final Link downloadEventLink = resources.createEventLink("download");
-        javaScriptSupport.require("gepi/charts/tablewidget").invoke("download").with(downloadEventLink.toAbsoluteURI().replace(":80", ""));
+        javaScriptSupport.require("gepi/charts/tablewidget").invoke("download").with(downloadEventLink.toAbsoluteURI(productionMode));
         javaScriptSupport.require("gepi/charts/tablewidget").invoke("setupHighlightTooltips");
         javaScriptSupport.require("gepi/base").invoke("setuptooltips");
     }
