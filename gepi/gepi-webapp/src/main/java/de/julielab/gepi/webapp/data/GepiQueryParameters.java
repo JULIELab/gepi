@@ -17,8 +17,8 @@ public class GepiQueryParameters {
     public static final String ALIST = "alist";
     public static final String BLIST = "blist";
     public static final String TAXID = "taxids";
-    public static final String TAXIDA = "taxidsA";
-    public static final String TAXIDB = "taxidsB";
+    public static final String TAXIDA = "taxidsa";
+    public static final String TAXIDB = "taxidsb";
     public static final String EVENTTYPES = "eventtypes";
     public static final String FACTUALITY = "factuality";
     public static final String FILTERFIELDSCONNECTIONOPERATOR = "filterconnector";
